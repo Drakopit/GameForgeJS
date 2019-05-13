@@ -33,7 +33,8 @@ class Base {
     }
 
     DrawSelf(canvas, context) {
-        
+        this.canvas = (canvas != undefined) ? canvas : console.log("Canvas não definido! A classe Button precisa ter um canvas.");
+        this.context = (context != undefined) ? context : console.log("Contexto não definido! A classe Button precisa ter um contexto.");
     }
 
     // Desenha algo na tela
