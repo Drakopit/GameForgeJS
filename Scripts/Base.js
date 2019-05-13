@@ -32,6 +32,10 @@ class Base {
         requestAnimationFrame(() => callBackFixed())
     }
 
+    DrawSelf(canvas, context) {
+        
+    }
+
     // Desenha algo na tela
     // Relativo a UI
     OnGUI() {
