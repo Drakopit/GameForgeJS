@@ -9,4 +9,12 @@ class Collide2D extends Math {
         }
         return isCollision;
     }
+    static isCollidingCircle(circle, obj) {
+        var isCollision = false;
+        // Teorema de Pitagoras
+        if (Math.sqrt((obj.x - circle.x) ** 2 + (obj.y - circle.y) ** 2) < circle.r) {
+            isCollision = true
+        }
+        return isCollision;
+    }
 }
