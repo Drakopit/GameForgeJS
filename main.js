@@ -1,3 +1,5 @@
+import { Button } from "Scripts/Button";
+
 class Base {
     constructor() {
         // Sempre é chamado
@@ -43,9 +45,8 @@ class OnGUI extends Base {
     }
 
     Button(x, y, width, height, callBack) {
-        context.fillStyle = "#428BCA"
-        context.rect(x, y, width, height);
-        context.fill();
+        var button = new Button();
+        button.Draw(x,y,width,height);
     }
 }
 
