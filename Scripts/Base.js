@@ -1,9 +1,23 @@
+/**
+ * @doc Class Base
+ * @namespace Scripts
+ * @class Base
+ * @author Patrick Faustino Camello
+ * @summary That class was made, to compose the EngineHtml5 framework.
+ * This class should be inherited, not instinctive.
+ * @Date 15/05/2019
+ * @returns {Object}
+ */
 class Base {
     constructor() {
         Awake();
     }
     
-    // Sempre é chamado quando um objeto é criado
+    /**
+     * @doc Method
+     * @description It's call when class is build
+     * @returns {}
+     */
     static Awake() {
         // Cálcula o tempo de Runtime
         this.startTime;
@@ -18,27 +32,50 @@ class Base {
         || function(f) {return setTimeout(f, 1000/60)} // Simula FPS 60
     }
 
-    // Inicializa
+    /**
+     * @doc Method
+     * @description Firts method call (take off Awake)
+     * @returns {}
+     */
     Start() {}
 
-    // Atualiza Baseado em FPS
+    /**
+     * @doc Method
+     * @param {functionToUpdate} callBack
+     * @description Method called every frame
+     * @returns {} 
+     */
     Update(callBack) {
         requestAnimationFrame(() => callBack())
     }
 
-    // Atualiza com uma taxa
-    // baseada em segundos
+    /**
+     * @doc Method
+     * @param {functionToUpdateFixed} callBackFixed 
+     * @description Method called each second
+     * @returns {}
+     */
     FixedUpdate(callBackFixed) {
         requestAnimationFrame(() => callBackFixed())
     }
 
+    /**
+     * @doc Method
+     * @param {canvas} canvas 
+     * @param {context} context
+     * @description Method called to draw the char, his draws 
+     * @returns {}
+     */
     DrawSelf(canvas, context) {
         this.canvas = (canvas != undefined) ? canvas : console.log("Canvas não definido! A classe Button precisa ter um canvas.");
         this.context = (context != undefined) ? context : console.log("Contexto não definido! A classe Button precisa ter um contexto.");
     }
 
-    // Desenha algo na tela
-    // Relativo a UI
+    /**
+     * @doc Method
+     * @description Method called to draw UI
+     * @return {}
+     */
     OnGUI() {
         this.Update(this.OnGUI());
     }
