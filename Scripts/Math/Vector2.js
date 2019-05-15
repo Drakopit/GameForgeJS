@@ -1,11 +1,7 @@
 class Vector2 {
-    constructor() {
-        this.x = 0;
-        this.y = 0;
-    }
     constructor(x, y) {
-        this.x = x;
-        this.y = y;
+        this.x = (x != undefined) ? x : 0;
+        this.y = (y != undefined) ? y : 0;
     }
 
     get Value() {
