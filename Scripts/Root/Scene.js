@@ -1,20 +1,14 @@
-///-----------------------------------------------------------------
-///   Namespace:      Root
-///   Class:          Scene
-///   Description:    Class that hadler scenes, of game.
-///   Author:         Patrick Faustino Camello      Date: 15/05/2019
-///   Notes:          That class was made, to compose the EngineHtml5
-///                   framework.
-///   Usage:
-///     var screen = new Screen(0, 320, 240);
-///     var scene = new Scene(0, "2d", screen);
-///     scene.Load2D("nameScene");
-///
-// To call scene
-///     scene.Call(0, "nameScene");
-///-----------------------------------------------------------------
-import { Screen } from "Window/Screen.js";
-
+/**
+ * @doc Class Screen
+ * @namespace Root
+ * @class Scene
+ * @author Patrick Faustino Camello
+ * @summary That class was made, to compose the EngineHtml5 framework.
+ * @Date 15/05/2019
+ * @example
+ *  var scene = new Scene(0, "typeContext", screenObject);
+ * @returns {Object}
+ */
 class Scene {
     constructor(id, context, screen) {
         // Contextos suportados "2d" e "webgl" (Caso webgl não for suportado, tem o "experimental-webgl")
@@ -28,14 +22,26 @@ class Scene {
         this.layers = [];
     }
 
-    //  Muda a cena via Id 
+    /**
+     * @doc Method
+     * @description Call the specific scene
+     * @example
+     *  scene.Call(0, "sceneName");
+     * @returns {}
+     */
     set Call(id, sceneName) {
         this.id = id;
-        // Carrega a cena no modo 2D
         Load2D(sceneName);
     }
 
-    // Carre
+    /**
+     * @doc Methdo
+     * @param {sceneName} sceneName
+     * @description Load and configure an scene 2d, based tile from Tiled tool
+     * @example
+     *  scene.Load2D("tiledMapName");
+     * @returns {}
+     */
     Load2D(sceneName) {
         this.scene = document.createElement("canvas");
         this.scene.id = sceneName;
@@ -43,11 +49,18 @@ class Scene {
         this.scene.height = screen.Height();
         this.map = document.getElementById(this.scene.id).getContext('2d');
         
-        // Carrega o Mapa
         Load(sceneName);
     }
 
-    RenderLayer(layer) {
+    /**
+     * @doc Method
+     * @param {layer} layer 
+     * @description Render an layer from tileset
+     * @example
+     *  scene.RenderLayer("yourLayer");
+     * @returns {}
+     */
+    static RenderLayer(layer) {
         if (layer.type !== "tilelayer" || !layer.opacity) { return; }
         var newCanvas = this.map.canvas.cloneNode(),
             size = scene.data.tilewidth;
@@ -76,21 +89,42 @@ class Scene {
         }
     }
 
-    // Pega Layer por layer pra ser reenderizado
-    RenderLayers(layers) { 
+    /**
+     * @doc Method
+     * @param {arrayLayers} layers 
+     * @description Render each layer from tileset
+     * @example
+     *  scene.RenderLayers("arrayLayers");
+     * @returns {}
+     */
+    static RenderLayers(layers) { 
         layers = $.isArray(layers) ? layers : this.data.layers;
         layers.forEach(this.RenderLayer);
     }
 
-    // Carrega a imagem que compõem o TileSet
-    LoadTileset(json) {
+    /**
+     * @doc Method
+     * @param {jsonFile} json 
+     * @description Load json with map of Tiled tool
+     * @example
+     *  scene.LoadTileset("jsonFile");
+     * @returns {}
+     */
+    static LoadTileset(json) {
         this.data = json;
         this.tileset = $("<img />", { src: json.tilesets[0].image })[0]
         this.tileset.onload = $.proxy(this.RenderLayers, this);
     }
 
-    // Carrega o Mapa inteiro
-    Load(mapName) {
+    /**
+     * @doc Method
+     * @param {mapName} mapName 
+     * @description Load an json file
+     * @example
+     *  scene.Load("fileName");
+     * @returns {json}
+     */
+    static Load(mapName) {
         return $.ajax({
             url: "/maps/" + mapName + ".json",
             type: "JSON"

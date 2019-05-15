@@ -10,12 +10,6 @@
  * @returns {Object}
  */
 import { Vector2 } from "Math/Vector2.js";
-
-/**
- * @doc Class
- * @class Screen
- * @constructor id, width, height
- */
 class Screen {
     constructor(id, width, height) {
         this.id = id;
