@@ -1,3 +1,5 @@
+import { Button } from "Button/Button.js";
+
 class OnGUI extends Base {
     constructor(id) {
         // O Id padrão é Main, caso nenhum seja especificado, ele será atribuido

@@ -1,4 +1,5 @@
 import {Base} from "Base.js"
+import {Screen} from "Window/Screen.js"
 import {Rect} from "Shapes/Rect.js";
 import {Collide2D} from "Math/Collide2D.js";
 
