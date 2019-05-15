@@ -1,6 +1,6 @@
 /**
  * @doc Class Vector2
- * @namespace Window
+ * @namespace Math
  * @class Vector2
  * @author Patrick Faustino Camello
  * @summary That class was made, to compose the EngineHtml5 framework.

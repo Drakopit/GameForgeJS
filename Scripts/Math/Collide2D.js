@@ -1,6 +1,6 @@
 /**
  * @doc Class Collide2D
- * @namespace Window
+ * @namespace Math
  * @class Collide2D
  * @author Patrick Faustino Camello
  * @summary That class was made, to compose the EngineHtml5 framework.
