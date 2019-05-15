@@ -9,7 +9,7 @@
  *  var vector2 = new Vector2(0, 0);
  * @returns {Object}
  */
-class Vector2 {
+export class Vector2 {
     constructor(x, y) {
         this.x = (x != undefined) ? x : 0;
         this.y = (y != undefined) ? y : 0;
@@ -33,7 +33,7 @@ class Vector2 {
      *  vector2.Value(100, 150);
      * @returns {}
      */
-    set Value(x, y) {
+    Value(x, y) {
         this.x = x;
         this.y = y;
     }

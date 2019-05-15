@@ -8,9 +8,8 @@
  * @Date 15/05/2019
  * @returns {Object}
  */
-class Base {
+export class Base {
     constructor() {
-        Awake();
     }
     
     /**

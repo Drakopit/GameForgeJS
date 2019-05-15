@@ -9,9 +9,9 @@
  *  var input = new Rect(0, 0, 32, 32);
  * @returns {Object}
  */
-import { Vector2 } from "Math/Vector2.js";
+import { Vector2 } from "../Math/Vector2.js";
 
-class Rect {
+export class Rect {
     constructor(x, y, width, height) {
         this.x = x;
         this.y = y;

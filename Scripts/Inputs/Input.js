@@ -12,11 +12,12 @@
  *  }
  * @returns {Object}
  */
-import {Base} from "Base.js"
+import {Base} from "../Base.js"
 
 // API padrão usa KeyboardEvent
-class Input extends Base {
+export class Input extends Base {
     constructor() {
+        super()
         this.KeyCode = {
             "Backspace":8,
             "Tab":9,
@@ -109,7 +110,7 @@ class Input extends Base {
      */
     GetKeyPress() {
         let key;
-        canvas.addEventListener('keypress', (e) => {
+        window.addEventListener('keypress', (e) => {
             key = e.which || e.KeyCode;
         }, false);
         return key;
@@ -125,7 +126,7 @@ class Input extends Base {
      */
     GetKeyDown() {
         let key;
-        canvas.addEventListener('keydown', (e) => {
+        window.addEventListener('keydown', (e) => {
             key = e.which || e.KeyCode;
         }, false);
         return key;
@@ -141,7 +142,7 @@ class Input extends Base {
      */
     GetKeyRelease() {
         let key;
-        canvas.addEventListener('keyup', (e) => {
+        window.addEventListener('keyup', (e) => {
             key = e.which || e.KeyCode;
         }, false);
         return key;
