@@ -9,35 +9,61 @@
  *  var input = new Rect(0, 0, 32, 32);
  * @returns {Object}
  */
-import { Vector2 } from "../Math/Vector2.js";
+import { Vector2D } from "../Math/Vector2D.js";
 
 export class Rect {
     constructor(x, y, width, height) {
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
+        this.position = new Vector2D(x,y);
+        // this.x = x;
+        // this.y = y;
+        this.size = new Vector2D(width, height);
+        // this.width = width;
+        // this.height = height;
     }
 
     /**
      * @doc Method
      * @description Get coordinates rect
      * @example
-     *  var position = rect.Coordinates();
-     * @returns {Vector2}
+     *  var position = rect.Coordinates;
+     * @returns {Vector2D}
      */
     get Coordinates() {
-        return (new Vector2(x,y));
+        return this.position;
+        // return new Vector2D(x,y);
+    }
+    
+    /**
+     * @doc Method
+     * @description Set coordinates rect
+     * @example
+     *  rect.Coordinates = new Vector2D(x,y);
+     * @returns {Vector2D}
+     */
+    set Coordinates(vector2D) {
+        this.position = vector2D;
     }
 
     /**
      * @doc Method
      * @description Get size rect
      * @example
-     *  var site = rect.Size();
-     * @returns {Vector2}
+     *  var size = rect.Size;
+     * @returns {Vector2D}
      */
     get Size() {
-        return (new Vector2(width, height))
+        return this.size;
+        // return new Vector2D(width, height);
+    }
+
+    /**
+     * @doc Method
+     * @description Set size rect
+     * @example
+     *  rect.Size = new Vector2D(width, height);
+     * @returns {Vector2D}
+     */
+    set Size(vector2D) {
+        this.size = vector2D;
     }
 }

@@ -18,7 +18,10 @@ import {Base} from "../Base.js"
 export class Input extends Base {
     constructor() {
         super()
+        // Chave
+        this.key = 0;
         this.KeyCode = {
+            "Break":3,
             "Backspace":8,
             "Tab":9,
             "Enter":13,
@@ -52,6 +55,8 @@ export class Input extends Base {
             ";":186,"=":187,",":188,"-":189,".":190,"/":191,"`":192,"[":219,"\\":220,"]":221,"'":222
         };
         this.CharCode = {
+            0:'That key has no keycode',
+            3:"Break",
             8:"Backspace",
             9:"Tab",
             13:"Enter",
@@ -108,12 +113,9 @@ export class Input extends Base {
      *      console.log("Jumping");
      *  } 
      */
-    GetKeyPress() {
-        let key;
-        window.addEventListener('keypress', (e) => {
-            key = e.which || e.KeyCode;
-        }, false);
-        return key;
+    GetKeyPress(key) {
+        window.onkeypress = (e) => { this.key = e.which || e.keyCode; };
+        return (key == this.key) ? true : false;
     }
 
     /**
@@ -124,12 +126,9 @@ export class Input extends Base {
      *      console.log("Jump");
      *  } 
      */
-    GetKeyDown() {
-        let key;
-        window.addEventListener('keydown', (e) => {
-            key = e.which || e.KeyCode;
-        }, false);
-        return key;
+    GetKeyDown(key) {
+        window.onkeydown = (e) => { this.key = e.which || e.keyCode; };
+        return (key == this.key) ? true : false;
     }
 
     /**
@@ -140,11 +139,8 @@ export class Input extends Base {
      *      console.log("Stop Jump");
      *  } 
      */
-    GetKeyRelease() {
-        let key;
-        window.addEventListener('keyup', (e) => {
-            key = e.which || e.KeyCode;
-        }, false);
-        return key;
+    GetKeyRelease(key) {
+        window.onkeyup = (e) => { this.key = e.which || e.keyCode; };
+        return (key == this.key) ? true : false;
     }
 }

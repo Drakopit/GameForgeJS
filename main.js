@@ -1,32 +1,27 @@
-window.onload = () => console.log("Engine Html5, para desenvolvimento de Jogos, em andamento...");
-// import { Input } from "./Scripts/Inputs/Input.js";
-// import { Rect } from "./Scripts/Shapes/Rect.js"
+// window.onload = () => console.log("Engine Html5, para desenvolvimento de Jogos, em andamento...");
+import { Input } from "./Scripts/Inputs/Input.js";
 
-// window.onload = function() {
-//     var context = document.getElementById("Main").getContext('2d');
-//     context.fillStyle = 'gray';
-//     context.clearRect(0, 0, 320, 240);
-//     context.fill();
+window.onload = function() {
+    var input = new Input();
+    const FPS = 1000/60;
+    const FPSTest = 1000;
+
+    setInterval(() => {
+        console.clear();
+        if (input.GetKeyDown(input.KeyCode["A"])) {
+            console.log(`Tecla: ${input.KeyCode["A"]}`);
+            console.log("Esquerda");
+        } else if (input.GetKeyDown(input.KeyCode["D"])) {
+            console.log(`Tecla: ${input.KeyCode["D"]}`);
+            console.log("Direita");
+        } else if (input.GetKeyDown(input.KeyCode["W"])) {
+            console.log(`Tecla: ${input.KeyCode["W"]}`);
+            console.log("Cima");
+        } else if (input.GetKeyDown(input.KeyCode["S"])) {
+            console.log(`Tecla: ${input.KeyCode["S"]}`);
+            console.log("Baixo");
+        }  
+    }, FPS);
+
     
-//     var input = new Input();
-//     var fps = 1000/60;
-
-//     var rect = new Rect(0,0,32,32);
-
-//     setInterval(() => {
-//         console.log("Input: ", input.KeyCode["A"]);
-//         if (input.GetKeyPress() == input.KeyCode["A"]) {
-//             alert("Jump");
-//         }
-//     }, 1000);
-
-//     setInterval(() => {
-
-//     })
-// }
-
-// window.onkeydown = function() {
-//     // if (input.GetKey("Space") = input.GetKeyDown()) {
-//     //     alert("Jump");
-//     // }
-// }
+}

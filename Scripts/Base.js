@@ -72,10 +72,11 @@ export class Base {
 
     /**
      * @doc Method
+     * @param {functionToOnGUI}
      * @description Method called to draw UI
      * @return {}
      */
-    OnGUI() {
-        this.Update(this.OnGUI());
+    OnGUI(callBackOnGui) {
+        requestAnimationFrame(() => callBackOnGui())
     }
 }
