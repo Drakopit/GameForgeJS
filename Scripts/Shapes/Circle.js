@@ -7,7 +7,7 @@
  * @Date 15/05/2019
  * @example
  *  var circle = new Circle();
- * @returns {Object}
+ * @returns {Object} Object
  */
 import { Vector2 } from "Math/Vector2.js";
 

@@ -9,9 +9,8 @@
  *  var scene = new Scene(0, "typeContext", screenObject);
  * @returns {Object}
  */
-class Scene {
-    constructor(id, context, screen) {
-        // Contextos suportados "2d" e "webgl" (Caso webgl não for suportado, tem o "experimental-webgl")
+export class Scene {
+    constructor(id, screen) {
         this.id = id;
         this.context = (context == undefined) ? "2d" : context;
         this.ratio = (window.devicePixelRatio ? window.devicePixelRatio : 1);
@@ -43,11 +42,10 @@ class Scene {
      * @returns {}
      */
     Load2D(sceneName) {
-        this.scene = document.createElement("canvas");
-        this.scene.id = sceneName;
-        this.scene.width = screen.Width();
-        this.scene.height = screen.Height();
-        this.map = document.getElementById(this.scene.id).getContext('2d');
+        this.scene = this.screen.Canvas;
+        this.scene.width = this.screen.Width;
+        this.scene.height = this.screen.Height;
+        this.map = this.screen.Context;
         
         Load(sceneName);
     }

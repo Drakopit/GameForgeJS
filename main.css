@@ -1,3 +1,7 @@
+body {
+    background-color: black;
+}
 canvas {
-    border-color: black;
+    border: 3px aqua;
+    align-items: center;
 }

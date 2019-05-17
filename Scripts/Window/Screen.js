@@ -9,8 +9,8 @@
  *  var screen = new Screen(0, 320, 240);
  * @returns {Object}
  */
-import { Vector2 } from "Math/Vector2.js";
-class Screen {
+import { Vector2D } from "../Math/Vector2D.js";
+export class Screen {
     constructor(id, width, height) {
         this.id = id;
         this.width = width;
@@ -24,7 +24,7 @@ class Screen {
      * @description Get canvas of the screen
      * @example
      *  var newCanvas = screen.Canvas();
-     * @returns {this.canvas}
+     * @returns canvas
      */
     get Canvas() { return this.canvas; }
 
@@ -34,7 +34,6 @@ class Screen {
      * @example
      * var canvas = document.getElementById("canvasName")
      *  screen.Canvas(canvas)
-     * @returns {}
      */
     set Canvas(canvas) { this.canvas = canvas; }
     
@@ -43,7 +42,7 @@ class Screen {
      * @description Get context of the screen
      * @example
      *  var newContext = screen.Context();
-     * @returns {this.context}
+     * @returns context
      */
     get Context() { return this.context }
 
@@ -53,7 +52,6 @@ class Screen {
      * @example
      *  var context = document.getElementById("canvasName").getContext("typeContext");
      *  screen.Context(context);
-     * @returns {}
      */
     set Context(context) { this.context = context; }
 
@@ -62,7 +60,7 @@ class Screen {
      * @description Get screen id
      * @example
      *  var id = screen.ScreenId();
-     * @returns {this.id}
+     * @returns number
      */
     get ScreenId() { return this.id; }
 
@@ -75,13 +73,14 @@ class Screen {
      *  var canvas = document.getElementById("canvasName");
      *  var context= canvas.getContext('2d');     
      *  screen.Init(canvas, context);
-     * @returns {}
      */
-    Init(canvas, context) {
-        this.canvas = canvas;
-        this.canvas.width = this.width;
-        this.canvas.height = this.height;
-        this.context = context;
+    Init(screenName) {
+        this.canvas = document.createElement("canvas");
+        document.body.appendChild(this.canvas);
+        this.canvas.setAttribute("id", screenName);
+        this.canvas.setAttribute("width", this.width);
+        this.canvas.setAttribute("height", this.height);
+        this.context = this.canvas.getContext("2d");
     }
 
     /**
@@ -89,7 +88,7 @@ class Screen {
      * @description return canvas width
      * @example
      *  var width = screen.Width();
-     * @returns {this.canvas.width}
+     * @returns number
      */
     get Width() { return this.canvas.width; }
     
@@ -98,9 +97,20 @@ class Screen {
      * @description returns canvas height
      * @example
      *  var width = screen.Height();
-     * @returns {this.canvas.height}
+     * @returns number
      */
     get Height() { return this.canvas.height; }
+
+    /**
+     * @doc Method
+     * @description Return size screen
+     * @example
+     * var size = screen.GetSize();
+     * @returns Vector2D
+     */
+    GetSize() {
+        return new Vector2D(this.Width, this.Height);
+    }    
 
     /**
      * @doc Method
@@ -109,7 +119,6 @@ class Screen {
      * @description Resize screen
      * @example
      *  screen.Resize(640, 480);
-     * @returns {}
      */
     Resize(width, height) {
         this.width = width;
@@ -123,9 +132,9 @@ class Screen {
      * @description Get position screen
      * @example
      *  var position = screen.Position();
-     * @returns {Vector2}
+     * @returns Vector2D
      */
-    get Position() { return new Vector2(this.x, this.y)}
+    get Position() { return new Vector2D(this.x, this.y)}
 
     /**
      * @doc Method
@@ -134,11 +143,9 @@ class Screen {
      * @description Change screen position
      * @example
      *  screen.Position(150, 100);
-     * @returns {} 
      */
     Position(x, y) {
-        this.x = x;
-        this.y = y;
+        this.x = x; this.y = y;
         this.canvas.style.position = "absolute";
         this.canvas.style.left = `${this.x}px`;
         this.canvas.style.top = `${this.y}px`;
