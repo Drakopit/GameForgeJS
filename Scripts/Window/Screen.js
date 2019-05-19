@@ -15,6 +15,8 @@ export class Screen {
         this.id = id;
         this.width = width;
         this.height = height;
+        this.clientWidth = window.innerWidth;
+        this.clientHeight = window.innerHeight;
         this.x = 0;
         this.y = 0;
     }
@@ -111,6 +113,17 @@ export class Screen {
     GetSize() {
         return new Vector2D(this.Width, this.Height);
     }    
+
+    /**
+     * @doc Method
+     * @description Return size window browser
+     * @example
+     * var windowSize = GetwindowSize();
+     * @returns Vector2D
+     */
+    GetwindowSize() {
+        return new Vector2D(this.clientWidth, this.clientHeight);
+    }
 
     /**
      * @doc Method

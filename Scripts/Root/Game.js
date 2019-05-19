@@ -3,14 +3,14 @@ import { Base } from "../Base.js";
 // Elementos do meu jogo
 import { myGame } from "../../Jogo de Exemplo/myGame.js";
 
-export class Game extends Base {
+export class Game {
     constructor() {
         this.input = new Input();
         const FPS = 1000/60;
         const FPSTest = 1000;
     }
 
-    Awake() {
+    static Awake() {
         window.onload = () => {
             // Carregar meu Jogo
             this.myGame = new myGame();
@@ -25,26 +25,26 @@ export class Game extends Base {
 
     static Start() {
         this.myGame.Start();
-        super.Start();
+        Base.Start();
     }
 
     static Update() {
         this.myGame.Update();
-        super.Update(this.Update());
+        Base.Update(this.Update());
     }
 
     static FixedUpdate() {
         this.myGame.FixedUpdate();
-        super.FixedUpdate(this.FixedUpdate());
+        Base.FixedUpdate(this.FixedUpdate());
     }
 
     static DrawSelf() {
         this.myGame.DrawSelf();
-        super.DrawSelf();
+        Base.DrawSelf();
     }
 
     static OnGUI() {
         this.myGame.OnGUI();
-        super.OnGUI(this.OnGUI());
+        Base.OnGUI(this.OnGUI());
     }
 }

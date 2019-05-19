@@ -12,10 +12,9 @@
 export class Scene {
     constructor(id, screen) {
         this.id = id;
-        this.context = (context == undefined) ? "2d" : context;
         this.ratio = (window.devicePixelRatio ? window.devicePixelRatio : 1);
         this.screen = screen;
-        screen.Resize(screen.Width() * ratio, screen.Height() * ratio)
+        screen.Resize(screen.Width * ratio, screen.Height * ratio)
 
         // Mapa
         this.layers = [];
@@ -28,7 +27,7 @@ export class Scene {
      *  scene.Call(0, "sceneName");
      * @returns {}
      */
-    set Call(id, sceneName) {
+    CallScene(id, sceneName) {
         this.id = id;
         Load2D(sceneName);
     }
