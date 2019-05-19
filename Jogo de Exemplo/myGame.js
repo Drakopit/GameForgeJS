@@ -12,18 +12,22 @@ export class Player {
         this.sprite = new Sprite(fileName);
         this.sprite.SetScreen(screen);
         this.draw = new Draw(screen);
+        this.base = new Base();
     }
 
     Start() {
         this.deltaTime; this.lastTime;
+        console.log(this.deltaTime);
         this.requestAnimationFrame = Base.prototype.getRefreshScreen();
     }
 
     Update() {
+        this.base.Update();
     }
 
     FixedUpdate() {
-        this.deltaTime = Base.prototype.getDeltaTime();
+        this.deltaTime = this.base.prototype.getDeltaTime();
+        console.log(this.deltaTime);
         /** **/if (this.input.GetKeyDown(this.input.KeyCode["A"])) {
             this.position.AddValue(new Vector2D(-40*this.deltaTime,0));
             // console.log(`Tecla: ${this.input.KeyCode["A"]}`);
@@ -41,13 +45,14 @@ export class Player {
             // console.log(`Tecla: ${this.input.KeyCode["S"]}`);
             // console.log("Baixo");
         }
-        Base.FixedUpdate(this.FixedUpdate());
+        this.base.FixedUpdate(this.FixedUpdate());
         this.lastTime = Date.now();
+        console.log(this.lastTime);
     }
 
     DrawSelf() {
         this.sprite.DrawSprite(this.position);
-        Base.DrawSelf(this.DrawSelf());
+        this.base.DrawSelf(this.DrawSelf());
     }
 
     OnGUI() {
@@ -55,7 +60,7 @@ export class Player {
         this.draw.Font = "Arial";
         this.draw.FontSize = "12px";
         this.draw.DrawText("Funciona!", 10, 10);
-        Base.OnGUI(this.OnGUI());
+        this.base.OnGUI(this.OnGUI());
     }
 }
 
@@ -63,12 +68,16 @@ export class myGame {
     constructor() {
         this.screen = new Screen("PrimeiraFase", 800, 600);
         this.screen.Init("Fase01");
-        this.scene = new Scene("PrimeiraFase", screen);
+        this.scene = new Scene("PrimeiraFase", this.screen);
         this.scene.CallScene("PrimeiraFase", "Fase_01");
-        this.jogador = new Player("sprite.png");
+        this.jogador = new Player("sprite.png", this.screen);
+        console.log(`Tela: ${this.screen}`);
+        console.log(`Cena: ${this.scene}`);
+        console.log(`Jogador: ${this.jogador}`)
     }
 
     Start() {
+        console.log(this.jogador);
         this.jogador.Start();
     }
 

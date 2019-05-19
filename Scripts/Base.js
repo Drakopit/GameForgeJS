@@ -15,7 +15,9 @@ export class Base {
      * @doc Method
      * @description It's call when class is build
      */
-    static Awake() {}
+    static Awake() {
+        throw "Need be implemented!";
+    }
 
     /**
      * @doc Method
@@ -23,7 +25,7 @@ export class Base {
      */
     static Start() {
         this.lastTime; this.deltaTime;
-        this.requestAnimationFrame = getRefreshScreen();
+        this.requestAnimationFrame = this.prototype.getRefreshScreen();
     }
 
     /**
@@ -32,7 +34,7 @@ export class Base {
      * @description Method called every frame
      */
     static Update(callBack) {
-        this.requestAnimationFrame(() => callBack);
+        requestAnimationFrame(() => callBack);
     }
 
     /**
@@ -41,8 +43,8 @@ export class Base {
      * @description Method called each second
      */
     static FixedUpdate(callBack) {
-        this.deltaTime = getDeltaTime(lastTime);
-        this.requestAnimationFrame(() => callBack)
+        this.deltaTime = this.prototype.getDeltaTime(lastTime);
+        requestAnimationFrame(() => callBack)
         this.lastTime = Date.now();
     }
 
@@ -51,8 +53,8 @@ export class Base {
      * @description Method called to draw the char, his draws 
      */
     static DrawSelf(callBack) {
-        this.deltaTime = getDeltaTime(lastTime);
-        this.requestAnimationFrame(() => callBack)
+        this.deltaTime = this.prototype.getDeltaTime(lastTime);
+        requestAnimationFrame(() => callBack)
         this.lastTime = Date.now();
     }
 
@@ -62,8 +64,8 @@ export class Base {
      * @description Method called to draw UI
      */
     static OnGUI(callBack) {
-        this.deltaTime = getDeltaTime(lastTime);
-        this.requestAnimationFrame(() => callBack)
+        this.deltaTime = this.prototype.getDeltaTime(lastTime);
+        requestAnimationFrame(() => callBack)
         this.lastTime = Date.now();
     }
 }

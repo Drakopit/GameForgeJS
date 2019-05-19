@@ -6,8 +6,8 @@ export class Draw {
         
         // Enum pra controlar o estado dos desenhos
         const TYPES = Object.freeze({
-            FILLED,
-            STROKED
+            FILLED: 0,
+            STROKED: 1
         });
 
         this.style = TYPES.FILLED;

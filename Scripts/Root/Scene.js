@@ -14,7 +14,7 @@ export class Scene {
         this.id = id;
         this.ratio = (window.devicePixelRatio ? window.devicePixelRatio : 1);
         this.screen = screen;
-        screen.Resize(screen.Width * ratio, screen.Height * ratio)
+        this.screen.Resize(this.screen.Width * this.ratio, this.screen.Height * this.ratio)
 
         // Mapa
         this.layers = [];
@@ -29,7 +29,7 @@ export class Scene {
      */
     CallScene(id, sceneName) {
         this.id = id;
-        Load2D(sceneName);
+        this.Load2D(sceneName);
     }
 
     /**
@@ -46,7 +46,7 @@ export class Scene {
         this.scene.height = this.screen.Height;
         this.map = this.screen.Context;
         
-        Load(sceneName);
+        this.Load = sceneName;
     }
 
     /**

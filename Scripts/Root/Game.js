@@ -1,4 +1,5 @@
 import { Base } from "../Base.js";
+import { Input } from "../Inputs/Input.js";
 
 // Elementos do meu jogo
 import { myGame } from "../../Jogo de Exemplo/myGame.js";
@@ -6,6 +7,7 @@ import { myGame } from "../../Jogo de Exemplo/myGame.js";
 export class Game {
     constructor() {
         this.input = new Input();
+        this.base = new Base();
         const FPS = 1000/60;
         const FPSTest = 1000;
     }
@@ -14,37 +16,38 @@ export class Game {
         window.onload = () => {
             // Carregar meu Jogo
             this.myGame = new myGame();
-
-            this.Start();
-            this.Update();
-            this.FixedUpdate();
-            this.DrawSelf();
-            this.OnGUI();
+            this.Start;
+            this.Update;
+            this.FixedUpdate;
+            this.DrawSelf;
+            this.OnGUI;
         }
     }
 
     static Start() {
         this.myGame.Start();
-        Base.Start();
+        console.log(this.myGame);
+        this.base.Start;
     }
 
     static Update() {
         this.myGame.Update();
-        Base.Update(this.Update());
+        console.log("Atualizando");
+        this.base.Update = this.Update();
     }
 
     static FixedUpdate() {
         this.myGame.FixedUpdate();
-        Base.FixedUpdate(this.FixedUpdate());
+        this.base.FixedUpdate = this.FixedUpdate();
     }
 
     static DrawSelf() {
         this.myGame.DrawSelf();
-        Base.DrawSelf();
+        this.base.DrawSelf;
     }
 
     static OnGUI() {
         this.myGame.OnGUI();
-        Base.OnGUI(this.OnGUI());
+        this.base.OnGUI = this.OnGUI();
     }
 }

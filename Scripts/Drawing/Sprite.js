@@ -3,15 +3,12 @@ import { Base } from "../Base.js";
 
 export class Sprite extends Base {
     constructor(sprite) {
+        super();
         this.sprite = sprite;
     }
 
     SetScreen(screen) {
-        let id = screen.ScreenId;
-        let width = screen.Width;
-        let height = screen.height;
-
-        this.screen = new Screen(id, width, height);
+        this.screen = new Screen(screen.ScreenId, screen.Width, screen.Height);
     }
 
     DrawSprite(vector2D, sprite) {
