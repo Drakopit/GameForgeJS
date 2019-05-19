@@ -71,8 +71,9 @@ export class Base {
 }
 
 Base.prototype.getDeltaTime = () => {
-    let startTime = Date.now(); let lastTime;
-    return deltaTime = (startTime - lastTime) / 1000.0;
+    let startTime = Date.now();
+    let lastTime; let deltaTime = (startTime - lastTime) / 1000.0;
+    return deltaTime;
 }
 
 Base.prototype.getRefreshScreen = () => {
