@@ -2,6 +2,6 @@ body {
     background-color: black;
 }
 canvas {
-    border: 3px aqua;
-    align-items: center;
+    border: 3px solid aqua;
+    display: block inline;
 }

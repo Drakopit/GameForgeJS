@@ -1,3 +1,5 @@
+import { Vector2D } from "../Math/Vector2D";
+
 /**
  * @doc Class Mouse
  * @namespace Inputs
@@ -9,6 +11,15 @@
  *  var mouse = new Mouse();
  * @returns {Object}
  */
-class Mouse {
+export class Mouse {
     constructor();
+
+    GetCoordinates() {
+        let x, y = 0; 
+        window.onmousemove = (e) => {
+            x = e.ClientX;
+            y = e.ClientY;
+        };
+        return new Vector2D(x, y);
+    }
 }

@@ -1,7 +1,7 @@
 import { Base } from "../Base.js";
 import { Input } from "../Inputs/Input.js";
 
-export class Menu extends Base {
+export class Menu {
     constructor() {}
 
     Start() {
@@ -41,12 +41,7 @@ export class Menu extends Base {
         if (input.GetKeyDown("Enter")) {
             // Faz o que estiver na opção
         }
-        super.Update();
     }
 
-    OnGUI() {
-        
-
-        super.OnGUI();
-    }
+    OnGUI() {}
 }

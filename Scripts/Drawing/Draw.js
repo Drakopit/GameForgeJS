@@ -5,12 +5,12 @@ export class Draw {
         this.font = "verdana";
         
         // Enum pra controlar o estado dos desenhos
-        const TYPES = Object.freeze({
+        const TYPES = {
             FILLED: 0,
             STROKED: 1
-        });
-
+        }
         this.style = TYPES.FILLED;
+        this.TYPES = TYPES;
     }
 
     get Color() { return this.color; }
@@ -34,11 +34,11 @@ export class Draw {
         maxWidth = maxWidth || "1px";
         this.screen.Context.font = `${this.fontSize} ${this.font}`;
         switch (this.style) {
-            case TYPES.FILLED:
+            case this.TYPES.FILLED:
                 this.screen.Context.fillText(text, x, y);
             break;
             
-            case TYPES.STROKED:
+            case this.TYPES.STROKED:
                 this.screen.Context.strokeText(text, x, y, maxWidth);
             break;
             default:
@@ -49,10 +49,10 @@ export class Draw {
 
     DrawRect(x, y, width, height) {
         switch (this.style) {
-            case TYPES.FILLED:
+            case this.TYPES.FILLED:
                 this.screen.Context.fillRect(x, y, width, height);
             break;
-            case TYPES.STROKED:
+            case this.TYPES.STROKED:
                 this.screen.Context.strokeRect(x, y, width, height);
             break;
             default:
@@ -64,10 +64,10 @@ export class Draw {
     DrawCircle(x, y, radius) {
         this.screen.Context.arc(x, y, radius, Math.PI / 180 * startAngle, Math.PI / 180 * endAngle, anticlockwise);
         switch (this.style) {
-            case TYPES.FILLED:
+            case this.TYPES.FILLED:
                 this.screen.Context.fill();
             break;
-            case TYPES.STROKED:
+            case this.TYPES.STROKED:
                 this.screen.Context.stroke();
             break;
             default:

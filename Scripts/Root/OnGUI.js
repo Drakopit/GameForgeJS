@@ -1,6 +1,6 @@
 import { Button } from "Button/Button.js";
 
-class OnGUI extends Base {
+class OnGUI {
     constructor(id) {
         // O Id padrão é Main, caso nenhum seja especificado, ele será atribuido
         var canvas = (id == undefined) ? document.getElementById("Main") : document.getElementById(id);

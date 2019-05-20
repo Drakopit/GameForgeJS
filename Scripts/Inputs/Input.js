@@ -5,21 +5,13 @@
  * @author Patrick Faustino Camello
  * @summary That class was made, to compose the EngineHtml5 framework.
  * @Date 15/05/2019
- * @example
- *  var input = new Input();
- *  if (input.KeyCode["Space"] == input.GetKeyDown()) {
- *      console.log("Jump");
- *  }
  * @returns {Object}
  */
-import {Base} from "../Base.js"
 
 // API padrão usa KeyboardEvent
-export class Input extends Base {
+export class Input {
     constructor() {
-        super()
-        // Chave
-        this.key = 0;
+        super();
         this.KeyCode = {
             "Break":3,
             "Backspace":8,
@@ -54,6 +46,7 @@ export class Input extends Base {
             "My Computer":182,"My Calculator":183,
             ";":186,"=":187,",":188,"-":189,".":190,"/":191,"`":192,"[":219,"\\":220,"]":221,"'":222
         };
+        
         this.CharCode = {
             0:'That key has no keycode',
             3:"Break",
@@ -89,58 +82,48 @@ export class Input extends Base {
             144:"Num Lock",145:"Scroll Lock",
             182:"My Computer",183:"My Calculator",
             186:";",187:"=",188:",",189:"-",190:".",191:"/",192:"`",219:"[",220:"\\",221:"]",222:"'"
-        };
+        };        
     }
 
-    /**
-     * @doc Method
-     * @param {codeOfKeyBoardKey} keyCode
-     * @description Returns the key code, of key passed
-     * @example
-     *  if (input.GetKeyDown() == input.GetKey("Space")) {
-     *      console.log("Jump");
-     *  } 
-     */
-    GetKey(keyCode) {
-        return this.KeyCode[keyCode];
-    }
+    get Key() { return this.key };
+    set Key(key) { this.key = key };
 
     /**
      * @doc Method
      * @description Returns the key code, of key pressing
      * @example
-     *  if (input.GetKeyPress() == input.GetKey("Space")) {
+     *  if (Input.GetKeyPress("Space")) {
      *      console.log("Jumping");
      *  } 
      */
     GetKeyPress(key) {
-        window.onkeypress = (e) => { this.key = e.which || e.keyCode; };
-        return (key == this.key) ? true : false;
+        window.onkeypress = (e) => { this.Key = e.which || e.keyCode; };
+        return (this.KeyCode[key] == this.Key) ? true : false;
     }
 
     /**
      * @doc Method
      * @description Returns the key code, of key pressed
      * @example
-     *  if (input.GetKeyDown() == input.GetKey("Space")) {
+     *  if (Input.GetKeyDown("Space")) {
      *      console.log("Jump");
      *  } 
      */
     GetKeyDown(key) {
-        window.onkeydown = (e) => { this.key = e.which || e.keyCode; };
-        return (key == this.key) ? true : false;
+        window.onkeydown = (e) => { this.Key = e.which || e.keyCode; };
+        return (this.KeyCode[key] == this.Key) ? true : false;
     }
 
     /**
      * @doc Method
      * @description Returns the key code, of key released
      * @example
-     *  if (input.GetKeyRelease() == input.GetKey("Space")) {
+     *  if (input.GetKeyRelease("Space")) {
      *      console.log("Stop Jump");
      *  } 
      */
     GetKeyRelease(key) {
-        window.onkeyup = (e) => { this.key = e.which || e.keyCode; };
-        return (key == this.key) ? true : false;
+        window.onkeyup = (e) => { this.Key = e.which || e.keyCode; };
+        return (this.KeyCode[key] == this.Key) ? true : false;
     }
 }

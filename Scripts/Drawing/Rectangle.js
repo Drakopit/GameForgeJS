@@ -1,6 +1,6 @@
-import { Base } from "../Base.js";
+import { Screen } from "../Window/Screen.js"
 
-export class Rectangle extends Base {
+export class Rectangle {
     constructor(rect) {
         this.rect = rect;
 
@@ -31,21 +31,20 @@ export class Rectangle extends Base {
         this.screen.Context.fillStyle = this.color;
         switch (style) {
             case TYPES.FILLED:
-                context.fillRect(this.rect.Coordinates.x, this.rect.Coordinates.y, this.rect.Size.width, this.rect.Size.height);
+                this.screen.Context.fillRect(this.rect.Coordinates.x, this.rect.Coordinates.y, this.rect.Size.width, this.rect.Size.height);
             break;
 
             case TYPES.OUTLINED:
-                context.rect(this.rect.Coordinates.x, this.rect.Coordinates.y, this.rect.Size.width, this.rect.Size.height);
+                this.screen.Context.rect(this.rect.Coordinates.x, this.rect.Coordinates.y, this.rect.Size.width, this.rect.Size.height);
             break;
 
             case TYPES.STROKED:
-                context.strokeRect(this.rect.Coordinates.x, this.rect.Coordinates.y, this.rect.Size.width, this.rect.Size.height);
+                this.screen.Context.strokeRect(this.rect.Coordinates.x, this.rect.Coordinates.y, this.rect.Size.width, this.rect.Size.height);
             break;
         
             default:
-                context.fillRect(this.rect.Coordinates.x, this.rect.Coordinates.y, this.rect.Size.width, this.rect.Size.height);
+                this.screen.Context.fillRect(this.rect.Coordinates.x, this.rect.Coordinates.y, this.rect.Size.width, this.rect.Size.height);
             break;
         }
-        super.OnGUI();
     }
 }
