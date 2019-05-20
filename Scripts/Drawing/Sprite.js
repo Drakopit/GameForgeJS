@@ -2,7 +2,6 @@ import { Screen } from "../Window/Screen.js";
 
 export class Sprite {
     constructor(sprite) {
-        super();
         this.sprite = sprite;
     }
 

@@ -1,4 +1,3 @@
-import { Base } from "../Base.js";
 import { Input } from "../Inputs/Input.js";
 
 export class Menu {

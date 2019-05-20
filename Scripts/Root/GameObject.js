@@ -1,4 +1,3 @@
-import { Base } from "../Base.js"
 import { Sprite } from "../Drawing/Sprite.js"
 import { Vector2D } from "../Math/Vector2D.js";
 

@@ -10,6 +10,7 @@ import { Game } from "./Scripts/Root/Game.js";
  */
 // Inicializa o Jogo
 Game.Awake();
+window.requestAnimationFrame(Game.Loop);
 
 /**
  * @author Patrick Faustino Camello

@@ -1,9 +1,8 @@
-import { Base } from "../Base.js";
 
 // Elementos do meu jogo
 import { myGame } from "../../Jogo de Exemplo/myGame.js";
 
-export class Game extends Base {
+export class Game {
     constructor() {
         this.startTime = Date.now();
         this.lastTime = this.startTime;
@@ -32,9 +31,9 @@ export class Game extends Base {
     }
 
     static Start() {
-        // this.startTime;
-        // this.lastTime;
-        // this.deltaTime;
+        this.startTime;
+        this.lastTime;
+        this.deltaTime;
         this.myGame.Start();
     }
 
@@ -48,16 +47,17 @@ export class Game extends Base {
     }
 
     static Loop() {
-        this.startTime = Date.now();
-        this.deltaTime = ((this.startTime - this.lastTime) / 1000.0);
-        console.log("Delta Time: ", this.deltaTime);
-        this.Update();
-        this.FixedUpdate(this.deltaTime);
-        this.DrawSelf(this.deltaTime);
-        this.OnGUI(this.deltaTime);
-        this.lastTime = this.startTime;
-        window.requestAnimationFrame(this.Loop);
-    }
+            this.startTime = Date.now();
+            this.deltaTime = ((this.startTime - this.lastTime) / 1000.0);
+            console.log("Delta Time: ", this.deltaTime);
+            this.Update();
+            this.FixedUpdate(this.deltaTime);
+            this.DrawSelf(this.deltaTime);
+            this.OnGUI(this.deltaTime);
+            this.lastTime = this.startTime;
+            console.log("Atualizando...");
+            window.requestAnimationFrame(this.Loop);
+        }
 
     static DrawSelf(dt) {
         this.myGame.DrawSelf(dt);

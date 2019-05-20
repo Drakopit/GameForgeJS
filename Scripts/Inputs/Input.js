@@ -11,7 +11,6 @@
 // API padrão usa KeyboardEvent
 export class Input {
     constructor() {
-        super();
         this.KeyCode = {
             "Break":3,
             "Backspace":8,
