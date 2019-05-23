@@ -14,7 +14,10 @@ export class Draw {
     }
 
     get Color() { return this.color; }
-    set Color(color) { this.color = color; }
+    set Color(color) {
+        this.color = color;
+        this.screen.Context.fillStyle = color;
+    }
 
     get Font() { return this.font; }
     set Font(font) { this.font = font; }

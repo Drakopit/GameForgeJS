@@ -1,7 +1,7 @@
 body {
-    background-color: black;
+    background-color: #ffffff;
 }
 canvas {
-    border: 3px solid aqua;
+    border: 1px solid purple;
     display: block inline;
 }

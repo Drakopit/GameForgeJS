@@ -18,16 +18,14 @@ export class Game {
     }
 
     static Awake() {
-        window.onload = () => {
-            // Carregar meu Jogo
-            this.myGame = new myGame();
-            this.Start();
-            this.Update();
-            this.FixedUpdate();
-            this.DrawSelf();
-            this.OnGUI();
-            this.Loop();
-        }
+        // Carregar meu Jogo
+        this.myGame = new myGame();
+        this.Start();
+        this.Update();
+        this.FixedUpdate();
+        this.DrawSelf();
+        this.OnGUI();
+        this.Loop();
     }
 
     static Start() {
@@ -47,17 +45,16 @@ export class Game {
     }
 
     static Loop() {
-            this.startTime = Date.now();
-            this.deltaTime = ((this.startTime - this.lastTime) / 1000.0);
-            console.log("Delta Time: ", this.deltaTime);
-            this.Update();
-            this.FixedUpdate(this.deltaTime);
-            this.DrawSelf(this.deltaTime);
-            this.OnGUI(this.deltaTime);
-            this.lastTime = this.startTime;
-            console.log("Atualizando...");
-            window.requestAnimationFrame(this.Loop);
-        }
+        this.startTime = Date.now();
+        this.deltaTime = ((this.startTime - this.lastTime) / 1000.0);
+        console.log("Delta Time: ", this.deltaTime);
+        this.Update();
+        this.FixedUpdate(this.deltaTime);
+        this.DrawSelf(this.deltaTime);
+        this.OnGUI(this.deltaTime);
+        this.lastTime = this.startTime;
+        console.log("Atualizando...");
+    }
 
     static DrawSelf(dt) {
         this.myGame.DrawSelf(dt);
