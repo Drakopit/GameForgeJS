@@ -125,6 +125,10 @@ export class Screen {
         return new Vector2D(this.clientWidth, this.clientHeight);
     }
 
+    Refresh() {
+        this.Context.clearRect(0, 0, this.Width, this.Height);
+    }
+
     /**
      * @doc Method
      * @param {width} width 

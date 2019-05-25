@@ -1,5 +1,3 @@
-
-// Elementos do meu jogo
 import { myGame } from "../../Jogo de Exemplo/myGame.js";
 
 export class Game {
@@ -46,16 +44,13 @@ export class Game {
     }
 
     static Loop() {
-        console.clear();
         this.startTime = Date.now();
         this.deltaTime = ((this.startTime - this.lastTime) / 1000.0);
-        console.log("Delta Time: ", this.deltaTime);
         this.Update();
         this.FixedUpdate(this.deltaTime);
         this.DrawSelf(this.deltaTime);
         this.OnGUI(this.deltaTime);
         this.lastTime = this.startTime;
-        console.log("Atualizando...");
         // Erro no Callback. Por algum motivo o objeto
         // perde a referência depois de um tempo usando o this.
         // Aparentemente o próprio Javascript se enrola em tanto this.

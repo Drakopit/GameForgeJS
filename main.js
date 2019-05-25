@@ -1,4 +1,3 @@
-// window.onload = () => console.log("Engine Html5, para desenvolvimento de Jogos, em andamento...");
 import { Game } from "./Scripts/Root/Game.js";
 
 /**
@@ -8,8 +7,4 @@ import { Game } from "./Scripts/Root/Game.js";
  * And Game class initialize, entire game
  * with all assets
  */
-// Inicializa o Jogo
 Game.Awake();
-// window.onload = () => {
-//     Game.Awake();
-// }

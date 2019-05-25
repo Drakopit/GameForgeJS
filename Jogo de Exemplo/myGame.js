@@ -1,4 +1,3 @@
-import { Sprite } from "../Scripts/Drawing/Sprite.js";
 import { Screen } from "../Scripts/Window/Screen.js";
 import { Vector2D } from "../Scripts/Math/Vector2D.js";
 import { Scene } from "../Scripts/Root/Scene.js";
@@ -21,39 +20,32 @@ export class Player {
     Update() {  }
 
     FixedUpdate(deltaTime) {
-        console.log("DeltaTime Jogador: ", deltaTime);
         /** **/if (this.input.GetKeyDown("A")) {
-            this.position.AddValue(new Vector2D(-40*deltaTime,0));
-            console.log("Moveu A");
+            this.position = this.position.AddValue(new Vector2D(-40*deltaTime,0));
         } else if (this.input.GetKeyDown("D")) {
-            this.position.AddValue(new Vector2D(40*deltaTime,0));
-            console.log("Moveu D");
+            this.position = this.position.AddValue(new Vector2D(40*deltaTime,0));
         } else if (this.input.GetKeyDown("W")) {
-            this.position.AddValue(new Vector2D(0,-40*deltaTime));
-            console.log("Moveu W");
+            this.position = this.position.AddValue(new Vector2D(0,-40*deltaTime));
         } else if (this.input.GetKeyDown("S")) {
-            this.position.AddValue(new Vector2D(0,40*deltaTime));
-            console.log("Moveu S");
+            this.position = this.position.AddValue(new Vector2D(0,40*deltaTime));
         }
     }
 
-    DrawSelf() {
-        // this.sprite.DrawSprite(this.position);
-        // Debug
+    DrawSelf(deltaTime) {
         this.draw.Color = "Blue";
         this.draw.DrawRect(this.position.GetValue().x, this.position.GetValue().y, 32, 32);
-        this.draw.Color = "Red";
+        var red = Math.random() * 255;
+        var green = Math.random() * 255;
+        var blue = Math.random() * 255;
+        this.draw.Color = `rgb(${Math.floor(red)}, ${Math.floor(green)}, ${Math.floor(blue)})`;
         this.draw.DrawRect(200, 50, 32, 32);
     }
 
-    OnGUI() {        
-        this.count++;
-        this.draw.Color = "purple";
+    OnGUI(deltaTime) {        
+        this.draw.Color = "black";
         this.draw.Font = "Arial";
         this.draw.FontSize = "12px";
-        this.draw.DrawText("Porra, que merda é essa?", 100, 100);
-        this.draw.DrawText("Olá Mundo!", 300, 100);
-        this.draw.DrawText(`Coordenadas do Player: ${this.position.GetValue().x}, ${this.position.GetValue().y}  Count: ${this.count}`, 10, 10);
+        this.draw.DrawText("Drako", this.position.x, this.position.y - 8);
     }
 }
 
@@ -75,6 +67,7 @@ export class myGame {
     }
 
     FixedUpdate(dt) {
+        this.screen.Refresh();
         this.jogador.FixedUpdate(dt);
     }
 
@@ -83,7 +76,6 @@ export class myGame {
     }
 
     OnGUI(dt) {
-        this.screen.Context.clearRect(0, 0, this.screen.Width, this.screen.Height);
         this.jogador.OnGUI(dt);
     }
 }
