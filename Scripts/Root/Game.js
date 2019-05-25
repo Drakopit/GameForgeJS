@@ -19,13 +19,15 @@ export class Game {
 
     static Awake() {
         // Carregar meu Jogo
-        this.myGame = new myGame();
-        this.Start();
-        this.Update();
-        this.FixedUpdate();
-        this.DrawSelf();
-        this.OnGUI();
-        this.Loop();
+        window.onload = () => {
+            this.myGame = new myGame();
+            this.Start();
+            this.Update();
+            this.FixedUpdate();
+            this.DrawSelf();
+            this.OnGUI();
+            this.Loop();
+        }
     }
 
     static Start() {
@@ -40,11 +42,11 @@ export class Game {
     }
 
     static FixedUpdate(dt) {
-        console.log("DeltaTime Game: ", dt);
         this.myGame.FixedUpdate(dt);
     }
 
     static Loop() {
+        console.clear();
         this.startTime = Date.now();
         this.deltaTime = ((this.startTime - this.lastTime) / 1000.0);
         console.log("Delta Time: ", this.deltaTime);
@@ -54,6 +56,15 @@ export class Game {
         this.OnGUI(this.deltaTime);
         this.lastTime = this.startTime;
         console.log("Atualizando...");
+        // Erro no Callback. Por algum motivo o objeto
+        // perde a referência depois de um tempo usando o this.
+        // Aparentemente o próprio Javascript se enrola em tanto this.
+        // Url com uma explicação (ou quase), sobre isso.
+        // https://www.freecodecamp.org/forum/t/issues-with-function-losing-scope/108231
+        // O curioso, é o fato de setInterval(Game.Loop.bind(Game), 1000/60);
+        // Funcionar.
+        var self = this;
+        window.requestAnimationFrame(self.Loop.bind(self));
     }
 
     static DrawSelf(dt) {
