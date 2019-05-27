@@ -1,24 +1,23 @@
-import { myGame } from "../../Jogo de Exemplo/myGame.js";
+import { World } from "../../Jogo de Exemplo/World.js";
 
 export class Game {
-    constructor() {
-        this.startTime = Date.now();
-        this.lastTime = this.startTime;
-        this.deltaTime = ((this.startTime - this.lastTime) / 1000);
-        // this.requestAnimFrame = (() => {
+    constructor() {}
+
+    static Awake() {
+        // Encontra o requestAnimationFrame correto
+        // let findRequestAnimationFrame = (() => {
         //     return window.requestAnimationFrame    || // Padrão
         //         window.webkitRequestAnimationFrame || // Chrome
         //         window.mozRequestAnimationFrame    || // Mozilla
         //         window.oRequestAnimationFrame      ||
         //         window.msRequestAnimationFrame     || // Safari
         //         function(callback) { window.setTimeout(callback, 1000 / 60); }; // Simula FPS 60
-        // })();
-    }
+        // });
+        // this.requestAnimFrame = findRequestAnimationFrame();
 
-    static Awake() {
         // Carregar meu Jogo
         window.onload = () => {
-            this.myGame = new myGame();
+            this.World = new World();
             this.Start();
             this.Update();
             this.FixedUpdate();
@@ -32,24 +31,25 @@ export class Game {
         this.startTime;
         this.lastTime;
         this.deltaTime;
-        this.myGame.Start();
     }
 
-    static Update() {
-        this.myGame.Update();
-    }
+    static Update() {}
 
-    static FixedUpdate(dt) {
-        this.myGame.FixedUpdate(dt);
-    }
+    static FixedUpdate(dt) {}
 
     static Loop() {
-        this.startTime = Date.now();
+        console.clear();
+        // this.startTime = Date.now();
+        this.startTime = performance.now();
         this.deltaTime = ((this.startTime - this.lastTime) / 1000.0);
         this.Update();
         this.FixedUpdate(this.deltaTime);
         this.DrawSelf(this.deltaTime);
         this.OnGUI(this.deltaTime);
+
+        // Atualiza o Jogo
+        this.World.Loop(this.deltaTime);
+
         this.lastTime = this.startTime;
         // Erro no Callback. Por algum motivo o objeto
         // perde a referência depois de um tempo usando o this.
@@ -58,15 +58,11 @@ export class Game {
         // https://www.freecodecamp.org/forum/t/issues-with-function-losing-scope/108231
         // O curioso, é o fato de setInterval(Game.Loop.bind(Game), 1000/60);
         // Funcionar.
-        var self = this;
+        let self = this;
         window.requestAnimationFrame(self.Loop.bind(self));
     }
 
-    static DrawSelf(dt) {
-        this.myGame.DrawSelf(dt);
-    }
+    static DrawSelf(dt) {}
 
-    static OnGUI(dt) {
-        this.myGame.OnGUI(dt);
-    }
+    static OnGUI(dt) {}
 }

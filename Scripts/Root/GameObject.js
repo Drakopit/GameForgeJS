@@ -1,23 +1,33 @@
 import { Sprite } from "../Drawing/Sprite.js"
 import { Vector2D } from "../Math/Vector2D.js";
 
-class GameObject {
+export class GameObject {
     constructor() {
-        this.x, this.y, this.z, this.deth = 0;
+        this.id;
+        this.hspeed = 64;
+        this.vspeed = 64;
+        this.solid = true;
         this.position = new Vector2D(0, 0);
+        this.previousPosition = this.position;
+        this.startPosition = this.position;
+        this.size = new Vector2D(0, 0);
+        this.direction = 90;
+        this.friction = 0.5;
+        this.gravity = 9.80665; // Força da gravidade
+        this.gravityDirection = 180;
+        this.deth;
+        this.danping = 0.5;
+        this.mass;
         this.sprite = new Sprite();
     }
 
-    Init() {}
+    Start() {}
 
-    set Sprite(Sprite) {
-        this.Sprite = Sprite;
-    }
-    get Sprite() {
-        return this.Sprite;
-    }
+    Update() {}
 
-    DrawSelf() {
-        // context.getImageData(sx, sy, sw, sh);
-    }
+    FixedUpdate() {}
+
+    DrawSelf() {}
+
+    OnGUI() {}
 }

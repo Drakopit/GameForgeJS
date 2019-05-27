@@ -12,7 +12,7 @@
  *  }
  * @returns {Object}
  */
-class Collide2D extends Math {
+export class Collide2D {
     constructor() {}
 
     /**
@@ -24,13 +24,14 @@ class Collide2D extends Math {
      *  var collide = collide2D.isCollidingAABB(obj1, obj2);
      * @returns {boolean}
      */
-    static isCollidingAABB(rect, otherRect) {
-        var isCollision = false;
-        if (otherRect.x <= rect.x + rect.width && otherRect.x + otherRect.width >= rect.x &&
-            otherRect.y <= rect.y + rect.height && otherRect.y + otherRect.height >= rect.y) {
-            isCollision = true;
+    static isCollidingAABB(Obj0, Obj1) {
+        if (Obj0.x + Obj0.width < Obj1.x &&
+            Obj1.x + Obj1.width < Obj0.x &&
+            Obj0.y + Obj0.height < Obj1.y &&
+            Obj1.y + Obj1.height < Obj0.y) {
+            return false;
         }
-        return isCollision;
+        return true;
     }
 
     /**
@@ -43,11 +44,10 @@ class Collide2D extends Math {
      * @returns {boolean} 
      */
     static isCollidingCircle(circle, obj) {
-        var isCollision = false;
         // Teorema de Pitagoras
         if (Math.sqrt((obj.x - circle.x) ** 2 + (obj.y - circle.y) ** 2) < circle.r) {
-            isCollision = true
+            return true
         }
-        return isCollision;
+        return false;
     }
 }
