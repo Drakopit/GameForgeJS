@@ -7,8 +7,8 @@ export class Player extends GameObject {
     constructor(fileName, screen) {
         super();
         this.id;
-        this.hspeed = 4;
-        this.vspeed = 4;
+        this.hspeed = 64;
+        this.vspeed = 64;
         this.solid = true;
         this.position = new Vector2D(64, 64);
         this.previousPosition = this.position;
