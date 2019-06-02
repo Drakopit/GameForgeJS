@@ -39,7 +39,6 @@ export class Game {
 
     static Loop() {
         console.clear();
-        // this.startTime = Date.now();
         this.startTime = performance.now();
         this.deltaTime = ((this.startTime - this.lastTime) / 1000.0);
         this.Update();
