@@ -9,9 +9,9 @@ export class Sprite {
         } else {
             this.sprite;
         }
-        this.screen = new Screen(screen.ScreenId, screen.Width, screen.Height);
-        this.position = position || new Vector2D(0, 0);
-        this.size = size || new Vector2D(32, 32);
+        this.screen = screen;
+        this.position = new Vector2D(0, 0);
+        this.size = new Vector2D(32, 32);
 
         // Animação
         this.index = 0;
@@ -24,12 +24,18 @@ export class Sprite {
     }
 
     SetStaticSprite(spr, position) {
-        this.sprite.src = spr;
+        if (spr === undefined && this.sprite === undefined) {
+            throw 'Esta classe não funciona, se você não atribuir uma sprite à ela!';
+        }
+        this.sprite.src = spr || this.sprite.src;
         this.screen.Context.drawImage(this.sprite, position.GetValue().x, position.GetValue().y);
     }
 
     SetClipingSprite(spr, position, size, cutPosition, cutSize) {
-        this.sprite.src = spr;
+        if (spr === undefined && this.sprite === undefined) {
+            throw 'Esta classe não funciona, se você não atribuir uma sprite à ela!';
+        }
+        this.sprite.src = spr || this.sprite.src;
         this.screen.Context.drawImage(this.sprite,
             cutPosition.GetValue().x, cutPosition.GetValue().y,
             cutSize.GetValue().x, cutSize.GetValue().y,
@@ -38,17 +44,24 @@ export class Sprite {
     }
 
     SetSpriteAnimation(spr, x, y, direction) {
-        this.sprite.src = spr;
+        if (spr === undefined && this.sprite === undefined) {
+            throw 'Esta classe não funciona, se você não atribuir uma sprite à ela!';
+        }
+        this.sprite.src = spr || this.sprite.src;
         if (direction === "horizontal") {
-            this.DrawClipingSprite(spr, x, y,
-                this.size.GetValue().x / this.frames * this.scale, this.size.GetValue().y * this.scale,
+            console.log("Indice:", this.index);
+            console.log("Tamanho do Player: ", this.size.toString());
+            this.screen.Context.drawImage(this.sprite,
                 this.index * this.size.GetValue().x / this.frames, 0,
-                this.size.GetValue().x / this.frames, this.size.GetValue().y);
+                this.size.GetValue().x / this.frames, this.size.GetValue().y,
+                x, y,
+                this.size.GetValue().x / this.frames * this.scale, this.size.GetValue().y * this.scale);
         } else {
-            this.DrawClipingSprite(spr, x, y,
-                this.size.GetValue().x, this.size.GetValue().y,
-                x, this.index * this.size.GetValue().y / this.frames,
-                this.size.GetValue().x, this.size.GetValue().y);
+            this.screen.Context.drawImage(this.sprite,
+                y, this.index * this.size.GetValue().y / this.frames,
+                this.size.GetValue().x / this.frames, this.size.GetValue().y,
+                x, y,
+                this.size.GetValue().x / this.frames * this.scale, this.size.GetValue().y * this.scale);
         }
     }
 
@@ -65,8 +78,10 @@ export class Sprite {
         }
     }
 
-    Draw(x, y) {
+    Draw(position) {
+        this.position = position;
+		console.log("Position:", position);
         this.Update();
-        this.SetSpriteAnimation(this.sprite, x, y, this.frames, this.direction);
+        this.SetSpriteAnimation(this.sprite, position.GetValue().x, position.GetValue().y, this.frames, this.direction);
     }
 }
