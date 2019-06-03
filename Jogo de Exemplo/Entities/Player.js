@@ -39,7 +39,8 @@ export class Player extends GameObject {
         this.sprite.direction = "vertical";
         this.sprite.frameCount = 7;
         this.sprite.updatesPerFrame = 3;
-        this.count = 0;
+        this.updateFPS = 0;
+        this.updateFPSPerFrame = 3;
 		this.FPS = 60;
     }
 
@@ -70,16 +71,17 @@ export class Player extends GameObject {
     }
 
     OnGUI(deltaTime) {
-        this.count++;
         this.draw.Color = "black";
         this.draw.Font = "Arial";
         this.draw.FontSize = "12px";
         this.draw.DrawText(`${this.name}`, this.position.x + 16, this.position.y + this.size.GetValue().y - 16);
         this.draw.DrawText(`Posição: ${JSON.stringify(this.position)}`, 10, 10);
 		
-		if (this.count % this.FPS == 0) {
+		if (this.updateFPS > this.updateFPSPerFrame) {
+            this.updateFPS = 0;
 			this.FPS = Math.floor(1 / deltaTime);
 		}
+        this.updateFPS++;
         this.draw.DrawText(`FPS: ${this.FPS}`, 500, 10);
     }
 }
