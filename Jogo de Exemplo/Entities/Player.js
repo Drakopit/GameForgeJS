@@ -31,9 +31,15 @@ export class Player extends GameObject {
         // Classes necessárias
         this.draw = new Draw(screen);
         this.input = new Input();
+        // Configuração sprite
         this.sprite = new Sprite(screen, "../../Assets/Sora.jpg");
-        this.sprite.SetStaticSprite("../../Assets/Sora.jpg", this.position);
-		this.count = 0;
+        this.sprite.scale = 1;
+        this.sprite.size = new Vector2D(64, 64);
+        this.sprite.position = this.position;
+        this.sprite.direction = "vertical";
+        this.sprite.frameCount = 7;
+        this.sprite.updatesPerFrame = 3;
+        this.count = 0;
 		this.FPS = 60;
     }
 
@@ -48,10 +54,19 @@ export class Player extends GameObject {
 
     DrawSelf(deltaTime) {
         this.draw.Color = "Blue";
-		// this.draw.DrawRect(this.position.GetValue().x, this.position.GetValue().y, 32, 32);
-		this.sprite.SetSpriteAnimation("../../Assets/Sora.jpg", this.position.GetValue().x, this.position.GetValue().y);
-		console.log(this.position);
-		this.sprite.Draw(this.position);
+        // this.draw.DrawRect(this.position.GetValue().x, this.position.GetValue().y, 32, 32);
+        
+         /** **/if (this.input.GetKeyDown("A")) {
+            this.sprite.Animation("../../Assets/Esqueleto.png", this.position, "horizontal", 1);
+        } else if (this.input.GetKeyDown("D")) {
+            this.sprite.Animation("../../Assets/Esqueleto.png", this.position, "horizontal", 3);
+        } else if (this.input.GetKeyDown("W")) {
+            this.sprite.Animation("../../Assets/Esqueleto.png", this.position, "horizontal", 0);
+        } else if (this.input.GetKeyDown("S")) {
+            this.sprite.Animation("../../Assets/Esqueleto.png", this.position, "horizontal", 2);
+        } else {
+            this.sprite.Animation("../../Assets/Esqueleto.png", this.position, "horizontal", 0);
+        }
     }
 
     OnGUI(deltaTime) {
@@ -59,7 +74,7 @@ export class Player extends GameObject {
         this.draw.Color = "black";
         this.draw.Font = "Arial";
         this.draw.FontSize = "12px";
-        this.draw.DrawText(`${this.name}`, this.position.x, this.position.y + this.size.GetValue().y + 12);
+        this.draw.DrawText(`${this.name}`, this.position.x + 16, this.position.y + this.size.GetValue().y - 16);
         this.draw.DrawText(`Posição: ${JSON.stringify(this.position)}`, 10, 10);
 		
 		if (this.count % this.FPS == 0) {

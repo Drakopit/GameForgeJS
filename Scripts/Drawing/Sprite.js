@@ -15,15 +15,15 @@ export class Sprite {
 
         // Animação
         this.index = 0;
-        this.frames = 3;
+        this.frameCount = 1;
         this.scale = 1;
-        this.speed = 0.2;
         this.direction = "horizontal";
+        this.row = 0; // Primeira linha
         this.updateFrame = 0;
-        this.updatesPerFrame = 0;
+        this.updatesPerFrame = 2;
     }
 
-    SetStaticSprite(spr, position) {
+    Static(spr, position) {
         if (spr === undefined && this.sprite === undefined) {
             throw 'Esta classe não funciona, se você não atribuir uma sprite à ela!';
         }
@@ -31,7 +31,7 @@ export class Sprite {
         this.screen.Context.drawImage(this.sprite, position.GetValue().x, position.GetValue().y);
     }
 
-    SetClipingSprite(spr, position, size, cutPosition, cutSize) {
+    Cliping(spr, position, size, cutPosition, cutSize) {
         if (spr === undefined && this.sprite === undefined) {
             throw 'Esta classe não funciona, se você não atribuir uma sprite à ela!';
         }
@@ -43,45 +43,64 @@ export class Sprite {
             size.GetValue().x, size.GetValue().y);
     }
 
-    SetSpriteAnimation(spr, x, y, direction) {
+    Animation(spr, position, direction, row) {
         if (spr === undefined && this.sprite === undefined) {
             throw 'Esta classe não funciona, se você não atribuir uma sprite à ela!';
         }
         this.sprite.src = spr || this.sprite.src;
+        this.position = position;
+        this.row = (row !== undefined) ? row: this.row;
+
         if (direction === "horizontal") {
             console.log("Indice:", this.index);
-            console.log("Tamanho do Player: ", this.size.toString());
+            console.log("Linha: ", this.row);
+            console.log("Tamanho do Player: ", this.size);
+            /**
+             * @example
+             * this.screen.Context.drawImage(spirte, posicaoXCorte, posicaoYCorte,
+             * larguraCorte, alturaCorte,
+             * posicaoXSprite, posicaoYSprite,
+             * larguraSprite, alturaSprite)
+             */
             this.screen.Context.drawImage(this.sprite,
-                this.index * this.size.GetValue().x / this.frames, 0,
-                this.size.GetValue().x / this.frames, this.size.GetValue().y,
-                x, y,
-                this.size.GetValue().x / this.frames * this.scale, this.size.GetValue().y * this.scale);
+
+                this.index * this.size.GetValue().x, this.row * this.size.GetValue().y,
+                
+                this.size.GetValue().x, this.size.GetValue().y,
+                
+                this.position.GetValue().x, this.position.GetValue().y,
+                
+                this.size.GetValue().x * this.scale, this.size.GetValue().y * this.scale);
         } else {
             this.screen.Context.drawImage(this.sprite,
-                y, this.index * this.size.GetValue().y / this.frames,
-                this.size.GetValue().x / this.frames, this.size.GetValue().y,
-                x, y,
-                this.size.GetValue().x / this.frames * this.scale, this.size.GetValue().y * this.scale);
+                0, this.index * this.size.GetValue().y,
+                
+                this.size.GetValue().x, this.size.GetValue().y,
+                
+                this.position.GetValue().x, this.position.GetValue().y,
+                
+                this.size.GetValue().x * this.scale, this.size.GetValue().y * this.scale);
         }
+
+        // Atualiza a posição do sprite
+        this.Update();
     }
 
     Update() {
-        this.updateFrame++;
-
         if (this.updateFrame > this.updatesPerFrame) {
             this.updateFrame = 0;
-            if (this.index < this.frames - 1) {
+            
+            if (this.index == this.frameCount && this.row == 3) {
+                this.index = 0;
+                this.row = 0;
+            } else if (this.index <= this.frameCount) {
                 this.index++;
             } else {
+                this.row++;
                 this.index = 0;
+                this.updateFrame = 0;
             }
         }
-    }
-
-    Draw(position) {
-        this.position = position;
-		console.log("Position:", position);
-        this.Update();
-        this.SetSpriteAnimation(this.sprite, position.GetValue().x, position.GetValue().y, this.frames, this.direction);
+        this.updateFrame++;
     }
 }

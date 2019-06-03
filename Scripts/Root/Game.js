@@ -38,7 +38,6 @@ export class Game {
     static FixedUpdate(dt) {}
 
     static Loop() {
-        console.clear();
         this.startTime = performance.now();
         this.deltaTime = ((this.startTime - this.lastTime) / 1000.0);
         this.Update();
