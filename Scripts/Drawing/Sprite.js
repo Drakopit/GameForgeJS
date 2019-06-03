@@ -43,7 +43,7 @@ export class Sprite {
             size.GetValue().x, size.GetValue().y);
     }
 
-    Animation(spr, position, direction, row) {
+    Animation(spr = undefined, position, direction, row) {
         if (spr === undefined && this.sprite === undefined) {
             throw 'Esta classe não funciona, se você não atribuir uma sprite à ela!';
         }

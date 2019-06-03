@@ -1,11 +1,13 @@
 import { Input } from "../Inputs/Input.js";
+import { Draw } from "../Drawing/Draw.js";
 
 export class Menu {
-    constructor() {}
-
-    Start() {
+    constructor(screen) {
         // Interace com o teclado
         this.input = new Input();
+
+        this.screen = screen;
+        this.draw = new Draw(this.screen);
 
         // Estados do Menu
         const MENU_STATES = Object.freeze({
@@ -24,23 +26,40 @@ export class Menu {
         this.currentSelected = 0;        
     }
 
+    Start() {
+        this.draw.FontSize = "45px";
+    }
+
     Update() {
-        if (input.GetKeyDown("W")) {
+        if (this.input.GetKeyDown("W")) {
             this.currentSelected--;
             if (this.currentSelected < 0) {
                 this.currentSelected = (this.Menu.length - 1);
             }
-        } else if (input.GetKeyDown("S")) {
+        } else if (this.input.GetKeyDown("S")) {
             this.currentSelected++;
             if (this.currentSelected > (this.Menu.length - 1)) {
                 this.currentSelected = 0;
             }
         }
 
-        if (input.GetKeyDown("Enter")) {
+        if (this.input.GetKeyDown("Enter")) {
             // Faz o que estiver na opção
         }
     }
 
-    OnGUI() {}
+    FixedUpdate() {}
+ 
+    DrawSelf() {}
+
+    OnGUI() {
+        for (let i = 0; i <= 3; i++) {
+            if (i == this.currentSelected) {
+                this.draw.Color = "lightgray";
+            } else {
+                this.draw.Color = "green";
+            }
+            this.draw.DrawText(this.Menu[i], 32, 32 + i * 16);
+        }
+    }
 }

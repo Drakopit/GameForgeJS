@@ -1,3 +1,4 @@
+"use strict"
 import { Draw } from "../../Scripts/Drawing/Draw.js";
 import { Input } from "../../Scripts/Inputs/Input.js";
 import { Sprite } from "../../Scripts/Drawing/Sprite.js";
@@ -5,7 +6,7 @@ import { Vector2D } from "../../Scripts/Math/Vector2D.js";
 import { GameObject } from "../../Scripts/Root/GameObject.js";
 
 export class Player extends GameObject {
-    constructor(fileName, screen) {
+    constructor(screen) {
         super();
         this.id;
         this.hspeed = 64;
@@ -32,16 +33,18 @@ export class Player extends GameObject {
         this.draw = new Draw(screen);
         this.input = new Input();
         // Configuração sprite
-        this.sprite = new Sprite(screen, "../../Assets/Sora.jpg");
-        this.sprite.scale = 1;
+        this.spritefileName = "../../Assets/Esqueleto.png";
+        this.sprite = new Sprite(screen, this.spritefileName);
         this.sprite.size = new Vector2D(64, 64);
         this.sprite.position = this.position;
-        this.sprite.direction = "vertical";
         this.sprite.frameCount = 7;
         this.sprite.updatesPerFrame = 3;
+
+        this.row = 2;
+
         this.updateFPS = 0;
-        this.updateFPSPerFrame = 3;
-		this.FPS = 60;
+        this.updateFPSPerFrame = 10;
+        this.FPS = 60;
     }
 
     Start() {}
@@ -49,7 +52,6 @@ export class Player extends GameObject {
     Update() {}
 
     FixedUpdate(deltaTime) {
-        console.log("Delta Time: ", deltaTime);
         this.Translate(deltaTime);
     }
 
@@ -57,17 +59,7 @@ export class Player extends GameObject {
         this.draw.Color = "Blue";
         // this.draw.DrawRect(this.position.GetValue().x, this.position.GetValue().y, 32, 32);
         
-         /** **/if (this.input.GetKeyDown("A")) {
-            this.sprite.Animation("../../Assets/Esqueleto.png", this.position, "horizontal", 1);
-        } else if (this.input.GetKeyDown("D")) {
-            this.sprite.Animation("../../Assets/Esqueleto.png", this.position, "horizontal", 3);
-        } else if (this.input.GetKeyDown("W")) {
-            this.sprite.Animation("../../Assets/Esqueleto.png", this.position, "horizontal", 0);
-        } else if (this.input.GetKeyDown("S")) {
-            this.sprite.Animation("../../Assets/Esqueleto.png", this.position, "horizontal", 2);
-        } else {
-            this.sprite.Animation("../../Assets/Esqueleto.png", this.position, "horizontal", 0);
-        }
+         /** **/this.TranslateAnimation();
     }
 
     OnGUI(deltaTime) {
@@ -75,7 +67,6 @@ export class Player extends GameObject {
         this.draw.Font = "Arial";
         this.draw.FontSize = "12px";
         this.draw.DrawText(`${this.name}`, this.position.x + 16, this.position.y + this.size.GetValue().y - 16);
-        this.draw.DrawText(`Posição: ${JSON.stringify(this.position)}`, 10, 10);
 		
 		if (this.updateFPS > this.updateFPSPerFrame) {
             this.updateFPS = 0;
@@ -86,15 +77,24 @@ export class Player extends GameObject {
     }
 }
 
-// Caracteristicas do Player
+// Movimentação do Player
 Player.prototype.Translate = function(deltaTime) {
-    /** **/if (this.input.GetKeyDown("A")) {
+    /* */if (this.input.GetKeyDown("A"))
         this.position = this.position.AddValue(new Vector2D(-this.hspeed*deltaTime,0));            
-    } else if (this.input.GetKeyDown("D")) {
+    else if (this.input.GetKeyDown("D"))
         this.position = this.position.AddValue(new Vector2D(this.hspeed*deltaTime,0));
-    } else if (this.input.GetKeyDown("W")) {
+    else if (this.input.GetKeyDown("W"))
         this.position = this.position.AddValue(new Vector2D(0,-this.vspeed*deltaTime));
-    } else if (this.input.GetKeyDown("S")) {
+    else if (this.input.GetKeyDown("S"))
         this.position = this.position.AddValue(new Vector2D(0,this.vspeed*deltaTime));
-    }
 }
+
+// Animação de movimentação do Player
+Player.prototype.TranslateAnimation = function() {
+    /* */if (this.input.GetKeyDown("A")) this.row = 1;
+    else if (this.input.GetKeyDown("D")) this.row = 3;
+    else if (this.input.GetKeyDown("W")) this.row = 0;
+    else if (this.input.GetKeyDown("S")) this.row = 2;
+    this.sprite.Animation(this.spritefileName, this.position, "horizontal", this.row);
+}
+
