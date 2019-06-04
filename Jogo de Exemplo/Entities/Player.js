@@ -5,17 +5,25 @@ import { Sprite } from "../../Scripts/Drawing/Sprite.js";
 import { Vector2D } from "../../Scripts/Math/Vector2D.js";
 import { GameObject } from "../../Scripts/Root/GameObject.js";
 
+// Constante
+const DIRECOES = Object.freeze({
+    ESQUERDA: 1,
+    DIREITA: 3,
+    CIMA: 0,
+    BAIXO: 2
+})
+
 export class Player extends GameObject {
     constructor(screen) {
         super();
         this.id;
-        this.hspeed = 64;
-        this.vspeed = 64;
+        this.hspeed = 256;
+        this.vspeed = 256;
         this.solid = true;
         this.position = new Vector2D(64, 64);
         this.previousPosition = this.position;
         this.startPosition = this.position;
-        this.size = new Vector2D(32, 32);
+        this.size = new Vector2D(64, 64);
         this.direction;
         this.friction;
         this.gravity;
@@ -40,11 +48,12 @@ export class Player extends GameObject {
         this.sprite.frameCount = 7;
         this.sprite.updatesPerFrame = 3;
 
-        this.row = 2;
+        this.row = DIRECOES.BAIXO;
 
         this.updateFPS = 0;
         this.updateFPSPerFrame = 10;
         this.FPS = 60;
+    
     }
 
     Start() {}
@@ -58,8 +67,7 @@ export class Player extends GameObject {
     DrawSelf(deltaTime) {
         this.draw.Color = "Blue";
         // this.draw.DrawRect(this.position.GetValue().x, this.position.GetValue().y, 32, 32);
-        
-         /** **/this.TranslateAnimation();
+        this.sprite.Animation(this.spritefileName, this.position, "horizontal", this.row);
     }
 
     OnGUI(deltaTime) {
@@ -79,22 +87,17 @@ export class Player extends GameObject {
 
 // Movimentação do Player
 Player.prototype.Translate = function(deltaTime) {
-    /* */if (this.input.GetKeyDown("A"))
-        this.position = this.position.AddValue(new Vector2D(-this.hspeed*deltaTime,0));            
-    else if (this.input.GetKeyDown("D"))
+    /* */if (this.input.GetKeyDown("A")) {
+        this.position = this.position.AddValue(new Vector2D(-this.hspeed*deltaTime,0));    
+        this.row = DIRECOES.ESQUERDA;            
+    } else if (this.input.GetKeyDown("D")) {
         this.position = this.position.AddValue(new Vector2D(this.hspeed*deltaTime,0));
-    else if (this.input.GetKeyDown("W"))
+        this.row = DIRECOES.DIREITA;
+    } else if (this.input.GetKeyDown("W")) {
         this.position = this.position.AddValue(new Vector2D(0,-this.vspeed*deltaTime));
-    else if (this.input.GetKeyDown("S"))
+        this.row = DIRECOES.CIMA;
+    } else if (this.input.GetKeyDown("S")) {
         this.position = this.position.AddValue(new Vector2D(0,this.vspeed*deltaTime));
+        this.row = DIRECOES.BAIXO;
+    }
 }
-
-// Animação de movimentação do Player
-Player.prototype.TranslateAnimation = function() {
-    /* */if (this.input.GetKeyDown("A")) this.row = 1;
-    else if (this.input.GetKeyDown("D")) this.row = 3;
-    else if (this.input.GetKeyDown("W")) this.row = 0;
-    else if (this.input.GetKeyDown("S")) this.row = 2;
-    this.sprite.Animation(this.spritefileName, this.position, "horizontal", this.row);
-}
-

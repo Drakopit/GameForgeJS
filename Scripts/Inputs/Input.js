@@ -112,6 +112,12 @@ export class Input {
         window.onkeydown = (e) => {
             this.Key = e.which || e.keyCode;
         };
+        if (this.KeyCode[key] === this.Key) {
+            this.Key = null;
+            return true;
+        } else {
+            return false;
+        }
         return (this.KeyCode[key] == this.Key) ? true : false;
     }
 

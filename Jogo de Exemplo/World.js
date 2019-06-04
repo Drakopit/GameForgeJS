@@ -7,6 +7,8 @@ import { Physic2D } from "../Scripts/Math/Physic2D.js";
 import { Menu } from "../Scripts/GUI/Menu.js";
 
 var Objects = new Array();
+var p = document.createElement('p');
+document.body.appendChild(p);
 
 export class World {
     constructor() {
@@ -28,15 +30,20 @@ export class World {
     Loop(dt) {
         this.screen.Refresh();
         // Adiciona todos os objetos da cena
-        // for (let i = 0; i <= Objects.length; i++) {
-        //     for (let j = i+1; j < Objects.length; j++) {
-        //         let colidido = Objects[i];
-        //         let colisor = Objects[j];
-        //         if (Collide2D.isCollidingAABB(colidido, colisor)) {
-        //             Physic2D.reactinCollision(colidido, colisor);
-        //         }
-        //     }
-        // }
+        for (let i = 0; i <= Objects.length; i++) {
+            for (let j = i+1; j < Objects.length; j++) {
+                let colidido = Objects[i];
+                let colisor = Objects[j];
+                if (Collide2D.isCollidingAABB(colidido, colisor)) {
+                    Physic2D.reactinCollision(colidido, colisor);
+                    p.innerText = "Esta colidindo!";
+                    p.style.color = "red";
+                } else {
+                    p.innerText = "Não esta colidindo!";
+                    p.style.color = "blue";
+                }
+            }
+        }
         for (const object of Objects) {
             object.Update();
             object.FixedUpdate(dt);
