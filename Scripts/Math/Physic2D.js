@@ -1,4 +1,5 @@
 import { Vector3D } from "../Math/Vector3D.js";
+import { Vector2D } from "./Vector2D.js";
 
 export class Physic2D {
     constructor() {}
@@ -51,7 +52,7 @@ export class Physic2D {
         Métodos customizados de física
     ----------------------------------------------------------------------------*/
     static reactinCollision(Obj0, Obj1) {
-        // Caso ocorra colisão, 
+        // Caso ocorra colisão,         
         let tx = Obj0.hspeed;
         let ty = Obj0.vspeed;
         Obj0.hspeed = Obj1.hspeed;

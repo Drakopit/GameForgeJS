@@ -63,22 +63,15 @@ export class Sprite {
              * larguraSprite, alturaSprite)
              */
             this.screen.Context.drawImage(this.sprite,
-
                 this.index * this.size.GetValue().x, this.row * this.size.GetValue().y,
-                
                 this.size.GetValue().x, this.size.GetValue().y,
-                
                 this.position.GetValue().x, this.position.GetValue().y,
-                
                 this.size.GetValue().x * this.scale, this.size.GetValue().y * this.scale);
         } else {
             this.screen.Context.drawImage(this.sprite,
                 0, this.index * this.size.GetValue().y,
-                
                 this.size.GetValue().x, this.size.GetValue().y,
-                
                 this.position.GetValue().x, this.position.GetValue().y,
-                
                 this.size.GetValue().x * this.scale, this.size.GetValue().y * this.scale);
         }
 

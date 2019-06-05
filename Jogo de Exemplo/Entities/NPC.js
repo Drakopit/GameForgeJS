@@ -14,4 +14,10 @@ export class NPC extends GameObject {
         this.draw.Color = `blue`;
         this.draw.DrawRect(this.position.GetValue().x, this.position.GetValue().y, this.size.GetValue().x, this.size.GetValue().x);
     }
+
+    OnGUI() {
+        this.draw.Color = 'Red';
+        this.draw.DrawText(`Posição ${JSON.stringify(this.position)}` , 10, 15);
+        this.draw.DrawText(`Tamanho ${JSON.stringify(this.size)}` , 10, 30);
+    }
 }

@@ -68,14 +68,21 @@ export class Player extends GameObject {
         this.draw.Color = "Blue";
         // this.draw.DrawRect(this.position.GetValue().x, this.position.GetValue().y, 32, 32);
         this.sprite.Animation(this.spritefileName, this.position, "horizontal", this.row);
+        this.draw.Style = 1;
+        this.draw.DrawRect(this.position.GetValue().x, this.position.GetValue().y, this.size.GetValue().x, this.size.GetValue().y);
+        this.draw.Style = 0;
     }
 
     OnGUI(deltaTime) {
         this.draw.Color = "black";
         this.draw.Font = "Arial";
         this.draw.FontSize = "12px";
-        this.draw.DrawText(`${this.name}`, this.position.x + 16, this.position.y + this.size.GetValue().y - 16);
-		
+        this.draw.DrawText(`${this.name}`, this.position.x + 16, this.position.y + this.size.GetValue().y - 56);
+        
+        this.draw.Color = 'Blue';
+        this.draw.DrawText(`Posição: ${JSON.stringify(this.position)}`, 10, 45);
+        this.draw.DrawText(`Tamanho: ${JSON.stringify(this.size)}`, 10, 60);
+
 		if (this.updateFPS > this.updateFPSPerFrame) {
             this.updateFPS = 0;
 			this.FPS = Math.floor(1 / deltaTime);
