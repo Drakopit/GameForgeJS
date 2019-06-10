@@ -12,17 +12,18 @@
 import { Vector2D } from "../Math/Vector2D.js";
 export class Screen {
     constructor(id, width, height) {
-        this.id = id;
+		this.id = id;
+		this.ratio = width/height;
 		if (width !== undefined && height !== undefined) {
-			this.width = width;
-			this.height = height;
+            this.width = width * this.ratio;
+			this.height = height * this.ratio;
 		} else {
-			this.width = window.innerWidth;
-			this.height = window.innerHeight;
+			this.width = window.innerWidth * this.ratio;
+			this.height = window.innerHeight * this.ratio;
 		}
         this.clientWidth = window.innerWidth;
         this.clientHeight = window.innerHeight;
-        this.x = 0; this.y = 0;
+		this.x = 0; this.y = 0;
     }
 
     /**
@@ -86,7 +87,7 @@ export class Screen {
         this.canvas.setAttribute("id", screenName);
         this.canvas.setAttribute("width", this.width);
         this.canvas.setAttribute("height", this.height);
-        this.context = this.canvas.getContext("2d");
+		this.context = this.canvas.getContext("2d");
     }
 
     /**
@@ -171,4 +172,8 @@ export class Screen {
         this.canvas.style.left = `${this.x}px`;
         this.canvas.style.top = `${this.y}px`;
     }
+}
+
+Screen.prototype.MDC = function(width, height) {
+    return (height == 0) ? width : this.MDC(height, width%height);;
 }

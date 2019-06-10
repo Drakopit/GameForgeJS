@@ -17,8 +17,9 @@ export class Player extends GameObject {
     constructor(screen) {
         super();
         this.id;
-        this.hspeed = 256;
-        this.vspeed = 256;
+        this.speed = 256;
+        this.hspeed = this.speed;
+        this.vspeed = this.speed;
         this.solid = true;
         this.position = new Vector2D(64, 64);
         this.previousPosition = this.position;
@@ -49,11 +50,11 @@ export class Player extends GameObject {
         this.sprite.updatesPerFrame = 3;
 
         this.row = DIRECOES.BAIXO;
+        this.invertSignal = -1;
 
         this.updateFPS = 0;
         this.updateFPSPerFrame = 10;
-        this.FPS = 60;
-    
+        this.FPS = 60;        
     }
 
     Start() {}
@@ -64,7 +65,7 @@ export class Player extends GameObject {
         this.Translate(deltaTime);
     }
 
-    DrawSelf(deltaTime) {
+    DrawnSelf(deltaTime) {
         this.draw.Color = "Blue";
         // this.draw.DrawRect(this.position.GetValue().x, this.position.GetValue().y, 32, 32);
         this.sprite.Animation(this.spritefileName, this.position, "horizontal", this.row);
@@ -83,6 +84,9 @@ export class Player extends GameObject {
         this.draw.DrawText(`Posição: ${JSON.stringify(this.position)}`, 10, 45);
         this.draw.DrawText(`Tamanho: ${JSON.stringify(this.size)}`, 10, 60);
 
+        this.draw.Color = 'Purple';
+        this.draw.DrawText(`Aspect Ratio Normal: ${this.ratio}`, 200, 15);
+
 		if (this.updateFPS > this.updateFPSPerFrame) {
             this.updateFPS = 0;
 			this.FPS = Math.floor(1 / deltaTime);
@@ -95,8 +99,8 @@ export class Player extends GameObject {
 // Movimentação do Player
 Player.prototype.Translate = function(deltaTime) {
     /* */if (this.input.GetKeyDown("A")) {
-        this.position = this.position.AddValue(new Vector2D(-this.hspeed*deltaTime,0));    
-        this.row = DIRECOES.ESQUERDA;            
+        this.position = this.position.AddValue(new Vector2D(-this.hspeed*deltaTime,0));
+        this.row = DIRECOES.ESQUERDA;
     } else if (this.input.GetKeyDown("D")) {
         this.position = this.position.AddValue(new Vector2D(this.hspeed*deltaTime,0));
         this.row = DIRECOES.DIREITA;

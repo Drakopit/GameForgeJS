@@ -19,6 +19,8 @@ export class GameObject {
         this.danping = 0.5;
         this.mass;
         this.sprite = new Sprite();
+
+        this.ObjectType = "Entity";
     }
 
     Start() {}
@@ -27,7 +29,7 @@ export class GameObject {
 
     FixedUpdate() {}
 
-    DrawSelf() {}
+    DrawnSelf() {}
 
     OnGUI() {}
 }
