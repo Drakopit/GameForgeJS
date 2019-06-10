@@ -13,12 +13,12 @@ document.body.appendChild(p);
 export class World {
     constructor() {
         // Configurações do ambiente
-        this.screen = new Screen("PrimeiraFase", 640, 480);
+        this.screen = new Screen("PrimeiraFase");
         this.screen.Init("Fase01");
 
         this.scene = new Scene("PrimeiraFase", this.screen);
         this.scene.CallScene("PrimeiraFase", "Fase_01");
-        
+                
         // Entidades
         this.jogador = new Player(this.screen);
         this.npc = new NPC(this.screen);

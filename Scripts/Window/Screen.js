@@ -13,12 +13,16 @@ import { Vector2D } from "../Math/Vector2D.js";
 export class Screen {
     constructor(id, width, height) {
         this.id = id;
-        this.width = width;
-        this.height = height;
+		if (width !== undefined && height !== undefined) {
+			this.width = width;
+			this.height = height;
+		} else {
+			this.width = window.innerWidth;
+			this.height = window.innerHeight;
+		}
         this.clientWidth = window.innerWidth;
         this.clientHeight = window.innerHeight;
-        this.x = 0;
-        this.y = 0;
+        this.x = 0; this.y = 0;
     }
 
     /**
