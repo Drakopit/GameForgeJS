@@ -7,6 +7,7 @@ import { Physic2D } from "../Scripts/Math/Physic2D.js";
 import { Menu } from "../Scripts/GUI/Menu.js";
 import { DebugMap } from "../Scripts/Root/DebugMap.js";
 import { Vector2D } from "../Scripts/Math/Vector2D.js";
+import { Camera } from "../Scripts/Root/Camera.js";
 
 var Objects = new Array();
 var p = document.createElement('p');
@@ -36,8 +37,16 @@ export class World {
         this.jogador = new Player(this.screen);
         this.npc = new NPC(this.screen);
 
+        // Camera
+        this.camera = new Camera(this.jogador.position, new Vector2D(this.screen.Width, this.screen.Height));
+        var GameWorld = {
+            width: (this.debugMap.mapWidth*this.debugMap.tileW),
+            height: (this.debugMap.mapHeight*this.debugMap.tileH)
+        }
+        this.camera.Init(this.screen, GameWorld);
+
         // Adiciona objetos à lista
-        Objects.push(this.debugMap, this.jogador, this.npc);
+        Objects.push(this.debugMap, this.jogador, this.npc, this.camera);
     }
 
     Loop(dt) {
@@ -60,7 +69,7 @@ export class World {
             }
         }
         for (const object of Objects) {
-            object.Update();
+            object.Update(this.jogador);
             object.FixedUpdate(dt);
             object.DrawnSelf(dt);
             object.OnGUI(dt);

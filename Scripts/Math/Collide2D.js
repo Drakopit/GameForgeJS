@@ -25,6 +25,7 @@ export class Collide2D {
      * @returns {boolean}
      */
     static isCollidingAABB(Obj0, Obj1) {
+        console.log(Obj0, Obj1);
         if (Obj0.position.GetValue().x < Obj1.position.GetValue().x + Obj1.size.GetValue().x &&
             Obj0.position.GetValue().x + Obj0.size.GetValue().x > Obj1.position.GetValue().x &&
             Obj0.position.GetValue().y < Obj1.position.GetValue().y + Obj1.size.GetValue().y &&

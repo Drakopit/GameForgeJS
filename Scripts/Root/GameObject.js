@@ -20,7 +20,9 @@ export class GameObject {
         this.mass;
         this.sprite = new Sprite();
 
-        this.ObjectType = "Entity";
+        this.Tag = "Entity";
+        this.name = "Drako";
+
     }
 
     Start() {}

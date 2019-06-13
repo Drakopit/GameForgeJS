@@ -4,6 +4,7 @@ import { Input } from "../../Scripts/Inputs/Input.js";
 import { Sprite } from "../../Scripts/Drawing/Sprite.js";
 import { Vector2D } from "../../Scripts/Math/Vector2D.js";
 import { GameObject } from "../../Scripts/Root/GameObject.js";
+import { Collide2D } from "../../Scripts/Math/Collide2D.js";
 
 // Constante
 const DIRECOES = Object.freeze({
@@ -16,26 +17,15 @@ const DIRECOES = Object.freeze({
 export class Player extends GameObject {
     constructor(screen) {
         super();
-        this.id;
         this.speed = 256;
         this.hspeed = this.speed;
         this.vspeed = this.speed;
-        this.solid = true;
         this.position = new Vector2D(64, 64);
         this.previousPosition = this.position;
         this.startPosition = this.position;
         this.size = new Vector2D(64, 64);
-        this.direction;
-        this.friction;
-        this.gravity;
-        this.gravityDirection;
-        this.deth;
-        this.danping = 0.3;
-        this.mass;
 
         // Mecânica de jogo 
-        this.ObjectType = "Entity";
-        this.name = "Drako";
         this.type = "Ally";
                 
         // Classes necessárias
@@ -50,19 +40,16 @@ export class Player extends GameObject {
         this.sprite.updatesPerFrame = 3;
 
         this.row = DIRECOES.BAIXO;
-        this.invertSignal = -1;
 
         this.updateFPS = 0;
         this.updateFPSPerFrame = 10;
         this.FPS = 60;        
     }
 
-    Start() {}
-
-    Update() {}
-
     FixedUpdate(deltaTime) {
-        this.Translate(deltaTime);
+        if (!this.Intersect(window.npc)) {
+            this.Translate(deltaTime);
+        }
     }
 
     DrawnSelf(deltaTime) {
@@ -110,5 +97,13 @@ Player.prototype.Translate = function(deltaTime) {
     } else if (this.input.GetKeyDown("S")) {
         this.position = this.position.AddValue(new Vector2D(0,this.vspeed*deltaTime));
         this.row = DIRECOES.BAIXO;
+    }
+}
+
+Player.prototype.Intersect = function(other) {
+    if (other != undefined) {
+        return Collide2D.isCollidingAABB(this.position, other.position);
+    } else {
+        return false;
     }
 }

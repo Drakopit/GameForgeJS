@@ -109,10 +109,7 @@ export class Input {
      *  } 
      */
     GetKeyDown(key) {
-        window.onkeydown = (e) => {
-            this.Key = e.which || e.keyCode; 
-            e.preventDefault();
-        };
+        window.onkeydown = (e) => { this.Key = e.which || e.keyCode; };
         return (this.KeyCode[key] === this.Key) ? true : false;
     }
 

@@ -2,7 +2,7 @@ export class Base {
     constructor() {}
     Start() {}
     Update() {}
-    FixedUpdate() {}
-    DrawnSelf() {}
-    OnGUI() {}
+    FixedUpdate(dt) {}
+    DrawnSelf(dt) {}
+    OnGUI(dt) {}
 }
