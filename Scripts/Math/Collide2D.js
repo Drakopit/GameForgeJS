@@ -25,13 +25,14 @@ export class Collide2D {
      * @returns {boolean}
      */
     static isCollidingAABB(Obj0, Obj1) {
-        if (Obj0.x + Obj0.width < Obj1.x &&
-            Obj1.x + Obj1.width < Obj0.x &&
-            Obj0.y + Obj0.height < Obj1.y &&
-            Obj1.y + Obj1.height < Obj0.y) {
-            return false;
+        console.log(Obj0, Obj1);
+        if (Obj0.position.GetValue().x < Obj1.position.GetValue().x + Obj1.size.GetValue().x &&
+            Obj0.position.GetValue().x + Obj0.size.GetValue().x > Obj1.position.GetValue().x &&
+            Obj0.position.GetValue().y < Obj1.position.GetValue().y + Obj1.size.GetValue().y &&
+            Obj0.position.GetValue().y + Obj0.size.GetValue().y > Obj1.position.GetValue().y) {
+            return true;
         }
-        return true;
+        return false;
     }
 
     /**

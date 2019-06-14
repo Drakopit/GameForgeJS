@@ -21,7 +21,7 @@ export class Game {
             this.Start();
             this.Update();
             this.FixedUpdate();
-            this.DrawSelf();
+            this.DrawnSelf();
             this.OnGUI();
             this.Loop();
         }
@@ -38,13 +38,11 @@ export class Game {
     static FixedUpdate(dt) {}
 
     static Loop() {
-        console.clear();
-        // this.startTime = Date.now();
         this.startTime = performance.now();
         this.deltaTime = ((this.startTime - this.lastTime) / 1000.0);
         this.Update();
         this.FixedUpdate(this.deltaTime);
-        this.DrawSelf(this.deltaTime);
+        this.DrawnSelf(this.deltaTime);
         this.OnGUI(this.deltaTime);
 
         // Atualiza o Jogo
@@ -62,7 +60,7 @@ export class Game {
         window.requestAnimationFrame(self.Loop.bind(self));
     }
 
-    static DrawSelf(dt) {}
+    static DrawnSelf(dt) {}
 
     static OnGUI(dt) {}
 }

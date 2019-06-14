@@ -97,7 +97,7 @@ export class Input {
      */
     GetKeyPress(key) {
         window.onkeypress = (e) => { this.Key = e.which || e.keyCode; };
-        return (this.KeyCode[key] == this.Key) ? true : false;
+        return (this.KeyCode[key] === this.Key) ? true : false;
     }
 
     /**
@@ -109,10 +109,8 @@ export class Input {
      *  } 
      */
     GetKeyDown(key) {
-        window.onkeydown = (e) => {
-            this.Key = e.which || e.keyCode;
-        };
-        return (this.KeyCode[key] == this.Key) ? true : false;
+        window.onkeydown = (e) => { this.Key = e.which || e.keyCode; };
+        return (this.KeyCode[key] === this.Key) ? true : false;
     }
 
     /**
@@ -125,6 +123,6 @@ export class Input {
      */
     GetKeyRelease(key) {
         window.onkeyup = (e) => { this.Key = e.which || e.keyCode; };
-        return (this.KeyCode[key] == this.Key) ? true : false;
+        return (this.KeyCode[key] === this.Key) ? true : false;
     }
 }

@@ -1,76 +1,109 @@
+"use strict"
 import { Draw } from "../../Scripts/Drawing/Draw.js";
 import { Input } from "../../Scripts/Inputs/Input.js";
+import { Sprite } from "../../Scripts/Drawing/Sprite.js";
 import { Vector2D } from "../../Scripts/Math/Vector2D.js";
 import { GameObject } from "../../Scripts/Root/GameObject.js";
+import { Collide2D } from "../../Scripts/Math/Collide2D.js";
+
+// Constante
+const DIRECOES = Object.freeze({
+    ESQUERDA: 1,
+    DIREITA: 3,
+    CIMA: 0,
+    BAIXO: 2
+})
 
 export class Player extends GameObject {
-    constructor(fileName, screen) {
+    constructor(screen) {
         super();
-        this.id;
-        this.hspeed = 64;
-        this.vspeed = 64;
-        this.solid = true;
+        this.speed = 256;
+        this.hspeed = this.speed;
+        this.vspeed = this.speed;
         this.position = new Vector2D(64, 64);
         this.previousPosition = this.position;
         this.startPosition = this.position;
-        this.size = new Vector2D(32, 32);
-        this.direction;
-        this.friction;
-        this.gravity;
-        this.gravityDirection;
-        this.deth;
-        this.danping = 0.3;
-        this.mass;
+        this.size = new Vector2D(64, 64);
 
         // Mecânica de jogo 
-        this.ObjectType = "Entity";
-        this.name = "Drako";
         this.type = "Ally";
                 
         // Classes necessárias
         this.draw = new Draw(screen);
         this.input = new Input();
-        // this.sprite = new Sprite(fileName);
-        // this.sprite.SetScreen(screen);
-        this.count = 0;
+        // Configuração sprite
+        this.spritefileName = "../../Assets/Esqueleto.png";
+        this.sprite = new Sprite(screen, this.spritefileName);
+        this.sprite.size = new Vector2D(64, 64);
+        this.sprite.position = this.position;
+        this.sprite.frameCount = 7;
+        this.sprite.updatesPerFrame = 3;
+
+        this.row = DIRECOES.BAIXO;
+
+        this.updateFPS = 0;
+        this.updateFPSPerFrame = 10;
+        this.FPS = 60;        
     }
-
-    Start() {}
-
-    Update() {}
 
     FixedUpdate(deltaTime) {
-        console.log("Delta Time: ", deltaTime);
-        this.Translate(deltaTime);
+        if (!this.Intersect(window.npc)) {
+            this.Translate(deltaTime);
+        }
     }
 
-    DrawSelf(deltaTime) {
+    DrawnSelf(deltaTime) {
         this.draw.Color = "Blue";
-        this.draw.DrawRect(this.position.GetValue().x, this.position.GetValue().y, 32, 32);
+        // this.draw.DrawRect(this.position.GetValue().x, this.position.GetValue().y, 32, 32);
+        this.sprite.Animation(this.spritefileName, this.position, "horizontal", this.row);
+        this.draw.Style = 1;
+        this.draw.DrawRect(this.position.GetValue().x, this.position.GetValue().y, this.size.GetValue().x, this.size.GetValue().y);
+        this.draw.Style = 0;
     }
 
     OnGUI(deltaTime) {
-        this.count++;
         this.draw.Color = "black";
         this.draw.Font = "Arial";
         this.draw.FontSize = "12px";
-        this.draw.DrawText(`${this.name}`, this.position.x, this.position.y + this.size.GetValue().y + 12);
-        this.draw.DrawText(`Posição: ${JSON.stringify(this.position)}`, 10, 10);
+        this.draw.DrawText(`${this.name}`, this.position.x + 16, this.position.y + this.size.GetValue().y - 56);
         
-        let FPS = Math.floor(1 / deltaTime);
-        this.draw.DrawText(`FPS: ${FPS}`, 500, 10);
+        this.draw.Color = 'Blue';
+        this.draw.DrawText(`Posição: ${JSON.stringify(this.position)}`, 10, 45);
+        this.draw.DrawText(`Tamanho: ${JSON.stringify(this.size)}`, 10, 60);
+
+        this.draw.Color = 'Purple';
+        this.draw.DrawText(`Aspect Ratio Normal: ${this.ratio}`, 200, 15);
+
+		if (this.updateFPS > this.updateFPSPerFrame) {
+            this.updateFPS = 0;
+			this.FPS = Math.floor(1 / deltaTime);
+		}
+        this.updateFPS++;
+        this.draw.DrawText(`FPS: ${this.FPS}`, 500, 10);
     }
 }
 
-// Caracteristicas do Player
+// Movimentação do Player
 Player.prototype.Translate = function(deltaTime) {
-    /** **/if (this.input.GetKeyDown("A")) {
-        this.position = this.position.AddValue(new Vector2D(-this.hspeed*deltaTime,0));            
+    /* */if (this.input.GetKeyDown("A")) {
+        this.position = this.position.AddValue(new Vector2D(-this.hspeed*deltaTime,0));
+        this.row = DIRECOES.ESQUERDA;
     } else if (this.input.GetKeyDown("D")) {
         this.position = this.position.AddValue(new Vector2D(this.hspeed*deltaTime,0));
+        this.row = DIRECOES.DIREITA;
     } else if (this.input.GetKeyDown("W")) {
         this.position = this.position.AddValue(new Vector2D(0,-this.vspeed*deltaTime));
+        this.row = DIRECOES.CIMA;
     } else if (this.input.GetKeyDown("S")) {
         this.position = this.position.AddValue(new Vector2D(0,this.vspeed*deltaTime));
+        this.row = DIRECOES.BAIXO;
+    }
+}
+
+Player.prototype.Intersect = function(other) {
+    if (other != undefined) {
+        return Collide2D.isCollidingAABB(this.position, other.position);
+    } else {
+        return false;
     }
 }

@@ -19,6 +19,10 @@ export class GameObject {
         this.danping = 0.5;
         this.mass;
         this.sprite = new Sprite();
+
+        this.Tag = "Entity";
+        this.name = "Drako";
+
     }
 
     Start() {}
@@ -27,7 +31,7 @@ export class GameObject {
 
     FixedUpdate() {}
 
-    DrawSelf() {}
+    DrawnSelf() {}
 
     OnGUI() {}
 }
