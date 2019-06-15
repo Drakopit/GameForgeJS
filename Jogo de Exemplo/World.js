@@ -4,14 +4,12 @@ import { Player } from "./Entities/Player.js";
 import { NPC } from "./Entities/NPC.js";
 import { Collide2D } from "../Scripts/Math/Collide2D.js";
 import { Physic2D } from "../Scripts/Math/Physic2D.js";
-import { Menu } from "../Scripts/GUI/Menu.js";
 import { DebugMap } from "../Scripts/Root/DebugMap.js";
 import { Vector2D } from "../Scripts/Math/Vector2D.js";
 import { Camera } from "../Scripts/Root/Camera.js";
+import { Coin } from "./Entities/Coin.js";
 
 var Objects = new Array();
-var p = document.createElement('p');
-document.body.appendChild(p);
 
 export class World {
     constructor() {
@@ -39,14 +37,17 @@ export class World {
 
         // Camera
         this.camera = new Camera(this.jogador.position, new Vector2D(this.screen.Width, this.screen.Height));
-        var GameWorld = {
+        let GameWorld = {
             width: (this.debugMap.mapWidth*this.debugMap.tileW),
             height: (this.debugMap.mapHeight*this.debugMap.tileH)
-        }
+        };
         this.camera.Init(this.screen, GameWorld);
 
+        // Dinheiro
+        this.coin = new Coin();
+
         // Adiciona objetos à lista
-        Objects.push(this.debugMap, this.jogador, this.npc, this.camera);
+        Objects.push(this.debugMap,this.jogador, this.npc, this.coin);
     }
 
     Loop(dt) {
@@ -59,21 +60,19 @@ export class World {
                 if (Objects[i].ObjectType == 'Entity' && Objects[j].ObjectType == 'Entity') {
                     if (Collide2D.isCollidingAABB(colidido, colisor)) {
                         Physic2D.reactinCollision(colidido, colisor);
-                        p.innerText = "Esta colidindo!";
-                        p.style.color = "red";
-                    } else {
-                        p.innerText = "Não esta colidindo!";
-                        p.style.color = "blue";
                     }
                 }
             }
         }
         for (const object of Objects) {
-            object.Update(this.jogador);
-            object.FixedUpdate(dt);
+            object.Update();
+            object.FixedUpdate(dt, this.npc);
+            this.camera.Update(this.jogador);
+            this.camera.Begin();
             object.DrawnSelf(dt);
+            this.camera.DrawnSelf();
+            this.camera.End();
             object.OnGUI(dt);
         }
-        console.log(`Ratio: ${this.screen.Width/this.screen.ratio}, ${this.screen.Height/this.screen.ratio}`)
     }
 }

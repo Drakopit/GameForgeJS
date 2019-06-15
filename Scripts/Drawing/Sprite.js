@@ -52,9 +52,6 @@ export class Sprite {
         this.row = (row !== undefined) ? row: this.row;
 
         if (direction === "horizontal") {
-            console.log("Indice:", this.index);
-            console.log("Linha: ", this.row);
-            console.log("Tamanho do Player: ", this.size);
             /**
              * @example
              * this.screen.Context.drawImage(spirte, posicaoXCorte, posicaoYCorte,

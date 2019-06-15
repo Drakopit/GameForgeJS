@@ -142,9 +142,9 @@ export class Screen {
      * @example
      *  screen.Resize(640, 480);
      */
-    Resize(width, height) {
-        this.width = width;
-        this.height = height;
+    Resize(vector2D) {
+        // this.width = vector2D.GetValue().x;
+        // this.height = vector2D.GetValue().y;
         this.canvas.width = this.width;
         this.canvas.height = this.height;
     }

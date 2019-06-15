@@ -41,4 +41,8 @@ export class Vector2D {
     AddValue(vector2D) {
         return new Vector2D(this.x + vector2D.GetValue().x, this.y + vector2D.GetValue().y);
     }
+
+    SubtractValue(vector2D) {
+        return new Vector2D(this.x - vector2D.GetValue().x, this.y - vector2D.GetValue().y);
+    }
 }
