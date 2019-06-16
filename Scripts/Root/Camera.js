@@ -34,13 +34,13 @@ export class Camera extends Base {
     }
 
     StrictLimit() {
-        if(this.position.GetValue().x < 0){
+        if(this.position.GetValue().x < 0) {
 			this.position.GetValue().x = 0;
-		} else  if(this.position.GetValue().x + this.size.GetValue().x > this.GameWorld.width){
+		} else  if(this.position.GetValue().x + this.size.GetValue().x > this.GameWorld.width) {
 			this.position.GetValue().x = this.GameWorld.width - this.size.GetValue().x;
-		} else if(this.position.GetValue().y < 0){
+		} else if(this.position.GetValue().y < 0) {
 			this.position.GetValue().y = 0;
-		} else if(this.position.GetValue().y + this.size.GetValue().y > this.GameWorld.height){
+		} else if(this.position.GetValue().y + this.size.GetValue().y > this.GameWorld.height) {
 			this.position.GetValue().y = this.GameWorld.height - this.size.GetValue().y;
         }       
     }
@@ -57,32 +57,21 @@ export class Camera extends Base {
     Update(char) {
         this.LookAt(char);
         this.StrictLimit();
-        console.log(this.size);
-    }
-
-    DrawnSelf() {
-        this.draw.Style = 1;
-        this.draw.DrawRect(this.position.GetValue().x, this.position.GetValue().y, this.size.GetValue().x, this.size.GetValue().y);
-        this.draw.Style = 0;
     }
 }
 
 Camera.prototype.LeftEdge = function() {
     return (this.size.GetValue().x * 0.25);
-    // return this.x + (this.width * 0.25);
 }
 
 Camera.prototype.RightEdge = function() {
     return (this.size.GetValue().x * 0.75);
-    // return this.x + (this.width * 0.75);
 }
 
 Camera.prototype.TopEdge = function() {
     return (this.size.GetValue().y * 0.25);
-    // return this.y + (this.height * 0.25);
 }
 
 Camera.prototype.BottomEdge = function(){
     return (this.size.GetValue().y * 0.75);
-    // return this.y + (this.height * 0.75);
 }
