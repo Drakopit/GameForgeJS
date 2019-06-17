@@ -26,7 +26,7 @@ export class Game {
             this.Loop();
             // Teste
             var names = Object.getOwnPropertyNames(Game);
-            console.log("Names: ", Names);
+            console.log("Names: ", names);
         }
     }
 
@@ -83,5 +83,5 @@ export class Game {
     //     if (Game.World[name] !== undefined) {
     //         return Game.World[name];
     //     }
-    // }
+    }
 }
