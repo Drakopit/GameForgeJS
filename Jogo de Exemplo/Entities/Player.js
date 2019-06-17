@@ -46,6 +46,7 @@ export class Player extends GameObject {
         this.updateFPSPerFrame = 10;
         this.FPS = 60;
 
+		// Status RPG
         this.Hp = 500;
         this.MaxHp = this.Hp;
         this.Mp = 100;

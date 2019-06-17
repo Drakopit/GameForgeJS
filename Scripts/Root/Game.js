@@ -24,6 +24,9 @@ export class Game {
             this.DrawnSelf();
             this.OnGUI();
             this.Loop();
+            // Teste
+            var names = Object.getOwnPropertyNames(Game);
+            console.log("Names: ", Names);
         }
     }
 
@@ -69,4 +72,16 @@ export class Game {
             return Game.World[name];
         }
     }
+
+    static RecursiveFindProperty(name) {
+        var names = Object.getOwnPropertyNames(Game);
+    //     while (Object.getOwnPropertyNames(Game)) {
+    //         if (typeof Object !== undefined) {
+
+    //         }
+    //     }
+    //     if (Game.World[name] !== undefined) {
+    //         return Game.World[name];
+    //     }
+    // }
 }
