@@ -33,6 +33,10 @@ export class Draw {
         this.Font = font;
     }
 
+    SetTextAlign(align) {
+        this.screen.Context.textAlign = align;
+    }
+
     DrawText(text, x, y, maxWidth) {
         maxWidth = maxWidth || "1px";
         this.screen.Context.font = `${this.fontSize} ${this.font}`;

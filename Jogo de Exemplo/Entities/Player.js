@@ -69,7 +69,9 @@ export class Player extends GameObject {
     }
 
     DrawnSelf() {
-        this.draw.DrawText('Drako', this.position.GetValue().x + (this.size.GetValue().x / 5), this.position.GetValue().y + 8);
+        this.draw.SetTextAlign('center')
+        this.draw.DrawText('Drako', this.position.GetValue().x + (this.size.GetValue().x / 2), this.position.GetValue().y + 8);
+        this.draw.SetTextAlign('start')
 
         this.sprite.Animation(this.spritefileName, this.position, "horizontal", this.row);
         
@@ -137,9 +139,10 @@ Player.prototype.HUD = function() {
     this.draw.DrawRect(10, 20, (this.Hp/this.MaxHp)*200, 15);
     
     // Valor
+    this.draw.SetTextAlign('center');
     this.draw.Color = "whitesmoke";
-    this.draw.DrawText(`${this.Hp}/${this.MaxHp}`, 30, 30)
-
+    this.draw.DrawText(`${this.Hp}/${this.MaxHp}`, 100, 30)
+    this.draw.SetTextAlign('start')
 
     // Mp Label
     this.draw.Color = "white";
@@ -152,6 +155,8 @@ Player.prototype.HUD = function() {
     this.draw.DrawRect(10, 58, (this.Mp/this.MaxMp)*100, 15);
     
     // Valor
+    this.draw.SetTextAlign('center')
     this.draw.Color = "whitesmoke";
-    this.draw.DrawText(`${this.Mp}/${this.MaxMp}`, 30, 70);
+    this.draw.DrawText(`${this.Mp}/${this.MaxMp}`, 50, 70);
+    this.draw.SetTextAlign('start')
 }
