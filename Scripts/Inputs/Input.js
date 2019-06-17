@@ -110,7 +110,7 @@ export class Input {
      */
     GetKeyDown(key) {
         window.onkeydown = (e) => { this.Key = e.which || e.keyCode; };
-        return (this.KeyCode[key] === this.Key) ? true : false;
+        if (this.KeyCode[key] === this.Key) {this.Key = 0; return true} else {return false};
     }
 
     /**

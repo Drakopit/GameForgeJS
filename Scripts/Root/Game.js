@@ -63,4 +63,10 @@ export class Game {
     static DrawnSelf(dt) {}
 
     static OnGUI(dt) {}
+
+    static FindObject(name) {
+        if (Game.World[name] !== undefined) {
+            return Game.World[name];
+        }
+    }
 }

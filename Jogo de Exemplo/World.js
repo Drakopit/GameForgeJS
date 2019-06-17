@@ -66,10 +66,10 @@ export class World {
         }
         for (const object of Objects) {
             object.Update();
-            object.FixedUpdate(dt, this.npc);
+            object.FixedUpdate(dt);
             this.camera.Update(this.jogador);
             this.camera.Begin();
-            object.DrawnSelf(dt);
+            object.DrawnSelf();
             this.camera.DrawnSelf();
             this.camera.End();
             object.OnGUI(dt);

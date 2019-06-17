@@ -8,3 +8,4 @@ import { Game } from "./Scripts/Root/Game.js";
  * with all assets
  */
 Game.Awake();
+console.dir(Game);
