@@ -22,7 +22,7 @@ export class Player extends GameObject {
         this.speed = 256;
         this.hspeed = this.speed;
         this.vspeed = this.speed;
-        this.position = new Vector2D(192, 64);
+        this.position = new Vector2D(128, 64);
         this.previousPosition = this.position;
         this.startPosition = this.position;
         this.size = new Vector2D(64, 64);
@@ -55,17 +55,6 @@ export class Player extends GameObject {
     }
 
     FixedUpdate(deltaTime) {
-        // Diminui o Hp do personagem, para mostrar um exemplo de HUD
-        if (this.Hp > 0) {
-            this.Hp--;
-        }
-
-        // if (!this.Intersect(Game.FindObject('npc'))) {
-        //     this.Translate(deltaTime);
-        // } else {
-        //     let v = Math.floor(-this.hspeed*deltaTime);
-        //     this.position = this.position.AddValue(new Vector2D(v,0));
-        // }
         this.Translate(deltaTime);
     }
 
@@ -96,43 +85,44 @@ export class Player extends GameObject {
 
 // Movimentação do Player
 Player.prototype.Translate = function(deltaTime) {
-    let Distance = MathExt.DistanceVector(this, Game.FindObject('npc'));
-    console.log(`${JSON.stringify(Distance)}`);
-    let distX = MathExt.Module(Distance.GetValue().x - this.size.GetValue().x);
-    let distY = MathExt.Module(Distance.GetValue().y - this.size.GetValue().y);
+    let char = new Player(this.screen);
 
     /* */if (this.input.GetKeyDown("A")) {
         let x = Math.floor(-this.hspeed*deltaTime);
-        if (distX > MathExt.Module(x)) {
+        char.position = new Vector2D(this.position.GetValue().x + x, this.position.GetValue().y);
+
+        if (!char.Intersect(Game.FindObject('npc')))
             this.position = this.position.AddValue(new Vector2D(x,0));
-        } else {
-            this.position = this.position.AddValue(new Vector2D(-distX,0));
-        }
+
         this.row = DIRECOES.ESQUERDA;
     } else if (this.input.GetKeyDown("D")) {
         let x = Math.floor(this.hspeed*deltaTime);
-        if (distX > x) {
+        char.position = new Vector2D(this.position.GetValue().x + x, this.position.GetValue().y);
+        
+        if (!char.Intersect(Game.FindObject('npc')))
             this.position = this.position.AddValue(new Vector2D(x,0));
-        } else {
-            this.position = this.position.AddValue(new Vector2D(distX,0));
-        }
+
         this.row = DIRECOES.DIREITA;
     } else if (this.input.GetKeyDown("W")) {
         let y = Math.floor(-this.vspeed*deltaTime);
-        if (distY > MathExt.Module(y)) {
+        char.position = new Vector2D(this.position.GetValue().x, this.position.GetValue().y + y);
+        
+        if (!char.Intersect(Game.FindObject('npc')))
             this.position = this.position.AddValue(new Vector2D(0,y));
-        } else {
-            this.position = this.position.AddValue(new Vector2D(0,-distY));
-        }
+
         this.row = DIRECOES.CIMA;
     } else if (this.input.GetKeyDown("S")) {
         let y = Math.floor(this.vspeed*deltaTime);
-        if (distY > y) {
+        char.position = new Vector2D(this.position.GetValue().x, this.position.GetValue().y + y);
+        
+        if (!char.Intersect(Game.FindObject('npc')))
             this.position = this.position.AddValue(new Vector2D(0,y));
-        } else {
-            this.position = this.position.AddValue(new Vector2D(0,distY));
-        }
+
         this.row = DIRECOES.BAIXO;
+    }
+
+    if (this.input.GetKeyDown("Space")) {
+        this.Hp -= 10;
     }
 };
 
@@ -145,8 +135,13 @@ Player.prototype.Intersect = function(other) {
     else return false;
 };
 
+Player.prototype.LimiteHp = function() {
+    if (this.Hp < 0)
+        this.Hp = 0;
+}
+
 Player.prototype.ShowDistance = function() {
-    this.draw.DrawText(`Distancia: ${JSON.stringify(this.Distance(Game.FindObject('npc')))}`, 200, 200);
+    this.draw.DrawText(`Distancia: ${JSON.stringify(this.Distance(Game.FindObject('npc')))}`, 250, 10);
 }
 
 Player.prototype.ShowFPS = function(deltaTime) {

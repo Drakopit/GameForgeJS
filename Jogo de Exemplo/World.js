@@ -10,7 +10,6 @@ import { Camera } from "../Scripts/Root/Camera.js";
 import { Coin } from "./Entities/Coin.js";
 
 var Objects = new Array();
-
 export class World {
     constructor() {
         // Configurações do ambiente (Usando resolução do LG K7)
@@ -53,17 +52,6 @@ export class World {
     Loop(dt) {
         this.screen.Refresh();
         // Adiciona todos os objetos da cena
-        for (let i = 0; i <= Objects.length; i++) {
-            for (let j = i+1; j < Objects.length; j++) {
-                let colidido = Objects[i];
-                let colisor = Objects[j];
-                if (Objects[i].ObjectType == 'Entity' && Objects[j].ObjectType == 'Entity') {
-                    if (Collide2D.isCollidingAABB(colidido, colisor)) {
-                        Physic2D.reactinCollision(colidido, colisor);
-                    }
-                }
-            }
-        }
         for (const object of Objects) {
             object.Update();
             object.FixedUpdate(dt);

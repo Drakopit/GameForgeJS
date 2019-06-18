@@ -1,5 +1,5 @@
 # Tarefas que preciso fazer
-[ ] Corrigir colisão
+[!] Melhorar colisão
 [ ] Criar método pra cálcular distância
 [!] Corrigir erro na reenderização de alguns Objectos
 [ ] Refatorar o código

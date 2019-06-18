@@ -81,7 +81,8 @@ export class Input {
             144:"Num Lock",145:"Scroll Lock",
             182:"My Computer",183:"My Calculator",
             186:";",187:"=",188:",",189:"-",190:".",191:"/",192:"`",219:"[",220:"\\",221:"]",222:"'"
-        };        
+        };
+        this.event;
     }
 
     get Key() { return this.key };
@@ -110,7 +111,7 @@ export class Input {
      */
     GetKeyDown(key) {
         window.onkeydown = (e) => { this.Key = e.which || e.keyCode; };
-        if (this.KeyCode[key] === this.Key) {this.Key = 0; return true} else {return false};
+        if (this.KeyCode[key] === this.Key) { return true } else { return false };
     }
 
     /**
