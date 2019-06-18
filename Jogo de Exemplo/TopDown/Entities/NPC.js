@@ -19,7 +19,12 @@ export class NPC extends GameObject {
         this.sprite.updatesPerFrame = 7;
     }
 
-    DrawnSelf(deltaTime) {        
+    DrawnSelf(deltaTime) {
+        this.draw.Color = "red";
+        this.draw.Style = 1;
+        this.draw.DrawRect(this.position.GetValue().x, this.position.GetValue().y, this.size.GetValue().x, this.size.GetValue().y);
+        this.draw.Style = 0;
+        
         this.sprite.Animation(this.spritefileName, this.position, "horizontal", 0);
     }
 }

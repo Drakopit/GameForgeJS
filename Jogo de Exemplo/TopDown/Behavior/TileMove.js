@@ -1,6 +1,6 @@
-import { Base } from "../../Scripts/Root/Base";
-import { Vector2D } from "../../Scripts/Math/Vector2D";
-import { DebugMap } from "../../Scripts/Root/DebugMap";
+import { Base } from "../../../Scripts/Root/Base";
+import { Vector2D } from "../../../Scripts/Math/Vector2D";
+import { DebugMap } from "../../../Scripts/Root/DebugMap";
 
 export class TileMove extends Base {
     constructor(size) {
