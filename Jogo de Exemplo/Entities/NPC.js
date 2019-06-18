@@ -11,7 +11,7 @@ export class NPC extends GameObject {
         this.size = new Vector2D(64, 64);
 
         // Configuração sprite
-        this.spritefileName = "../../Assets/Ruby.png";
+        this.spritefileName = "../../Assets/Sprites/Ruby.png";
         this.sprite = new Sprite(screen, this.spritefileName);
         this.sprite.size = this.size;
         this.sprite.position = this.position;
@@ -19,10 +19,7 @@ export class NPC extends GameObject {
         this.sprite.updatesPerFrame = 7;
     }
 
-    DrawnSelf(deltaTime) {
-        // this.draw.Color = `blue`;
-        // this.draw.DrawRect(this.position.GetValue().x, this.position.GetValue().y, this.size.GetValue().x, this.size.GetValue().x);
-        
+    DrawnSelf(deltaTime) {        
         this.sprite.Animation(this.spritefileName, this.position, "horizontal", 0);
     }
 }

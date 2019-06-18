@@ -52,4 +52,12 @@ export class Collide2D {
         }
         return false;
     }
+
+    static isCollidingPoint(position, rect) {
+        if (position.GetValue().x > rect.x && position.GetValue().x < rect.x + rect.width &&
+            position.GetValue().y > rect.y && position.GetValue().y < rect.y + rect.height) {
+            return true;
+        }
+        return false;
+    }
 }

@@ -2,8 +2,6 @@ import { Screen } from "../Scripts/Window/Screen.js";
 import { Scene } from "../Scripts/Root/Scene.js";
 import { Player } from "./Entities/Player.js";
 import { NPC } from "./Entities/NPC.js";
-import { Collide2D } from "../Scripts/Math/Collide2D.js";
-import { Physic2D } from "../Scripts/Math/Physic2D.js";
 import { DebugMap } from "../Scripts/Root/DebugMap.js";
 import { Vector2D } from "../Scripts/Math/Vector2D.js";
 import { Camera } from "../Scripts/Root/Camera.js";
@@ -43,10 +41,10 @@ export class World {
         this.camera.Init(this.screen, GameWorld);
 
         // Dinheiro
-        // this.coin = new Coin();
+        this.coin = new Coin(this.screen);
 
         // Adiciona objetos à lista
-        Objects.push(this.debugMap,this.jogador, this.npc);
+        Objects.push(this.debugMap,this.jogador, this.npc, this.coin);
     }
 
     Loop(dt) {

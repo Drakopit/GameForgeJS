@@ -18,6 +18,7 @@ export class GameObject {
         this.deth;
         this.danping = 0.5;
         this.mass;
+        
         this.sprite = new Sprite();
 
         this.Tag = "Entity";
@@ -29,7 +30,7 @@ export class GameObject {
 
     Update() {}
 
-    FixedUpdate() {}
+    FixedUpdate(dt) {}
 
     DrawnSelf() {}
 

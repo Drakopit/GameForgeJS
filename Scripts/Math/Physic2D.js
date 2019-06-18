@@ -46,19 +46,6 @@ export class Physic2D {
             }
         }
         // Ex: this.CoefficientFriction.GraphiteOnGraphite['Dynamic'];
-    }    
-
-    /*----------------------------------------------------------------------------
-        Métodos customizados de física
-    ----------------------------------------------------------------------------*/
-    static reactinCollision(Obj0, Obj1) {
-        // Caso ocorra colisão,         
-        let tx = Obj0.hspeed;
-        let ty = Obj0.vspeed;
-        Obj0.hspeed = Obj1.hspeed;
-        Obj0.vspeed = Obj1.vspeed;
-        Obj1.hspeed = tx;
-        Obj1.vspeed = ty;
     }
 
     /*----------------------------------------------------------------------------

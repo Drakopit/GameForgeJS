@@ -34,7 +34,7 @@ export class Player extends GameObject {
         this.draw = new Draw(screen);
         this.input = new Input();
         // Configuração sprite
-        this.spritefileName = "../../Assets/Esqueleto.png";
+        this.spritefileName = "../../Assets/Sprites/Esqueleto.png";
         this.sprite = new Sprite(screen, this.spritefileName);
         this.sprite.size = this.size;
         this.sprite.position = this.position;
@@ -55,6 +55,10 @@ export class Player extends GameObject {
     }
 
     FixedUpdate(deltaTime) {
+		if (this.Intersect(Game.FindObject('coin'))) {
+			
+		}
+		this.LimiteHp();
         this.Translate(deltaTime);
     }
 
@@ -158,31 +162,47 @@ Player.prototype.HUD = function() {
     // Hp Label
     this.draw.DrawText('Pontos de Vida', 10, 12);
 
-    // Hp
-    this.draw.Color = "lightgray";
-    this.draw.DrawRect(10, 20, 200, 15);
-    this.draw.Color = "Red";
-    this.draw.DrawRect(10, 20, (this.Hp/this.MaxHp)*200, 15);
+	// Hp
+	this.HpBar(10,20,300,15,(this.Hp/this.MaxHp));
     
-    // Valor
-    this.draw.SetTextAlign('center');
-    this.draw.Color = "whitesmoke";
-    this.draw.DrawText(`${this.Hp}/${this.MaxHp}`, 100, 30)
-    this.draw.SetTextAlign('start')
+	// Valor
+	this.HpText(150,30,this.Hp,this.MaxHp);
 
     // Mp Label
     this.draw.Color = "white";
     this.draw.DrawText('Pontos de Mana', 10, 50);
 
     // Mp
+	this.MpBar(10,58,100,16,(this.Mp/this.MaxMp));
+	
+	// Valor
+	this.MpText(50,70,this.Mp,this.MaxMp);
+}
+
+Player.prototype.HpBar = function(x, y, w, h, value) {
+	this.draw.Color = "lightgray";
+	this.draw.DrawRect(x, y, w, h);
+	this.draw.Color = "Red";
+	this.draw.DrawRect(x, y, value*w, h);
+}
+
+Player.prototype.HpText = function(x, y, hp, MaxHp) {
+    this.draw.SetTextAlign('center');
+    this.draw.Color = "whitesmoke";
+    this.draw.DrawText(`${hp}/${MaxHp}`, x, y)
+    this.draw.SetTextAlign('start')
+}
+
+Player.prototype.MpBar = function(x, y, w, h, value) {
     this.draw.Color = "lightgray";
-    this.draw.DrawRect(10, 58, 100, 15);
+    this.draw.DrawRect(x, y, w, h);
     this.draw.Color = "aqua";
-    this.draw.DrawRect(10, 58, (this.Mp/this.MaxMp)*100, 15);
-    
-    // Valor
+    this.draw.DrawRect(x, y, value*w, h);
+}
+
+Player.prototype.MpText = function(x, y, mp, MaxMp) {
     this.draw.SetTextAlign('center')
     this.draw.Color = "whitesmoke";
-    this.draw.DrawText(`${this.Mp}/${this.MaxMp}`, 50, 70);
+    this.draw.DrawText(`${mp}/${MaxMp}`, x, y);
     this.draw.SetTextAlign('start')
 }

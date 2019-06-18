@@ -1,32 +1,17 @@
 import { World } from "../../Jogo de Exemplo/World.js";
+import { Base } from "./Base.js";
 
-export class Game {
-    constructor() {}
+export class Game extends Base {
+    constructor() {
+        super();
+    }
 
     static Awake() {
-        // Encontra o requestAnimationFrame correto
-        // let findRequestAnimationFrame = (() => {
-        //     return window.requestAnimationFrame    || // Padrão
-        //         window.webkitRequestAnimationFrame || // Chrome
-        //         window.mozRequestAnimationFrame    || // Mozilla
-        //         window.oRequestAnimationFrame      ||
-        //         window.msRequestAnimationFrame     || // Safari
-        //         function(callback) { window.setTimeout(callback, 1000 / 60); }; // Simula FPS 60
-        // });
-        // this.requestAnimFrame = findRequestAnimationFrame();
-
         // Carregar meu Jogo
         window.onload = () => {
             this.World = new World();
             this.Start();
-            this.Update();
-            this.FixedUpdate();
-            this.DrawnSelf();
-            this.OnGUI();
             this.Loop();
-            // Teste
-            var names = Object.getOwnPropertyNames(Game);
-            console.log("Names: ", names);
         }
     }
 
@@ -36,17 +21,9 @@ export class Game {
         this.deltaTime;
     }
 
-    static Update() {}
-
-    static FixedUpdate(dt) {}
-
     static Loop() {
         this.startTime = performance.now();
         this.deltaTime = ((this.startTime - this.lastTime) / 1000.0);
-        this.Update();
-        this.FixedUpdate(this.deltaTime);
-        this.DrawnSelf(this.deltaTime);
-        this.OnGUI(this.deltaTime);
 
         // Atualiza o Jogo
         this.World.Loop(this.deltaTime);
@@ -62,10 +39,6 @@ export class Game {
         let self = this;
         window.requestAnimationFrame(self.Loop.bind(self));
     }
-
-    static DrawnSelf(dt) {}
-
-    static OnGUI(dt) {}
 
     static FindObject(name) {
         if (Game.World[name] !== undefined) {
