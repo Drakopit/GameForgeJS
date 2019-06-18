@@ -8,7 +8,7 @@ export class Maps {
     }
 
     LoadMaps() {
-        this.map00 = new GenericMap();
+         this.map00 = new GenericMap();
         let Map00Structure = [
             1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
             1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1,
