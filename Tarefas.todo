@@ -1,0 +1,7 @@
+# Tarefas que preciso fazer
+[ ] Corrigir colisão
+[ ] Criar método pra cálcular distância
+[!] Corrigir erro na reenderização de alguns Objectos
+[ ] Refatorar o código
+[x] Criar classe de extensão para Math
+[x] Criar classe pra tocar sons

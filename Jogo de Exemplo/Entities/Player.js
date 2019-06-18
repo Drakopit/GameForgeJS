@@ -6,6 +6,7 @@ import { Vector2D } from "../../Scripts/Math/Vector2D.js";
 import { GameObject } from "../../Scripts/Root/GameObject.js";
 import { Collide2D } from "../../Scripts/Math/Collide2D.js";
 import { Game } from "../../Scripts/Root/Game.js";
+import { MathExt } from "../../Scripts/Math/MathExt.js";
 
 // Constante
 const DIRECOES = Object.freeze({
@@ -21,7 +22,7 @@ export class Player extends GameObject {
         this.speed = 256;
         this.hspeed = this.speed;
         this.vspeed = this.speed;
-        this.position = new Vector2D(256, 256);
+        this.position = new Vector2D(192, 64);
         this.previousPosition = this.position;
         this.startPosition = this.position;
         this.size = new Vector2D(64, 64);
@@ -59,21 +60,22 @@ export class Player extends GameObject {
             this.Hp--;
         }
 
-        // this.Intersect(globalThis.npc);
-        if (!this.Intersect(Game.FindObject('npc'))) {
-            this.Translate(deltaTime);
-        } else {
-            Game.FindObject('npc').position.AddValue(new Vector2D(this.hspeed*deltaTime,0));
-            this.position = this.position.AddValue(new Vector2D(-this.hspeed*deltaTime,0));
-        }
+        // if (!this.Intersect(Game.FindObject('npc'))) {
+        //     this.Translate(deltaTime);
+        // } else {
+        //     let v = Math.floor(-this.hspeed*deltaTime);
+        //     this.position = this.position.AddValue(new Vector2D(v,0));
+        // }
         this.Translate(deltaTime);
     }
 
     DrawnSelf() {
+        // Nick do Personagem
         this.draw.SetTextAlign('center')
         this.draw.DrawText('Drako', this.position.GetValue().x + (this.size.GetValue().x / 2), this.position.GetValue().y + 8);
         this.draw.SetTextAlign('start')
 
+        // Animação
         this.sprite.Animation(this.spritefileName, this.position, "horizontal", this.row);
         
         // Caixa de colisão
@@ -88,36 +90,64 @@ export class Player extends GameObject {
 
         this.HUD();
         this.ShowFPS(deltaTime);
+        this.ShowDistance();
     }
 }
 
 // Movimentação do Player
 Player.prototype.Translate = function(deltaTime) {
+    let Distance = MathExt.DistanceVector(this, Game.FindObject('npc'));
+    console.log(`${JSON.stringify(Distance)}`);
+    let distX = MathExt.Module(Distance.GetValue().x - this.size.GetValue().x);
+    let distY = MathExt.Module(Distance.GetValue().y - this.size.GetValue().y);
+
     /* */if (this.input.GetKeyDown("A")) {
-        this.position = this.position.AddValue(new Vector2D(-this.hspeed*deltaTime,0));
+        let x = Math.floor(-this.hspeed*deltaTime);
+        if (distX > MathExt.Module(x)) {
+            this.position = this.position.AddValue(new Vector2D(x,0));
+        } else {
+            this.position = this.position.AddValue(new Vector2D(-distX,0));
+        }
         this.row = DIRECOES.ESQUERDA;
     } else if (this.input.GetKeyDown("D")) {
-        this.position = this.position.AddValue(new Vector2D(this.hspeed*deltaTime,0));
+        let x = Math.floor(this.hspeed*deltaTime);
+        if (distX > x) {
+            this.position = this.position.AddValue(new Vector2D(x,0));
+        } else {
+            this.position = this.position.AddValue(new Vector2D(distX,0));
+        }
         this.row = DIRECOES.DIREITA;
     } else if (this.input.GetKeyDown("W")) {
-        this.position = this.position.AddValue(new Vector2D(0,-this.vspeed*deltaTime));
+        let y = Math.floor(-this.vspeed*deltaTime);
+        if (distY > MathExt.Module(y)) {
+            this.position = this.position.AddValue(new Vector2D(0,y));
+        } else {
+            this.position = this.position.AddValue(new Vector2D(0,-distY));
+        }
         this.row = DIRECOES.CIMA;
     } else if (this.input.GetKeyDown("S")) {
-        this.position = this.position.AddValue(new Vector2D(0,this.vspeed*deltaTime));
+        let y = Math.floor(this.vspeed*deltaTime);
+        if (distY > y) {
+            this.position = this.position.AddValue(new Vector2D(0,y));
+        } else {
+            this.position = this.position.AddValue(new Vector2D(0,distY));
+        }
         this.row = DIRECOES.BAIXO;
     }
 };
 
+Player.prototype.Distance = function(position) {
+    return MathExt.Module(MathExt.Distance(this, position) - this.size.GetValue().x);
+}
+
 Player.prototype.Intersect = function(other) {
-    if (other != undefined) {
-        if (Collide2D.isCollidingAABB(this, other)) {
-            return true;
-        }
-    } else {
-        
-        return false;
-    }
+    if (other != undefined && Collide2D.isCollidingAABB(this, other)) return true;
+    else return false;
 };
+
+Player.prototype.ShowDistance = function() {
+    this.draw.DrawText(`Distancia: ${JSON.stringify(this.Distance(Game.FindObject('npc')))}`, 200, 200);
+}
 
 Player.prototype.ShowFPS = function(deltaTime) {
     if (this.updateFPS > this.updateFPSPerFrame) {

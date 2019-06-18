@@ -44,10 +44,10 @@ export class World {
         this.camera.Init(this.screen, GameWorld);
 
         // Dinheiro
-        this.coin = new Coin();
+        // this.coin = new Coin();
 
         // Adiciona objetos à lista
-        Objects.push(this.debugMap,this.jogador, this.npc, this.coin);
+        Objects.push(this.debugMap,this.jogador, this.npc);
     }
 
     Loop(dt) {

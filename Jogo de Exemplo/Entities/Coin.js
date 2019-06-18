@@ -26,7 +26,7 @@ export class Coin extends Base {
         this.value = value;
     }
 
-    DrawSelf(dt) {
+    DrawnSelf(dt) {
         this.sprite.Animation(this.spritefileName, this.position, "horizontal", this.row);
     }
 }
