@@ -7,7 +7,7 @@ export class Maps {
         this.maps = new Array();
     }
 
-    LoadMaps() {
+    InitMaps() {
          this.map00 = new GenericMap();
         let Map00Structure = [
             1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -26,7 +26,7 @@ export class Maps {
             1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
             1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
             1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-        ]    
+        ];
         this.map00.SetMap(Map00Structure);
         this.map00.SetTileSize(64,64);
         for (let i = 0; i < this.map00.mapWidth; i++) {
@@ -40,5 +40,9 @@ export class Maps {
             }
         }
         this.maps.push(this.map00);
+    }
+
+    LoadMaps(id) {
+        
     }
 }

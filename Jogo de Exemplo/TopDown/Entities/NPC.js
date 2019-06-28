@@ -1,7 +1,7 @@
-import { Draw } from "../../Scripts/Drawing/Draw.js";
-import { GameObject } from "../../Scripts/Root/GameObject.js";
-import { Vector2D } from "../../Scripts/Math/Vector2D.js";
-import { Sprite } from "../../Scripts/Drawing/Sprite.js";
+import { Draw } from "../../../Scripts/Drawing/Draw.js";
+import { GameObject } from "../../../Scripts/Root/GameObject.js"
+import { Vector2D } from "../../../Scripts/Math/Vector2D.js";
+import { Sprite } from "../../../Scripts/Drawing/Sprite.js";
 
 export class NPC extends GameObject {
     constructor(screen) {

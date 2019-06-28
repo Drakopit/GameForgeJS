@@ -69,6 +69,8 @@ export class Draw {
     }
 
     DrawCircle(x, y, radius) {
+        let startAngle = 0;
+        let endAngle = 360;
         this.screen.Context.arc(x, y, radius, Math.PI / 180 * startAngle, Math.PI / 180 * endAngle, anticlockwise);
         switch (this.style) {
             case this.TYPES.FILLED:

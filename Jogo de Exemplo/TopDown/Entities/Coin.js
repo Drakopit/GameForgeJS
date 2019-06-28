@@ -6,6 +6,7 @@ import { Draw } from "../../../Scripts/Drawing/Draw.js";
 export class Coin extends Base {
     constructor(screen) {
         super();
+        this.id = 0;
         this.value = Math.ceil(Math.random() * 100);
         this.position = new Vector2D(128, 128);
         this.size = new Vector2D(44, 40);
@@ -31,7 +32,7 @@ export class Coin extends Base {
         this.value = value;
     }
 
-    DrawnSelf(dt) {
+    DrawnSelf() {
         this.draw.Color = "red";
         this.draw.Style = 1;
         this.draw.DrawRect(this.position.GetValue().x, this.position.GetValue().y, this.size.GetValue().x, this.size.GetValue().y);

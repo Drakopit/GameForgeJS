@@ -117,7 +117,7 @@ export class Screen {
      */
     GetSize() {
         return new Vector2D(this.Width, this.Height);
-    }    
+    }
 
     /**
      * @doc Method

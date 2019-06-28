@@ -25,6 +25,7 @@ export class Phase00 {
 
         // Mapas
         this.maps = new Maps();
+        this.maps.LoadMaps(0);
 
         // Adiciona objetos à lista
         this.Objects = new Array();

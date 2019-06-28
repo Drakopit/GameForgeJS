@@ -1,11 +1,13 @@
 import { Screen } from "../Scripts/Window/Screen.js";
 import { Scene } from "../Scripts/Root/Scene.js";
-import { Player } from "./TopDown/Entities/Player.js.js";
-import { NPC } from "./TopDown/Entities/NPC.js.js";
+import { Player } from "./TopDown/Entities/Player.js";
+import { NPC } from "./TopDown/Entities/NPC.js";
 import { DebugMap } from "../Scripts/Root/DebugMap.js";
 import { Vector2D } from "../Scripts/Math/Vector2D.js";
 import { Camera } from "../Scripts/Root/Camera.js";
-import { Coin } from "./TopDown/Entities/Coin.js.js";
+import { Coin } from "./TopDown/Entities/Coin.js";
+import { Collide2D } from "../Scripts/Math/Collide2D.js";
+import { Game } from "../Scripts/Root/Game.js";
 
 export class World {
     constructor() {
@@ -39,12 +41,28 @@ export class World {
         };
         this.camera.Init(this.screen, GameWorld);
 
-        // Dinheiro
-        this.coin = new Coin(this.screen);
-
+        // Moedas no Jogo
+        // this.Moedas = new Array();
+        // for (let i = 0; i < 10; i++) {
+        //     let coin = new Coin(this.screen);
+        //     if (Collide2D.isCollidingAABB(coin, Game.FindObject('coin'))
+        //         && coin.position.GetValue().x % 64 === 0 && coin.position.GetValue().y % 64 === 0) {
+        //         coin.id = i;
+        //         this.Moedas.push(coin);
+        //     }
+        // }
+        
         // Adiciona objetos à lista
         this.Objects = new Array();
-        this.Objects.push(this.debugMap,this.jogador, this.npc, this.coin);
+        this.Objects.push(this.debugMap,this.jogador, this.npc);
+
+        console.table([ this.debugMap, this.jogador, this.npc, this.camera, this.screen, this.scene])
+
+        this.WORLDSTATE = Object.freeze({
+            GAME_MENU: 0,
+            GAME_RUNING: 1,
+            GAME_PAUSE: 2
+        });
     }
 
     Loop(dt) {

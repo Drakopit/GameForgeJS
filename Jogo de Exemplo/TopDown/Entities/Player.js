@@ -1,4 +1,3 @@
-"use strict";
 import { Draw } from "../../../Scripts/Drawing/Draw.js";
 import { Input } from "../../../Scripts/Inputs/Input.js";
 import { Sprite } from "../../../Scripts/Drawing/Sprite.js";
@@ -48,10 +47,18 @@ export class Player extends GameObject {
         this.FPS = 60;
 
 		// Status RPG
-        this.Hp = 500;
+        this.Hp = 2000;
         this.MaxHp = this.Hp;
         this.Mp = 100;
         this.MaxMp = this.Mp;
+
+		this.danoTeste = 10;
+
+		this.barSize = 300;
+		this.maxBar = 4;
+		this.currentBar = this.maxBar;
+		this.minBar = 1;
+		this.colorMap = ['lightgrey', 'red', 'orange', 'green', 'olive', 'lime', 'navy', 'blue', 'aqua', 'purple', 'violet'];
 
         this.Coin = 0;
     }
@@ -87,6 +94,7 @@ export class Player extends GameObject {
         this.HUD();
         this.ShowFPS(deltaTime);
         this.ShowDistance();
+        this.ShowVectorDistance();
     }
 }
 
@@ -129,12 +137,21 @@ Player.prototype.Translate = function(deltaTime) {
     }
 
     if (this.input.GetKeyDown("Space")) {
-        this.Hp -= 10;
+		if (this.Hp >= this.danoTeste) {
+			this.Hp -= this.danoTeste;
+		}
     }
 };
 
 Player.prototype.Distance = function(position) {
     return MathExt.Module(MathExt.Distance(this, position) - this.size.GetValue().x);
+}
+
+Player.prototype.VectorDistance = function(other) {
+    let v = MathExt.DistanceVector(this, other);
+    let x = MathExt.Module(v.GetValue().x - this.size.GetValue().x);
+    let y = MathExt.Module(v.GetValue().y - this.size.GetValue().y);
+    return new Vector2D(x, y);
 }
 
 Player.prototype.Intersect = function(other) {
@@ -148,7 +165,11 @@ Player.prototype.LimiteHp = function() {
 }
 
 Player.prototype.ShowDistance = function() {
-    this.draw.DrawText(`Distancia: ${JSON.stringify(this.Distance(Game.FindObject('npc')))}`, 250, 10);
+    this.draw.DrawText(`Distância: ${JSON.stringify(this.Distance(Game.FindObject('npc')))}`, 250, 10);
+}
+
+Player.prototype.ShowVectorDistance = function() {
+    this.draw.DrawText(`Distância Vetorial: ${JSON.stringify(this.VectorDistance(Game.FindObject('npc')))}`, 350, 30);
 }
 
 Player.prototype.ShowFPS = function(deltaTime) {
@@ -165,12 +186,26 @@ Player.prototype.HUD = function() {
     // Hp Label
     this.draw.DrawText('Pontos de Vida', 10, 12);
 
-	// Hp
-	this.HpBar(10,20,300,15,(this.Hp/this.MaxHp));
-    
-	// Valor
-	this.HpText(150,30,this.Hp,this.MaxHp);
+	if (this.Hp < ((this.currentBar-1)/this.maxBar)*this.MaxHp) {
+		if (this.currentBar > this.minBar) {
+			this.currentBar--;
+			console.log(`Barra Atual: ${this.currentBar}`);
+		}
+	}
 
+	// Hp
+	let x = 10, y = 20, h = 15; 
+	let value = (this.Hp - ((this.currentBar-1)/this.maxBar)*this.MaxHp)/(this.MaxHp/this.maxBar);
+		
+	this.draw.Color = this.colorMap[this.currentBar-1];
+	this.draw.DrawRect(x, y, this.barSize, h);
+	
+	this.draw.Color = this.colorMap[this.currentBar];;
+	this.draw.DrawRect(x, y, value*this.barSize, h);
+	// Valor
+	this.HpText(this.barSize/2,30,Math.ceil(value*(this.MaxHp/this.maxBar)),Math.ceil(this.MaxHp/this.maxBar));
+
+    
     // Mp Label
     this.draw.Color = "white";
     this.draw.DrawText('Pontos de Mana', 10, 50);
