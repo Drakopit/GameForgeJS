@@ -21,12 +21,116 @@ export class Screen3D extends Screen {
 
     Init(screenName) {
         this.canvas = document.createElement("canvas");
-        document.body.appendChild(this.canvas);
+        document.head.appendChild(this.canvas);
         this.canvas.setAttribute("id", screenName);
         this.canvas.setAttribute("width", this.width);
         this.canvas.setAttribute("height", this.height);
         this.context = this.canvas.getContext("webgl") || this.canvas.getContext("experimental-webgl");
         if (this.context && this.context instanceof WebGLRenderingContext) return true;
         else throw "Contexto de reenderização 3D não encontrado";
+    }
+
+        /**
+     * @doc Method
+     * @description Get canvas of the screen
+     * @example
+     *  var newCanvas = screen.Canvas();
+     * @returns canvas
+     */
+    get Canvas() { return this.canvas; }
+
+    /**
+     * @doc Method
+     * @description Set new canvas
+     * @example
+     * var canvas = document.getElementById("canvasName")
+     *  screen.Canvas(canvas)
+     */
+    set Canvas(canvas) { this.canvas = canvas; }
+    
+    /**
+     * @doc Method
+     * @description Get context of the screen
+     * @example
+     *  var newContext = screen.Context();
+     * @returns context
+     */
+    get Context() { return this.context }
+
+    /**
+     * @doc Method
+     * @description Set new context
+     * @example
+     *  var context = document.getElementById("canvasName").getContext("typeContext");
+     *  screen.Context(context);
+     */
+    set Context(context) { this.context = context; }
+
+    /**
+     * @doc Method
+     * @description Get screen id
+     * @example
+     *  var id = screen.ScreenId();
+     * @returns number
+     */
+    get ScreenId() { return this.id; }
+
+    /**
+     * @doc Method
+     * @description return canvas width
+     * @example
+     *  var width = screen.Width();
+     * @returns number
+     */
+    get Width() { return this.canvas.width; }
+    
+    /**
+     * @doc Method
+     * @description returns canvas height
+     * @example
+     *  var width = screen.Height();
+     * @returns number
+     */
+    get Height() { return this.canvas.height; }
+
+    /**
+     * @doc Method
+     * @description Return size screen
+     * @example
+     * var size = screen.GetSize();
+     * @returns Vector2D
+     */
+    GetSize() {
+        return new Vector2D(this.Width, this.Height);
+    }
+
+    /**
+     * @doc Method
+     * @description Return size window browser
+     * @example
+     * var windowSize = GetwindowSize();
+     * @returns Vector2D
+     */
+    GetwindowSize() {
+        return new Vector2D(this.clientWidth, this.clientHeight);
+    }
+
+    Refresh() {
+        this.Context.clearRect(0, 0, this.Width, this.Height);
+    }
+
+    /**
+     * @doc Method
+     * @param {width} width 
+     * @param {height} height
+     * @description Resize screen
+     * @example
+     *  screen.Resize(640, 480);
+     */
+    Resize() {
+        // this.width = vector2D.GetValue().x;
+        // this.height = vector2D.GetValue().y;
+        this.canvas.width = this.width;
+        this.canvas.height = this.height;
     }
 }
