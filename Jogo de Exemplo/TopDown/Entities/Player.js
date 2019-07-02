@@ -6,6 +6,7 @@ import { GameObject } from "../../../Scripts/Root/GameObject.js";
 import { Collide2D } from "../../../Scripts/Math/Collide2D.js";
 import { Game } from "../../../Scripts/Root/Game.js";
 import { MathExt } from "../../../Scripts/Math/MathExt.js";
+import { Shader } from "../../../Scripts/Drawing/Shader.js";
 
 // Constante
 const DIRECOES = Object.freeze({
@@ -70,6 +71,23 @@ export class Player extends GameObject {
 		this.colorMap = ['lightgrey', 'red', 'orange', 'green', 'olive', 'lime', 'navy', 'blue', 'aqua', 'purple', 'violet'];
 
         this.Coin = 0;
+
+        this.colorVertexShader = new Shader();
+        this.colorVertexShader.Init('vertex');
+        
+        this.colorFragmentShader = new Shader();
+        this.colorFragmentShader.Init('fragment');
+
+        this.colorVertexShader.Load('../../../Shaders/Color/VertexShaderColor.glsl');
+        this.colorFragmentShader.Load('../../../Shaders/Color/FragmentShaderColor.glsl');
+
+        this.vertColorShader = this.screen.createShader(this.screen.VERTEX_SHADER);
+        this.screen.shaderSource(this.vertColorShader, this.colorVertexShader.Source);
+        this.screen.compileShader(this.vertColorShader);
+
+        this.fragColorShader = this.screen.createShader(this.screen.FRAGMENT_SHADER);
+        this.screen.shaderSource(this.fragColorShader, this.colorFragmentShader.Source);
+        this.screen.compileShader(this.fragColorShader);
     }
 
     FixedUpdate(deltaTime) {
