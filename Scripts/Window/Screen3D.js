@@ -21,16 +21,24 @@ export class Screen3D extends Screen {
 
     Init(screenName) {
         this.canvas = document.createElement("canvas");
-        document.head.appendChild(this.canvas);
+        document.body.appendChild(this.canvas);
         this.canvas.setAttribute("id", screenName);
         this.canvas.setAttribute("width", this.width);
         this.canvas.setAttribute("height", this.height);
-        this.context = this.canvas.getContext("webgl") || this.canvas.getContext("experimental-webgl");
+        this.context = this.canvas.getContext("webgl") ||
+                       this.canvas.getContext("experimental-webgl") ||
+                       this.canvas.getContext("webkit-3d") ||
+                       this.canvas.getContext("moz-webgl");
         if (this.context && this.context instanceof WebGLRenderingContext) return true;
         else throw "Contexto de reenderização 3D não encontrado";
     }
 
-        /**
+    // configura o viewport
+    ViewPort() {
+        this.Context.viewport(0, 0, this.canvas.width, this.canvas.height );
+    }
+
+    /**
      * @doc Method
      * @description Get canvas of the screen
      * @example
@@ -55,7 +63,7 @@ export class Screen3D extends Screen {
      *  var newContext = screen.Context();
      * @returns context
      */
-    get Context() { return this.context }
+    get Context() { return this.context; }
 
     /**
      * @doc Method
@@ -116,7 +124,10 @@ export class Screen3D extends Screen {
     }
 
     Refresh() {
-        this.Context.clearRect(0, 0, this.Width, this.Height);
+        // Limpa a tela com a cor preta
+        this.Context.clearColor(0.0, 0.0, 0.0, 1.0);
+        // Limpa a tela
+        this.Context.clear(this.Canvas.COLOR_BUFFER_BIT);
     }
 
     /**
@@ -128,9 +139,9 @@ export class Screen3D extends Screen {
      *  screen.Resize(640, 480);
      */
     Resize() {
-        // this.width = vector2D.GetValue().x;
-        // this.height = vector2D.GetValue().y;
-        this.canvas.width = this.width;
-        this.canvas.height = this.height;
+        window.addEventListener("resize", function() {
+            this.canvas.width = this.width;
+            this.canvas.height = this.height;
+        });
     }
 }

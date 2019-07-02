@@ -1,15 +1,33 @@
 export class Touch {
-    constructor() {}
+	constructor() {}
+	
+	TouchStartListener(evt) {
 
+	}
+	TouchEndListener(evt) {
+
+	}
+	TouchMoveListener(evt) {
+
+	}
+	TouchEnterListener(evt) {
+
+	}
+	TouchLeaveListener(evt) {
+
+	}
+	TouchCancelListener(evt) {
+
+	}
 }
 
 Touch.prototype.AddEvent = function() {
     if (document.addEventListener) {
-        document.addEventListener("touchstart", __touchlistener__, false);
-		document.addEventListener("touchend", __touchlistener__, false);
-		document.addEventListener("touchmove", __touchlistener__, false);
-		document.addEventListener("touchenter", __touchlistener__, false);
-		document.addEventListener("touchleave", __touchlistener__, false);
-		document.addEventListener("touchcancel", __touchlistener__, false);
+        document.addEventListener("touchstart", this.TouchStartListener, false);
+		document.addEventListener("touchend", this.TouchEndListener, false);
+		document.addEventListener("touchmove", this.TouchMoveListener, false);
+		document.addEventListener("touchenter", this.TouchEnterListener, false);
+		document.addEventListener("touchleave", this.TouchLeaveListener, false);
+		document.addEventListener("touchcancel", this.TouchCancelListener, false);
     }
 };

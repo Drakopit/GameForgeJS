@@ -13,7 +13,7 @@ import { Collide2D } from "../Math/Collide2D";
  * @returns {Object}
  */
 export class Mouse {
-    constructor();
+    constructor() {}
 
     PositionAbsolute() {
         let x, y = 0; 
@@ -29,19 +29,19 @@ export class Mouse {
 
     PositionClickDown() {
         let x, y = 0;
-        window.onmousedown = (e) => { x = e.clientX; y = e.clientY; }
+        window.onmousedown = (e) => { x = e.clientX; y = e.clientY; };
         return new Vector2D(x, y);
     }
 
     PositionClickRelease() {
         let x, y = 0;
-        window.onmouseup = (e) => { x = e.clientX; y = e.clientY; }
+        window.onmouseup = (e) => { x = e.clientX; y = e.clientY; };
         return new Vector2D(x, y);
     }
 
     ClickDown(rect) {
         let x, y = 0;
-        window.onmousedown = (e) => { x = e.clientX; y = e.clientY; }
+        window.onmousedown = (e) => { x = e.clientX; y = e.clientY; };
 
         if (Collide2D.isCollidingPoint(new Vector2D(x, y), rect)) return true;
         return false;
@@ -49,7 +49,7 @@ export class Mouse {
 
     ClickRelease(rect) {
         let x, y = 0;
-        window.onmouseup = (e) => { x = e.clientX; y = e.clientY; }
+        window.onmouseup = (e) => { x = e.clientX; y = e.clientY; };
 
         if (Collide2D.isCollidingPoint(new Vector2D(x, y), rect)) return true;
         return false;
@@ -70,4 +70,4 @@ Mouse.prototype.AddEvent = function() {
 		document.attachEvent("onmousedown", this.MouseDownListener);
 		document.attachEvent("onmouseup", this.MouseReleaseListener);
     }
-}
+};
