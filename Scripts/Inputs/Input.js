@@ -10,7 +10,8 @@
 
 // API padrão usa KeyboardEvent
 export class Input {
-    constructor() {
+    constructor(screen) {
+        this.screen = screen;
         this.KeyCode = {
             "Break":3,
             "Backspace":8,
@@ -45,7 +46,10 @@ export class Input {
             "My Computer":182,"My Calculator":183,
             ";":186,"=":187,",":188,"-":189,".":190,"/":191,"`":192,"[":219,"\\":220,"]":221,"'":222
         };
-        
+        this.KeyPressed = this.KeyCode;
+        this.KeyRelease = this.KeyCode;
+        this.KeyPress = this.KeyCode;
+
         this.CharCode = {
             0:'That key has no keycode',
             3:"Break",
@@ -82,10 +86,12 @@ export class Input {
             182:"My Computer",183:"My Calculator",
             186:";",187:"=",188:",",189:"-",190:".",191:"/",192:"`",219:"[",220:"\\",221:"]",222:"'"
         };
+
+        this.KeyBoardSet = {};
     }
 
-    get Key() { return this.key };
-    set Key(key) { this.key = key };
+    get Key() { return this.key; }
+    set Key(key) { this.key = key; }
 
     /**
      * @doc Method
@@ -96,8 +102,7 @@ export class Input {
      *  } 
      */
     GetKeyPress(key) {
-        window.onkeypress = (e) => { this.Key = e.which || e.keyCode; };
-        return (this.KeyCode[key] === this.Key) ? true : false;
+        return this.KeyCode[key];
     }
 
     /**
@@ -109,8 +114,38 @@ export class Input {
      *  } 
      */
     GetKeyDown(key) {
-        window.onkeydown = (e) => { this.Key = e.which || e.keyCode; };
-        return (this.KeyCode[key] === this.Key) ? true : false;
+        return this.KeyCode[key];
+    }
+
+    KeyDownListener(evt) {
+        // console.dir(evt);
+        // let key = evt.which || evt.keyCode;
+        // for (let i = 0; i < this.KeyboardEvent.length; i++) {
+        //     return (key === this.KeyBoardSet[i]) ? true : false;
+        // }        
+        let result = true;
+        
+        evt = (!evt) ? window.event : evt;
+        console.log("Event: ", evt);
+
+        if (document.activeElement &&
+            document.activeElement == this.screen.Canvas ||
+            document.activeElement == document.body) result = false;
+        
+        if (evt.repeat) return;
+        
+        let key = window.event ? evt.which : evt.keyCode;
+        
+        if (!this.KeyCode[key]) {
+            this.KeyPressed[key] = true;
+            tu_keys_pressed.push(key);
+        }
+
+        this.KeyCode[key] = true;
+        
+        if (!result) evt.preventDefault();
+        
+        return result;
     }
 
     /**
@@ -122,7 +157,24 @@ export class Input {
      *  } 
      */
     GetKeyRelease(key) {
-        window.onkeyup = (e) => { this.Key = e.which || e.keyCode; };
-        return (this.KeyCode[key] === this.Key) ? true : false;
+        return this.KeyCode[key];
     }
 }
+
+Input.prototype.AddEvents = function() {
+    if (document.addEventListener) {
+		document.addEventListener("keydown", this.GetKeyDown, false);
+		document.addEventListener("keyup", this.GetKeyRelease, false);
+		document.addEventListener("keypress", this.GetKeyPress, false);
+	} else {
+		document.attachEvent("onkeydown", this.GetKeyDown);
+		document.attachEvent("onkeyup", this.GetKeyRelease);
+		document.attachEvent("onkeypress", this.GetKeyPress);
+	}
+};
+
+Input.prototype.RemoveEvents = function() {
+    this.screen.Canvas.removeEventListener("keydown", this.GetKeyDown);
+    this.screen.Canvas.removeEventListener("keyup", this.GetKeyRelease);
+    this.screen.Canvas.removeEventListener("keypress", this.GetKeyPress);
+};

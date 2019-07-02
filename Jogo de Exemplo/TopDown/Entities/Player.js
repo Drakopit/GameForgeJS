@@ -17,7 +17,7 @@ const DIRECOES = Object.freeze({
 
 export class Player extends GameObject {
     constructor(screen) {
-        super();
+        super();   
         this.speed = 256;
         this.hspeed = this.speed;
         this.vspeed = this.speed;
@@ -31,7 +31,16 @@ export class Player extends GameObject {
                 
         // Classes necessárias
         this.draw = new Draw(screen);
-        this.input = new Input();
+        this.input = new Input(screen);
+        this.input.KeyBoardSet = {
+            'Left': this.input.KeyCode.A,
+            'Right': this.input.KeyCode.D,
+            'Up': this.input.KeyCode.W,
+            'Down': this.input.KeyCode.S,
+            'Space': this.input.KeyCode.Space
+        };
+        this.input.AddEvents();
+
         // Configuração sprite
         this.spritefileName = "../../Assets/Sprites/Esqueleto.png";
         this.sprite = new Sprite(screen, this.spritefileName);
@@ -74,9 +83,9 @@ export class Player extends GameObject {
 
     DrawnSelf() {
         // Nick do Personagem
-        this.draw.SetTextAlign('center')
+        this.draw.SetTextAlign('center');
         this.draw.DrawText('Drako', this.position.GetValue().x + (this.size.GetValue().x / 2), this.position.GetValue().y + 8);
-        this.draw.SetTextAlign('start')
+        this.draw.SetTextAlign('start');
 
         // Animação
         this.sprite.Animation(this.spritefileName, this.position, "horizontal", this.row);
@@ -102,7 +111,7 @@ export class Player extends GameObject {
 Player.prototype.Translate = function(deltaTime) {
     let char = new Player(this.screen);
 
-    /* */if (this.input.GetKeyDown("A")) {
+    /* */if (this.input.GetKeyDown(this.input.KeyBoardSet.Left)) {
         let x = Math.floor(-this.hspeed*deltaTime);
         char.position = new Vector2D(this.position.GetValue().x + x, this.position.GetValue().y);
 
@@ -110,7 +119,7 @@ Player.prototype.Translate = function(deltaTime) {
             this.position = this.position.AddValue(new Vector2D(x,0));
 
         this.row = DIRECOES.ESQUERDA;
-    } else if (this.input.GetKeyDown("D")) {
+    } else if (this.input.GetKeyDown(this.input.KeyBoardSet.Right)) {
         let x = Math.floor(this.hspeed*deltaTime);
         char.position = new Vector2D(this.position.GetValue().x + x, this.position.GetValue().y);
         
@@ -118,7 +127,7 @@ Player.prototype.Translate = function(deltaTime) {
             this.position = this.position.AddValue(new Vector2D(x,0));
 
         this.row = DIRECOES.DIREITA;
-    } else if (this.input.GetKeyDown("W")) {
+    } else if (this.input.GetKeyDown(this.input.KeyBoardSet.Up)) {
         let y = Math.floor(-this.vspeed*deltaTime);
         char.position = new Vector2D(this.position.GetValue().x, this.position.GetValue().y + y);
         
@@ -126,7 +135,7 @@ Player.prototype.Translate = function(deltaTime) {
             this.position = this.position.AddValue(new Vector2D(0,y));
 
         this.row = DIRECOES.CIMA;
-    } else if (this.input.GetKeyDown("S")) {
+    } else if (this.input.GetKeyDown(this.input.KeyBoardSet.Down)) {
         let y = Math.floor(this.vspeed*deltaTime);
         char.position = new Vector2D(this.position.GetValue().x, this.position.GetValue().y + y);
         
@@ -136,7 +145,7 @@ Player.prototype.Translate = function(deltaTime) {
         this.row = DIRECOES.BAIXO;
     }
 
-    if (this.input.GetKeyDown("Space")) {
+    if (this.input.GetKeyDown(this.input.KeyBoardSet.Space)) {
 		if (this.Hp >= this.danoTeste) {
 			this.Hp -= this.danoTeste;
 		}
@@ -145,14 +154,14 @@ Player.prototype.Translate = function(deltaTime) {
 
 Player.prototype.Distance = function(position) {
     return MathExt.Module(MathExt.Distance(this, position) - this.size.GetValue().x);
-}
+};
 
 Player.prototype.VectorDistance = function(other) {
     let v = MathExt.DistanceVector(this, other);
     let x = MathExt.Module(v.GetValue().x - this.size.GetValue().x);
     let y = MathExt.Module(v.GetValue().y - this.size.GetValue().y);
     return new Vector2D(x, y);
-}
+};
 
 Player.prototype.Intersect = function(other) {
     if (other != undefined && Collide2D.isCollidingAABB(this, other)) return true;
@@ -162,15 +171,15 @@ Player.prototype.Intersect = function(other) {
 Player.prototype.LimiteHp = function() {
     if (this.Hp < 0)
         this.Hp = 0;
-}
+};
 
 Player.prototype.ShowDistance = function() {
     this.draw.DrawText(`Distância: ${JSON.stringify(this.Distance(Game.FindObject('npc')))}`, 250, 10);
-}
+};
 
 Player.prototype.ShowVectorDistance = function() {
     this.draw.DrawText(`Distância Vetorial: ${JSON.stringify(this.VectorDistance(Game.FindObject('npc')))}`, 350, 30);
-}
+};
 
 Player.prototype.ShowFPS = function(deltaTime) {
     if (this.updateFPS > this.updateFPSPerFrame) {
@@ -180,7 +189,7 @@ Player.prototype.ShowFPS = function(deltaTime) {
     this.updateFPS++;
 
     this.draw.DrawText(`FPS: ${this.FPS}`, 500, 10);
-}
+};
 
 Player.prototype.HUD = function() {        
     // Hp Label
@@ -200,7 +209,7 @@ Player.prototype.HUD = function() {
 	this.draw.Color = this.colorMap[this.currentBar-1];
 	this.draw.DrawRect(x, y, this.barSize, h);
 	
-	this.draw.Color = this.colorMap[this.currentBar];;
+	this.draw.Color = this.colorMap[this.currentBar];
 	this.draw.DrawRect(x, y, value*this.barSize, h);
 	// Valor
 	this.HpText(this.barSize/2,30,Math.ceil(value*(this.MaxHp/this.maxBar)),Math.ceil(this.MaxHp/this.maxBar));
@@ -218,32 +227,32 @@ Player.prototype.HUD = function() {
     
     // Dinheiro
     this.draw.DrawText(`Gold: ${this.Coin}`, 400, 10);
-}
+};
 
 Player.prototype.HpBar = function(x, y, w, h, value) {
 	this.draw.Color = "lightgray";
 	this.draw.DrawRect(x, y, w, h);
 	this.draw.Color = "Red";
 	this.draw.DrawRect(x, y, value*w, h);
-}
+};
 
 Player.prototype.HpText = function(x, y, hp, MaxHp) {
     this.draw.SetTextAlign('center');
     this.draw.Color = "whitesmoke";
-    this.draw.DrawText(`${hp}/${MaxHp}`, x, y)
-    this.draw.SetTextAlign('start')
-}
+    this.draw.DrawText(`${hp}/${MaxHp}`, x, y);
+    this.draw.SetTextAlign('start');
+};
 
 Player.prototype.MpBar = function(x, y, w, h, value) {
     this.draw.Color = "lightgray";
     this.draw.DrawRect(x, y, w, h);
     this.draw.Color = "aqua";
     this.draw.DrawRect(x, y, value*w, h);
-}
+};
 
 Player.prototype.MpText = function(x, y, mp, MaxMp) {
-    this.draw.SetTextAlign('center')
+    this.draw.SetTextAlign('center');
     this.draw.Color = "whitesmoke";
     this.draw.DrawText(`${mp}/${MaxMp}`, x, y);
-    this.draw.SetTextAlign('start')
-}
+    this.draw.SetTextAlign('start');
+};

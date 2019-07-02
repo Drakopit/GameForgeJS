@@ -54,4 +54,20 @@ export class Mouse {
         if (Collide2D.isCollidingPoint(new Vector2D(x, y), rect)) return true;
         return false;
     }
+
+    MouseMoveListener(evt) {}
+    MouseDownListener(evt) {}
+    MouseReleaseListener(evt) {}
+}
+
+Mouse.prototype.AddEvent = function() {
+    if (document.addEventListener) {
+		document.addEventListener("mousemove", this.MouseMoveListener, false);
+		document.addEventListener("mousedown", this.MouseDownListener, false);
+		document.addEventListener("mouseup", this.MouseReleaseListener, false);		
+    } else {
+        document.attachEvent("onmousemove", this.MouseMoveListener);
+		document.attachEvent("onmousedown", this.MouseDownListener);
+		document.attachEvent("onmouseup", this.MouseReleaseListener);
+    }
 }

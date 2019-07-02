@@ -1,5 +1,4 @@
 import { Vector3D } from "../Math/Vector3D.js";
-import { Vector2D } from "./Vector2D.js";
 
 export class Physic2D {
     constructor() {}
@@ -44,7 +43,7 @@ export class Physic2D {
                 Static: 1,
                 Dynamic: 0.8
             }
-        }
+        };
         // Ex: this.CoefficientFriction.GraphiteOnGraphite['Dynamic'];
     }
 

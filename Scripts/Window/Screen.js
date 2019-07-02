@@ -51,7 +51,7 @@ export class Screen {
      *  var newContext = screen.Context();
      * @returns context
      */
-    get Context() { return this.context }
+    get Context() { return this.context; }
 
     /**
      * @doc Method
@@ -156,24 +156,9 @@ export class Screen {
      *  var position = screen.Position();
      * @returns Vector2D
      */
-    get Position() { return new Vector2D(this.x, this.y)}
-
-    /**
-     * @doc Method
-     * @param {x} x 
-     * @param {y} y
-     * @description Change screen position
-     * @example
-     *  screen.Position(150, 100);
-     */
-    Position(x, y) {
-        this.x = x; this.y = y;
-        this.canvas.style.position = "absolute";
-        this.canvas.style.left = `${this.x}px`;
-        this.canvas.style.top = `${this.y}px`;
-    }
+    get Position() { return new Vector2D(this.x, this.y); }
 }
 
 Screen.prototype.MDC = function(width, height) {
-    return (height == 0) ? width : this.MDC(height, width%height);;
-}
+    return (height == 0) ? width : this.MDC(height, width%height);
+};
