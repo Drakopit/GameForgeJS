@@ -1,8 +1,13 @@
+/***
+ * @description Classe base, que carrega todos os métodos necessários
+*/
 export class Base {
     constructor() {}
-    Start() {}
-    Update() {}
-    FixedUpdate(dt) {}
-    DrawnSelf(dt) {}
-    OnGUI(dt) {}
+    static OnStart() {}
+    static OnUpdate() {}
+    static OnFixedUpdate(dt) {}
+    static OnDrawn() {}
+    static OnGUI() {}
+    static OnDestroy() {}
+    static OnCollision() {}
 }

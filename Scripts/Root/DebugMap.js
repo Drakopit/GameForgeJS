@@ -1,6 +1,28 @@
 import { Draw } from "../Drawing/Draw.js";
 import { Base } from "../Root/Base.js";
 
+export var Screen;
+export var DrawLib;
+// Default
+export const MapStructure = [
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+];
+
 const GROUNDING = Object.freeze({
     NOTHING: 0,
     SAND: 1,
@@ -11,30 +33,12 @@ const GROUNDING = Object.freeze({
 export class DebugMap extends Base {
     constructor(screen) {
         super();
-        this.screen = screen;
-        this.draw = new Draw(this.screen);
-        this.MapStruct = [
-            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-            1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1,
-            1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1,
-            1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 1,
-            1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-            1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1,
-            1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1,
-            1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-            1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-            1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-            1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-            1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-            1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-        ];
+        Screen = screen;
+        DrawLib = new Draw(Screen);
     }
 
     AddObjectToMap(item, x, y) {
-        this.MapStruct[x, y] = item;
+        MapStructure[x][y] = item;
     }
 
     SetTileSize(vector2D) {
@@ -48,25 +52,25 @@ export class DebugMap extends Base {
     }
 
     DrawnSelf() {
-        this.draw.Font = 'Bold Arial';
-        this.draw.FontSize = '11px';
+        DrawLib.Font = 'Bold Arial';
+        DrawLib.FontSize = '11px';
         for (let i = 0; i < this.mapWidth; i++) {
             for (let j = 0; j < this.mapHeight; j++) {
-                switch (this.MapStruct[((j*this.mapWidth)+i)]) {
+                switch (MapStructure[((j*this.mapWidth)+i)]) {
                     case GROUNDING.NOTHING:
-                        this.draw.Color = "#5AA457";
-                        this.draw.Style = 1;
-                        this.draw.DrawRect(i*this.tileW, j*this.tileH, this.tileW, this.tileH);
-                        this.draw.Style = 0;
+                        DrawLib.Color = "#5AA457";
+                        DrawLib.Style = 1;
+                        DrawLib.DrawRect(i*this.tileW, j*this.tileH, this.tileW, this.tileH);
+                        DrawLib.Style = 0;
                     break;
-                
+
                     default:
-                        this.draw.Color = "#685b48";
+                        DrawLib.Color = "#685b48";
                     break;
                 }
-                this.draw.DrawRect(i*this.tileW, j*this.tileH, this.tileW, this.tileH);
+                DrawLib.DrawRect(i*this.tileW, j*this.tileH, this.tileW, this.tileH);
             }
         }
-        this.draw.Color = "white";
+        DrawLib.Color = "white";
     }
 }
