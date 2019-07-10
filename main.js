@@ -1,4 +1,4 @@
-import { Engine } from "./Scripts/Root/Engine.js";
+import { Engine } from "./Scripts/Root/Engine";
 
 /**
  * @author Patrick Faustino Camello
@@ -7,8 +7,5 @@ import { Engine } from "./Scripts/Root/Engine.js";
  * And Game class initialize, entire game
  * with all assets
  */
-window.onload = function() {
-    Engine.Start();
-    Engine.Update();
-    console.dir(Engine);
-}
+Engine.OnStart();
+console.dir(Engine);

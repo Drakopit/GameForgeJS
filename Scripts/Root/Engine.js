@@ -1,57 +1,52 @@
-import { Base } from "./Base";
-import { GameObject } from "./GameObject";
+import { Base } from "Base.js";
+import { Level00 } from "../../Jogo de Exemplo/Level00.js";
+import { Level01 } from "../../Jogo de Exemplo/Level01.js";
+import { Level02 } from "../../Jogo de Exemplo/Level02.js";
 
-export var GameObjects = [];
-var startTime; var lastTime; var deltaTime;
+// Levels
+var LevelHandler = {
+	levels: [],
+	current,
+	Index: 0
+};
+
+// Time
+var StartTime;
+var LastTime;
+var DeltaTime;
 
 export class Engine extends Base {
-    constructor() {}
+	constructor() { super(); }
 
-    static Start() {
-        for (const gameObject of GameObjects) {
-            if (gameObject instanceof GameObject) gameObject.Start();
-        }
-    }
+	static OnStart() {
+		window.onload = () => {
+			let level00 = new Level00();
+			let level01 = new Level01();
+			let level02 = new Level02();
+			LevelHandler.levels.push(level00, level01, level02);
+			LevelHandler.current = levels[LevelHandler.Index];
+		};
+	}
 
-    static Update() {
-        startTime = performance.now();
-        deltaTime = ((startTime - lastTime) / 1000.0);
+	static OnFixedUpdate() {
+		StartTime = performance.now();
+		DeltaTime = (1000.0 / (StartTime - LastTime));
 
-        // Loop Baseado no FPS
-        for (const gameObject of GameObjects) {
-            if (gameObject instanceof GameObject) gameObject.Update();
-        }
+		// Verificações da engine
+		if (LevelHandler.current.Next) {
+			LevelHandler.Index++;
+			LevelHandler.current = levels[LevelHandler.Index];
+		}
+		this.OnDrawn();
 
-        // Loop com deltaTime
-        for (const gameObject of GameObjects) {
-            if (gameObject instanceof GameObject) gameObject.FixedUpdate(deltaTime);
-        }
+		// Código da cena à ser atualizado
+		currentLevel.OnUpdate();
+		currentLevel.OnFixedUpdate(DeltaTime);
+		currentLevel.OnDrawn();
+		currentLevel.OnGUI();
 
-        // Draw
-        for (const gameObject of GameObjects) {
-            if (gameObject instanceof GameObject) gameObject.DrawnSelf();
-        }
-
-        // Interface gráfica
-        for (const gameObject of GameObject) {
-            if (gameObject instanceof GameObject) gameObject.OnGUI();
-        }
-
-        lastTime = startTime;
-        let self = this;
-        window.requestAnimationFrame(self.Loop.bind(self));
-    }
-
-    static AddObject(object) {
-        GameObjects.push(object);
-    }
-
-    static GetObject(id, name) {
-        return GameObjects.find(id) || GameObjects.find(name);
-    }
-
-    static DeleteObject(id, name) {
-        let gameObject = GameObjects.find(id) || GameObjects.find(name);
-        delete gameObject;
-    }
+		LastTime = StartTime;
+		let self = this;
+		window.requestAnimationFrame(self.Loop.bind(self));
+	}
 }

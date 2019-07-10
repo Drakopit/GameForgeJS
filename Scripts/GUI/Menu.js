@@ -1,43 +1,34 @@
 import { Input } from "../Inputs/Input.js";
 import { Draw } from "../Drawing/Draw.js";
+import { Base } from "../Root/Base.js";
 
-export class Menu {
+export class Menu extends Base {
     constructor(screen) {
+        super();
         // Interace com o teclado
         this.input = new Input();
         this.screen = screen;
         this.draw = new Draw(this.screen);
 
-        // Estados do Menu
-        const MENU_STATES = Object.freeze({
-            INITIALSTATE: 0,
-            NEWGAME: 1,
-            CONTINUE: 2,
-            OPTIONS: 3,
-            SHUTDOWN: 4
-        });
-        // Estado Atual do Menu
-        this.state = MENU_STATES.INITIALSTATE;
-
-        this.Menu = new Array("Novo Jogo", "Continuar", "Opções", "Sair");
+        this.options = new Array("Novo Jogo", "Continuar", "Opções", "Sair");
 
         // Item selecionado do menu
         this.currentSelected = 0;        
     }
 
-    Start() {
+    OnStart() {
         this.draw.FontSize = "45px";
     }
 
-    Update() {
+    OnUpdate() {
         if (this.input.GetKeyDown("W")) {
             this.currentSelected--;
             if (this.currentSelected < 0) {
-                this.currentSelected = (this.Menu.length - 1);
+                this.currentSelected = (this.options.length - 1);
             }
         } else if (this.input.GetKeyDown("S")) {
             this.currentSelected++;
-            if (this.currentSelected > (this.Menu.length - 1)) {
+            if (this.currentSelected > (this.options.length - 1)) {
                 this.currentSelected = 0;
             }
         }
@@ -47,10 +38,6 @@ export class Menu {
         }
     }
 
-    FixedUpdate() {}
- 
-    DrawSelf() {}
-
     OnGUI() {
         for (let i = 0; i <= 3; i++) {
             if (i == this.currentSelected) {
@@ -58,7 +45,7 @@ export class Menu {
             } else {
                 this.draw.Color = "green";
             }
-            this.draw.DrawText(this.Menu[i], 32, 32 + i * 16);
+            this.draw.DrawText(this.options[i], 32, 32 + i * 16);
         }
     }
 }
