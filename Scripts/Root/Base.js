@@ -3,6 +3,6 @@ export class Base {
     Start() {}
     Update() {}
     FixedUpdate(dt) {}
-    DrawnSelf(dt) {}
-    OnGUI(dt) {}
+    DrawnSelf() {}
+    OnGUI() {}
 }

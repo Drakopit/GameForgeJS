@@ -5,7 +5,6 @@ export class Menu {
     constructor(screen) {
         // Interace com o teclado
         this.input = new Input();
-
         this.screen = screen;
         this.draw = new Draw(this.screen);
 

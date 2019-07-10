@@ -1,6 +1,3 @@
-import { Screen } from "../Window/Screen";
-import { Screen3D } from "../Window/Screen3D";
-
 export class Shader {
     constructor(screen) {
         this.screen = screen;

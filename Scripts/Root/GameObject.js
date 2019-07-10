@@ -1,9 +1,11 @@
 import { Sprite } from "../Drawing/Sprite.js"
 import { Vector2D } from "../Math/Vector2D.js";
+import { Util } from "./Utils.js";
+import { Collide2D } from "../Math/Collide2D.js";
 
 export class GameObject {
     constructor() {
-        this.id;
+        this.id = Util.NewUUIDv4();
         this.hspeed = 64;
         this.vspeed = 64;
         this.solid = true;
@@ -23,16 +25,23 @@ export class GameObject {
 
         this.Tag = "Entity";
         this.name = "Drako";
-
     }
 
-    Start() {}
+    OnCreate() {}
 
-    Update() {}
+    OnUpdate() {}
 
-    FixedUpdate(dt) {}
+    OnFixedUpdate(dt) {}
 
-    DrawnSelf() {}
+    OnDraw() {}
 
     OnGUI() {}
+
+    OnCollision(other, callback) {
+        if (other instanceof GameObject && Collide2D.isCollidingAABB(this, other)) {
+            return () => callback;
+        }
+    };
+
+    OnDestroy() {}
 }

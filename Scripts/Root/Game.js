@@ -1,4 +1,4 @@
-import { World } from "../../Jogo de Exemplo/World.js";
+import { World } from "../../Jogo de Exemplo/Room01.js/index.js";
 import { Base } from "./Base.js";
 
 export class Game extends Base {

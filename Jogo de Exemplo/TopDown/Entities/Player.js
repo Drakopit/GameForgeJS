@@ -1,5 +1,5 @@
 import { Draw } from "../../../Scripts/Drawing/Draw.js";
-import { Input } from "../../../Scripts/Inputs/Input.js";
+import { Input, KeyCode } from "../../../Scripts/Inputs/Input.js";
 import { Sprite } from "../../../Scripts/Drawing/Sprite.js";
 import { Vector2D } from "../../../Scripts/Math/Vector2D.js";
 import { GameObject } from "../../../Scripts/Root/GameObject.js";
@@ -7,18 +7,27 @@ import { Collide2D } from "../../../Scripts/Math/Collide2D.js";
 import { Game } from "../../../Scripts/Root/Game.js";
 import { MathExt } from "../../../Scripts/Math/MathExt.js";
 import { Shader } from "../../../Scripts/Drawing/Shader.js";
+import { Screen3D } from "../../../Scripts/Window/Screen3D.js";
 
 // Constante
-const DIRECOES = Object.freeze({
+export const DIRECOES = Object.freeze({
     ESQUERDA: 1,
     DIREITA: 3,
     CIMA: 0,
     BAIXO: 2
 });
 
+export const KeyBoardSet = Object.freeze({
+    'Left'  : KeyCode.A,
+    'Right' : KeyCode.D,
+    'Up'    : KeyCode.W,
+    'Down'  : KeyCode.S,
+    'Space' : KeyCode.Space
+});
+
 export class Player extends GameObject {
     constructor(screen) {
-        super();   
+        super();
         this.speed = 256;
         this.hspeed = this.speed;
         this.vspeed = this.speed;
@@ -33,13 +42,6 @@ export class Player extends GameObject {
         // Classes necessárias
         this.draw = new Draw(screen);
         this.input = new Input(screen);
-        this.input.KeyBoardSet = {
-            'Left': this.input.KeyCode.A,
-            'Right': this.input.KeyCode.D,
-            'Up': this.input.KeyCode.W,
-            'Down': this.input.KeyCode.S,
-            'Space': this.input.KeyCode.Space
-        };
         this.input.AddEvents();
 
         // Configuração sprite
@@ -72,25 +74,28 @@ export class Player extends GameObject {
 
         this.Coin = 0;
 
-        this.colorVertexShader = new Shader();
-        this.colorVertexShader.Init('vertex');
-        
-        this.colorFragmentShader = new Shader();
-        this.colorFragmentShader.Init('fragment');
+        const VSHADER_SOURCE =
+        'void main() {\n' +
+        '  gl_Position = vec4(0.0, 0.0, 0.0, 1.0);\n' + // Set the vertex coordinates of the point
+        '  gl_PointSize = 30.0;\n' +                    // Set the point size
+        '}\n';
 
-        this.colorVertexShader.Load('../../../Shaders/Color/VertexShaderColor.glsl');
-        this.colorFragmentShader.Load('../../../Shaders/Color/FragmentShaderColor.glsl');
+        const FSHADER_SOURCE =
+        'void main() {\n' +
+        '  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n' + // Set the point color
+        '}\n';
 
-        this.vertColorShader = this.screen.createShader(this.screen.VERTEX_SHADER);
-        this.screen.shaderSource(this.vertColorShader, this.colorVertexShader.Source);
-        this.screen.compileShader(this.vertColorShader);
-
-        this.fragColorShader = this.screen.createShader(this.screen.FRAGMENT_SHADER);
-        this.screen.shaderSource(this.fragColorShader, this.colorFragmentShader.Source);
-        this.screen.compileShader(this.fragColorShader);
+        let screen3D = new Screen3D();
+        let teste = new Shader(screen3D);
+        teste.Init();
+        teste.Attach(VSHADER_SOURCE, FSHADER_SOURCE);
+        let VertexShader = teste.Vertex();
+        let FragmentShader = teste.Fragment();
+        let shader = teste.Create(VertexShader, FragmentShader);
+        teste.Use(shader);
     }
 
-    FixedUpdate(deltaTime) {
+    OnFixedUpdate(deltaTime) {
 		if (this.Intersect(Game.FindObject('coin'))) {
             this.Coin += Game.FindObject('coin').Value;
             // Deletar moeda
@@ -99,7 +104,7 @@ export class Player extends GameObject {
         this.Translate(deltaTime);
     }
 
-    DrawnSelf() {
+    OnDraw() {
         // Nick do Personagem
         this.draw.SetTextAlign('center');
         this.draw.DrawText('Drako', this.position.GetValue().x + (this.size.GetValue().x / 2), this.position.GetValue().y + 8);
@@ -129,7 +134,7 @@ export class Player extends GameObject {
 Player.prototype.Translate = function(deltaTime) {
     let char = new Player(this.screen);
 
-    /* */if (this.input.GetKeyDown(this.input.KeyBoardSet.Left)) {
+    /* */if (this.input.GetKeyDown(KeyBoardSet.Left)) {
         let x = Math.floor(-this.hspeed*deltaTime);
         char.position = new Vector2D(this.position.GetValue().x + x, this.position.GetValue().y);
 
@@ -137,7 +142,7 @@ Player.prototype.Translate = function(deltaTime) {
             this.position = this.position.AddValue(new Vector2D(x,0));
 
         this.row = DIRECOES.ESQUERDA;
-    } else if (this.input.GetKeyDown(this.input.KeyBoardSet.Right)) {
+    } else if (this.input.GetKeyDown(KeyBoardSet.Right)) {
         let x = Math.floor(this.hspeed*deltaTime);
         char.position = new Vector2D(this.position.GetValue().x + x, this.position.GetValue().y);
         
@@ -145,7 +150,7 @@ Player.prototype.Translate = function(deltaTime) {
             this.position = this.position.AddValue(new Vector2D(x,0));
 
         this.row = DIRECOES.DIREITA;
-    } else if (this.input.GetKeyDown(this.input.KeyBoardSet.Up)) {
+    } else if (this.input.GetKeyDown(KeyBoardSet.Up)) {
         let y = Math.floor(-this.vspeed*deltaTime);
         char.position = new Vector2D(this.position.GetValue().x, this.position.GetValue().y + y);
         
@@ -153,7 +158,7 @@ Player.prototype.Translate = function(deltaTime) {
             this.position = this.position.AddValue(new Vector2D(0,y));
 
         this.row = DIRECOES.CIMA;
-    } else if (this.input.GetKeyDown(this.input.KeyBoardSet.Down)) {
+    } else if (this.input.GetKeyDown(KeyBoardSet.Down)) {
         let y = Math.floor(this.vspeed*deltaTime);
         char.position = new Vector2D(this.position.GetValue().x, this.position.GetValue().y + y);
         
