@@ -28,7 +28,7 @@ const MENU_STATE = Object.freeze({
 // Estado inicial
 var menuState;
 
-export class Level01 extends Level, Base {
+export class Level01 extends Level {
 	constructor() {
 		super();
 		this.caption = "Menu Principal";

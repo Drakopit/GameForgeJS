@@ -38,7 +38,7 @@ const WORLD_STATE = Object.freeze({
 // Estado inicial
 var worldState = WORLD_STATE.GAME_MENU;
 
-export class Level02 extends Level, Base {
+export class Level02 extends Level {
     constructor() {
       super();
       this.caption = "Segunda Fase";

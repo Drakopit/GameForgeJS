@@ -16,6 +16,13 @@
             "request": "launch",
             "name": "Launch Program",
             "program": "${workspaceFolder}"
+        },
+        {
+            "name": "Firefox Debug",
+            "type": "firefox",
+            "request": "launch",
+            "reAttach": true,
+            "file": "${workspaceFolder}/Main.html"
         }
     ]
 }

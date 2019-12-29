@@ -1,4 +1,4 @@
-import { Base } from "Base.js";
+import { Base } from "./Base.js";
 import { Level00 } from "../../Jogo de Exemplo/Level00.js";
 import { Level01 } from "../../Jogo de Exemplo/Level01.js";
 import { Level02 } from "../../Jogo de Exemplo/Level02.js";
