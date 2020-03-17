@@ -74,8 +74,7 @@ export class Key {
     constructor(code) {
         this.code = code;
         this.keyCode = this.code;
-        console.log(`Code: ${code} and ${this.keyCode}`);
-        this.keyStr = KeyCode[this.code];
+        this.keyStr = CharCode[this.code];
         this.isPress = false;
         this.isDown = false;
         this.isUp = true;
@@ -88,7 +87,7 @@ export class Key {
     set KeyCode(code) { this.keyCode = code; }
     
     get KeyStr() { return this.keyStr; };
-    set KeyStr(code) { this.keyStr = KeyCode[this.code].toString(); };
+    set KeyStr(code) { console.log(code); this.keyStr = KeyCode[this.code].toString(); };
     
     get KeyPressed() { return this.isDown; };
     set KeyPressed(bool) { this.isDown = bool; };
@@ -129,7 +128,11 @@ export class Input {
         return key;
     }
     GetKeyDown(key) {
-        if (key === this.KeyDownListener && this.KeyDownListener.isDown) return true;
+        if (key === this.KeyDownListener && this.KeyDownListener.isDown) {
+            // TODO: Never call
+            console.log('true');
+            return true;
+        }
     }
 
     KeyReleaseListener(evt) {
@@ -143,6 +146,13 @@ export class Input {
     }
 }
 
+Input.prototype.KeyDownListener.prototype = function GetKey(key) {
+    if (key === this.KeyDownListener && this.KeyDownListener.isDown) {
+        // TODO: Never call
+        console.log('true');
+        return true;
+    }
+}
 Input.prototype.AddEvents = function() {
     if (document.addEventListener) {
 		document.addEventListener("keydown", this.KeyDownListener.bind(this), false);

@@ -27,7 +27,7 @@ export class GameObject {
         this.name = "Drako";
     }
 
-    OnCreate() {}
+    OnStart() {}
 
     OnUpdate() {}
 

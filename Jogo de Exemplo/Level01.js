@@ -8,99 +8,100 @@ import { Camera } from "../Scripts/Root/Camera.js";
 import { Level } from "./Level.js";
 
 
-      ////////////////////////
-    //////// OBJECTS ////////
-  //////////////////////////
+////////////////////////
+//////// OBJECTS ////////
+//////////////////////////
 
 // Tela
 export var Tela = new Screen("PrimeiraFase", 640, 480);
 // Mapa carregado de um JSON
 export var Mapa = new Scene("PrimeiraFase", Tela);
-// Mapa de Teste
+// Mapa de Debug
 export var MapaTeste = new DebugMap(Tela);
-// Jogador
-export var Jogador = new Player(Tela);
-// Npc
-export var Npc = new NPC(Tela);
+var MapStructure = [];
 // Camera
 export var ViewPort = new Camera(Jogador.position, new Vector2D(Tela.Width, Tela.Height));
 // Constante de dimensões do Jogo
-const GameWorld = {
-    width: (MapaTeste.mapWidth*MapaTeste.tileW),
-    height: (MapaTeste.mapHeight*MapaTeste.tileH)
-};
+var GameWorld;
 // Máquina de estado do Level
 const WORLD_STATE = Object.freeze({
-    GAME_MENU: 0,
-    GAME_RUNING: 1,
-    GAME_PAUSE: 2
+	GAME_MENU: 0,
+	GAME_RUNING: 1,
+	GAME_PAUSE: 2
 });
 // Estado inicial
-var worldState = WORLD_STATE.GAME_MENU;
+var worldState = WORLD_STATE.GAME_RUNING;
+
+// Entidades no Level
+var Entities = [];
 
 export class Level01 extends Level {
-    constructor() {
-      super();
-      this.caption = "Primeira Fase";
-    }
+	constructor() {
+		super();
+		this.caption = "Primeira Fase";
+	}
 
-    static Start() {
-      Tela.Init("Fase01");
-      Mapa.CallScene("PrimeiraFase", "Fase_01");
-      // Necessário pra usar o MapaTeste
-      MapStructure = [
-          1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-          1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1,
-          1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1,
-          1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 1,
-          1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-          1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-          0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0,
-          0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1,
-          1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1,
-          1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-          1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-          1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-          1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-          1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-          1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-      ];
-      MapaTeste.SetTileSize(new Vector2D(64, 64));
-      MapaTeste.SetMapSize(new Vector2D(16, 16));
-      ViewPort.Init(Tela, GameWorld);
-    }
+	static OnStart() {
+		Tela.Init("Fase01");
+		// Mapa.CallScene("PrimeiraFase", "Fase_01");
+		// Necessário pra usar o MapaTeste
+		MapStructure = [
+			1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+			1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1,
+			1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1,
+			1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 1,
+			1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+			1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1,
+			1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1,
+			1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+			1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+			1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+			1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+			1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+			1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+		];
+		MapaTeste.SetTileSize(new Vector2D(64, 64));
+		MapaTeste.SetMapSize(new Vector2D(16, 16));
+		GameWorld = {
+			width: (MapaTeste.mapWidth * MapaTeste.tileW),
+			height: (MapaTeste.mapHeight * MapaTeste.tileH)
+		}
+		ViewPort.Init(Tela, GameWorld);
+		// Jogador
+		this.Jogador = new Player(Tela);
+		// Npc
+		this.Npc = new NPC(Tela);
+		Entities.push(Jogador, Npc)
+	}
 
-    static Update() {}
+	static OnUpdate() { }
 
-    static FixedUpdate(dt) {
-        Tela.Refresh();
-        switch (worldState) {
-          case WORLD_STATE.GAME_MENU:
+	static OnFixedUpdate(dt) {
+		Tela.Refresh();
+		switch (worldState) {
+			case WORLD_STATE.GAME_MENU:
 
-            break;
-          case WORLD_STATE.GAME_PAUSE:
-          // Pause do Jogo
-            break;
-          case WORLD_STATE.GAME_RUNING:
-            WorldRunning();
-            break;
-          default:
-
-        }
-    }
+				break;
+			case WORLD_STATE.GAME_PAUSE:
+				// Pause do Jogo
+				break;
+			case WORLD_STATE.GAME_RUNING:
+				// Adiciona todos os objetos da cena
+				for (const object of Entities) {
+					object.OnUpdate();
+					object.OnFixedUpdate(dt);
+					ViewPort.OnUpdate(Jogador);
+					ViewPort.OnBegin();
+					object.DrawnSelf();
+					ViewPort.OnDrawnSelf();
+					ViewPort.OnEnd();
+					object.OnGUI(dt);
+				}
+				break;
+			default:
+		}
+	}
 }
-
-Level01.prototype.WorldRunning = function () {
-  // Adiciona todos os objetos da cena
-  for (const object of Entities) {
-      object.Update();
-      object.FixedUpdate(dt);
-      ViewPort.Update(Jogador);
-      ViewPort.Begin();
-      object.DrawnSelf();
-      ViewPort.DrawnSelf();
-      ViewPort.End();
-      object.OnGUI(dt);
-  }
-};

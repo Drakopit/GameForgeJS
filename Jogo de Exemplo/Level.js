@@ -6,4 +6,10 @@ export class Level extends Base {
         this.caption = "";
         this.Next = false;
     }
+
+    FindObject(name) {
+        if (this[name] !== undefined) {
+            return this[name];
+        }
+    }
 }
