@@ -10,6 +10,7 @@
  * @returns {Object}
  */
 import { Vector2D } from "../Math/Vector2D.js";
+
 export class Screen {
     constructor(id, width, height) {
 		this.id = id;

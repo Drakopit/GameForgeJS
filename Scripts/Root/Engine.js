@@ -6,7 +6,7 @@ import { Level02 } from "../../Jogo de Exemplo/Level02.js";
 // Levels
 var LevelHandler = {
 	levels: [],
-	current,
+	current: 0,
 	Index: 0
 };
 
@@ -24,7 +24,7 @@ export class Engine extends Base {
 			let level01 = new Level01();
 			let level02 = new Level02();
 			LevelHandler.levels.push(level00, level01, level02);
-			LevelHandler.current = levels[LevelHandler.Index];
+			LevelHandler.current = LevelHandler.levels[LevelHandler.Index];
 		};
 	}
 
@@ -40,10 +40,10 @@ export class Engine extends Base {
 		this.OnDrawn();
 
 		// Código da cena à ser atualizado
-		currentLevel.OnUpdate();
-		currentLevel.OnFixedUpdate(DeltaTime);
-		currentLevel.OnDrawn();
-		currentLevel.OnGUI();
+		LevelHandler.current.OnUpdate();
+		LevelHandler.current.OnFixedUpdate(DeltaTime);
+		LevelHandler.current.OnDrawn();
+		LevelHandler.current.OnGUI();
 
 		LastTime = StartTime;
 		let self = this;

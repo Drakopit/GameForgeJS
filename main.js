@@ -8,7 +8,6 @@ import { Engine } from "./Scripts/Root/Engine.js";
  */
 
 try {
-    console.log("Chamará!");
     Engine.OnStart();
     console.dir(Engine);
 } catch(exception) {

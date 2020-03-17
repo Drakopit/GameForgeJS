@@ -10,6 +10,7 @@ import { Level } from "./Level.js";
 
 // Tela
 export var Tela = new Screen("MenuPrincipal", 640, 480);// Máquina de estado do Level
+Tela.Init("MenuPrincipal");	// Inicializa a tela do Jogo
 
 // Menu Base
 export var MenuPrincipal = new Menu(Tela);
@@ -28,14 +29,15 @@ const MENU_STATE = Object.freeze({
 // Estado inicial
 var menuState;
 
-export class Level01 extends Level {
+export class Level00 extends Level {
 	constructor() {
 		super();
 		this.caption = "Menu Principal";
 	}
 
 	static Start() {
-		Tela.Init("MenuPrincipal");
+		// Tela.Init("MenuPrincipal");
+		console.log("Start");
 		MenuPrincipal.OnStart();
 		menuState = MENU_STATE.RUNNING;
 	}
@@ -64,5 +66,9 @@ export class Level01 extends Level {
 				break;
 			default: menuState = MENU_STATE.RUNNING;
 		}
+	}
+
+	static OnGUI() {
+		MenuPrincipal.OnGUI();
 	}
 }

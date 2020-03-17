@@ -74,25 +74,25 @@ export class Player extends GameObject {
 
         this.Coin = 0;
 
-        const VSHADER_SOURCE =
-        'void main() {\n' +
-        '  gl_Position = vec4(0.0, 0.0, 0.0, 1.0);\n' + // Set the vertex coordinates of the point
-        '  gl_PointSize = 30.0;\n' +                    // Set the point size
-        '}\n';
+        // const VSHADER_SOURCE =
+        // 'void main() {\n' +
+        // '  gl_Position = vec4(0.0, 0.0, 0.0, 1.0);\n' + // Set the vertex coordinates of the point
+        // '  gl_PointSize = 30.0;\n' +                    // Set the point size
+        // '}\n';
 
-        const FSHADER_SOURCE =
-        'void main() {\n' +
-        '  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n' + // Set the point color
-        '}\n';
+        // const FSHADER_SOURCE =
+        // 'void main() {\n' +
+        // '  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n' + // Set the point color
+        // '}\n';
 
-        let screen3D = new Screen3D();
-        let teste = new Shader(screen3D);
-        teste.Init();
-        teste.Attach(VSHADER_SOURCE, FSHADER_SOURCE);
-        let VertexShader = teste.Vertex();
-        let FragmentShader = teste.Fragment();
-        let shader = teste.Create(VertexShader, FragmentShader);
-        teste.Use(shader);
+        // let screen3D = new Screen3D();
+        // let teste = new Shader(screen3D);
+        // teste.Init();
+        // teste.Attach(VSHADER_SOURCE, FSHADER_SOURCE);
+        // let VertexShader = teste.Vertex();
+        // let FragmentShader = teste.Fragment();
+        // let shader = teste.Create(VertexShader, FragmentShader);
+        // teste.Use(shader);
     }
 
     OnFixedUpdate(deltaTime) {
