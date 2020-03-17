@@ -2,6 +2,7 @@ import { Screen } from "../Scripts/Window/Screen.js";
 import { Menu } from "../Scripts/GUI/Menu.js";
 import { Input } from "../Scripts/Inputs/Input.js";
 import { Level } from "./Level.js";
+import { Draw } from "../Scripts/Drawing/Draw.js";
 
 
 ////////////////////////
@@ -10,13 +11,20 @@ import { Level } from "./Level.js";
 
 // Tela
 export var Tela = new Screen("MenuPrincipal", 640, 480);// Máquina de estado do Level
-Tela.Init("MenuPrincipal");	// Inicializa a tela do Jogo
 
 // Menu Base
 export var MenuPrincipal = new Menu(Tela);
 
 // Keyboard events
 var Teclado = new Input(Tela);
+
+// Draw
+var draw = new Draw(Tela);
+
+// FPS
+var UpdateFPS = 0;
+var UpdateFPSPerFrame = 10;
+var FPS = 60;
 
 // Estado do Menu
 const MENU_STATE = Object.freeze({
@@ -35,19 +43,26 @@ export class Level00 extends Level {
 		this.caption = "Menu Principal";
 	}
 
-	static Start() {
-		// Tela.Init("MenuPrincipal");
+	static OnStart() {
+		Tela.Init("MenuPrincipal");
 		console.log("Start");
 		MenuPrincipal.OnStart();
 		menuState = MENU_STATE.RUNNING;
 	}
 
-	static Update() {
+	static OnUpdate() {
 		MenuPrincipal.OnUpdate();
 	}
 
-	static FixedUpdate(dt) {
+	static OnFixedUpdate(dt) {
 		Tela.Refresh();
+
+		// FPS
+		if (UpdateFPS > UpdateFPSPerFrame) {
+			UpdateFPS = 0;
+			FPS = Math.ceil(1000 / dt);
+		}
+		UpdateFPS++;	
 
 		if (Teclado.GetKeyDown("Enter")) menuState = MenuPrincipal.currentSelected;
 
@@ -68,7 +83,24 @@ export class Level00 extends Level {
 		}
 	}
 
+	static OnDrawn() {
+		draw.Color = "lime";
+		draw.DrawText(`FPS: ${FPS}`, 10, 10);	
+	}
+
 	static OnGUI() {
 		MenuPrincipal.OnGUI();
 	}
 }
+
+/**
+ * @doc FPSCounter
+ * @description Method that update the current FPS
+ */
+// Level00.prototype.FPSCounter = function() {
+// 	if (UpdateFPS > UpdateFPSPerFrame) {
+// 		UpdateFPS = 0;
+// 		FPS = Math.floor(1 / deltaTime);
+// 	}
+// 	UpdateFPS++;
+// }

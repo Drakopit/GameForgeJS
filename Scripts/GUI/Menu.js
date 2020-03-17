@@ -6,8 +6,8 @@ export class Menu extends Base {
     constructor(screen) {
         super();
         // Interace com o teclado
-        this.input = new Input();
         this.screen = screen;
+        this.input = new Input(this.screen);
         this.draw = new Draw(this.screen);
 
         this.options = new Array("Novo Jogo", "Continuar", "Opções", "Sair");
@@ -45,7 +45,7 @@ export class Menu extends Base {
             } else {
                 this.draw.Color = "green";
             }
-            this.draw.DrawText(this.options[i], 32, 32 + i * 16);
+            this.draw.DrawText(this.options[i], 320, 176 + i * 64);
         }
     }
 }

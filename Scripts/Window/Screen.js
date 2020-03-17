@@ -24,7 +24,12 @@ export class Screen {
 		}
         this.clientWidth = window.innerWidth;
         this.clientHeight = window.innerHeight;
-		this.x = 0; this.y = 0;
+        this.x = 0; this.y = 0;
+        //#region Default Value
+        this.canvas = document.createElement("canvas");
+        document.body.appendChild(this.canvas);
+        this.context = this.canvas.getContext("2D");
+        //#endregion
     }
 
     /**
@@ -83,8 +88,10 @@ export class Screen {
      *  screen.Init(canvas, context);
      */
     Init(screenName) {
-        this.canvas = document.createElement("canvas");
-        document.body.appendChild(this.canvas);
+        if (!this.canvas) {
+            this.canvas = document.createElement("canvas");
+            document.body.appendChild(this.canvas);
+        }
         this.canvas.setAttribute("id", screenName);
         this.canvas.setAttribute("width", this.width);
         this.canvas.setAttribute("height", this.height);

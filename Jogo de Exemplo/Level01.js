@@ -14,7 +14,6 @@ import { Level } from "./Level.js";
 
 // Tela
 export var Tela = new Screen("PrimeiraFase", 640, 480);
-Tela.Init("Fase01");
 // Mapa carregado de um JSON
 export var Mapa = new Scene("PrimeiraFase", Tela);
 // Mapa de Teste
@@ -46,7 +45,7 @@ export class Level01 extends Level {
     }
 
     static Start() {
-      // Tela.Init("Fase01");
+      Tela.Init("Fase01");
       Mapa.CallScene("PrimeiraFase", "Fase_01");
       // Necessário pra usar o MapaTeste
       MapStructure = [

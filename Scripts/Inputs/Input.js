@@ -74,7 +74,8 @@ export class Key {
     constructor(code) {
         this.code = code;
         this.keyCode = this.code;
-        this.keyStr = KeyCode[this.code].toString();
+        console.log(`Code: ${code} and ${this.keyCode}`);
+        this.keyStr = KeyCode[this.code];
         this.isPress = false;
         this.isDown = false;
         this.isUp = true;

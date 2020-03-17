@@ -6,7 +6,7 @@ import { Level02 } from "../../Jogo de Exemplo/Level02.js";
 // Levels
 var LevelHandler = {
 	levels: [],
-	current: 0,
+	current: undefined,
 	Index: 0
 };
 
@@ -20,11 +20,12 @@ export class Engine extends Base {
 
 	static OnStart() {
 		window.onload = () => {
-			let level00 = new Level00();
-			let level01 = new Level01();
-			let level02 = new Level02();
-			LevelHandler.levels.push(level00, level01, level02);
+			console.log('Load Levels!');
+			LevelHandler.levels.push(Level00, Level01, Level02);
+			// Error not passind a instance
 			LevelHandler.current = LevelHandler.levels[LevelHandler.Index];
+			LevelHandler.current.OnStart();
+			this.OnFixedUpdate();
 		};
 	}
 
@@ -37,16 +38,14 @@ export class Engine extends Base {
 			LevelHandler.Index++;
 			LevelHandler.current = levels[LevelHandler.Index];
 		}
-		this.OnDrawn();
-
 		// Código da cena à ser atualizado
 		LevelHandler.current.OnUpdate();
 		LevelHandler.current.OnFixedUpdate(DeltaTime);
-		LevelHandler.current.OnDrawn();
+		LevelHandler.current.OnDrawn(DeltaTime);
 		LevelHandler.current.OnGUI();
 
 		LastTime = StartTime;
 		let self = this;
-		window.requestAnimationFrame(self.Loop.bind(self));
-	}
+		window.requestAnimationFrame(self.OnFixedUpdate.bind(self));
+	}	
 }
