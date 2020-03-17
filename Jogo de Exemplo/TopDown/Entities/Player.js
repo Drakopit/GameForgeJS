@@ -4,7 +4,6 @@ import { Sprite } from "../../../Scripts/Drawing/Sprite.js";
 import { Vector2D } from "../../../Scripts/Math/Vector2D.js";
 import { GameObject } from "../../../Scripts/Root/GameObject.js";
 import { Collide2D } from "../../../Scripts/Math/Collide2D.js";
-import { Engine, LevelHandler } from "../../../Scripts/Root/Engine.js";
 import { MathExt } from "../../../Scripts/Math/MathExt.js";
 
 // Constante
@@ -72,6 +71,7 @@ export class Player extends GameObject {
 
         this.Coin = 0;
 
+        this.level = 0;
         if (typeof LevelHandler) {
             this.level = levelHandler.current;
         }

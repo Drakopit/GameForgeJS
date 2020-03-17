@@ -19,6 +19,10 @@ export var Mapa = new Scene("PrimeiraFase", Tela);
 // Mapa de Debug
 export var MapaTeste = new DebugMap(Tela);
 var MapStructure = [];
+// Jogador
+export var Jogador = new Player(Tela);
+// Npc
+export var Npc = new NPC(Tela);
 // Camera
 export var ViewPort = new Camera(Jogador.position, new Vector2D(Tela.Width, Tela.Height));
 // Constante de dimensões do Jogo
@@ -70,10 +74,6 @@ export class Level01 extends Level {
 			height: (MapaTeste.mapHeight * MapaTeste.tileH)
 		}
 		ViewPort.Init(Tela, GameWorld);
-		// Jogador
-		this.Jogador = new Player(Tela);
-		// Npc
-		this.Npc = new NPC(Tela);
 		Entities.push(Jogador, Npc)
 	}
 

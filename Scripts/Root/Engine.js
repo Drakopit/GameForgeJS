@@ -4,7 +4,7 @@ import { Level01 } from "../../Jogo de Exemplo/Level01.js";
 import { Level02 } from "../../Jogo de Exemplo/Level02.js";
 
 // Levels
-var LevelHandler = {
+export var LevelHandler = {
 	levels: [],
 	current: undefined,
 	Index: 0
