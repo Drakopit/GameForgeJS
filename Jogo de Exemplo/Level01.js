@@ -19,10 +19,10 @@ export var Mapa = new Scene("PrimeiraFase", Tela);
 // Mapa de Debug
 export var MapaTeste = new DebugMap(Tela);
 var MapStructure = [];
-// Jogador
-export var Jogador = new Player(Tela);
+// Jogador (Global)
+window.Jogador = new Player(Tela);
 // Npc
-export var Npc = new NPC(Tela);
+window.Npc = new NPC(Tela);
 // Camera
 export var ViewPort = new Camera(Jogador.position, new Vector2D(Tela.Width, Tela.Height));
 // Constante de dimensões do Jogo
@@ -74,7 +74,9 @@ export class Level01 extends Level {
 			height: (MapaTeste.mapHeight * MapaTeste.tileH)
 		}
 		ViewPort.Init(Tela, GameWorld);
-		Entities.push(Jogador, Npc)
+		this.Jogador = window.Jogador;
+		this.Npc = window.Npc;
+		Entities.push(this.Jogador, this.Npc)
 	}
 
 	static OnUpdate() { }
@@ -95,8 +97,8 @@ export class Level01 extends Level {
 					object.OnFixedUpdate(dt);
 					ViewPort.OnUpdate(Jogador);
 					ViewPort.OnBegin();
-					object.DrawnSelf();
-					ViewPort.OnDrawnSelf();
+					object.OnDraw();
+					// ViewPort.OnDrawnSelf();
 					ViewPort.OnEnd();
 					object.OnGUI(dt);
 				}

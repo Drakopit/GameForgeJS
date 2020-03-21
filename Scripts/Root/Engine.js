@@ -3,8 +3,8 @@ import { Level00 } from "../../Jogo de Exemplo/Level00.js";
 import { Level01 } from "../../Jogo de Exemplo/Level01.js";
 import { Level02 } from "../../Jogo de Exemplo/Level02.js";
 
-// Levels
-export var LevelHandler = {
+// Levels (That's global because need be acessed from anywhere)
+window.LevelHandler = {
 	levels: [],
 	current: undefined,
 	Index: 0
@@ -20,10 +20,11 @@ export class Engine extends Base {
 
 	static OnStart() {
 		window.onload = () => {
-			console.log('Load Levels!');
+			console.log('Engine was load!');
+			var LevelHandler = window.LevelHandler;
 			LevelHandler.levels.push(Level00, Level01, Level02);
 			// Error not passind a instance
-			LevelHandler.current = LevelHandler.levels[LevelHandler.Index];
+			LevelHandler.current = LevelHandler.levels[LevelHandler.Index + 1];
 			LevelHandler.current.OnStart();
 			this.OnFixedUpdate();
 		};

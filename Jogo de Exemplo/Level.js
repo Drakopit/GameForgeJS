@@ -7,7 +7,7 @@ export class Level extends Base {
         this.Next = false;
     }
 
-    FindObject(name) {
+    static FindObject(name) {
         if (this[name] !== undefined) {
             return this[name];
         }

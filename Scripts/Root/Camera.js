@@ -45,16 +45,16 @@ export class Camera extends Base {
         }       
     }
 
-    Begin() {
+    OnBegin() {
         this.screen.Context.save();
         this.screen.Context.translate(-this.position.GetValue().x,-this.position.GetValue().y);
     }
 
-    End() {
+    OnEnd() {
         this.screen.Context.restore();
     }
 
-    Update(char) {
+    OnUpdate(char) {
         this.LookAt(char);
         this.StrictLimit();
     }

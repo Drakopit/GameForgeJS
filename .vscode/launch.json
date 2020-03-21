@@ -9,13 +9,13 @@
             "request": "launch",
             "name": "Launch Chrome",
             "url": "http://localhost:5500",
-            "webRoot": "${workspaceFolder}"
+            "webRoot": "${workspaceFolder}/main.html"
         },
         {
             "type": "node",
             "request": "launch",
             "name": "Launch Program",
-            "program": "${workspaceFolder}"
+            "program": "${workspaceFolder}/main.html"
         },
         {
             "name": "Firefox Debug",
