@@ -32,14 +32,15 @@ export class Player extends GameObject {
         this.speed = 256;
         this.hspeed = this.speed;
         this.vspeed = this.speed;
-        this.position = new Vector2D(128, 64);
+        this.position = new Vector2D(64, 64);
         this.previousPosition = this.position;
         this.startPosition = this.position;
         this.size = new Vector2D(64, 64);
 
         // Mecânica de jogo 
         this.type = "Ally";
-                
+        this.name = "Drako";
+
         // Classes necessárias
         this.draw = new Draw(screen);
         this.input = new Input(screen);
@@ -100,7 +101,9 @@ export class Player extends GameObject {
 		if (this.Intersect(window.LevelHandler.current.FindObject('coin'))) {
             this.Coin += window.LevelHandler.current.FindObject('coin').Value;
             // Deletar moeda
-		}
+        }
+        // TODO: Teste
+        this.Hp--;
 		this.LimiteHp();
         this.Translate(deltaTime);
     }
@@ -139,7 +142,7 @@ Player.prototype.Translate = function(deltaTime) {
         let x = Math.floor(-this.hspeed*deltaTime);
         char.position = new Vector2D(this.position.GetValue().x + x, this.position.GetValue().y);
 
-        if (!char.Intersect(window.LevelHandler.current.FindObject('npc')))
+        if (!char.Intersect(window.LevelHandler.Npc))
             this.position = this.position.AddValue(new Vector2D(x,0));
 
         this.row = DIRECOES.ESQUERDA;
@@ -147,7 +150,7 @@ Player.prototype.Translate = function(deltaTime) {
         let x = Math.floor(this.hspeed*deltaTime);
         char.position = new Vector2D(this.position.GetValue().x + x, this.position.GetValue().y);
         
-        if (!char.Intersect(window.LevelHandler.current.FindObject('npc')))
+        if (!char.Intersect(window.LevelHandler.Npc))
             this.position = this.position.AddValue(new Vector2D(x,0));
 
         this.row = DIRECOES.DIREITA;
@@ -155,7 +158,7 @@ Player.prototype.Translate = function(deltaTime) {
         let y = Math.floor(-this.vspeed*deltaTime);
         char.position = new Vector2D(this.position.GetValue().x, this.position.GetValue().y + y);
         
-        if (!char.Intersect(window.LevelHandler.current.FindObject('npc')))
+        if (!char.Intersect(window.LevelHandler.Npc))
             this.position = this.position.AddValue(new Vector2D(0,y));
 
         this.row = DIRECOES.CIMA;
@@ -163,7 +166,7 @@ Player.prototype.Translate = function(deltaTime) {
         let y = Math.floor(this.vspeed*deltaTime);
         char.position = new Vector2D(this.position.GetValue().x, this.position.GetValue().y + y);
         
-        if (!char.Intersect(window.LevelHandler.current.FindObject('npc')))
+        if (!char.Intersect(window.LevelHandler.Npc))
             this.position = this.position.AddValue(new Vector2D(0,y));
 
         this.row = DIRECOES.BAIXO;
@@ -198,11 +201,12 @@ Player.prototype.LimiteHp = function() {
 };
 
 Player.prototype.ShowDistance = function() {
-    this.draw.DrawText(`Distância: ${JSON.stringify(this.Distance(window.LevelHandler.current.FindObject('npc')))}`, 250, 10);
+    console.log("Npc: ", window.LevelHandler.Npc);
+    this.draw.DrawText(`Distância: ${JSON.stringify(this.Distance(window.LevelHandler.current.Npc))}`, 250, 10);
 };
 
 Player.prototype.ShowVectorDistance = function() {
-    this.draw.DrawText(`Distância Vetorial: ${JSON.stringify(this.VectorDistance(window.LevelHandler.current.FindObject('npc')))}`, 350, 30);
+    this.draw.DrawText(`Distância Vetorial: ${JSON.stringify(this.VectorDistance(window.LevelHandler.current.Npc))}`, 350, 30);
 };
 
 Player.prototype.ShowFPS = function(deltaTime) {

@@ -24,7 +24,7 @@ export class GameObject {
         this.sprite = new Sprite();
 
         this.Tag = "Entity";
-        this.name = "Drako";
+        this.name = "Toba";
     }
 
     OnStart() {}
