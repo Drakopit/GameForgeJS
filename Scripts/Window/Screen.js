@@ -26,8 +26,12 @@ export class Screen {
         this.clientHeight = window.innerHeight;
         this.x = 0; this.y = 0;
         //#region Default Value
-        this.canvas = document.createElement("canvas");
-        document.body.appendChild(this.canvas);
+        if (!document.querySelector("canvas")) {
+            this.canvas = document.createElement("canvas");
+            document.body.appendChild(this.canvas);
+        } else {
+            this.canvas = document.querySelector("canvas");
+        }
         this.context = this.canvas.getContext("2D");
         //#endregion
     }

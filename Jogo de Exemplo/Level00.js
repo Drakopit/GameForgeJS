@@ -9,16 +9,16 @@ import { Draw } from "../Scripts/Drawing/Draw.js";
 //////// OBJECTS ////////
 //////////////////////////
 
-// Tela
+// Screen
 export var Tela = new Screen("MenuPrincipal", 640, 480);// Máquina de estado do Level
 
 // Menu Base
 export var MenuPrincipal = new Menu(Tela);
 
-// Keyboard events
+// Input class
 var Teclado = new Input(Tela);
 
-// Draw
+// Draw class
 var draw = new Draw(Tela);
 
 // FPS
@@ -34,38 +34,48 @@ const MENU_STATE = Object.freeze({
 	OPTIONS: 3,
 	QUIT: 4
 });
-// Estado inicial
+
+// Intial state of menu
 var menuState;
 
 export class Level00 extends Level {
 	constructor() {
 		super();
+		// Caption of the level
 		this.caption = "Menu Principal";
 	}
 
 	static OnStart() {
+		// Initialize screen
 		Tela.Init("MenuPrincipal");
-		console.log("Start");
+		// Starts menu
 		MenuPrincipal.OnStart();
+		// Set's menu state
 		menuState = MENU_STATE.RUNNING;
 	}
 
 	static OnUpdate() {
+		// Update menu logic
 		MenuPrincipal.OnUpdate();
 	}
 
 	static OnFixedUpdate(dt) {
+		// Refresh screen
 		Tela.Refresh();
 
-		// FPS
-		if (UpdateFPS > UpdateFPSPerFrame) {
-			UpdateFPS = 0;
-			FPS = Math.ceil(1000 / dt);
-		}
-		UpdateFPS++;	
+		// Update FPS
+		this.UpdateFPSMethod(dt);	
+		// Menu dynamics
+		this.MenuDynamic();
+	}
 
-		if (Teclado.GetKeyDown("Enter")) menuState = MenuPrincipal.currentSelected;
-
+	static MenuDynamic() {
+		// Check's if key Enter was pressed
+		// And change menu state
+		if (Teclado.GetKeyDown("Enter"))
+			menuState = MenuPrincipal.currentSelected;
+		
+			// See the choice in menu
 		switch (menuState) {
 			case MENU_STATE.NEWGAME:
 				alert("Novo Jogo!");
@@ -83,24 +93,23 @@ export class Level00 extends Level {
 		}
 	}
 
+	static UpdateFPSMethod(dt) {
+		if (UpdateFPS > UpdateFPSPerFrame) {
+			UpdateFPS = 0;
+			FPS = Math.ceil(1000 / dt);
+		}
+		// Count updates
+		UpdateFPS++;
+	}
+
 	static OnDrawn() {
+		// Draw FPS on screen
 		draw.Color = "lime";
 		draw.DrawText(`FPS: ${FPS}`, 10, 10);	
 	}
 
 	static OnGUI() {
+		// Draw Menu on Gui
 		MenuPrincipal.OnGUI();
 	}
 }
-
-/**
- * @doc FPSCounter
- * @description Method that update the current FPS
- */
-// Level00.prototype.FPSCounter = function() {
-// 	if (UpdateFPS > UpdateFPSPerFrame) {
-// 		UpdateFPS = 0;
-// 		FPS = Math.floor(1 / deltaTime);
-// 	}
-// 	UpdateFPS++;
-// }

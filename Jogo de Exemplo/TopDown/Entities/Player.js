@@ -32,7 +32,7 @@ export class Player extends GameObject {
         this.speed = 256;
         this.hspeed = this.speed;
         this.vspeed = this.speed;
-        this.position = new Vector2D(64, 64);
+        this.position = new Vector2D(128, 64);
         this.previousPosition = this.position;
         this.startPosition = this.position;
         this.size = new Vector2D(64, 64);
@@ -102,8 +102,6 @@ export class Player extends GameObject {
             this.Coin += window.LevelHandler.current.FindObject('coin').Value;
             // Deletar moeda
         }
-        // TODO: Teste
-        this.Hp--;
 		this.LimiteHp();
         this.Translate(deltaTime);
     }
@@ -201,7 +199,6 @@ Player.prototype.LimiteHp = function() {
 };
 
 Player.prototype.ShowDistance = function() {
-    console.log("Npc: ", window.LevelHandler.Npc);
     this.draw.DrawText(`Distância: ${JSON.stringify(this.Distance(window.LevelHandler.current.Npc))}`, 250, 10);
 };
 
@@ -216,7 +213,7 @@ Player.prototype.ShowFPS = function(deltaTime) {
     }
     this.updateFPS++;
 
-    this.draw.DrawText(`FPS: ${this.FPS}`, 500, 10);
+    //this.draw.DrawText(`FPS: ${this.FPS}`, 500, 10);
 };
 
 Player.prototype.HUD = function() {        
