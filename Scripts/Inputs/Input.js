@@ -74,7 +74,8 @@ export class Key {
     constructor(code) {
         this.code = code;
         this.keyCode = this.code;
-        this.keyStr = KeyCode[this.code].toString();
+        // this.keyStr = KeyCode[this.code].toString();
+        this.keyStr = KeyCode[this.code];
         this.isPress = false;
         this.isDown = false;
         this.isUp = true;
@@ -87,7 +88,7 @@ export class Key {
     set KeyCode(code) { this.keyCode = code; }
     
     get KeyStr() { return this.keyStr; };
-    set KeyStr(code) { this.keyStr = KeyCode[this.code].toString(); };
+    set KeyStr(code) { this.keyStr = KeyCode[this.code]; };
     
     get KeyPressed() { return this.isDown; };
     set KeyPressed(bool) { this.isDown = bool; };
@@ -115,47 +116,40 @@ export class Input {
         this.screen = screen;
     }
 
-    Initialize() {
-        if (this !== undefined) {
-            this.AddEvents();
+    AddEvents(Down, Release, Press) {
+        if (document.addEventListener) {
+            document.addEventListener("keydown",    (evento) => {
+                // console.log("KeyDown");
+                return Down(evento);
+            }, false);
+            document.addEventListener("keyup",      (evento) => {
+                return Release(evento);
+            }, false);
+            document.addEventListener("keypress",   (evento) => {
+                return Press(evento);
+            }, false);
+        } else {
+            document.attachEvent("onkeydown",   (evento) => {
+                return Down(evento)
+            });
+            document.attachEvent("onkeyup",     (evento) => {
+                return Release(evento);
+            });
+            document.attachEvent("onkeypress",  (evento) => {
+                return Press(evento);
+            });
         }
-    }
+    };
 
-    KeyDownListener(evt) {
-        let key = new Key(evt.keyCode);
-        key.isDown = true;
-        key.isUp = false;
-        return key;
-    }
-    GetKeyDown(key) {
-        if (key === this.KeyDownListener && this.KeyDownListener.isDown) return true;
-    }
-
-    KeyReleaseListener(evt) {
-        let key = new Key(evt.keyCode);
-        key.isDown = false;
-        key.isUp = true;
-        return key;
-    }
-    GetKeyRelease(key) {
-        if (key === this.KeyDownListener && this.KeyDownListener.isUp) return true;
-    }
+    RemoveEvents(Down, Release, Press) {
+        document.removeEventListener("keydown",     (evento) => {
+            return Down(evento);
+        });
+        document.removeEventListener("keyup",       (evento) => {
+            return Release(evento);
+        });
+        document.removeEventListener("keypress",    (event) => {
+            return Press(evento);
+        });
+    };
 }
-
-Input.prototype.AddEvents = function() {
-    if (document.addEventListener) {
-		document.addEventListener("keydown", this.KeyDownListener.bind(this), false);
-		document.addEventListener("keyup", this.KeyReleaseListener.bind(this), false);
-		// document.addEventListener("keypress", this.KeyPressListener.bind(this), false);
-	} else {
-		document.attachEvent("onkeydown", this.KeyDownListener.bind(this));
-		document.attachEvent("onkeyup", this.KeyReleaseListener.bind(this));
-		// document.attachEvent("onkeypress", this.KeyPressListener.bind(this));
-	}
-};
-
-Input.prototype.RemoveEvents = function() {
-    this.screen.Canvas.removeEventListener("keydown", this.KeyDownListener.bind(this));
-    this.screen.Canvas.removeEventListener("keyup", this.KeyReleaseListener.bind(this));
-    // this.screen.Canvas.removeEventListener("keypress", this.KeyPressListener.bind(this));
-};

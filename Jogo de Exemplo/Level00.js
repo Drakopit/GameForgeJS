@@ -1,74 +1,107 @@
 import { Screen } from "../Scripts/Window/Screen.js";
 import { Menu } from "../Scripts/GUI/Menu.js";
-import { Input } from "../Scripts/Inputs/Input.js";
+import { Input, KeyCode } from "../Scripts/Inputs/Input.js";
 import { Level } from "./Level.js";
+import { KeyBoard, KeyResponse } from "../Scripts/Inputs/KeyBoard.js";
 
-
-////////////////////////
-//////// OBJECTS ////////
-//////////////////////////
-
-// Tela
-export var Tela = new Screen("MenuPrincipal", 640, 480);// Máquina de estado do Level
-Tela.Init("MenuPrincipal");	// Inicializa a tela do Jogo
-
-// Menu Base
-export var MenuPrincipal = new Menu(Tela);
-
-// Keyboard events
-var Teclado = new Input(Tela);
-
-// Estado do Menu
-const MENU_STATE = Object.freeze({
-	RUNNING: 0,
-	NEWGAME: 1,
-	LOADGAME: 2,
-	OPTIONS: 3,
-	QUIT: 4
-});
-// Estado inicial
-var menuState;
+// Estrutura que carrega todas informações de cunho global do level
+var StructLevel = {
+	Tela: null, // Tela
+	MenuPrincipal: null, // Menu Base
+	Teclado: null, // Keyboard events
+	KeyCode: null, // KeyCodes
+	MENU_STATE: null, // Estado do Menu
+	menuState: null // Estado inicial
+}
 
 export class Level00 extends Level {
 	constructor() {
 		super();
+		// Título da fase
 		this.caption = "Menu Principal";
+		document.title = this.caption;
+
+		// Administrador de níveis
+		this.levelHandler;
 	}
 
-	static Start() {
-		// Tela.Init("MenuPrincipal");
-		console.log("Start");
-		MenuPrincipal.OnStart();
-		menuState = MENU_STATE.RUNNING;
+	OnStart() {
+		// Inicializa as depêndencias do nível
+		this.InitializeDependencies();
+
+		// Inicializa o Menu
+		StructLevel.MenuPrincipal.OnStart();
+		
+		// Seta o estado do Menu
+		StructLevel.menuState = StructLevel.MENU_STATE.RUNNING;
 	}
 
-	static Update() {
-		MenuPrincipal.OnUpdate();
+	OnUpdate() {
+		// Atualiza o Menus
+		StructLevel.MenuPrincipal.OnUpdate();
 	}
 
-	static FixedUpdate(dt) {
-		Tela.Refresh();
+	OnFixedUpdate(dt) {
+		// Atualiza a Tela
+		StructLevel.Tela.Refresh();
+		
+		// TODO: Verificar melhora no método de receber informações do teclado
+		// Escolhe uma opção do Menu
+		if (KeyResponse.getKeyDown == KeyCode["Enter"]) {
+			StructLevel.menuState = StructLevel.MenuPrincipal.currentSelected;
+			
+			// Reseta a Tecla
+			KeyResponse.getKeyDown = 0;
+		}
 
-		if (Teclado.GetKeyDown("Enter")) menuState = MenuPrincipal.currentSelected;
-
-		switch (menuState) {
-			case MENU_STATE.NEWGAME:
-				alert("Novo Jogo!");
+		switch (StructLevel.menuState) {
+			case StructLevel.MENU_STATE.NEWGAME:
+				console.log("Novo Jogo: ");
+				this.levelHandler.current.Next = true;
+				StructLevel.menuState = StructLevel.MENU_STATE.RUNNING
+				// StructLevel = null;
 				break;
-			case MENU_STATE.LOADGAME:
-				alert("Carregar Jogo!");
+			case StructLevel.MENU_STATE.LOADGAME:
+				console.log("Carregar Jogo!");
+				StructLevel.menuState = StructLevel.MENU_STATE.RUNNING
 				break;
-			case MENU_STATE.OPTIONS:
-				alert("Opções!");
+			case StructLevel.MENU_STATE.OPTIONS:
+				console.log("Opções!");
+				StructLevel.menuState = StructLevel.MENU_STATE.RUNNING
 				break;
-			case MENU_STATE.QUIT:
-				alert("Sair!");
+			case StructLevel.MENU_STATE.QUIT:
+				console.log("Sair!");
+				StructLevel.menuState = StructLevel.MENU_STATE.RUNNING
 				break;
-			default: menuState = MENU_STATE.RUNNING;
+			default: StructLevel.menuState = StructLevel.MENU_STATE.RUNNING;
 		}
 	}
 
-	static OnGUI() {
-		MenuPrincipal.OnGUI();
+	OnGUI() {
+		StructLevel.MenuPrincipal.OnGUI();
 	}
+}
+
+Level00.prototype.InitializeDependencies = function() {
+	// Tela
+	StructLevel.Tela = new Screen("MenuPrincipal", 640, 480);// Máquina de estado do Level
+	StructLevel.Tela.Init("MenuPrincipal");	// Inicializa a tela do Jogo
+
+	// Keyboard Events
+	StructLevel.Teclado = new Input(StructLevel.Tela);
+	StructLevel.Teclado.AddEvents(KeyBoard.GetKeyDown, KeyBoard.GetKeyUp, KeyBoard.GetKeyPress);
+
+	// Menu Base
+	StructLevel.MenuPrincipal = new Menu(StructLevel.Tela, StructLevel.Teclado);
+
+	// Estado do Menu
+	StructLevel.MENU_STATE = Object.freeze({
+		RUNNING: null,
+		NEWGAME: 0,
+		LOADGAME: 1,
+		OPTIONS: 2,
+		QUIT: 3
+	});
+	// Estado inicial
+	StructLevel.menuState = StructLevel.MENU_STATE.RUNNING;
 }

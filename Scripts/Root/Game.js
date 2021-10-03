@@ -61,5 +61,4 @@
 
 // TODO: Fix it
 export class Game {
-
 }

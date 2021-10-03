@@ -2,9 +2,11 @@ import { Sprite } from "../Drawing/Sprite.js"
 import { Vector2D } from "../Math/Vector2D.js";
 import { Util } from "./Utils.js";
 import { Collide2D } from "../Math/Collide2D.js";
+import { Base } from "./Base.js";
 
-export class GameObject {
+export class GameObject extends Base {
     constructor() {
+        super();
         this.id = Util.NewUUIDv4();
         this.hspeed = 64;
         this.vspeed = 64;
@@ -27,21 +29,9 @@ export class GameObject {
         this.name = "Drako";
     }
 
-    OnCreate() {}
-
-    OnUpdate() {}
-
-    OnFixedUpdate(dt) {}
-
-    OnDraw() {}
-
-    OnGUI() {}
-
     OnCollision(other, callback) {
         if (other instanceof GameObject && Collide2D.isCollidingAABB(this, other)) {
             return () => callback;
         }
     };
-
-    OnDestroy() {}
 }

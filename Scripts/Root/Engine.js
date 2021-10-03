@@ -4,7 +4,7 @@ import { Level01 } from "../../Jogo de Exemplo/Level01.js";
 import { Level02 } from "../../Jogo de Exemplo/Level02.js";
 
 // Levels
-var LevelHandler = {
+export var LevelHandler = {
 	levels: [],
 	current: 0,
 	Index: 0
@@ -23,8 +23,16 @@ export class Engine extends Base {
 			let level00 = new Level00();
 			let level01 = new Level01();
 			let level02 = new Level02();
+			
 			LevelHandler.levels.push(level00, level01, level02);
 			LevelHandler.current = LevelHandler.levels[LevelHandler.Index];
+			LevelHandler.current.levelHandler = LevelHandler;
+			
+			// Inicializa o nível em questão
+			LevelHandler.current.OnStart();
+
+			// Inicializa o loop
+			this.OnFixedUpdate();
 		};
 	}
 
@@ -35,9 +43,10 @@ export class Engine extends Base {
 		// Verificações da engine
 		if (LevelHandler.current.Next) {
 			LevelHandler.Index++;
-			LevelHandler.current = levels[LevelHandler.Index];
+			LevelHandler.current = LevelHandler.levels[LevelHandler.Index];
+			LevelHandler.current.OnStart();
+			LevelHandler.current.Next = false;
 		}
-		this.OnDrawn();
 
 		// Código da cena à ser atualizado
 		LevelHandler.current.OnUpdate();
@@ -45,8 +54,13 @@ export class Engine extends Base {
 		LevelHandler.current.OnDrawn();
 		LevelHandler.current.OnGUI();
 
+		this.OnDrawn();
+
 		LastTime = StartTime;
 		let self = this;
-		window.requestAnimationFrame(self.Loop.bind(self));
+		window.requestAnimationFrame(self.OnFixedUpdate.bind(self));
+	}
+
+	static OnDrawn() {
 	}
 }

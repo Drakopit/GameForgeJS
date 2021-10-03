@@ -1,15 +1,13 @@
 import { Draw } from "../../../Scripts/Drawing/Draw.js";
-import { Input, KeyCode } from "../../../Scripts/Inputs/Input.js";
+import { KeyCode } from "../../../Scripts/Inputs/Input.js";
 import { Sprite } from "../../../Scripts/Drawing/Sprite.js";
 import { Vector2D } from "../../../Scripts/Math/Vector2D.js";
 import { GameObject } from "../../../Scripts/Root/GameObject.js";
 import { Collide2D } from "../../../Scripts/Math/Collide2D.js";
-import { Game } from "../../../Scripts/Root/Game.js";
 import { MathExt } from "../../../Scripts/Math/MathExt.js";
-import { Shader } from "../../../Scripts/Drawing/Shader.js";
-import { Screen3D } from "../../../Scripts/Window/Screen3D.js";
+import { KeyResponse } from "../../../Scripts/Inputs/KeyBoard.js";
 
-// Constante
+// Constante de Direções
 export const DIRECOES = Object.freeze({
     ESQUERDA: 1,
     DIREITA: 3,
@@ -17,6 +15,7 @@ export const DIRECOES = Object.freeze({
     BAIXO: 2
 });
 
+// Conjunto das Teclas Permitidas 
 export const KeyBoardSet = Object.freeze({
     'Left'  : KeyCode.A,
     'Right' : KeyCode.D,
@@ -28,6 +27,11 @@ export const KeyBoardSet = Object.freeze({
 export class Player extends GameObject {
     constructor(screen) {
         super();
+
+        // Acessa os objetos da fase
+        this.parent;
+
+        //#region Configurações do Player
         this.speed = 256;
         this.hspeed = this.speed;
         this.vspeed = this.speed;
@@ -35,93 +39,94 @@ export class Player extends GameObject {
         this.previousPosition = this.position;
         this.startPosition = this.position;
         this.size = new Vector2D(64, 64);
+        //#endregion
 
         // Mecânica de jogo 
         this.type = "Ally";
                 
-        // Classes necessárias
+        //#region Classes Necessárias
         this.draw = new Draw(screen);
-        this.input = new Input(screen);
-        this.input.AddEvents();
+        // this.input = new Input(screen);
+        // this.input.AddEvents(this.GetKeyDown, this.GetKeyUp, this.GetKeyPress);
+        // this.input.Initialize();
+        //#endregion
 
-        // Configuração sprite
+        //#region Configuração sprite
         this.spritefileName = "../../Assets/Sprites/Esqueleto.png";
         this.sprite = new Sprite(screen, this.spritefileName);
         this.sprite.size = this.size;
         this.sprite.position = this.position;
         this.sprite.frameCount = 7;
         this.sprite.updatesPerFrame = 3;
+        //#endregion
 
+        // Setando direção da spritesheet
         this.row = DIRECOES.BAIXO;
 
+        //#region Configurações para cálculo do FPS
         this.updateFPS = 0;
         this.updateFPSPerFrame = 10;
         this.FPS = 60;
+        //#endregion
 
-		// Status RPG
+		//#region Status RPG
         this.Hp = 2000;
         this.MaxHp = this.Hp;
         this.Mp = 100;
         this.MaxMp = this.Mp;
+        
+        // Dinheiro
+        this.Coin = 0;
+        //#endregion
 
+        // DEBUG dano
 		this.danoTeste = 10;
 
+        //#region Configuração da Barra de Sangue
 		this.barSize = 300;
 		this.maxBar = 4;
 		this.currentBar = this.maxBar;
 		this.minBar = 1;
 		this.colorMap = ['lightgrey', 'red', 'orange', 'green', 'olive', 'lime', 'navy', 'blue', 'aqua', 'purple', 'violet'];
-
-        this.Coin = 0;
-
-        // const VSHADER_SOURCE =
-        // 'void main() {\n' +
-        // '  gl_Position = vec4(0.0, 0.0, 0.0, 1.0);\n' + // Set the vertex coordinates of the point
-        // '  gl_PointSize = 30.0;\n' +                    // Set the point size
-        // '}\n';
-
-        // const FSHADER_SOURCE =
-        // 'void main() {\n' +
-        // '  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n' + // Set the point color
-        // '}\n';
-
-        // let screen3D = new Screen3D();
-        // let teste = new Shader(screen3D);
-        // teste.Init();
-        // teste.Attach(VSHADER_SOURCE, FSHADER_SOURCE);
-        // let VertexShader = teste.Vertex();
-        // let FragmentShader = teste.Fragment();
-        // let shader = teste.Create(VertexShader, FragmentShader);
-        // teste.Use(shader);
+        //#endregion
     }
 
     OnFixedUpdate(deltaTime) {
-		if (this.Intersect(Game.FindObject('coin'))) {
-            this.Coin += Game.FindObject('coin').Value;
-            // Deletar moeda
-		}
+        // DEBUG teste de interseção com um objeto
+		// if (this.Intersect(Game.FindObject('coin'))) {
+        //     this.Coin += Game.FindObject('coin').Value;
+        //     // Deletar moeda
+		// }
+
+        // Executa a função que limita o Hp do Player
 		this.LimiteHp();
+        
+        // Executa a função que move o player  
         this.Translate(deltaTime);
     }
 
-    OnDraw() {
-        // Nick do Personagem
+    OnDrawn() {
+        //#region Nick do Personagem 
         this.draw.SetTextAlign('center');
         this.draw.DrawText('Drako', this.position.GetValue().x + (this.size.GetValue().x / 2), this.position.GetValue().y + 8);
         this.draw.SetTextAlign('start');
+        //#endregion
 
         // Animação
         this.sprite.Animation(this.spritefileName, this.position, "horizontal", this.row);
         
-        // Caixa de colisão
+        //#region Caixa de colisão
         this.draw.Style = 1;
         this.draw.DrawRect(this.position.GetValue().x, this.position.GetValue().y, this.size.GetValue().x, this.size.GetValue().y);
         this.draw.Style = 0;
+        //#endregion
     }
 
     OnGUI(deltaTime) {
+        //#region Reseta as configurações de drawn
         this.draw.Style = 0;
         this.draw.Color = "white";
+        //#endregion
 
         this.HUD();
         this.ShowFPS(deltaTime);
@@ -134,51 +139,58 @@ export class Player extends GameObject {
 Player.prototype.Translate = function(deltaTime) {
     let char = new Player(this.screen);
 
-    /* */if (this.input.GetKeyDown(KeyBoardSet.Left)) {
+    /* */if (KeyResponse.getKeyDown == KeyCode["A"]) {
+        KeyResponse.getKeyDown = 0;
         let x = Math.floor(-this.hspeed*deltaTime);
         char.position = new Vector2D(this.position.GetValue().x + x, this.position.GetValue().y);
 
-        if (!char.Intersect(Game.FindObject('npc')))
+        if (!char.Intersect(this.parent["Npc"]))
             this.position = this.position.AddValue(new Vector2D(x,0));
 
         this.row = DIRECOES.ESQUERDA;
-    } else if (this.input.GetKeyDown(KeyBoardSet.Right)) {
+    } else if (KeyResponse.getKeyDown == KeyCode["D"]) {
+        KeyResponse.getKeyDown = 0;
         let x = Math.floor(this.hspeed*deltaTime);
         char.position = new Vector2D(this.position.GetValue().x + x, this.position.GetValue().y);
         
-        if (!char.Intersect(Game.FindObject('npc')))
+        if (!char.Intersect(this.parent["Npc"]))
             this.position = this.position.AddValue(new Vector2D(x,0));
 
         this.row = DIRECOES.DIREITA;
-    } else if (this.input.GetKeyDown(KeyBoardSet.Up)) {
+    } else if (KeyResponse.getKeyDown == KeyCode["W"]) {
+        KeyResponse.getKeyDown = 0;
         let y = Math.floor(-this.vspeed*deltaTime);
         char.position = new Vector2D(this.position.GetValue().x, this.position.GetValue().y + y);
         
-        if (!char.Intersect(Game.FindObject('npc')))
+        if (!char.Intersect(this.parent["Npc"]))
             this.position = this.position.AddValue(new Vector2D(0,y));
 
         this.row = DIRECOES.CIMA;
-    } else if (this.input.GetKeyDown(KeyBoardSet.Down)) {
+    } else if (KeyResponse.getKeyDown == KeyCode["S"]) {
+        KeyResponse.getKeyDown = 0;
         let y = Math.floor(this.vspeed*deltaTime);
         char.position = new Vector2D(this.position.GetValue().x, this.position.GetValue().y + y);
         
-        if (!char.Intersect(Game.FindObject('npc')))
+        if (!char.Intersect(this.parent["Npc"]))
             this.position = this.position.AddValue(new Vector2D(0,y));
 
         this.row = DIRECOES.BAIXO;
     }
 
-    if (this.input.GetKeyDown(this.input.KeyBoardSet.Space)) {
-		if (this.Hp >= this.danoTeste) {
+    if (KeyResponse.getKeyDown == KeyCode["Space"]) {
+		KeyResponse.getKeyDown = 0;
+        if (this.Hp >= this.danoTeste) {
 			this.Hp -= this.danoTeste;
 		}
     }
 };
 
+// Cálcula a distência entre dois objetos
 Player.prototype.Distance = function(position) {
     return MathExt.Module(MathExt.Distance(this, position) - this.size.GetValue().x);
 };
 
+// Cálcula a distência vetorial entre dois pontos
 Player.prototype.VectorDistance = function(other) {
     let v = MathExt.DistanceVector(this, other);
     let x = MathExt.Module(v.GetValue().x - this.size.GetValue().x);
@@ -186,24 +198,31 @@ Player.prototype.VectorDistance = function(other) {
     return new Vector2D(x, y);
 };
 
+// Verifica a interseção de dois objetos
 Player.prototype.Intersect = function(other) {
     if (other != undefined && Collide2D.isCollidingAABB(this, other)) return true;
     else return false;
 };
 
+// Limita os níveis do Hp 
 Player.prototype.LimiteHp = function() {
     if (this.Hp < 0)
         this.Hp = 0;
+    else if (this.Hp > this.MaxHp)
+        this.Hp = this.MaxHp;
 };
 
+// Mostrar a distência entre dois objetos
 Player.prototype.ShowDistance = function() {
-    this.draw.DrawText(`Distância: ${JSON.stringify(this.Distance(Game.FindObject('npc')))}`, 250, 10);
+    this.draw.DrawText(`Distância: ${JSON.stringify(this.Distance(this.parent["Npc"]))}`, 250, 10);
 };
 
+// Mostrar a distância vetorial entre dois objetos
 Player.prototype.ShowVectorDistance = function() {
-    this.draw.DrawText(`Distância Vetorial: ${JSON.stringify(this.VectorDistance(Game.FindObject('npc')))}`, 350, 30);
+    this.draw.DrawText(`Distância Vetorial: ${JSON.stringify(this.VectorDistance(this.parent["Npc"]))}`, 350, 30);
 };
 
+// Mostrar o FPS na tela
 Player.prototype.ShowFPS = function(deltaTime) {
     if (this.updateFPS > this.updateFPSPerFrame) {
         this.updateFPS = 0;
@@ -214,6 +233,7 @@ Player.prototype.ShowFPS = function(deltaTime) {
     this.draw.DrawText(`FPS: ${this.FPS}`, 500, 10);
 };
 
+// Desenha a HUD do jogo
 Player.prototype.HUD = function() {        
     // Hp Label
     this.draw.DrawText('Pontos de Vida', 10, 12);
@@ -252,6 +272,7 @@ Player.prototype.HUD = function() {
     this.draw.DrawText(`Gold: ${this.Coin}`, 400, 10);
 };
 
+// Desenha a barra de Hp
 Player.prototype.HpBar = function(x, y, w, h, value) {
 	this.draw.Color = "lightgray";
 	this.draw.DrawRect(x, y, w, h);
@@ -259,6 +280,7 @@ Player.prototype.HpBar = function(x, y, w, h, value) {
 	this.draw.DrawRect(x, y, value*w, h);
 };
 
+// Desenha o valor do Hp
 Player.prototype.HpText = function(x, y, hp, MaxHp) {
     this.draw.SetTextAlign('center');
     this.draw.Color = "whitesmoke";
@@ -266,6 +288,7 @@ Player.prototype.HpText = function(x, y, hp, MaxHp) {
     this.draw.SetTextAlign('start');
 };
 
+// Desenha a barra de Mp
 Player.prototype.MpBar = function(x, y, w, h, value) {
     this.draw.Color = "lightgray";
     this.draw.DrawRect(x, y, w, h);
@@ -273,6 +296,7 @@ Player.prototype.MpBar = function(x, y, w, h, value) {
     this.draw.DrawRect(x, y, value*w, h);
 };
 
+// Desenha o valor do Mp
 Player.prototype.MpText = function(x, y, mp, MaxMp) {
     this.draw.SetTextAlign('center');
     this.draw.Color = "whitesmoke";

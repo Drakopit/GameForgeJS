@@ -1,19 +1,18 @@
-import { Input } from "../Inputs/Input.js";
 import { Draw } from "../Drawing/Draw.js";
+import { KeyCode } from "../Inputs/Input.js";
+import { KeyResponse } from "../Inputs/KeyBoard.js";
 import { Base } from "../Root/Base.js";
 
 export class Menu extends Base {
-    constructor(screen) {
+    constructor(screen, input) {
         super();
-        // Interace com o teclado
-        this.input = new Input();
         this.screen = screen;
         this.draw = new Draw(this.screen);
 
         this.options = new Array("Novo Jogo", "Continuar", "Opções", "Sair");
 
         // Item selecionado do menu
-        this.currentSelected = 0;        
+        this.currentSelected = 0;
     }
 
     OnStart() {
@@ -21,21 +20,20 @@ export class Menu extends Base {
     }
 
     OnUpdate() {
-        if (this.input.GetKeyDown("W")) {
+        if (KeyResponse.getKeyDown == KeyCode["W"]) {
+            KeyResponse.getKeyDown = 0;
             this.currentSelected--;
             if (this.currentSelected < 0) {
                 this.currentSelected = (this.options.length - 1);
             }
-        } else if (this.input.GetKeyDown("S")) {
+        } else if (KeyResponse.getKeyDown == KeyCode["S"]) {
+            KeyResponse.getKeyDown = 0;
             this.currentSelected++;
             if (this.currentSelected > (this.options.length - 1)) {
                 this.currentSelected = 0;
             }
         }
 
-        if (this.input.GetKeyDown("Enter")) {
-            // Faz o que estiver na opção
-        }
     }
 
     OnGUI() {
@@ -43,9 +41,9 @@ export class Menu extends Base {
             if (i == this.currentSelected) {
                 this.draw.Color = "lightgray";
             } else {
-                this.draw.Color = "green";
+                this.draw.Color = "lime";
             }
-            this.draw.DrawText(this.options[i], 32, 32 + i * 16);
+            this.draw.DrawText(this.options[i], 32, 64 + i * 64);
         }
     }
 }
