@@ -1,46 +1,49 @@
-import { Input } from "../Inputs/Input.js";
+import { Draw } from "../Drawing/Draw.js";
+import { KeyCode } from "../Inputs/Input.js";
+import { KeyResponse } from "../Inputs/KeyBoard.js";
+import { Base } from "../Root/Base.js";
 
-export class Menu {
-    constructor() {}
+export class Menu extends Base {
+    constructor(screen, input) {
+        super();
+        this.screen = screen;
+        this.draw = new Draw(this.screen);
 
-    Start() {
-        // Interace com o teclado
-        this.input = new Input();
-
-        // Estados do Menu
-        const MENU_STATES = Object.freeze({
-            INITIALSTATE: 0,
-            NEWGAME: 1,
-            CONTINUE: 2,
-            OPTIONS: 3,
-            SHUTDOWN: 4
-        });
-        // Estado Atual do Menu
-        this.state = MENU_STATES.INITIALSTATE;
-
-        this.Menu = new Array("Novo Jogo", "Continuar", "Opções", "Sair");
+        this.options = new Array("Novo Jogo", "Continuar", "Opções", "Sair");
 
         // Item selecionado do menu
-        this.currentSelected = 0;        
+        this.currentSelected = 0;
     }
 
-    Update() {
-        if (input.GetKeyDown("W")) {
+    OnStart() {
+        this.draw.FontSize = "45px";
+    }
+
+    OnUpdate() {
+        if (KeyResponse.getKeyDown == KeyCode["W"]) {
+            KeyResponse.getKeyDown = 0;
             this.currentSelected--;
             if (this.currentSelected < 0) {
-                this.currentSelected = (this.Menu.length - 1);
+                this.currentSelected = (this.options.length - 1);
             }
-        } else if (input.GetKeyDown("S")) {
+        } else if (KeyResponse.getKeyDown == KeyCode["S"]) {
+            KeyResponse.getKeyDown = 0;
             this.currentSelected++;
-            if (this.currentSelected > (this.Menu.length - 1)) {
+            if (this.currentSelected > (this.options.length - 1)) {
                 this.currentSelected = 0;
             }
         }
 
-        if (input.GetKeyDown("Enter")) {
-            // Faz o que estiver na opção
-        }
     }
 
-    OnGUI() {}
+    OnGUI() {
+        for (let i = 0; i <= 3; i++) {
+            if (i == this.currentSelected) {
+                this.draw.Color = "lightgray";
+            } else {
+                this.draw.Color = "lime";
+            }
+            this.draw.DrawText(this.options[i], 32, 64 + i * 64);
+        }
+    }
 }

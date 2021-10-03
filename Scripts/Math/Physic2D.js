@@ -1,5 +1,4 @@
 import { Vector3D } from "../Math/Vector3D.js";
-import { Vector2D } from "./Vector2D.js";
 
 export class Physic2D {
     constructor() {}
@@ -44,21 +43,8 @@ export class Physic2D {
                 Static: 1,
                 Dynamic: 0.8
             }
-        }
+        };
         // Ex: this.CoefficientFriction.GraphiteOnGraphite['Dynamic'];
-    }    
-
-    /*----------------------------------------------------------------------------
-        Métodos customizados de física
-    ----------------------------------------------------------------------------*/
-    static reactinCollision(Obj0, Obj1) {
-        // Caso ocorra colisão, 
-        let tx = Obj0.hspeed;
-        let ty = Obj0.vspeed;
-        Obj0.hspeed = Obj1.hspeed;
-        Obj0.vspeed = Obj1.vspeed;
-        Obj1.hspeed = tx;
-        Obj1.vspeed = ty;
     }
 
     /*----------------------------------------------------------------------------

@@ -43,4 +43,8 @@ export class Vector3D {
     AddValue(vector3D) {
         return new Vector3D(this.x + vector3D.GetValue().x, this.y + vector3D.GetValue().y, this.z + vector3D.GetValue().z);
     }
+
+    SubtractValue(vector3D) {
+        return new Vector3D(this.x - vector3D.GetValue().x, this.y - vector3D.GetValue().y, this.z - vector3D.GetValue().z);
+    }
 }

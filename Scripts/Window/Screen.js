@@ -10,15 +10,21 @@
  * @returns {Object}
  */
 import { Vector2D } from "../Math/Vector2D.js";
+
 export class Screen {
     constructor(id, width, height) {
-        this.id = id;
-        this.width = width;
-        this.height = height;
+		this.id = id;
+		this.ratio = width/height;
+		if (width !== undefined && height !== undefined) {
+            this.width = width * this.ratio;
+			this.height = height * this.ratio;
+		} else {
+			this.width = window.innerWidth * this.ratio;
+			this.height = window.innerHeight * this.ratio;
+		}
         this.clientWidth = window.innerWidth;
         this.clientHeight = window.innerHeight;
-        this.x = 0;
-        this.y = 0;
+		this.x = 0; this.y = 0;
     }
 
     /**
@@ -46,7 +52,7 @@ export class Screen {
      *  var newContext = screen.Context();
      * @returns context
      */
-    get Context() { return this.context }
+    get Context() { return this.context; }
 
     /**
      * @doc Method
@@ -82,7 +88,7 @@ export class Screen {
         this.canvas.setAttribute("id", screenName);
         this.canvas.setAttribute("width", this.width);
         this.canvas.setAttribute("height", this.height);
-        this.context = this.canvas.getContext("2d");
+		this.context = this.canvas.getContext("2d");
     }
 
     /**
@@ -112,7 +118,7 @@ export class Screen {
      */
     GetSize() {
         return new Vector2D(this.Width, this.Height);
-    }    
+    }
 
     /**
      * @doc Method
@@ -137,9 +143,9 @@ export class Screen {
      * @example
      *  screen.Resize(640, 480);
      */
-    Resize(width, height) {
-        this.width = width;
-        this.height = height;
+    Resize(vector2D) {
+        // this.width = vector2D.GetValue().x;
+        // this.height = vector2D.GetValue().y;
         this.canvas.width = this.width;
         this.canvas.height = this.height;
     }
@@ -151,20 +157,9 @@ export class Screen {
      *  var position = screen.Position();
      * @returns Vector2D
      */
-    get Position() { return new Vector2D(this.x, this.y)}
-
-    /**
-     * @doc Method
-     * @param {x} x 
-     * @param {y} y
-     * @description Change screen position
-     * @example
-     *  screen.Position(150, 100);
-     */
-    Position(x, y) {
-        this.x = x; this.y = y;
-        this.canvas.style.position = "absolute";
-        this.canvas.style.left = `${this.x}px`;
-        this.canvas.style.top = `${this.y}px`;
-    }
+    get Position() { return new Vector2D(this.x, this.y); }
 }
+
+Screen.prototype.MDC = function(width, height) {
+    return (height == 0) ? width : this.MDC(height, width%height);
+};

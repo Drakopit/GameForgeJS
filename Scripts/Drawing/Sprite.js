@@ -43,7 +43,7 @@ export class Sprite {
             size.GetValue().x, size.GetValue().y);
     }
 
-    Animation(spr, position, direction, row) {
+    Animation(spr = undefined, position, direction, row) {
         if (spr === undefined && this.sprite === undefined) {
             throw 'Esta classe não funciona, se você não atribuir uma sprite à ela!';
         }
@@ -52,9 +52,6 @@ export class Sprite {
         this.row = (row !== undefined) ? row: this.row;
 
         if (direction === "horizontal") {
-            console.log("Indice:", this.index);
-            console.log("Linha: ", this.row);
-            console.log("Tamanho do Player: ", this.size);
             /**
              * @example
              * this.screen.Context.drawImage(spirte, posicaoXCorte, posicaoYCorte,
@@ -63,22 +60,15 @@ export class Sprite {
              * larguraSprite, alturaSprite)
              */
             this.screen.Context.drawImage(this.sprite,
-
                 this.index * this.size.GetValue().x, this.row * this.size.GetValue().y,
-                
                 this.size.GetValue().x, this.size.GetValue().y,
-                
                 this.position.GetValue().x, this.position.GetValue().y,
-                
                 this.size.GetValue().x * this.scale, this.size.GetValue().y * this.scale);
         } else {
             this.screen.Context.drawImage(this.sprite,
                 0, this.index * this.size.GetValue().y,
-                
                 this.size.GetValue().x, this.size.GetValue().y,
-                
                 this.position.GetValue().x, this.position.GetValue().y,
-                
                 this.size.GetValue().x * this.scale, this.size.GetValue().y * this.scale);
         }
 

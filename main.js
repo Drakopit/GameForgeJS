@@ -1,5 +1,4 @@
-import { Game } from "./Scripts/Root/Game.js";
-
+import { Engine } from "./Scripts/Root/Engine.js";
 /**
  * @author Patrick Faustino Camello
  * @description Initialize the Game.
@@ -7,4 +6,10 @@ import { Game } from "./Scripts/Root/Game.js";
  * And Game class initialize, entire game
  * with all assets
  */
-Game.Awake();
+
+try {
+    Engine.OnStart();
+    console.dir(Engine);
+} catch(exception) {
+    console.error(`Exception: ${exception}`);
+}

@@ -9,14 +9,22 @@
  *  var button = new Button(canvas, context);
  * @returns {Object}
  */
-import {Rect} from "Shapes/Rect.js";
-import {Collide2D} from "Math/Collide2D.js";
+import { Rectangle } from "../Shapes/Rectangle.js";
+import { Draw } from "../Drawing/Draw.js";
+import { Mouse } from "../Inputs/Mouse.js";
 
-class Button {
+export class Button {
     constructor(screen) {
         this.screen = screen;
         this.color = "#428BCA";
+        this.draw = new Draw(screen);
+        this.mouse = new Mouse();
+        this.rect = new Rectangle(0,0,80,15);
     };
+
+    SetButton(rect) {
+        this.rect = rect;
+    }
 
     /**
      * @doc Method
@@ -26,17 +34,8 @@ class Button {
      *  button.Color(cor);
      * @returns {}
      */
-    set Color(cor) { this.color = cor; }
+    set Color(cor) { this.draw.Color = cor; }
 
-    /**
-     * @doc Method
-     * @description Get button color
-     * @example
-     *  var color = button.Color();
-     * @returns {string}
-     */
-    get Color() { return this.color; }
-    
     /**
      * @doc Method
      * @param {functionToExecute} callback 
@@ -46,14 +45,13 @@ class Button {
      *      console.log("Button was clicked!");
      *  });
      */
-    Click(callback) {
-        // Executa a função de callback, caso seja clicado
-        canvas.addEventListener('click', (e) => {
-            const collide = new Collide2D();
-            const mouserect = new Rect(e.offsetX, e.offsetY, 1, 1);
-            var iscollide = collide.isCollidingAABB(rect, mouserect);
-            if (iscollide) callback();
-        }, false);
+    Click() {
+        this.rect = rect || this.rect;
+        if (this.mouse.ClickDown(this.rect)) {
+            return true;
+        } else {
+            return false;
+        };
     }
 
     /**
@@ -67,13 +65,13 @@ class Button {
      *  button.Draw(0, 0, 121, 24);
      * @returns {} 
      */
-    Draw(x, y, width, height) {
-        // Instancia um retângulo do tamanho do botão pra que seja possível fazer os cálculos
-        this.rect = new Rect(x, y, width, height);
-        
-        // Desenha o botão
-        this.screen.Context.fillStyle = color;
-        this.screen.Context.rect(rect.x, rect.y, rect.width, rect.height);
-        this.screen.Context.fill();
+    Draw(rect) {
+        this.rect = rect || this.rect;
+        this.draw.Color = this.Color;
+        this.draw.Style = 1;
+        this.draw.DrawRect(this.rect.x+1, this.rect.y+1, this.rect.width-1, this.rect.height-1);
+        this.draw.Style = 0;
+        this.draw.DrawRect(this.rect.x, this.rect.y, this.rect.width, this.rect.height);
+        this.draw.Color = "white";
     }
 }
