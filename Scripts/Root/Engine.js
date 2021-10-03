@@ -7,7 +7,7 @@ import { Level02 } from "../../Jogo de Exemplo/Level02.js";
 export var LevelHandler = {
 	levels: [],
 	current: 0,
-	Index: 0
+	Index: 1
 };
 
 // Time

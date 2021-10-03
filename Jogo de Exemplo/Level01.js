@@ -1,11 +1,14 @@
-import { Screen } from "../Scripts/Window/Screen.js";
-import { Scene } from "../Scripts/Root/Scene.js";
-import { Player } from "./TopDown/Entities/Player.js";
-import { NPC } from "./TopDown/Entities/NPC.js";
-import { DebugMap } from "../Scripts/Root/DebugMap.js";
+import { Input } from "../Scripts/Inputs/Input.js";
+import { KeyBoard } from "../Scripts/Inputs/KeyBoard.js";
 import { Vector2D } from "../Scripts/Math/Vector2D.js";
 import { Camera } from "../Scripts/Root/Camera.js";
+import { DebugMap } from "../Scripts/Root/DebugMap.js";
+import { Scene } from "../Scripts/Root/Scene.js";
+import { Screen } from "../Scripts/Window/Screen.js";
 import { Level } from "./Level.js";
+import { Coin } from "./TopDown/Entities/Coin.js";
+import { NPC } from "./TopDown/Entities/NPC.js";
+import { Player } from "./TopDown/Entities/Player.js";
 
 // Estrutura que carrega todas informações de cunho global do level
 var StructLevel = {
@@ -19,6 +22,8 @@ var StructLevel = {
 	Jogador: null,
 	// Npc
 	Npc: null,
+	// Coin
+	Coin: null,
 	// Camera
 	ViewPort: null,
 	// Constante de dimensões do Jogo
@@ -41,7 +46,7 @@ export class Level01 extends Level {
 		this.InitializeDependencies();
 		StructLevel.Mapa.CallScene("PrimeiraFase", "Fase_01");
 		// Necessário pra usar o MapaTeste
-		StructLevel.MapStructure = [
+		StructLevel.MapaTeste.MapStructure = [
 			1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 			1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1,
 			1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1,
@@ -106,32 +111,47 @@ Level01.prototype.InitializeDependencies = function() {
 	// Tela
 	StructLevel.Tela = new Screen("PrimeiraFase", 640, 480);
 	StructLevel.Tela.Init("Fase01");
+	
 	// Mapa carregado de um JSON
 	StructLevel.Mapa = new Scene("PrimeiraFase", StructLevel.Tela);
+	
 	// Mapa de Teste
 	StructLevel.MapaTeste = new DebugMap(StructLevel.Tela);
+	
+	// Keyboard Events
+	StructLevel.Teclado = new Input(StructLevel.Tela);
+	StructLevel.Teclado.AddEvents(KeyBoard.GetKeyDown, KeyBoard.GetKeyUp, KeyBoard.GetKeyPress);
+
 	// Jogador
 	StructLevel.Jogador = new Player(StructLevel.Tela);
 	StructLevel.Jogador.parent = StructLevel; // Permiti acesso à todos os objetos do nível
+	
 	// Npc
 	StructLevel.Npc = new NPC(StructLevel.Tela);
+
+	// Coid
+	StructLevel.Coin = new Coin(StructLevel.Tela);
+	
 	// Camera
 	StructLevel.ViewPort = new Camera(StructLevel.Jogador.position, new Vector2D(StructLevel.Tela.Width, StructLevel.Tela.Height));
+	
 	// Constante de dimensões do Jogo
 	StructLevel.GameWorld = {
 		width: (StructLevel.MapaTeste.mapWidth * StructLevel.MapaTeste.tileW),
 		height: (StructLevel.MapaTeste.mapHeight * StructLevel.MapaTeste.tileH)
 	};
+	
 	// Máquina de estado do Level
 	StructLevel.WORLD_STATE = Object.freeze({
 		GAME_MENU: 0,
 		GAME_RUNING: 1,
 		GAME_PAUSE: 2
 	});
+	
 	// Estado inicial
 	StructLevel.worldState = StructLevel.WORLD_STATE.GAME_RUNING;
 
 	// Entidades do level
 	// ViewPort, Tela, Mapa, MapaTeste não é adicionado, pois tem uma tratativa diferente
-	StructLevel.Entities.push(StructLevel.Jogador, StructLevel.Npc);
+	StructLevel.Entities.push(StructLevel.MapaTeste, StructLevel.Jogador, StructLevel.Npc, StructLevel.Coin);
 }

@@ -15,15 +15,6 @@ export const DIRECOES = Object.freeze({
     BAIXO: 2
 });
 
-// Conjunto das Teclas Permitidas 
-export const KeyBoardSet = Object.freeze({
-    'Left'  : KeyCode.A,
-    'Right' : KeyCode.D,
-    'Up'    : KeyCode.W,
-    'Down'  : KeyCode.S,
-    'Space' : KeyCode.Space
-});
-
 export class Player extends GameObject {
     constructor(screen) {
         super();
@@ -32,7 +23,7 @@ export class Player extends GameObject {
         this.parent;
 
         //#region Configurações do Player
-        this.speed = 256;
+        this.speed = 8;
         this.hspeed = this.speed;
         this.vspeed = this.speed;
         this.position = new Vector2D(128, 64);
@@ -44,12 +35,8 @@ export class Player extends GameObject {
         // Mecânica de jogo 
         this.type = "Ally";
                 
-        //#region Classes Necessárias
+        // Classe que permite desenhar na tela
         this.draw = new Draw(screen);
-        // this.input = new Input(screen);
-        // this.input.AddEvents(this.GetKeyDown, this.GetKeyUp, this.GetKeyPress);
-        // this.input.Initialize();
-        //#endregion
 
         //#region Configuração sprite
         this.spritefileName = "../../Assets/Sprites/Esqueleto.png";
@@ -92,11 +79,15 @@ export class Player extends GameObject {
     }
 
     OnFixedUpdate(deltaTime) {
-        // DEBUG teste de interseção com um objeto
-		// if (this.Intersect(Game.FindObject('coin'))) {
-        //     this.Coin += Game.FindObject('coin').Value;
-        //     // Deletar moeda
-		// }
+        // Se bater na moeda
+        if (this.Intersect(this.parent["Coin"])) {
+            if (this.parent["Coin"]) {
+                this.Coin += this.parent["Coin"].Value;
+            //    if (this.parent["Entities"]) {
+            //        this.parent["Entities"].pop();
+            //    }
+            }
+        }
 
         // Executa a função que limita o Hp do Player
 		this.LimiteHp();
@@ -135,44 +126,49 @@ export class Player extends GameObject {
     }
 }
 
+//#region Mecânica
 // Movimentação do Player
 Player.prototype.Translate = function(deltaTime) {
     let char = new Player(this.screen);
 
     /* */if (KeyResponse.getKeyDown == KeyCode["A"]) {
         KeyResponse.getKeyDown = 0;
-        let x = Math.floor(-this.hspeed*deltaTime);
+        // let x = Math.floor(-this.hspeed*deltaTime);
+        let x = -this.hspeed;
         char.position = new Vector2D(this.position.GetValue().x + x, this.position.GetValue().y);
 
         if (!char.Intersect(this.parent["Npc"]))
-            this.position = this.position.AddValue(new Vector2D(x,0));
+            this.position = this.position.AddValue(new Vector2D(x, 0));
 
         this.row = DIRECOES.ESQUERDA;
     } else if (KeyResponse.getKeyDown == KeyCode["D"]) {
         KeyResponse.getKeyDown = 0;
-        let x = Math.floor(this.hspeed*deltaTime);
+        // let x = Math.floor(this.hspeed*deltaTime);
+        let x = this.hspeed;
         char.position = new Vector2D(this.position.GetValue().x + x, this.position.GetValue().y);
-        
+
         if (!char.Intersect(this.parent["Npc"]))
-            this.position = this.position.AddValue(new Vector2D(x,0));
+            this.position = this.position.AddValue(new Vector2D(x, 0));
 
         this.row = DIRECOES.DIREITA;
     } else if (KeyResponse.getKeyDown == KeyCode["W"]) {
         KeyResponse.getKeyDown = 0;
-        let y = Math.floor(-this.vspeed*deltaTime);
+        // let y = Math.floor(-this.vspeed*deltaTime);
+        let y = -this.vspeed
         char.position = new Vector2D(this.position.GetValue().x, this.position.GetValue().y + y);
-        
+
         if (!char.Intersect(this.parent["Npc"]))
-            this.position = this.position.AddValue(new Vector2D(0,y));
+            this.position = this.position.AddValue(new Vector2D(0, y));
 
         this.row = DIRECOES.CIMA;
     } else if (KeyResponse.getKeyDown == KeyCode["S"]) {
         KeyResponse.getKeyDown = 0;
-        let y = Math.floor(this.vspeed*deltaTime);
+        // let y = Math.floor(this.vspeed*deltaTime);
+        let y = this.vspeed
         char.position = new Vector2D(this.position.GetValue().x, this.position.GetValue().y + y);
-        
+
         if (!char.Intersect(this.parent["Npc"]))
-            this.position = this.position.AddValue(new Vector2D(0,y));
+            this.position = this.position.AddValue(new Vector2D(0, y));
 
         this.row = DIRECOES.BAIXO;
     }
@@ -211,7 +207,9 @@ Player.prototype.LimiteHp = function() {
     else if (this.Hp > this.MaxHp)
         this.Hp = this.MaxHp;
 };
+//#endregion
 
+//#region Funções do Drawn
 // Mostrar a distência entre dois objetos
 Player.prototype.ShowDistance = function() {
     this.draw.DrawText(`Distância: ${JSON.stringify(this.Distance(this.parent["Npc"]))}`, 250, 10);
@@ -303,3 +301,4 @@ Player.prototype.MpText = function(x, y, mp, MaxMp) {
     this.draw.DrawText(`${mp}/${MaxMp}`, x, y);
     this.draw.SetTextAlign('start');
 };
+//#endregion
