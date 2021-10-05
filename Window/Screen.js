@@ -26,6 +26,9 @@ export class Screen {
         this.clientWidth = window.innerWidth;
         this.clientHeight = window.innerHeight;
 		this.x = 0; this.y = 0;
+
+        // Inicializa a tela
+        this.Init(this.id);
     }
 
     /**
