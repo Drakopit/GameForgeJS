@@ -1,4 +1,4 @@
-import { Engine } from "./Scripts/Root/Engine.js";
+import { Engine } from "./Root/Engine.js";
 /**
  * @author Patrick Faustino Camello
  * @description Initialize the Game.
