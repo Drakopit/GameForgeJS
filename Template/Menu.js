@@ -1,6 +1,5 @@
 import { Draw } from "../Drawing/Draw.js";
-import { KeyCode } from "../Input/Input.js";
-import { KeyResponse } from "../Input/KeyBoard.js";
+import { KeyCode, KeyResponse } from "../Input/Input.js";
 import { Base } from "../Root/Base.js";
 
 export class Menu extends Base {

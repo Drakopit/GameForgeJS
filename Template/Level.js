@@ -24,9 +24,6 @@ export class Level extends Base {
         
 		// Level ID
 		this.TelaId;
-
-        // Level Handler
-        this.LEVEL_HANDLER
     }
 
     OnStart() {

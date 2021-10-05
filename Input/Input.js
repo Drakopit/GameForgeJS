@@ -1,3 +1,84 @@
+/**
+ * @doc Class Input
+ * @namespace Input
+ * @class Input
+ * @author Patrick Faustino Camello
+ * @summary That class was made, to compose the EngineHtml5 framework.
+ * @Date 15/05/2019
+ * @example var input = new Input(screen);
+ * @returns {Object}
+ */
+
+// API padrão usa KeyboardEvent
+export class Input {
+    constructor(screen) {
+        this.screen = screen;
+    }
+
+    AddEvents(Down, Release, Press) {
+        if (document.addEventListener) {
+            document.addEventListener("keydown",    (evento) => {
+                return Down(evento);
+            }, false);
+            document.addEventListener("keyup",      (evento) => {
+                return Release(evento);
+            }, false);
+            document.addEventListener("keypress",   (evento) => {
+                return Press(evento);
+            }, false);
+        } else {
+            document.attachEvent("onkeydown",   (evento) => {
+                return Down(evento)
+            });
+            document.attachEvent("onkeyup",     (evento) => {
+                return Release(evento);
+            });
+            document.attachEvent("onkeypress",  (evento) => {
+                return Press(evento);
+            });
+        }
+    };
+
+    RemoveEvents(Down, Release, Press) {
+        document.removeEventListener("keydown",     (evento) => {
+            return Down(evento);
+        });
+        document.removeEventListener("keyup",       (evento) => {
+            return Release(evento);
+        });
+        document.removeEventListener("keypress",    (event) => {
+            return Press(evento);
+        });
+    };
+}
+
+Input.prototype.GetKeyDown = function(evento) {
+    if (evento !== undefined) {
+        KeyResponse.getKeyUp = 0;
+        // KeyResponse.getKeyPress = 0;
+        KeyResponse.getKeyDown = evento.keyCode;
+        // return evento.keyCode;
+    }
+}
+
+Input.prototype.GetKeyUp = function(evento) {
+    if (evento !== undefined) {
+        KeyResponse.getKeyDown = 0;
+        // KeyResponse.getKeyPress = 0;
+        KeyResponse.getKeyUp = evento.keyCode;
+        // return evento.keyCode;
+    }
+}
+
+Input.prototype.GetKeyPress = function(evento) {
+    if (evento !== undefined) {
+        // KeyResponse.getKeyDown = 0;
+        // KeyResponse.getKeyUp = 0;
+        KeyResponse.getKeyPress = evento.keyCode;
+        // return evento.keyCode;
+    }
+}
+
 export const KeyCode = Object.freeze({
     "Break" : 3,
     "Backspace" : 8,
@@ -100,56 +181,8 @@ export class Key {
     set KeyPress(bool) { this.isPress = bool; };
 }
 
-/**
- * @doc Class Input
- * @namespace Input
- * @class Input
- * @author Patrick Faustino Camello
- * @summary That class was made, to compose the EngineHtml5 framework.
- * @Date 15/05/2019
- * @example var input = new Input(screen);
- * @returns {Object}
- */
-
-// API padrão usa KeyboardEvent
-export class Input {
-    constructor(screen) {
-        this.screen = screen;
-    }
-
-    AddEvents(Down, Release, Press) {
-        if (document.addEventListener) {
-            document.addEventListener("keydown",    (evento) => {
-                return Down(evento);
-            }, false);
-            document.addEventListener("keyup",      (evento) => {
-                return Release(evento);
-            }, false);
-            document.addEventListener("keypress",   (evento) => {
-                return Press(evento);
-            }, false);
-        } else {
-            document.attachEvent("onkeydown",   (evento) => {
-                return Down(evento)
-            });
-            document.attachEvent("onkeyup",     (evento) => {
-                return Release(evento);
-            });
-            document.attachEvent("onkeypress",  (evento) => {
-                return Press(evento);
-            });
-        }
-    };
-
-    RemoveEvents(Down, Release, Press) {
-        document.removeEventListener("keydown",     (evento) => {
-            return Down(evento);
-        });
-        document.removeEventListener("keyup",       (evento) => {
-            return Release(evento);
-        });
-        document.removeEventListener("keypress",    (event) => {
-            return Press(evento);
-        });
-    };
-}
+export var KeyResponse = {
+    getKeyDown: 0,
+    getKeyUp: 0,
+    getKeyPress: 0
+};

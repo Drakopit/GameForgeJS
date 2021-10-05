@@ -10,7 +10,7 @@
  */
 
 import { Base } from "./Base.js";
-import { Level } from "../Template/Level.js";
+import { Level } from "../Template/Level.js"
 
 // Level Handler
 export var LevelHandler = {
