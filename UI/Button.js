@@ -3,15 +3,16 @@
  * @namespace UI
  * @class Button
  * @author Patrick Faustino Camello
- * @summary That class was made, to compose the EngineHtml5 framework.
+ * @summary This class is part of the EngineHtml5 framework and provides functionality to create and interact with UI buttons.
  * @Date 15/05/2019
  * @example
- *  In Progress
+ *  var button = new Button(screen);
  * @returns {Object}
  */
 
-import { Draw } from "../Drawing/Draw.js";
+import { Draw } from "../Graphic/Draw.js";
 import { Mouse } from "../Input/Mouse.js";
+import { Rectangle } from "../Graphic/Rectangle.js"; // Certifique-se de que a classe Rectangle está corretamente importada
 
 export class Button {
     constructor(screen) {
@@ -19,8 +20,8 @@ export class Button {
         this.color = "#428BCA";
         this.draw = new Draw(screen);
         this.mouse = new Mouse();
-        this.rect = new Rectangle(0,0,80,15);
-    };
+        this.rect = new Rectangle(0, 0, 80, 15);
+    }
 
     SetButton(rect) {
         this.rect = rect;
@@ -28,48 +29,49 @@ export class Button {
 
     /**
      * @doc Method
-     * @param {color} cor
-     * @description Chage button color
+     * @param {string} color
+     * @description Changes the button color.
      * @example
-     *  button.Color(cor);
-     * @returns {}
+     *  button.Color = "#FF5733";
+     * @returns {void}
      */
-    set Color(cor) { this.draw.Color = cor; }
-
-    /**
-     * @doc Method
-     * @param {functionToExecute} callback 
-     * @description Execute some action when button is clicked
-     * @example
-     *  button.Click(function () {
-     *      console.log("Button was clicked!");
-     *  });
-     */
-    Click() {
-        this.rect = rect || this.rect;
-        if (this.mouse.ClickDown(this.rect)) {
-            return true;
-        } else {
-            return false;
-        };
+    set Color(color) {
+        this.color = color;
     }
 
     /**
      * @doc Method
-     * @param {x} x 
-     * @param {y} y 
-     * @param {width} width 
-     * @param {height} height
-     * @description Draws button UI
+     * @param {function} callback
+     * @description Executes the provided callback function when the button is clicked.
      * @example
-     *  button.Draw(0, 0, 121, 24);
-     * @returns {} 
+     *  button.Click(() => {
+     *      console.log("Button was clicked!");
+     *  });
+     * @returns {void}
+     */
+    Click(callback) {
+        if (this.mouse.ClickDown(this.rect)) {
+            if (typeof callback === 'function') {
+                callback();
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @doc Method
+     * @param {Rectangle} rect
+     * @description Draws the button UI with the specified rectangle.
+     * @example
+     *  button.DrawCursor(new Rectangle(0, 0, 121, 24));
+     * @returns {void}
      */
     DrawCursor(rect) {
         this.rect = rect || this.rect;
-        this.draw.Color = this.Color;
+        this.draw.Color = this.color;
         this.draw.Style = 1;
-        this.draw.DrawRect(this.rect.x+1, this.rect.y+1, this.rect.width-1, this.rect.height-1);
+        this.draw.DrawRect(this.rect.x + 1, this.rect.y + 1, this.rect.width - 1, this.rect.height - 1);
         this.draw.Style = 0;
         this.draw.DrawRect(this.rect.x, this.rect.y, this.rect.width, this.rect.height);
         this.draw.Color = "white";

@@ -1,4 +1,4 @@
-import { Draw } from "../Drawing/Draw.js";
+import { Draw } from "../Graphic/Draw.js";
 import { KeyCode } from "../Input/Input.js";
 import { KeyResponse } from "../Input/KeyBoard.js";
 import { Base } from "../Root/Base.js";

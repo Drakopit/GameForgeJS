@@ -3,89 +3,130 @@
  * @namespace Root
  * @class Engine
  * @author Patrick Faustino Camello
- * @summary That class was made, to compose the EngineHtml5 framework.
- * @description It's the of the framework. This class run the whole game/app
+ * @summary This class represents the main engine of the framework, responsible for running the entire game/application.
+ * @description Manages game levels, updates, and rendering.
  * @Date 15/05/2019
- * @returns void
+ * @returns {void}
  */
 
 import { Base } from "./Base.js";
 import { Level } from "../Template/Level.js";
 
 // Level Handler
-export var LevelHandler = {
-	levels: [],
-	current: 0,
-	Index: 0
+export const LevelHandler = {
+    levels: [],
+    current: null,
+    index: 0,
+
+        /**
+     * @doc Method
+     * @description Adds a new level to the level handler.
+     * @param {Level} level - The level to add.
+     * @example
+     *  LevelHandler.addLevel(new Level());
+     * @returns {void}
+     */
+    addLevel(level) {
+        this.levels.push(level);
+        this.current = level;
+    }
 };
 
 // Time
-var StartTime;
-var LastTime;
-var DeltaTime;
+let startTime;
+let lastTime = performance.now();
+let deltaTime = 0;
 
 export class Engine extends Base {
-	constructor() { super(); }
+    constructor() {
+        super();
+    }
 
-	static OnStart() {
-		window.onload = () => {
-			// TODO: Preciso pensar em como farei para simplificar essa parte
-			// Por hora
+    /**
+     * @doc Method
+     * @description Initializes the engine, loads the first level, and starts the game loop.
+     * @example
+     *  Engine.OnStart();
+     * @returns {void}
+     */
+    static OnStart() {
+        window.onload = () => {
+            // // Initialize the first level
+            // const level = new Level();
+            // LevelHandler.levels.push(level);
+            // LevelHandler.current = level;
 
-			//#region Inicialize as fazer do Jogo aqui
-				let level = new Level();
-			//#endregion
+            // Configure the level handler for child objects
+            LevelHandler.current.LEVEL_HANDLER = LevelHandler;
 
-			// Adicione as fazes ao handler
-			LevelHandler.levels.push(level);
-			
-			// Configure a primeira fazer
-			LevelHandler.current = LevelHandler.levels[LevelHandler.Index]; // Set first level
-			
-			// Configura o levelHandler para ser acessado pelos objetos filhos
-			LevelHandler.current.LEVEL_HANDLER = LevelHandler;
-			
-			// Inicializa a fase em questão
-			LevelHandler.current.OnStart(); // Initialize the first level
+            // Start the first level
+            LevelHandler.current.OnStart();
 
-			// Inicializa o loop
-			this.OnFixedUpdate();
-		};
-	}
+            // Start the game loop
+            this.OnFixedUpdate();
+        };
+    }
 
-	static OnFixedUpdate() {
-		StartTime = performance.now();
-		DeltaTime = (1000.0 / (StartTime - LastTime));
+    /**
+     * @doc Method
+     * @description Main game loop, updates the game state and renders the scene.
+     * @example
+     *  Engine.OnFixedUpdate();
+     * @returns {void}
+     */
+    static OnFixedUpdate() {
+        startTime = performance.now();
+        deltaTime = (startTime - lastTime) / 1000.0; // Correctly calculate delta time in seconds
 
-		// Verificações da engine
-		if (LevelHandler.current.Next) {
-			// Remove o level anterior
-			this.RemoveLevel(LevelHandler.current.TelaId);
-			// Configura o novo nível
-			LevelHandler.Index++;
-			LevelHandler.current = LevelHandler.levels[LevelHandler.Index];
-			LevelHandler.current.OnStart();
-			LevelHandler.current.Next = false;
-		}
+        // Check if there is a new level to load
+        if (LevelHandler.current.Next) {
+            this.RemoveLevel(LevelHandler.current.TelaId);
 
-		// Código da cena à ser atualizado
-		LevelHandler.current.OnUpdate();
-		LevelHandler.current.OnFixedUpdate(DeltaTime);
-		LevelHandler.current.OnDrawn();
-		LevelHandler.current.OnGUI();
+            // Move to the next level
+            LevelHandler.index++;
+            LevelHandler.current = LevelHandler.levels[LevelHandler.index];
+            LevelHandler.current.LEVEL_HANDLER = LevelHandler; // Reassign level handler
+            LevelHandler.current.OnStart();
+            LevelHandler.current.Next = false;
+        }
 
-		this.OnDrawn();
+        // Update the current level
+        if (LevelHandler.current) {
+            LevelHandler.current.OnUpdate();
+            LevelHandler.current.OnFixedUpdate(deltaTime);
+            LevelHandler.current.OnDrawn();
+            LevelHandler.current.OnGUI();
+        }
 
-		LastTime = StartTime;
+        // Call engine's draw method
+        this.OnDrawn();
+
 		let self = this;
-		window.requestAnimationFrame(self.OnFixedUpdate.bind(self));
-	}
+        lastTime = startTime;
+        window.requestAnimationFrame(self.OnFixedUpdate.bind(this));
+    }
 
-	static OnDrawn() {}
+    /**
+     * @doc Method
+     * @description Override this method to implement custom drawing logic.
+     * @example
+     *  Engine.OnDrawn = function() { // Custom draw logic };
+     * @returns {void}
+     */
+    static OnDrawn() {}
 
-	static RemoveLevel(levelId) {
-		let element = document.getElementById(levelId);
-		element.parentNode.removeChild(element);
-		// .parentNode.removeChild(levelId);
-	}
+    /**
+     * @doc Method
+     * @param {string} levelId - The ID of the level to remove.
+     * @description Removes the specified level from the DOM.
+     * @example
+     *  Engine.RemoveLevel("level1");
+     * @returns {void}
+     */
+    static RemoveLevel(levelId) {
+        const element = document.getElementById(levelId);
+        if (element && element.parentNode) {
+            element.parentNode.removeChild(element);
+        }
+    }
 }
