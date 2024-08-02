@@ -172,7 +172,7 @@ try {
 
 ## Examples
 
-Explore the `[Levels/](https://github.com/Drakopit/TechDemo)` url to see examples of different game levels and how to create them. The `GravityLevel.js` demonstrates a level with gravity effects applied to game entities.
+Explore the `[https://github.com/Drakopit/TechDemo]` url to see examples of different game levels and how to create them. The `GravityLevel.js` demonstrates a level with gravity effects applied to game entities.
 
 ## Contributing
 
