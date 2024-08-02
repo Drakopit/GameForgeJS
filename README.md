@@ -2,7 +2,7 @@
 
 ## Overview
 
-Welcome to the TechDemo/Sample of our JavaScript framework for creating browser-based games! This demo will guide you through the essentials of using our framework to develop your own games, showcasing various features and functionalities. The framework is built with pure JavaScript (97.3%), along with a small amount of HTML (1.3%) and CSS (1.4%).
+Welcome to the GameForgeJS JavaScript framework for creating browser-based games! This will guide you through the essentials of using our framework to develop your own games, showcasing various features and functionalities. The framework is built with pure JavaScript (97.3%), along with a small amount of HTML (1.3%) and CSS (1.4%).
 
 ## Table of Contents
 
