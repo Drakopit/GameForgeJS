@@ -1,4 +1,4 @@
-# TechDemo/Sample Framework README
+# GameForgeJS README
 
 ## Overview
 
