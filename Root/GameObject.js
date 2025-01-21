@@ -10,7 +10,7 @@
  * @returns void
  */
 
-import { Sprite } from "../Drawing/Sprite.js";
+import { Sprite } from "../Graphic/Sprite.js";
 import { Vector2D } from "../Math/Vector2D.js";
 import { Base } from "./Base.js";
 import { Util } from "./Utils.js";
@@ -38,6 +38,9 @@ export class GameObject extends Base {
 
         this.Tag = "Entity";
         this.name = "Drako";
+
+        // Current Level
+        this.CurrentLevel = undefined;
     }
 
     OnCollision(other, callback) {
