@@ -25,46 +25,48 @@ To get started with our framework, you will need a basic understanding of JavaSc
 Here's an overview of the project's directory structure:
 
 ```
-TechDemo/
-├── Framework/
-│   ├── Audio/
-│   |   ├── Song.js/
-│   ├── Graphic/
-│   │   ├── Draw.js
-│   │   ├── Rectangle.js
-│   │   ├── Shape3D.js
-│   │   ├── Sprite.js
-│   ├── Input/
-│   │   ├── Input.js
-│   │   ├── KeyCode.js
-│   │   ├── Mouse.js
-│   │   ├── Touch.js
-│   ├── Math/
-│   │   ├── Collide2D.js
-│   │   ├── MathExt.js
-│   │   ├── Physic2D.js
-│   │   ├── Vector2D.js
-│   │   ├── Vector3D.js
-│   ├── Root/
-│   │   ├── Base.js
-│   │   ├── Camera.js
-│   │   ├── Engine.js
-│   │   ├── GameObject.js
-│   │   ├── Scene.js
-│   │   ├── Store.js
-│   │   ├── UI.js
-│   │   ├── Utils.js
-│   ├── Template/
-│   │   ├── DebugMap.js
-│   │   ├── Level.js
-│   │   ├── Menu.js
-│   ├── UI/
-│   │   ├── Button.js
-│   │   ├── Label.js
-│   │   ├── TextBox.js
-│   ├── Window/
-│   │   ├── Screen.js
-│   │   ├── Screen3D.js
+GameForgeJS/
+├── Audio/
+|   ├── Song.js/
+├── Graphic/
+│   ├── Draw.js
+│   ├── Rectangle.js
+│   ├── Shape3D.js
+│   ├── Sprite.js
+├── Input/
+│   ├── Input.js
+│   ├── KeyCode.js
+│   ├── Mouse.js
+│   ├── Touch.js
+├── Math/
+│   ├── Collide2D.js
+│   ├── MathExt.js
+│   ├── Physic2D.js
+│   ├── Vector2D.js
+│   ├── Vector3D.js
+├── Root/
+│   ├── Base.js
+│   ├── Camera.js
+│   ├── Engine.js
+│   ├── GameObject.js
+│   ├── Scene.js
+│   ├── Store.js
+│   ├── UI.js
+│   ├── Utils.js
+├── Template/
+│   ├── DebugMap.js
+│   ├── Level.js
+│   ├── Menu.js
+├── UI/
+│   ├── Button.js
+│   ├── Label.js
+│   ├── TextBox.js
+├── Window/
+│   ├── Screen.js
+│   ├── Screen3D.js
+├── _config.yml
+├── .gitignore
+├── engrenagem.png
 ├── main.html
 ├── main.css
 ├── main.js
@@ -77,7 +79,7 @@ TechDemo/
 1. **Clone the repository:**
 
    ```sh
-   git clone https://github.com/Drakopit/EngineHtml5.git
+   git clone https://github.com/Drakopit/GameForgeJS.git
    ```
 
 2. **Create and Navigate to the project directory:**
@@ -109,7 +111,7 @@ To create a new level, extend the `Level` class and override the necessary metho
 Example:
 
 ```javascript
-import { Level } from "./Framework/Template/Level.js";
+import { Level } from "./GameForgeJS/Template/Level.js";
 import { Player } from "./Objects/Player.js";
 
 export class CustomLevel extends Level {
@@ -147,7 +149,7 @@ export class CustomLevel extends Level {
 To run the game, initialize the `Engine` in your `main.js`:
 
 ```javascript
-import { Engine, LevelHandler } from "./Framework/Root/Engine.js";
+import { Engine, LevelHandler } from "./GameForgeJS/Root/Engine.js";
 import { CustomLevel } from "./Levels/CustomLevel.js";
 
 try {
@@ -184,7 +186,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## Contact
 
-For any questions or feedback, feel free to contact the author, Patrick Faustino Camello, at [patrickcamelo@yahoo.com.br].
+For any questions or feedback, feel free to contact the author, Patrick Faustino Camello, at [patrickcamelo@yahoo.com.br](mailto:patrickcamelo@yahoo.com.br).
 
 ---
 
