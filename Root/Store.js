@@ -14,6 +14,7 @@
 
 export class Store {
     constructor(prefix = 'game') {
+        // Set default prefix
         this.prefix = prefix;
     }
 
@@ -25,12 +26,16 @@ export class Store {
      *  store.SaveState({ level: 1, score: 1000 });
      * @returns {void}
      */
-    SaveState(state) {
+    SaveState(state, prefix) {
         try {
             if (typeof state !== 'object' || state === null) {
                 throw new Error('Invalid state: must be a non-null object.');
             }
-            window.localStorage.setItem(`${this.prefix}_state`, JSON.stringify(state));
+            if (!prefix) {
+                window.localStorage.setItem(`${this.prefix}_state`, JSON.stringify(state));
+            } else {
+                window.localStorage.setItem(`${prefix}_state`, JSON.stringify(state));
+            }
         } catch (error) {
             console.error('Failed to save state:', error);
         }
@@ -43,9 +48,16 @@ export class Store {
      *  var state = store.RestoreState();
      * @returns {Object|null} The saved state object or null if no state is found.
      */
-    RestoreState() {
+    RestoreState(prefix) {
         try {
-            let state = window.localStorage.getItem(`${this.prefix}_state`);
+            let state = null;
+            // Check if a prefix is provided
+            if (!prefix) {
+                state = window.localStorage.getItem(`${this.prefix}_state`);
+            } else {
+                state = window.localStorage.getItem(`${prefix}_state`);
+            }
+            // Check if state is null
             if (state) {
                 return JSON.parse(state);
             } else {
@@ -64,9 +76,13 @@ export class Store {
      *  store.ClearState();
      * @returns {void}
      */
-    ClearState() {
+    ClearState(prefix) {
         try {
-            window.localStorage.removeItem(`${this.prefix}_state`);
+            if (!prefix) {
+                window.localStorage.removeItem(`${this.prefix}_state`);
+            } else {
+                window.localStorage.removeItem(`${prefix}_state`);
+            }
         } catch (error) {
             console.error('Failed to clear state:', error);
         }
@@ -80,9 +96,14 @@ export class Store {
      *  store.BackupState('backup_game');
      * @returns {void}
      */
-    BackupState(backupPrefix) {
+    BackupState(backupPrefix, prefix) {
         try {
-            let state = window.localStorage.getItem(`${this.prefix}_state`);
+            let state = null;
+            if (!prefix) {
+                state = window.localStorage.getItem(`${this.prefix}_state`);
+            } else {
+                state = window.localStorage.getItem(`${prefix}_state`);
+            }
             if (state) {
                 window.localStorage.setItem(`${backupPrefix}_state`, state);
             }

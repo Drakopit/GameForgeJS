@@ -30,17 +30,18 @@ export class GameObject extends Base {
         this.friction = 0.5;
         this.gravity = 9.80665; // Força da gravidade
         this.gravityDirection = 180;
-        this.deth;
+        this.deth = null;
         this.danping = 0.5;
-        this.mass;
+        this.mass = null;
         
         this.sprite = new Sprite();
 
         this.Tag = "Entity";
         this.name = "Drako";
+    }
 
-        // Current Level
-        this.CurrentLevel = undefined;
+    OnUpdate() {
+        this.isMoving ? this.sprite.Update() : this.sprite.Reset();
     }
 
     OnCollision(other, callback) {

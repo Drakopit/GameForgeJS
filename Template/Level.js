@@ -25,6 +25,9 @@ export class Level extends Base {
         // Level ID
         this.TelaId = null;
 
+        // FPS
+        this.FPS = 0;
+
         // Level Handler
         this.LEVEL_HANDLER = this;
 
@@ -98,6 +101,19 @@ export class Level extends Base {
 
     /**
      * @doc Method
+     * @description Get an entity by its name.
+     * @param {string} name
+     * @example
+     * level.GetEntityByName("Player"); 
+     * @returns {Object} The entity with the specified name.
+     */
+    GetEntityByName(name) {
+        let entity = this.entities.find((entity) => { return entity.name == name});
+        return entity;
+    }
+
+    /**
+     * @doc Method
      * @description Adds an entity to the level.
      * @param {Object} entity - The entity to add.
      * @example
@@ -124,5 +140,14 @@ export class Level extends Base {
         if (index !== -1) {
             this.entities.splice(index, 1);
         }
+    }
+
+    ShowFPS(draw, x, y) {
+        // Draw FPS
+		draw.Color = "green";
+		draw.FontSize = "16px";
+		draw.DrawText(`FPS: ${this.FPS}`, x, y);
+		draw.FontSize = "12px";
+		draw.Color = "white";
     }
 }
