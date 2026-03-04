@@ -41,10 +41,10 @@ export const LevelHandler = {
     }
 };
 
-// Time
-let startTime;
+// Substitua as variáveis de tempo globais por estas:
 let lastTime = performance.now();
-let deltaTime = 0;
+let accumulator = 0;
+const TIME_STEP = 1 / 60; // 60 atualizações de física por segundo (0.0166s cravados)
 
 // FPS Calculation
 let frameCount = 0;
@@ -72,8 +72,8 @@ export class Engine extends Base {
             // Start the first level
             LevelHandler.current.OnStart();
 
-            // Start the game loop
-            this.OnFixedUpdate();
+            // Iniciar o Loop passando o timestamp inicial
+            window.requestAnimationFrame(this.GameLoop.bind(this));
         };
     }
 
@@ -84,11 +84,16 @@ export class Engine extends Base {
      *  Engine.OnFixedUpdate();
      * @returns {void}
      */
-    static OnFixedUpdate() {
-        startTime = performance.now();
-        deltaTime = (startTime - lastTime) / 1000.0; // Correctly calculate delta time in seconds
+    static GameLoop(currentTime) { // Renomeado para GameLoop, separa lógicas fixas de lógicas variáveis
+        let deltaTime = (currentTime - lastTime) / 1000.0;
 
-        // Update FPS calculation
+        // Evita a "Spiral of Death" se a aba do browser ficar inativa e acumular muito tempo
+        if (deltaTime > 0.25) deltaTime = 0.25;
+
+        lastTime = currentTime;
+        accumulator += deltaTime;
+
+        // Cálculo de FPS
         frameCount++;
         fpsTime += deltaTime;
         if (fpsTime >= 1.0) {
@@ -97,38 +102,39 @@ export class Engine extends Base {
             fpsTime = 0;
         }
 
-        // Check if there is a new level to load
-        if (LevelHandler.current.Next) {
+        // Lógica de transição de level
+        if (LevelHandler.current && LevelHandler.current.Next) {
             this.RemoveLevel(LevelHandler.current.TelaId);
-
-            // Increment the index before fetching the next level
             let index = LevelHandler.levels.findIndex(level => level.TelaId === LevelHandler.current.TelaId) + 1;
-            LevelHandler.current = LevelHandler.getCurrent(index);
-            
-            // Ensure index is within bounds
-            if (LevelHandler.index >= LevelHandler.levels.length) {
-                LevelHandler.index = 0; // Loop back to the first level or handle it as needed
-                LevelHandler.current = LevelHandler.getCurrent(LevelHandler.index);
-            }
 
+            if (index >= LevelHandler.levels.length) index = 0;
+
+            LevelHandler.current = LevelHandler.getCurrent(index);
             LevelHandler.current.OnStart();
-            LevelHandler.current.Next = false; // Reset the Next flag
+            LevelHandler.current.Next = false;
         }
 
-        // Update the current level
         if (LevelHandler.current) {
             LevelHandler.current.FPS = fps.toFixed(2);
-            LevelHandler.current.OnUpdate();
-            LevelHandler.current.OnFixedUpdate(deltaTime);
+
+            // 1. Atualização de Inputs e lógicas independentes da física (roda a cada frame)
+            LevelHandler.current.OnUpdate(deltaTime);
+
+            // 2. Fixed Update: Física, Movimento e Colisão (roda em passos constantes)
+            while (accumulator >= TIME_STEP) {
+                LevelHandler.current.OnFixedUpdate(TIME_STEP);
+                accumulator -= TIME_STEP;
+            }
+
+            // 3. Renderização visual
             LevelHandler.current.OnDrawn();
             LevelHandler.current.OnGUI();
         }
 
-        // Call engine's draw method
         this.OnDrawn();
 
-        lastTime = startTime;
-        window.requestAnimationFrame(this.OnFixedUpdate.bind(this));
+        // Requisita o próximo frame
+        window.requestAnimationFrame(this.GameLoop.bind(this));
     }
 
     /**

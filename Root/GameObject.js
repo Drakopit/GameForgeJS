@@ -12,6 +12,7 @@
 
 import { Sprite } from "../Graphic/Sprite.js";
 import { Vector2D } from "../Math/Vector2D.js";
+import { Collide2D } from "../Math/Collide2D.js";
 import { Base } from "./Base.js";
 import { Util } from "./Utils.js";
 

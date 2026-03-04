@@ -8,8 +8,8 @@ import { Engine } from "./Root/Engine.js";
  */
 
 try {
-    Engine.OnStart();
-    console.dir(Engine);
-} catch(exception) {
-    console.error(`Exception: ${exception}`);
+	Engine.OnStart();
+	console.dir(Engine);
+} catch (exception) {
+	console.error(`Exception: ${exception}`);
 }
