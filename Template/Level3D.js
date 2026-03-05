@@ -2,27 +2,24 @@ import { Base } from "../Root/Base.js";
 import { Screen3D as ScreenWebGL } from "../Window/Screen3D.js";
 
 export class Level3D extends Base {
-    constructor(canvasId = "gameCanvas", width = 800, height = 600) {
+    constructor() {
         super();
         this.caption = "Modelo de Level 3D";
-        this.Next = false;
         this.TelaId = null;
         this.FPS = 0;
         this.LEVEL_HANDLER = this;
         this.entities = [];
-        
-        // Inicializa o contexto 3D em vez do 2D
-        this.screen3D = new ScreenWebGL(canvasId, width, height);
     }
 
     OnStart() {
         document.title = this.caption;
-        
-        // Habilita o teste de profundidade (Depth Test) nativo do WebGL
-        const gl = this.screen3D.Context;
-        gl.clearColor(0.0, 0.0, 0.0, 1.0); // Fundo preto
-        gl.enable(gl.DEPTH_TEST);
 
+        if (this.screen3D) {
+            const gl = this.screen3D.Context;
+            gl.clearColor(0.0, 0.0, 0.0, 1.0); // Fundo preto
+            gl.enable(gl.DEPTH_TEST);
+        }
+        
         this.entities.forEach(entity => {
             if (typeof entity.OnStart === "function") entity.OnStart();
         });

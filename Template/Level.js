@@ -11,20 +11,18 @@
  */
 
 import { Base } from "../Root/Base.js";
+import { Logger } from "../Root/Logger.js";
 
 export class Level extends Base {
-    constructor(screen) {
+    constructor() {
         super();
-        this.screen = screen;
+        this.screen = null;
 
         // The level name
         this.caption = "Modelo de Level";
 
-        // If pass to the next level
-        this.Next = false;
-
         // Level ID
-        this.TelaId = null;
+        this.TelaId = this.screen ? (this.screen.id || this.screen.ScreenId) : null;
 
         // FPS
         this.FPS = 0;
@@ -149,6 +147,14 @@ export class Level extends Base {
         const index = this.entities.indexOf(entity);
         if (index !== -1) {
             this.entities.splice(index, 1);
+        }
+    }
+
+    // Adicione este método na sua classe Menu.js e MiniGame3DMenu.js
+    OnExit() {
+        if (this.screen && this.screen.Canvas) {
+            this.screen.Canvas.remove();
+            Logger.log("info", `[Level] Tela ${this.TelaId} destruída com sucesso.`);
         }
     }
 

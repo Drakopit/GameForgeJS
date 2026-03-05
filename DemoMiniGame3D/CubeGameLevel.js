@@ -4,20 +4,40 @@ import { Player3D } from "./Player3D.js";
 import { Coin3D } from "./Coin3D.js";
 import { Floor3D } from "./Floor3D.js";
 import { Camera3D } from "../Root/Camera3D.js";
+import { Screen3D } from "../Window/Screen3D.js";
+import { Input } from "../Input/Input.js";
+import { AssetManager } from "../Root/AssetManager.js";
+import { Skybox3D } from "../Graphic/Skybox3D.js";
 
 export class CubeGameLevel extends Level3D {
     constructor() {
-        super("gameCanvas3D", 800, 600);
+        super();
         this.TelaId = "CubeGame";
         this.caption = "GameForgeJS - 3D Mini Game";
-
-        this.ui = new ScreenUI("gameCanvasUI", 800, 600);
         this.score = 0;
     }
 
     OnStart() {
-        super.OnStart();
+        // 1. Instancia as telas apenas quando a fase 3D for ativada pelo LevelHandler
+        const width = 640;
+        const height = 480;
+        this.screen3D = new Screen3D("gameCanvas3D", width, height);
+        this.ui = new ScreenUI("gameCanvasUI", width, height);
+        this.TelaId = "CubeGame";
 
+        // Ajuste de zIndex para sobreposição correta
+        this.screen3D.Canvas.style.position = "absolute";
+        this.screen3D.Canvas.style.zIndex = "1";
+
+        const skyImageCross = AssetManager.instance.GetImage("sky_cross");
+
+        // 2. Instancia a Skybox e adiciona na fase
+        if (skyImageCross) {
+            this.skybox = new Skybox3D(this.screen3D, skyImageCross);
+            this.AddEntity(this.skybox);
+        }
+
+        // 2. Cria as entidades e a câmera
         this.mainCamera = new Camera3D(this.screen3D);
 
         this.floor = new Floor3D(this.screen3D);
@@ -27,6 +47,8 @@ export class CubeGameLevel extends Level3D {
         this.AddEntity(this.floor);
         this.AddEntity(this.player);
         this.AddEntity(this.coin);
+
+        super.OnStart();
     }
 
     OnUpdate(dt) {
@@ -51,6 +73,10 @@ export class CubeGameLevel extends Level3D {
         if (this.mainCamera && this.player) {
             this.mainCamera.Follow(this.player);
             this.mainCamera.Update();
+        }
+
+        if (Input.GetKeyDown("Escape")) {
+            this.Back = true;
         }
     }
 
@@ -83,5 +109,11 @@ export class CubeGameLevel extends Level3D {
         draw.Color = "#FFFFFF";
         draw.FontSize = "16px";
         draw.DrawText("Use W, A, S, D para se mover na dimensão 3D", 20, 580);
+    }
+
+    OnExit() {
+        // Limpeza estrita de memória exigida pela GameForgeJS
+        if (this.screen3D && this.screen3D.Canvas) this.screen3D.Canvas.remove();
+        if (this.ui && this.ui.Screen && this.ui.Screen.Canvas) this.ui.Screen.Canvas.remove();
     }
 }

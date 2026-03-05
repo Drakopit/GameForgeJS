@@ -64,17 +64,17 @@ export class Engine extends Base {
      * @returns {void}
      */
     static OnStart() {
-        window.onload = () => {
-            LevelHandler.current = LevelHandler.getCurrent(0);
-            // Configure the level handler for child objects
-            LevelHandler.current.LEVEL_HANDLER = LevelHandler;
+        // Pega a primeira fase (que no seu caso é o Menu)
+        LevelHandler.current = LevelHandler.getCurrent(0);
 
-            // Start the first level
-            LevelHandler.current.OnStart();
+        // Configura o handler
+        LevelHandler.current.LEVEL_HANDLER = LevelHandler;
 
-            // Iniciar o Loop passando o timestamp inicial
-            window.requestAnimationFrame(this.GameLoop.bind(this));
-        };
+        // Inicia o Level (Isso vai chamar o OnStart do Menu)
+        LevelHandler.current.OnStart();
+
+        // Inicia o Loop passando o timestamp inicial
+        window.requestAnimationFrame(this.GameLoop.bind(this));
     }
 
     /**
@@ -84,10 +84,9 @@ export class Engine extends Base {
      *  Engine.OnFixedUpdate();
      * @returns {void}
      */
-    static GameLoop(currentTime) { // Renomeado para GameLoop, separa lógicas fixas de lógicas variáveis
+    static GameLoop(currentTime) {
         let deltaTime = (currentTime - lastTime) / 1000.0;
 
-        // Evita a "Spiral of Death" se a aba do browser ficar inativa e acumular muito tempo
         if (deltaTime > 0.25) deltaTime = 0.25;
 
         lastTime = currentTime;
@@ -102,38 +101,62 @@ export class Engine extends Base {
             fpsTime = 0;
         }
 
-        // Lógica de transição de level
-        if (LevelHandler.current && LevelHandler.current.Next) {
-            this.RemoveLevel(LevelHandler.current.TelaId);
-            let index = LevelHandler.levels.findIndex(level => level.TelaId === LevelHandler.current.TelaId) + 1;
+        // --- LÓGICA DE TRANSIÇÃO DE LEVEL CORRIGIDA ---
+        if (LevelHandler.current && (LevelHandler.current.Next || LevelHandler.current.Back)) {
 
-            if (index >= LevelHandler.levels.length) index = 0;
+            // 1. A fase atual limpa o seu próprio lixo (Múltiplos canvases, eventos, etc)
+            if (typeof LevelHandler.current.OnExit === "function") {
+                LevelHandler.current.OnExit();
+            }
 
-            LevelHandler.current = LevelHandler.getCurrent(index);
-            LevelHandler.current.OnStart();
+            // 2. Calcula o novo index baseado na flag
+            if (LevelHandler.current.Next) {
+                LevelHandler.index++;
+                // Se passou da última fase, volta para a primeira (ou pode travar na última, se preferir)
+                if (LevelHandler.index >= LevelHandler.levels.length) LevelHandler.index = 0;
+            }
+            else if (LevelHandler.current.Back) {
+                LevelHandler.index--;
+                // Se tentou voltar antes da primeira, vai para a última (ou trava no 0)
+                if (LevelHandler.index < 0) LevelHandler.index = LevelHandler.levels.length - 1;
+            }
+
+            // 3. Reseta as flags da fase velha para não dar loop infinito se voltarmos para ela
             LevelHandler.current.Next = false;
+            LevelHandler.current.Back = false;
+
+            // 4. Carrega a nova fase
+            LevelHandler.current = LevelHandler.getCurrent(LevelHandler.index);
+            LevelHandler.current.LEVEL_HANDLER = LevelHandler;
+
+            // 5. Inicia a nova fase
+            if (typeof LevelHandler.current.OnStart === "function") {
+                LevelHandler.current.OnStart();
+            }
         }
 
         if (LevelHandler.current) {
             LevelHandler.current.FPS = fps.toFixed(2);
 
-            // 1. Atualização de Inputs e lógicas independentes da física (roda a cada frame)
-            LevelHandler.current.OnUpdate(deltaTime);
+            // Chama os métodos da fase com checagem de segurança (Duck Typing seguro)
+            if (typeof LevelHandler.current.OnUpdate === "function")
+                LevelHandler.current.OnUpdate(deltaTime);
 
-            // 2. Fixed Update: Física, Movimento e Colisão (roda em passos constantes)
             while (accumulator >= TIME_STEP) {
-                LevelHandler.current.OnFixedUpdate(TIME_STEP);
+                if (typeof LevelHandler.current.OnFixedUpdate === "function")
+                    LevelHandler.current.OnFixedUpdate(TIME_STEP);
                 accumulator -= TIME_STEP;
             }
 
-            // 3. Renderização visual
-            LevelHandler.current.OnDrawn();
-            LevelHandler.current.OnGUI();
+            if (typeof LevelHandler.current.OnDrawn === "function")
+                LevelHandler.current.OnDrawn();
+
+            if (typeof LevelHandler.current.OnGUI === "function")
+                LevelHandler.current.OnGUI();
         }
 
         this.OnDrawn();
 
-        // Requisita o próximo frame
         window.requestAnimationFrame(this.GameLoop.bind(this));
     }
 

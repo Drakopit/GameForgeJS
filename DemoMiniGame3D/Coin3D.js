@@ -9,7 +9,7 @@ export class Coin3D extends GameObject3D {
         this.shapes = new Shapes3D(screen3D);
 
         // Escala menorzinha (como se fosse um item)
-        this.transform.scale = [0.2, 0.2, 0.2];
+        this.transform.scale = [0.1, 0.1, 0.1];
         const htmlImage = AssetManager.instance.GetImage("textura_coin");
 
         // 2. Converte essa imagem HTML numa Textura WebGL (mantendo a referência)

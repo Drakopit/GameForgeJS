@@ -45,6 +45,6 @@ export class Camera3D {
 
         // A posição da câmera fica um pouco atrás e acima do objeto (Câmera em 3ª pessoa)
         // Ex: Eixo Y (Altura) + 3 unidades, Eixo Z (Distância) + 6 unidades
-        this.position = [objPos[0], objPos[1] + 3.0, objPos[2] + 6.0];
+        this.position = [objPos[0], objPos[1] + 3.0, objPos[2] + 12.0];
     }
 }

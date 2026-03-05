@@ -12,7 +12,10 @@
  */
 
 export class Base {
-    constructor() {}
+    constructor() {
+        this.Next = false;
+        this.Back = false;
+    }
     OnStart() {}
     OnUpdate() {}
     OnFixedUpdate(dt) {}

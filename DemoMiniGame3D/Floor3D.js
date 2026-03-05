@@ -12,7 +12,7 @@ export class Floor3D extends GameObject3D {
         this.transform.position = [0.0, -1.0, -7.5];
 
         // Escala: Largo (X = 10), Achatado como um papel (Y = 0.1) e Profundo (Z = 10)
-        this.transform.scale = [10.0, 0.1, 10.0];
+        this.transform.scale = [5.0, 0.1, 5.0];
 
         // 1. Vai buscar a imagem HTML carregada na memória
         const htmlImage = AssetManager.instance.GetImage("textura_chao");
