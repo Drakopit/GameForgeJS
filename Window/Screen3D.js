@@ -11,7 +11,7 @@
  */
 import { Vector2D } from "../Math/Vector2D.js";
 
-export class Screen {
+export class Screen3D {
     constructor(id, width, height) {
         this.id = id;
         this.ratio = width / height;

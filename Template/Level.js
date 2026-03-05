@@ -13,8 +13,9 @@
 import { Base } from "../Root/Base.js";
 
 export class Level extends Base {
-    constructor() {
+    constructor(screen) {
         super();
+        this.screen = screen;
 
         // The level name
         this.caption = "Modelo de Level";
@@ -83,8 +84,17 @@ export class Level extends Base {
      * @returns {void}
      */
     OnDrawn() {
-        // Draw all entities
-        this.entities.forEach(entity => entity.OnDrawn());
+        // Limpa a tela automaticamente em qualquer Level que herde desta classe
+        if (this.screen) {
+            this.screen.Refresh();
+        }
+
+        // Draw the GUI for all entities
+        this.entities.forEach(entity => {
+            if (typeof entity.OnDrawn === "function") {
+                entity.OnDrawn();
+            }
+        });
     }
 
     /**
@@ -108,7 +118,7 @@ export class Level extends Base {
      * @returns {Object} The entity with the specified name.
      */
     GetEntityByName(name) {
-        let entity = this.entities.find((entity) => { return entity.name == name});
+        let entity = this.entities.find((entity) => { return entity.name == name });
         return entity;
     }
 
@@ -144,10 +154,10 @@ export class Level extends Base {
 
     ShowFPS(draw, x, y) {
         // Draw FPS
-		draw.Color = "green";
-		draw.FontSize = "16px";
-		draw.DrawText(`FPS: ${this.FPS}`, x, y);
-		draw.FontSize = "12px";
-		draw.Color = "white";
+        draw.Color = "green";
+        draw.FontSize = "16px";
+        draw.DrawText(`FPS: ${this.FPS}`, x, y);
+        draw.FontSize = "12px";
+        draw.Color = "white";
     }
 }
