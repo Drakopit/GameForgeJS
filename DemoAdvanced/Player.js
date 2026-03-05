@@ -3,7 +3,6 @@ import { Vector2D } from "../Math/Vector2D.js";
 import { Input } from "../Input/Input.js";
 import { AssetManager } from "../Root/AssetManager.js";
 import { Animator } from "../Graphic/Animator.js";
-import { Logger } from "../Root/Logger.js";
 
 export class Player extends GameObject {
     constructor(screen) {

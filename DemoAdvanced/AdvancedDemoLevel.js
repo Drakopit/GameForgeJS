@@ -7,7 +7,6 @@ import { Player } from "./Player.js";
 import { Enemy } from "./Enemy.js";
 import { Collide2D } from "../Math/Collide2D.js";
 import { Bullet } from "./Bullet.js";
-import { Logger } from "../Root/Logger.js";
 
 export class AdvancedDemoLevel extends Level {
     constructor(screen) {
@@ -17,7 +16,6 @@ export class AdvancedDemoLevel extends Level {
 
         // Pega o fundo carregado
         this.bgImage = AssetManager.instance.GetImage("background");
-        Logger.log("info", "AdvancedDemoLevel initialized", { background: this.bgImage ? "loaded" : "missing" });
     }
 
     OnStart() {

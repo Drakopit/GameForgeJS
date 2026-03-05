@@ -1,4 +1,5 @@
 import { mat4 } from 'https://cdn.jsdelivr.net/npm/gl-matrix@3.4.3/+esm';
+import { AssetManager } from '../Root/AssetManager.js';
 
 export class Shapes3D {
     constructor(screen) {
@@ -12,30 +13,10 @@ export class Shapes3D {
 
     initShaders() {
         // Vertex Shader: Recebe a Posição 3D e a Coordenada UV (2D)
-        const vsSource = `
-            attribute vec4 aVertexPosition;
-            attribute vec2 aTextureCoord;
-
-            uniform mat4 uModelViewMatrix;
-            uniform mat4 uProjectionMatrix;
-
-            varying highp vec2 vTextureCoord;
-
-            void main(void) {
-                gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
-                vTextureCoord = aTextureCoord; // Passa o UV para o Fragment Shader
-            }
-        `;
+        const vsSource = AssetManager.instance.GetShader("vertexShader");
 
         // Fragment Shader: Lê o pixel exato da textura (uSampler)
-        const fsSource = `
-            varying highp vec2 vTextureCoord;
-            uniform sampler2D uSampler;
-
-            void main(void) {
-                gl_FragColor = texture2D(uSampler, vTextureCoord);
-            }
-        `;
+        const fsSource = AssetManager.instance.GetShader("fragmentShader");
 
         const vertexShader = this.loadShader(this.gl.VERTEX_SHADER, vsSource);
         const fragmentShader = this.loadShader(this.gl.FRAGMENT_SHADER, fsSource);

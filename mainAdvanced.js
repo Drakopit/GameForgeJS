@@ -26,7 +26,6 @@ try {
     }).catch(err => {
         console.error("Erro fatal ao carregar os assets:", err);
     });
-
 } catch(exception) {
     console.error(`Exception: ${exception}`);
 }
