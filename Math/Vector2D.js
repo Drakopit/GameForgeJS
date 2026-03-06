@@ -12,8 +12,8 @@
 
 export class Vector2D {
     constructor(x, y) {
-        this.x = (x != undefined) ? x : 0;
-        this.y = (y != undefined) ? y : 0;
+        this.x = (x !== undefined) ? x : 0;
+        this.y = (y !== undefined) ? y : 0;
     }
 
     /**
@@ -21,7 +21,7 @@ export class Vector2D {
      * @description Get value x and y of Vector
      * @example
      *  var position = vector2D.Value();
-     * @returns {this.x && this.y}
+     * @returns Vector2D(x, y)
      */
     GetValue() {
         return new Vector2D(this.x, this.y);
@@ -32,7 +32,7 @@ export class Vector2D {
      * @description Set value in Vector
      * @example
      *  vector2D.Value(100, 150);
-     * @returns {}
+     * @returns void
      */
     SetValue(x, y) {
         this.x = x;

@@ -1,33 +1,53 @@
 import { Level3D } from "../Template/Level3D.js";
 import { CubeEntity } from "./CubeEntity.js";
 import { ScreenUI } from "../Window/ScreenUI.js"; // Importando sua nova classe!
+import { Screen3D } from "../Window/Screen3D.js";
+import { Camera3D } from "../Root/Camera3D.js";
+
 
 export class TechDemo3DLevel extends Level3D {
 	constructor() {
-		super("gameCanvas3D", 800, 600);
+		super();
 		this.TelaId = "Demo3D";
 		this.caption = "GameForgeJS - 3D Cube com ScreenUI";
-
-		// CORREÇÃO DA SOBREPOSIÇÃO: Garante que o 3D também seja absoluto e fique no fundo
-		this.screen3D.Canvas.style.position = "absolute";
-		this.screen3D.Canvas.style.left = "0px";
-		this.screen3D.Canvas.style.top = "0px";
-		this.screen3D.Canvas.style.zIndex = "1"; // Fica atrás da UI (que tem zIndex 100)
-
-		// Instancia a nova classe de Interface com apenas 1 linha!
-		this.ui = new ScreenUI("gameCanvasUI", 800, 600);
 	}
 
 	OnStart() {
+		const width = 640;
+		const height = 480;
+		this.screen3D = new Screen3D("gameCanvas3D", width, height);
+		this.ui = new ScreenUI("gameCanvasUI", width, height);
+		// Ajuste de zIndex para sobreposição correta
+		this.screen3D.Canvas.style.position = "absolute";
+		this.screen3D.Canvas.style.zIndex = "1";
+
+		this.mainCamera = new Camera3D(this.screen3D);
+
+		this.myCube = new CubeEntity(this.screen3D);
+		this.AddEntity(this.myCube);
+
 		super.OnStart();
 
-		const myCube = new CubeEntity(this.screen3D);
-		this.AddEntity(myCube);
+	}
+
+	OnUpdate(dt) {
+		super.OnUpdate(dt);
+
+		if (this.mainCamera && this.myCube) {
+			this.mainCamera.Follow(this.myCube);
+			this.mainCamera.Update();
+		}
 	}
 
 	OnDrawn() {
 		// 1. Renderiza o mundo 3D
-		super.OnDrawn();
+		this.screen3D.Refresh();
+
+		this.entities.forEach(entity => {
+			if (typeof entity.OnDrawn === "function") {
+				entity.OnDrawn(this.mainCamera);
+			}
+		});
 
 		// 2. Atualiza a camada de UI
 		if (this.ui) {
@@ -51,5 +71,12 @@ export class TechDemo3DLevel extends Level3D {
 		this.entities.forEach(entity => {
 			if (typeof entity.OnGUI === "function") entity.OnGUI(this.ui);
 		});
+	}
+
+
+	OnExit() {
+		// Limpeza estrita de memória exigida pela GameForgeJS
+		if (this.screen3D && this.screen3D.Canvas) this.screen3D.Canvas.remove();
+		if (this.ui && this.ui.Screen && this.ui.Screen.Canvas) this.ui.Screen.Canvas.remove();
 	}
 }

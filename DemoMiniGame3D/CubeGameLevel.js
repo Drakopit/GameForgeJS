@@ -23,7 +23,6 @@ export class CubeGameLevel extends Level3D {
         const height = 480;
         this.screen3D = new Screen3D("gameCanvas3D", width, height);
         this.ui = new ScreenUI("gameCanvasUI", width, height);
-        this.TelaId = "CubeGame";
 
         // Ajuste de zIndex para sobreposição correta
         this.screen3D.Canvas.style.position = "absolute";

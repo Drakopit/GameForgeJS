@@ -1,5 +1,6 @@
 import { GameObject3D } from "../Root/GameObject3D.js";
 import { Shapes3D } from "../Graphic/Shape3D.js";
+import { AssetManager } from "../Root/AssetManager.js";
 
 export class CubeEntity extends GameObject3D {
 	constructor(screen3D) {
@@ -8,9 +9,16 @@ export class CubeEntity extends GameObject3D {
 
 		// Inicia o cubo 7 unidades para frente da câmera
 		this.transform.position = [0.0, 0.0, -7.0];
+		this.transform.scale = [1.0, 1.0, 1.0];
 
 		// Puxa os shaders e buffers
 		this.shapes = new Shapes3D(screen3D);
+		const htmlImage = AssetManager.instance.GetImage("textura_player");
+
+		if (htmlImage) {
+			this.myTexture = this.shapes.CreateTexture(htmlImage);
+		}
+
 		this.rotationSpeed = 1.0;
 	}
 
@@ -22,12 +30,14 @@ export class CubeEntity extends GameObject3D {
 		this.transform.rotation.y += this.rotationSpeed * delta;
 	}
 
-	OnDrawn() {
+	OnDrawn(camera) {
 		// Envia as coordenadas para o WebGL desenhar
 		this.shapes.DrawCube(
 			this.transform.position,
 			this.transform.rotation,
-			this.transform.scale
+			this.transform.scale,
+			camera,
+			this.myTexture
 		);
 	}
 }

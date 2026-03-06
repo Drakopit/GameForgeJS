@@ -22,7 +22,7 @@ export class Vector3D {
      * @description Get value x and y of Vector
      * @example
      *  var position = vector3D.Value();
-     * @returns {this.x && this.y}
+     * @returns new Vector3D(x, y, z)
      */
     GetValue() {
         return new Vector3D(this.x, this.y, this.z);
@@ -33,9 +33,9 @@ export class Vector3D {
      * @description Set value in Vector
      * @example
      *  vector3D.Value(100, 150);
-     * @returns {}
+     * @returns void
      */
-    SetValue(x, y) {
+    SetValue(x, y, z) {
         this.x = x;
         this.y = y;
         this.z = z;

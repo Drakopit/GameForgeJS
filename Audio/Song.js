@@ -45,7 +45,7 @@ export class Song {
                 document.addEventListener('click', checkAndResume);
             }
 
-            this.SetupAudioNodes();
+            this.SetupAudioNodes().then(r => r);
         } catch (ex) {
             console.error('Error initializing audio context:', ex);
         }
