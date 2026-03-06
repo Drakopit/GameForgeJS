@@ -18,7 +18,7 @@ export class Draw {
         this.screen = screen;
         this.fontSize = "12px";
         this.font = "verdana";
-        
+
         // Enum to control the drawing style
         this.TYPES = {
             FILLED: 0,
@@ -36,14 +36,14 @@ export class Draw {
     }
 
     get Font() { return this.font; }
-    set Font(font) { 
-        this.font = font; 
+    set Font(font) {
+        this.font = font;
         this.screen.Context.font = `${this.fontSize} ${this.font}`; // Update the context font
     }
 
     get FontSize() { return this.fontSize; }
-    set FontSize(fontSize) { 
-        this.fontSize = fontSize; 
+    set FontSize(fontSize) {
+        this.fontSize = fontSize;
         this.screen.Context.font = `${this.fontSize} ${this.font}`; // Update the context font
     }
 
@@ -76,7 +76,7 @@ export class Draw {
             case this.TYPES.FILLED:
                 this.screen.Context.fillText(text, x, y, maxWidth);
                 break;
-            
+
             case this.TYPES.STROKED:
                 this.screen.Context.strokeText(text, x, y, maxWidth);
                 break;
@@ -152,13 +152,11 @@ export class Draw {
      *  draw.DrawSprite(image, 10, 10);
      */
     DrawSprite(sprite, x, y) {
-        const image = typeof sprite === 'string' ? new Image() : sprite;
-        if (typeof sprite === 'string') {
-            image.src = sprite;
+        if (sprite instanceof HTMLImageElement || sprite instanceof Image) {
+            // Desenha diretamente. O asset já deve ter sido processado pelo Preloader
+            this.screen.Context.drawImage(sprite, x, y);
+        } else {
+            console.error("DrawSprite: O parâmetro 'sprite' deve ser uma Image previamente carregada.");
         }
-
-        image.onload = () => {
-            this.screen.Context.drawImage(image, x, y);
-        };
     }
 }

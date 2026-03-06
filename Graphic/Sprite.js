@@ -123,10 +123,12 @@ export class Sprite {
 	 *  sprite.Animation('path/to/sprite.png', new Vector2D(100, 100), 'horizontal', 0);
 	 */
 	Animation(spriteSrc, position, direction = 'horizontal', row = 0) {
-		let sprite = new Image();
-		sprite.src = spriteSrc;
+		// Atualiza a source apenas se for diferente, evitando recarregamentos no loop
+		if (spriteSrc && this.sprite.src !== new URL(spriteSrc, document.baseURI).href) {
+			this.sprite.src = spriteSrc;
+		}
 
-		if (!sprite.src) {
+		if (!this.sprite.src) {
 			throw new Error('Sprite source is not set.');
 		}
 
@@ -136,15 +138,15 @@ export class Sprite {
 		const { x, y } = this.size.GetValue();
 		const { x: posX, y: posY } = this.position.GetValue();
 
-		// TODO: Pelo fato de usar this.sprite a instância. O código se confunde e acaba passando um por cima do outro.
+		// Usa this.sprite em vez de criar uma nova imagem
 		if (direction === 'horizontal') {
-			this.screen.Context.drawImage(sprite,
+			this.screen.Context.drawImage(this.sprite,
 				this.index * x, this.row * y,
 				x, y, posX, posY,
 				x * this.scale, y * this.scale
 			);
 		} else {
-			this.screen.Context.drawImage(sprite,
+			this.screen.Context.drawImage(this.sprite,
 				0, this.index * y,
 				x, y, posX, posY,
 				x * this.scale, y * this.scale

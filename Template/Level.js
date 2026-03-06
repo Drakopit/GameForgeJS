@@ -11,19 +11,18 @@
  */
 
 import { Base } from "../Root/Base.js";
+import { Logger } from "../Root/Logger.js";
 
 export class Level extends Base {
     constructor() {
         super();
+        this.screen = null;
 
         // The level name
         this.caption = "Modelo de Level";
 
-        // If pass to the next level
-        this.Next = false;
-
         // Level ID
-        this.TelaId = null;
+        this.TelaId = this.screen ? (this.screen.id || this.screen.ScreenId) : null;
 
         // FPS
         this.FPS = 0;
@@ -83,8 +82,17 @@ export class Level extends Base {
      * @returns {void}
      */
     OnDrawn() {
-        // Draw all entities
-        this.entities.forEach(entity => entity.OnDrawn());
+        // Limpa a tela automaticamente em qualquer Level que herde desta classe
+        if (this.screen) {
+            this.screen.Refresh();
+        }
+
+        // Draw the GUI for all entities
+        this.entities.forEach(entity => {
+            if (typeof entity.OnDrawn === "function") {
+                entity.OnDrawn();
+            }
+        });
     }
 
     /**
@@ -108,7 +116,7 @@ export class Level extends Base {
      * @returns {Object} The entity with the specified name.
      */
     GetEntityByName(name) {
-        let entity = this.entities.find((entity) => { return entity.name == name});
+        let entity = this.entities.find((entity) => { return entity.name == name });
         return entity;
     }
 
@@ -142,12 +150,20 @@ export class Level extends Base {
         }
     }
 
+    // Adicione este método na sua classe Menu.js e MiniGame3DMenu.js
+    OnExit() {
+        if (this.screen && this.screen.Canvas) {
+            this.screen.Canvas.remove();
+            Logger.log("info", `[Level] Tela ${this.TelaId} destruída com sucesso.`);
+        }
+    }
+
     ShowFPS(draw, x, y) {
         // Draw FPS
-		draw.Color = "green";
-		draw.FontSize = "16px";
-		draw.DrawText(`FPS: ${this.FPS}`, x, y);
-		draw.FontSize = "12px";
-		draw.Color = "white";
+        draw.Color = "green";
+        draw.FontSize = "16px";
+        draw.DrawText(`FPS: ${this.FPS}`, x, y);
+        draw.FontSize = "12px";
+        draw.Color = "white";
     }
 }

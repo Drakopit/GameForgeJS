@@ -48,6 +48,7 @@ export class UI {
         const button = new Button(this.screen);
         button.SetButton(new Rectangle(x, y, width, height));
         button.Click(callBack);
+        button.OnClick(callBack);
         return button;
     }
 

@@ -21,6 +21,7 @@ export class Button {
         this.draw = new Draw(screen);
         this.mouse = new Mouse();
         this.rect = new Rectangle(0, 0, 80, 15);
+        this.onClickHandler = null;
     }
 
     SetButton(rect) {
@@ -50,9 +51,18 @@ export class Button {
      * @returns {void}
      */
     Click(callback) {
+        return this.Update(callback);
+    }
+
+    OnClick(callback) {
+        this.onClickHandler = callback;
+    }
+
+    Update(callback) {
+        const cb = callback || this.onClickHandler;
         if (this.mouse.ClickDown(this.rect)) {
-            if (typeof callback === 'function') {
-                callback();
+            if (typeof cb === 'function') {
+                cb();
             }
             return true;
         }

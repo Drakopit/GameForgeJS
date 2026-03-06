@@ -1,1 +1,47 @@
-.vscode
+# --- IDEs e Editores ---
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+.vs/
+
+# --- JavaScript / Node.js (GameForgeJS) ---
+node_modules/
+package-lock.json
+yarn.lock
+npm-debug.log*
+dist/
+build/
+.env
+
+# --- C++ (Para a versão GameForge em C++) ---
+# Binários e Objetos
+*.exe
+*.out
+*.app
+*.o
+*.obj
+*.dll
+*.so
+*.dylib
+
+# Pastas de Build (CMake, MSBuild, etc)
+[Bb]uild/
+[Dd]ebug/
+[Rr]elease/
+CMakeFiles/
+CMakeCache.txt
+CMakeScripts/
+Makefile
+*.cmake
+
+# --- Logs e Temporários ---
+*.log
+.DS_Store
+Thumbs.db
+
+# --- Documentação Gerada ---
+docs/site/

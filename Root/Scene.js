@@ -53,7 +53,10 @@ export class Scene {
         this.data = json;
         this.tileset = new Image();
         this.tileset.src = json.tilesets[0].image;
-        this.tileset.onload = () => this.RenderLayers();
+        this.tileset.onload = () => {
+            this.data.layers.forEach(layer => this.RenderLayer(layer));
+            this.RenderLayers();
+        };
     }
 
     /**
@@ -85,9 +88,7 @@ export class Scene {
             ctx.drawImage(this.tileset, imgX, imgY, size, size, sX, sY, size, size);
         });
 
-        this.layers.push(newCanvas.toDataURL());
-        const mapCtx = this.screen.Context;
-        mapCtx.drawImage(newCanvas, 0, 0);
+        this.layers.push(newCanvas);
     }
 
     /**
@@ -98,10 +99,8 @@ export class Scene {
      * @returns {void}
      */
     RenderLayers() {
-        this.layers.forEach((src) => {
-            const img = new Image();
-            img.src = src;
-            img.onload = () => this.screen.Context.drawImage(img, 0, 0);
+        this.layers.forEach((layerCanvas) => {
+            this.screen.Context.drawImage(layerCanvas, 0, 0);
         });
     }
 }
