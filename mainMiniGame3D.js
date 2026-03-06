@@ -24,7 +24,9 @@ try {
     // assets.QueueImage("sky_bottom", "DemoMiniGame3D/Assets/Textures/sky_bottom.jpg");
     // assets.QueueImage("sky_front", "DemoMiniGame3D/Assets/Textures/sky_front.jpg");
     // assets.QueueImage("sky_back", "DemoMiniGame3D/Assets/Textures/sky_back.jpg");
-    assets.QueueImage("sky_cross", "DemoMiniGame3D/Assets/Textures/Daylight Box UV.png"); // Imagem em formato de cruz para skybox
+
+    // Imagem em formato de cruz para skybox (6 faces em uma única imagem)
+    assets.QueueImage("sky_cross", "DemoMiniGame3D/Assets/Textures/Daylight Box UV.png");
 
     // Shaders específicos para a Skybox
     assets.QueueShader("skyboxVertex", "Shaders/SkyBoxVertexShader.glsl");
