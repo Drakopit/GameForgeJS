@@ -10,8 +10,9 @@
  * @returns void
  */
 
-import { Sprite } from "../Drawing/Sprite.js";
+import { Sprite } from "../Graphic/Sprite.js";
 import { Vector2D } from "../Math/Vector2D.js";
+import { Collide2D } from "../Math/Collide2D.js";
 import { Base } from "./Base.js";
 import { Util } from "./Utils.js";
 
@@ -30,14 +31,18 @@ export class GameObject extends Base {
         this.friction = 0.5;
         this.gravity = 9.80665; // Força da gravidade
         this.gravityDirection = 180;
-        this.deth;
+        this.deth = null;
         this.danping = 0.5;
-        this.mass;
+        this.mass = null;
         
         this.sprite = new Sprite();
 
         this.Tag = "Entity";
         this.name = "Drako";
+    }
+
+    OnUpdate() {
+        this.isMoving ? this.sprite.Update() : this.sprite.Reset();
     }
 
     OnCollision(other, callback) {
