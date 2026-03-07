@@ -3,19 +3,23 @@ import { Player } from "./Player.js";
 import { Coin } from "./Coin.js";
 import { Draw } from "../Graphic/Draw.js";
 import { Collide2D } from "../Math/Collide2D.js";
+import { Screen } from "../Window/Screen.js";
 
 export class TechDemoLevel extends Level {
-    constructor(screen) {
-        super(screen);
+    constructor() {
+        super();
         this.TelaId = "DemoLevel";
         this.caption = "GameForgeJS - Tech Demo";
-        this.screen = screen;
         this.score = 0;
-        this.draw = new Draw(this.screen);
     }
 
     OnStart() {
         super.OnStart(); // Configura título da página e chama OnStart das entidades
+
+        const width = 640;
+        const height = 480;
+        this.screen = new Screen("gameCanvas", width, height); // Acessa a tela criada pela Engine
+        this.draw = new Draw(this.screen);
 
         // Instancia os objetos
         this.player = new Player(this.screen);
@@ -38,16 +42,16 @@ export class TechDemoLevel extends Level {
 
     OnGUI() {
         super.OnGUI(); // Deixa as entidades desenharem suas GUIs (se tiverem)
-        
+
         // Desenha a Interface (Placar e Instruções)
         this.draw.Color = "#FFFFFF";
         this.draw.Font = "Arial";
         this.draw.FontSize = "24px";
         this.draw.DrawText(`Score: ${this.score}`, 20, 40);
-        
+
         this.draw.FontSize = "16px";
         this.draw.DrawText(`FPS: ${this.FPS}`, 700, 30);
-        
+
         this.draw.FontSize = "14px";
         this.draw.DrawText(`Use W, A, S, D para mover e coletar!`, 20, 580);
     }

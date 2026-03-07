@@ -13,8 +13,8 @@ export class Coin extends GameObject {
 
     Respawn() {
         // Nasce em uma posição aleatória dentro da tela
-        const randomX = Math.floor(Math.random() * 750) + 20;
-        const randomY = Math.floor(Math.random() * 550) + 20;
+        const randomX = Math.floor(Math.random() * 580) + 20;
+        const randomY = Math.floor(Math.random() * 420) + 20;
         this.position = new Vector2D(randomX, randomY);
     }
 

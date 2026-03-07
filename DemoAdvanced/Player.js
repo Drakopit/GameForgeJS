@@ -11,33 +11,48 @@ export class Player extends GameObject {
         this.position = new Vector2D(100, 300);
         this.size = new Vector2D(32, 32);
         this.speed = 200;
-        this.screen = screen; // Referência para passar pros tiros
+        this.screen = screen; 
 
-        // Puxa a spritesheet e configura a animação
+        // FÍSICA DE PLATAFORMA
+        this.vy = 0; 
+        this.gravity = 900; 
+        this.jumpStrength = -450; 
+        this.isGrounded = false; 
+
         this.sprite.sprite = AssetManager.instance.GetImage("hero");
-        this.sprite.size = this.size; // Tamanho de cada frame
+        this.sprite.size = this.size; 
         this.sprite.screen = screen;
-        
-        // Inicializa nossa máquina de estados
+
         this.animator = new Animator(this.sprite);
-        
-        // Registra as animações: AddAnimation(nome, linha, qtdFrames, velocidade)
-        this.animator.AddAnimation("Idle", 0, 4, 15);  // Linha 0 da imagem
-        this.animator.AddAnimation("Run", 1, 8, 5);   // Linha 1 da imagem
+        this.animator.AddAnimation("Idle", 0, 4, 15);  
+        this.animator.AddAnimation("Run", 1, 8, 5);   
+
+        this.facingRight = true; 
     }
 
     OnUpdate(dt) {
         const delta = dt || 0.016;
         let isMoving = false;
 
-        // Movimento Básico
+        // Movimento Básico e Direção
         if (Input.GetKey("KeyD") || Input.GetKey("ArrowRight")) {
             this.position.x += this.speed * delta;
+            this.facingRight = true; 
             isMoving = true;
         }
         if (Input.GetKey("KeyA") || Input.GetKey("ArrowLeft")) {
             this.position.x -= this.speed * delta;
+            this.facingRight = false; 
             isMoving = true;
+        }
+
+        // --- APLICANDO GRAVIDADE E PULO ---
+        this.vy += this.gravity * delta; 
+        this.position.y += this.vy * delta; 
+
+        if ((Input.GetKeyDown("KeyW") || Input.GetKeyDown("ArrowUp")) && this.isGrounded) {
+            this.vy = this.jumpStrength; 
+            this.isGrounded = false; 
         }
 
         // --- MÁQUINA DE ESTADOS VISUAIS ---
@@ -47,17 +62,17 @@ export class Player extends GameObject {
             this.animator.Play("Idle");
         }
 
-        // Atualiza o frame do sprite interno
         this.sprite.Update();
     }
 
     OnDrawn() {
-        // Usa o método Animation nativo do seu Sprite.js
+        // Envia a direção (facingRight) para o seu método de animação atualizado
         this.sprite.Animation(
-            this.sprite.sprite.src, 
-            this.position, 
-            "horizontal", 
-            this.sprite.row
+            this.sprite.sprite.src,
+            this.position,
+            "horizontal",
+            this.sprite.row,
+            this.facingRight 
         );
     }
 }

@@ -1,13 +1,10 @@
 import { Engine, LevelHandler } from "./Root/Engine.js";
-import { Screen } from "./Window/Screen.js";
 import { Input } from "./Input/Input.js";
 import { AssetManager } from "./Root/AssetManager.js";
 import { AdvancedDemoLevel } from "./DemoAdvanced/AdvancedDemoLevel.js";
 
 try {
-    new Input();
-    const screen = new Screen("gameCanvas", 800, 600);
-    
+    new Input();    
     // 1. Instancia o Preloader
     const assets = new AssetManager();
     
@@ -20,7 +17,7 @@ try {
 
     // 3. Aguarda o download de tudo ANTES de iniciar a Engine
     assets.LoadAll().then(() => {
-        LevelHandler.addLevel(new AdvancedDemoLevel(screen));
+        LevelHandler.addLevel(new AdvancedDemoLevel());
         Engine.OnStart();
         console.log("GameForgeJS: Todos os assets carregados e Engine iniciada!");
     }).catch(err => {
