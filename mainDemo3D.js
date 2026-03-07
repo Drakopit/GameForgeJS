@@ -7,7 +7,7 @@ try {
     const assets = new AssetManager();
     assets.QueueShader("vertexShader", "Shaders/VertexShader.glsl");
     assets.QueueShader("fragmentShader", "Shaders/FragmentShader.glsl");
-
+    assets.QueueImage("textura_player", "/Demo3D/Asssets/TemplateGrid_albedo.png");
 
     assets.LoadAll().then(() => {
         LevelHandler.addLevel(new TechDemo3DLevel());

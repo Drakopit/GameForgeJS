@@ -62,10 +62,11 @@ export class TechDemo3DLevel extends Level3D {
 
 		draw.Color = "#00FF00";
 		draw.FontSize = "24px";
-		draw.DrawText("ScreenUI Classe Externa!", 20, 40);
+		draw.DrawText("ScreenUI HUD Example!", 20, 40);
+		draw.DrawText("That's an example of a 3D level with a ScreenUI overlay.", 20, 70);
 
 		draw.Color = "#FFFFFF";
-		draw.DrawText(`FPS: ${this.FPS}`, 750, 40);
+		draw.DrawText(`FPS: ${this.FPS}`, 680, 40);
 
 		// Se suas entidades tiverem interface, você pode passar a UI para elas
 		this.entities.forEach(entity => {
