@@ -7,12 +7,13 @@ import { Collide2D } from "../Math/Collide2D.js";
 import { Vector2D } from "../Math/Vector2D.js";
 import { Logger } from "../Root/Logger.js";
 import { Screen } from "../Window/Screen.js";
-
+import { UIWindow } from "../UI/UIWindow.js";
 import { Camera } from "../Root/Camera.js";
 import { Block } from "./Block.js";
 import { Player } from "./Player.js";
 import { Enemy } from "./Enemy.js";
 import { Bullet } from "./Bullet.js";
+import { AudioManager } from "../Root/AudioManager.js";
 
 export class AdvancedDemoLevel extends Level {
     constructor() {
@@ -54,6 +55,17 @@ export class AdvancedDemoLevel extends Level {
 
         this.bulletPool = new ObjectPool(() => new Bullet(this.screen), 10);
         this.bulletPool.pool.forEach(bullet => this.AddEntity(bullet));
+
+        // Window de HUD
+        const uiBaseImage = AssetManager.instance.GetImage("window_base");
+        this.dialogWindow = new UIWindow(this.screen, uiBaseImage, 50, 480, 400, 150, 32);
+
+        this.dialogWindow.AddText("Advanced Demo Level", 20, 40, "#FFD700", "24px", "monospace");
+        this.dialogWindow.AddText("Enemies Defeated: 0", 20, 80, "#FFFFFF", "18px", "sans-serif");
+        this.dialogWindow.AddText("Status: Running smoothly", 20, 110, "#00FF00", "16px", "sans-serif");
+
+        let bgm = AssetManager.instance.GetAudio("bgm_fase1");
+        AudioManager.instance.PlayBGM(bgm, 0.4); // Volume em 40%
     }
 
     ApplyBlockCollision(entity) {
@@ -134,6 +146,9 @@ export class AdvancedDemoLevel extends Level {
             let fireY = this.player.position.y + (this.player.size.y / 2) - 2;
             
             bullet.Fire(fireX, fireY, dir); 
+
+            let laserSound = AssetManager.instance.GetAudio("sfx_laser");
+            AudioManager.instance.PlaySFX(laserSound, 0.6);
         }
     }
 
@@ -154,6 +169,12 @@ export class AdvancedDemoLevel extends Level {
             if (typeof entity.OnDrawn === "function") entity.OnDrawn();
         });
 
-        this.camera.End(); 
+        this.camera.End();
+
+        // --- UI RENDERING (Static on screen) ---
+        // We draw the UI OUTSIDE of the camera block!
+        if (this.dialogWindow) {
+            this.dialogWindow.OnDrawn();
+        }
     }
 }
