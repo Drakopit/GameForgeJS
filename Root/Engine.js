@@ -51,7 +51,7 @@ let frameCount = 0;
 let fps = 0;
 let fpsTime = 0;
 
-export const DEBUG = false; // Flag global para ativar/desativar logs de debug
+export const DEBUG = true; // Flag global para ativar/desativar logs de debug
 
 export class Engine extends Base {
     constructor() {

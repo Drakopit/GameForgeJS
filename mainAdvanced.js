@@ -9,9 +9,12 @@ try {
     const assets = new AssetManager();
 
     // 2. Coloca os recursos na fila (usando caminhos fake, como você pediu)
-    // assets.QueueImage("heroi_run", "DemoAdvanced/Assets/Run.png");
-    // assets.QueueImage("heroi_idle", "DemoAdvanced/Assets/Idle.png");
-    assets.QueueImage("hero", "DemoAdvanced/Assets/Hero.png");
+    assets.QueueImage("heroi_run", "DemoAdvanced/Assets/Player/Run.png");
+    assets.QueueImage("heroi_idle", "DemoAdvanced/Assets/Player/Idle.png");
+    assets.QueueImage("heroi_attack_01", "DemoAdvanced/Assets/Player/Attack-01.png");
+    // assets.QueueImage("heroi_jump", "DemoAdvanced/Assets/Player/Jump.png");
+
+    // assets.QueueImage("hero", "DemoAdvanced/Assets/Hero.png");
     assets.QueueImage("tiro_laser", "DemoAdvanced/Assets/Laser.png");
     assets.QueueImage("background", "DemoAdvanced/Assets/background.jpg");
 
