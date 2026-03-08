@@ -34,6 +34,6 @@ Projects:
 [!] Melhorar colisão
 [x] Criar método pra cálcular distância
 [!] Corrigir erro na reenderização de alguns Objectos
-[ ] Refatorar o código
+[x] Refatorar o código
 [x] Criar classe de extensão para Math
 [x] Criar classe pra tocar sons

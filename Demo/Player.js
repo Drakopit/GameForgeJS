@@ -32,8 +32,8 @@ export class Player extends GameObject {
 		// Limita o jogador dentro da tela (Assumindo 800x600)
 		if (this.position.x < 0) this.position.x = 0;
 		if (this.position.y < 0) this.position.y = 0;
-		if (this.position.x > 800 - this.size.x) this.position.x = 800 - this.size.x;
-		if (this.position.y > 600 - this.size.y) this.position.y = 600 - this.size.y;
+		if (this.position.x > 640 - this.size.x) this.position.x = 640 - this.size.x;
+		if (this.position.y > 480 - this.size.y) this.position.y = 480 - this.size.y;
 	}
 
 	OnDrawn() {

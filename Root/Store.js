@@ -50,7 +50,7 @@ export class Store {
      */
     RestoreState(prefix) {
         try {
-            let state = null;
+            let state;
             // Check if a prefix is provided
             if (!prefix) {
                 state = window.localStorage.getItem(`${this.prefix}_state`);
@@ -98,7 +98,7 @@ export class Store {
      */
     BackupState(backupPrefix, prefix) {
         try {
-            let state = null;
+            let state;
             if (!prefix) {
                 state = window.localStorage.getItem(`${this.prefix}_state`);
             } else {

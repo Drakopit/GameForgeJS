@@ -1,4 +1,5 @@
 import { Logger } from "./Logger.js";
+import { AudioManager } from "./AudioManager.js"; // <-- IMPORTANTE: Ajuste o caminho se necessário
 
 /**
  * @doc Class AssetManager
@@ -9,16 +10,53 @@ import { Logger } from "./Logger.js";
 export class AssetManager {
     constructor() {
         this.images = {};
+        this.audioQueue = [];
         this.audios = {};
         this.shaders = {};
         this.jsons = {};
-        this.promises = [];
+        this.promises = []; // Guarda as promessas de imagens e shaders
         
         // Singleton
         if (!AssetManager.instance) {
             AssetManager.instance = this;
         }
         return AssetManager.instance;
+    }
+
+    // Coloca o áudio na fila
+    QueueAudio(name, path) {
+        this.audioQueue.push({ name, path });
+    }
+
+    // Pega o áudio decodificado da memória
+    GetAudio(name) {
+        if (!this.audios[name]) console.warn(`AssetManager: Áudio '${name}' não encontrado.`);
+        return this.audios[name];
+    }
+
+    // Processa a fila de áudios separadamente
+    async LoadAudioQueue() {
+        if (this.audioQueue.length === 0) return;
+
+        // Precisamos garantir que o AudioManager instanciou o context para decodificar
+        AudioManager.instance.Initialize(); 
+        const context = AudioManager.instance.context;
+
+        // Cria as promessas, mas não joga no this.promises. Vamos resolver elas aqui mesmo.
+        const audioPromises = this.audioQueue.map(async (item) => {
+            try {
+                const response = await fetch(item.path);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const arrayBuffer = await response.arrayBuffer();
+                const audioBuffer = await context.decodeAudioData(arrayBuffer);
+                this.audios[item.name] = audioBuffer;
+            } catch (error) {
+                console.error(`GameForgeJS: Erro ao carregar áudio ${item.name} no caminho ${item.path}`, error);
+            }
+        });
+
+        // Aguarda todos os áudios terminarem de baixar e decodificar
+        await Promise.all(audioPromises);
     }
 
     /**
@@ -40,8 +78,6 @@ export class AssetManager {
     /**
      * @function QueueShader
      * @description Coloca um shader na fila de carregamento
-     * @param {string} name 
-     * @param {string} url 
      */
     QueueShader(name, url) {
         const promise = fetch(url)
@@ -58,8 +94,6 @@ export class AssetManager {
 
     /**
      * @description Retorna o código fonte do shader solicitado
-     * @param {string} name 
-     * @returns {string} Código fonte do shader
      */
     GetShader(name) {
         if (!this.shaders[name]) console.warn(`AssetManager: Shader '${name}' não encontrado.`);
@@ -70,9 +104,17 @@ export class AssetManager {
      * @description Aguarda todos os assets serem carregados
      */
     async LoadAll() {
+        // 1. Primeiro dispara o carregamento de todos os áudios e espera terminar
+        await this.LoadAudioQueue();
+
+        // 2. Depois espera todas as imagens e shaders terminarem
         await Promise.all(this.promises);
-        this.promises = []; // Limpa a fila após o carregamento
-        Logger.log("info", "AssetManager: Todos os assets foram carregados com sucesso!");
+
+        // 3. Limpa as filas para não carregar de novo caso chame LoadAll futuramente
+        this.promises = []; 
+        this.audioQueue = []; 
+        
+        Logger.log("info", "AssetManager: Todos os assets (Imagens, Shaders e Áudios) foram carregados com sucesso!");
     }
 
     GetImage(name) {
