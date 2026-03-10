@@ -14,8 +14,8 @@ export class MiniGame3DMenu extends Menu {
         this.options = new Array("Iniciar Jogo", "Continuar", "Opções", "Sair");
     }
 
-    OnUpdate() {
-        super.OnUpdate();
+    OnUpdate(dt) {
+        super.OnUpdate(dt);
         if (Input.GetKeyDown("Enter")) {
             switch (this.currentSelected) {
                 case 0:

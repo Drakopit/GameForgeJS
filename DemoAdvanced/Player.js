@@ -6,7 +6,7 @@ import { AudioManager } from "../Root/AudioManager.js";
 import { DEBUG } from "../Root/Engine.js";
 import { Draw } from "../Graphic/Draw.js";
 import { HitBox } from "./Attacks/HitBox.js";
-import { IdleState } from "./States/PlayerState.js";
+import { IdleState } from "./States/PlayerStates/PlayerIdleState.js";
 import { ObjectPool } from "../Root/ObjectPool.js";
 import { Bullet } from "./Bullet.js";
 import { ActionManager } from "../Input/ActionManager.js";
@@ -135,11 +135,12 @@ export class Player extends GameObject {
         this.stateMachine.Update(delta);
 
         this.sprite.Update();
-        this.animator.Update();
+        this.sprite.Update();
+        this.animator.Update(delta);
     }
 
     OnDrawn() {
-        if (DEBUG) {
+        if (DEBUG()) {
             this.draw.Style = this.draw.TYPES.STROKED;
             this.draw.Color = "#00FF00";
             this.draw.DrawRect(this.position.x, this.position.y, this.size.x, this.size.y);
@@ -147,7 +148,7 @@ export class Player extends GameObject {
             this.draw.Style = this.draw.TYPES.FILLED;
         }
 
-        if (DEBUG && this.attackHitBox.active) {
+        if (DEBUG() && this.attackHitBox.active) {
             this.draw.Style = this.draw.TYPES.STROKED;
             this.draw.Color = "#FF0000";
             this.draw.DrawRect(

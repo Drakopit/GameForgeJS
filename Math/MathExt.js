@@ -30,4 +30,31 @@ export class MathExt {
     static Module(value) {
         return (value < 0) ? value * -1 : value;
     }
+
+    /**
+     * @doc Method
+     * @description Interpolação linear entre dois valores.
+     * @param {number} a - Valor inicial.
+     * @param {number} b - Valor final.
+     * @param {number} t - Fator de interpolação (0..1).
+     * @returns {number}
+     */
+    static Lerp(a, b, t) {
+        return a + (b - a) * Math.min(Math.max(t, 0), 1);
+    }
+
+    /**
+     * @doc Method
+     * @description Lerp com snap: quando a diferença for menor que threshold, retorna b diretamente.
+     *              Evita oscilação infinita no final da animação.
+     * @param {number} a
+     * @param {number} b
+     * @param {number} t
+     * @param {number} threshold
+     * @returns {number}
+     */
+    static LerpSnap(a, b, t, threshold = 0.5) {
+        const result = this.Lerp(a, b, t);
+        return Math.abs(result - b) < threshold ? b : result;
+    }
 }

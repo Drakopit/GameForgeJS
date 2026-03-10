@@ -1,6 +1,6 @@
 import { GameObject3D } from "../Root/GameObject3D.js";
 import { Shapes3D } from "../Graphic/Shape3D.js";
-import { Input } from "../Input/Input.js";
+import { ActionManager } from "../Input/ActionManager.js";
 import { AssetManager } from "../Root/AssetManager.js";
 
 export class Player3D extends GameObject3D {
@@ -18,7 +18,6 @@ export class Player3D extends GameObject3D {
 
         const htmlImage = AssetManager.instance.GetImage("textura_player");
 
-        // 2. Converte essa imagem HTML numa Textura WebGL (mantendo a referência)
         if (htmlImage) {
             this.myTexture = this.shapes.CreateTexture(htmlImage);
         }
@@ -26,43 +25,40 @@ export class Player3D extends GameObject3D {
 
     OnUpdate(dt) {
         const delta = dt || 0.016;
-        const rotationSpeed = 3.0; // Velocidade do giro
+        const rotationSpeed = 3.0;
 
-        // Eixo X agora controla a ROTAÇÃO (Girar para os lados)
-        if (Input.GetKey("KeyA") || Input.GetKey("ArrowLeft")) {
+        // Girar para os lados usa LEFT/RIGHT do ActionManager
+        if (ActionManager.IsAction("LEFT")) {
             this.transform.rotation.y += rotationSpeed * delta;
         }
-        if (Input.GetKey("KeyD") || Input.GetKey("ArrowRight")) {
+        if (ActionManager.IsAction("RIGHT")) {
             this.transform.rotation.y -= rotationSpeed * delta;
         }
 
-        // Eixo Z agora usa a matemática de Seno e Cosseno para andar na direção do giro
-        if (Input.GetKey("KeyW") || Input.GetKey("ArrowUp")) {
-            // Anda para a FRENTE (Baseado na rotação Y atual)
+        // Andar frente/trás usa FORWARD/BACK do ActionManager
+        if (ActionManager.IsAction("FORWARD")) {
             this.transform.position[0] -= this.speed * Math.sin(this.transform.rotation.y) * delta;
             this.transform.position[2] -= this.speed * Math.cos(this.transform.rotation.y) * delta;
         }
-        if (Input.GetKey("KeyS") || Input.GetKey("ArrowDown")) {
-            // Anda para TRÁS (Baseado na rotação Y atual)
+        if (ActionManager.IsAction("BACK")) {
             this.transform.position[0] += this.speed * Math.sin(this.transform.rotation.y) * delta;
             this.transform.position[2] += this.speed * Math.cos(this.transform.rotation.y) * delta;
         }
 
-        // Limites da Arena (Opcional, pode remover se quiser explorar fora do mapa)
+        // Limites da Arena
         if (this.transform.position[0] < -4.0) this.transform.position[0] = -4.0;
-        if (this.transform.position[0] > 4.0) this.transform.position[0] = 4.0;
+        if (this.transform.position[0] >  4.0) this.transform.position[0] =  4.0;
         if (this.transform.position[2] < -12.0) this.transform.position[2] = -12.0;
-        if (this.transform.position[2] > -3.0) this.transform.position[2] = -3.0;
+        if (this.transform.position[2] >  -3.0) this.transform.position[2] =  -3.0;
     }
 
-    // Exemplo no Player3D.js (Faça o mesmo nas outras entidades)
     OnDrawn(camera) {
         this.shapes.DrawCube(
             this.transform.position,
             this.transform.rotation,
             this.transform.scale,
-            camera, // <-- Passa a câmera para renderizar no referencial correto
-            this.myTexture // <-- Passa a textura para renderizar
+            camera,
+            this.myTexture
         );
     }
 }

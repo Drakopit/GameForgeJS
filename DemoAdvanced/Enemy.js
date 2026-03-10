@@ -7,6 +7,7 @@ import { EnemyIdleState } from "./States/EnemyStates/EnemyIdleState.js";
 import { EnemyRunState } from "./States/EnemyStates/EnemyRunState.js";
 import { EnemyHitState } from "./States/EnemyStates/EnemyHitState.js";
 import { StateMachine } from "./States/StateMachine.js";
+import { DEBUG } from "../Root/Engine.js";
 
 export class Enemy extends GameObject {
     constructor(screen, playerRef, startX, startY) {
@@ -76,6 +77,14 @@ export class Enemy extends GameObject {
 
     OnDrawn() {
         if (!this.active) return;
+
+        if (DEBUG()) {
+            this.draw.Style = this.draw.TYPES.STROKED;
+            this.draw.Color = "#00FF00";
+            this.draw.DrawRect(this.position.x, this.position.y, this.size.x, this.size.y);
+            this.draw.Color = "#FFFFFF";
+            this.draw.Style = this.draw.TYPES.FILLED;
+        }
 
         let anim = this.animator.currentAnimation;
 

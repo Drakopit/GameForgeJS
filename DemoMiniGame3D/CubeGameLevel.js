@@ -28,26 +28,25 @@ export class CubeGameLevel extends Level3D {
         this.screen3D.Canvas.style.position = "absolute";
         this.screen3D.Canvas.style.zIndex = "1";
 
-        const skyImageCross = AssetManager.instance.GetImage("sky_cross");
+        this.mainCamera = new Camera3D(this.screen3D);
 
-        // 2. Instancia a Skybox e adiciona na fase
+        // super.OnStart() configura o WebGL e chama OnStart das entidades já adicionadas.
+        // Deve ser chamado ANTES de AddEntity para evitar dupla inicialização.
+        super.OnStart();
+
+        const skyImageCross = AssetManager.instance.GetImage("sky_cross");
         if (skyImageCross) {
             this.skybox = new Skybox3D(this.screen3D, skyImageCross);
             this.AddEntity(this.skybox);
         }
 
-        // 2. Cria as entidades e a câmera
-        this.mainCamera = new Camera3D(this.screen3D);
-
-        this.floor = new Floor3D(this.screen3D);
-        this.player = new Player3D(this.screen3D);
-        this.coin = new Coin3D(this.screen3D);
+        this.floor   = new Floor3D(this.screen3D);
+        this.player  = new Player3D(this.screen3D);
+        this.coin    = new Coin3D(this.screen3D);
 
         this.AddEntity(this.floor);
         this.AddEntity(this.player);
         this.AddEntity(this.coin);
-
-        super.OnStart();
     }
 
     OnUpdate(dt) {

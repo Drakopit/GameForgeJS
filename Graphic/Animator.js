@@ -13,6 +13,11 @@ export class Animator {
         this.currentAnimation = null;
         this.currentAnimationName = null;
         this.onEvent = null;
+        this.lastFrame = -1; // guarda último frame processado
+
+        this.nextAnimation = null;
+        this.transitionTime = 0;
+        this.transitionDuration = 0;
     }
 
     /**
@@ -35,18 +40,67 @@ export class Animator {
         };
     }
 
-    Update() {
+    Transition(name, duration = 0.15) {
+
+        let anim = this.animations[name];
+        if (!anim) return;
+
+        // Se não tem animação atual ainda
+        if (!this.currentAnimation) {
+            this.Play(name);
+            return;
+        }
+
+        if (this.currentAnimationName === name) return;
+
+        this.nextAnimation = anim;
+        this.transitionDuration = duration;
+        this.transitionTime = 0;
+    }
+
+    Update(dt) {
+
         if (!this.currentAnimation) return;
 
-        let anim = this.currentAnimation;
+        if (this.nextAnimation) {
+
+            this.transitionTime += dt;
+
+            if (this.transitionTime >= this.transitionDuration) {
+
+                let anim = this.nextAnimation;
+
+                this.currentAnimation = anim;
+                this.currentAnimationName = Object.keys(this.animations)
+                    .find(k => this.animations[k] === anim);
+
+                this.sprite.sprite = anim.image;
+                this.sprite.row = anim.row;
+                this.sprite.frameCount = anim.totalFrames;
+                this.sprite.updatesPerFrame = anim.speed;
+
+                this.sprite.index = 0;
+
+                this.nextAnimation = null;
+                this.lastFrame = -1;
+            }
+        }
+
         let frame = this.sprite.index;
 
-        if (anim.events && anim.events[frame]) {
+        if (frame !== this.lastFrame) {
 
-            if (this.onEvent) {
-                this.onEvent(anim.events[frame]);
+            this.lastFrame = frame;
+
+            let anim = this.currentAnimation;
+
+            if (anim.events && anim.events[frame]) {
+
+                if (this.onEvent) {
+                    this.onEvent(anim.events[frame]);
+                }
+
             }
-
         }
     }
 
@@ -73,5 +127,6 @@ export class Animator {
         this.sprite.size = new Vector2D(frameWidth, frameHeight);
 
         this.sprite.index = 0;
+        this.lastFrame = -1;
     }
 }

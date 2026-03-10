@@ -171,6 +171,6 @@ export class Screen3D {
     get Position() { return new Vector2D(this.x, this.y); }
 }
 
-Screen.prototype.MDC = function(width, height) {
+Screen3D.prototype.MDC = function(width, height) {
     return (height === 0) ? width : this.MDC(height, width % height);
 };

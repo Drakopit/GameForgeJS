@@ -24,6 +24,10 @@
 				{ "device": "keyboard", "input": "KeyE" },
 				{ "device": "gamepad", "input": "button_2" }
 			],
+			"CANCEL": [
+				{ "device": "keyboard", "input": "KeyQ" },
+				{ "device": "gamepad", "input": "button_3" }
+			],
 			"JUMP": [
 				{ "device": "keyboard", "input": "KeyW" },
 				{ "device": "keyboard", "input": "ArrowUp" },
@@ -67,7 +71,7 @@
 	},
 	"debug": {
 		"showFPS": true,
-		"showHitboxes": false,
+		"showHitboxes": true,
 		"logLevel": "info"
 	}
 }

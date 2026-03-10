@@ -52,7 +52,8 @@ let frameCount = 0;
 let fps = 0;
 let fpsTime = 0;
 
-export const DEBUG = true; // Flag global para ativar/desativar logs de debug
+import { Config } from "./Config.js";
+export const DEBUG = () => Config.data?.debug?.showHitboxes ?? false; // Lê do config.json
 
 export class Engine extends Base {
     constructor() {

@@ -14,12 +14,17 @@ export class StateMachine {
             this.currentState.Exit();
 
         this.currentState = newState;
+
         this.currentState.Enter();
     }
 
     Update(dt) {
-        if (this.currentState)
-            this.currentState.Update(dt);
+
+        if (!this.currentState)
+            return;
+
+        this.currentState.Update(dt);
+
     }
 
 }

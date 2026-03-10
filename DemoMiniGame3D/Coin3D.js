@@ -34,14 +34,13 @@ export class Coin3D extends GameObject3D {
         this.transform.rotation.y += 3.0 * delta;
     }
 
-    // Exemplo no Player3D.js (Faça o mesmo nas outras entidades)
     OnDrawn(camera) {
         this.shapes.DrawCube(
             this.transform.position,
             this.transform.rotation,
             this.transform.scale,
-            camera, // <-- Passa a câmera para renderizar no referencial correto
-            this.myTexture // <-- Passa a textura para renderizar
+            camera,
+            this.myTexture
         );
-    } '  '
+    }
 }                                                                                                                                                           

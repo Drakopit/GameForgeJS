@@ -15,7 +15,7 @@ export class AssetManager {
         this.shaders = {};
         this.jsons = {};
         this.promises = []; // Guarda as promessas de imagens e shaders
-        
+
         // Singleton
         if (!AssetManager.instance) {
             AssetManager.instance = this;
@@ -39,7 +39,7 @@ export class AssetManager {
         if (this.audioQueue.length === 0) return;
 
         // Precisamos garantir que o AudioManager instanciou o context para decodificar
-        AudioManager.instance.Initialize(); 
+        AudioManager.instance.Initialize();
         const context = AudioManager.instance.context;
 
         // Cria as promessas, mas não joga no this.promises. Vamos resolver elas aqui mesmo.
@@ -88,8 +88,23 @@ export class AssetManager {
             .then(sourceCode => {
                 this.shaders[name] = sourceCode; // Salva na memória
             });
-            
+
         this.promises.push(promise);
+    }
+
+    QueueModel(name, url) {
+        const promise = url.endsWith(".obj")
+            ? OBJLoader.Load(url)
+            : ModelLoader.Load(url);   // GLTF ou GLB
+
+        this.promises.push(
+            promise.then(meshes => { this.models[name] = meshes; })
+        );
+    }
+
+    GetModel(name) {
+        if (!this.models?.[name]) console.warn(`AssetManager: Modelo '${name}' não encontrado.`);
+        return this.models?.[name] ?? null;
     }
 
     /**
@@ -111,9 +126,9 @@ export class AssetManager {
         await Promise.all(this.promises);
 
         // 3. Limpa as filas para não carregar de novo caso chame LoadAll futuramente
-        this.promises = []; 
-        this.audioQueue = []; 
-        
+        this.promises = [];
+        this.audioQueue = [];
+
         Logger.log("info", "AssetManager: Todos os assets (Imagens, Shaders e Áudios) foram carregados com sucesso!");
     }
 
