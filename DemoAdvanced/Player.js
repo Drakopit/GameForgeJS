@@ -10,6 +10,7 @@ import { IdleState } from "./States/PlayerState.js";
 import { ObjectPool } from "../Root/ObjectPool.js";
 import { Bullet } from "./Bullet.js";
 import { ActionManager } from "../Input/ActionManager.js";
+import { StateMachine } from "./States/StateMachine.js";
 
 export class Player extends GameObject {
     constructor(screen) {
@@ -56,7 +57,11 @@ export class Player extends GameObject {
         // Ataques geralmente têm a espada "esticando" a imagem para a direita.
         // Por isso, puxamos o corpo um pouco para trás (ex: -15) para ele não deslizar.
         // Se a espada for MUITO grande, aumente o número negativo (-20, -30).
-        this.animator.AddAnimation("Attack_1", Attack_1, 0, 6, 5, 0.5, 1, 37);
+        this.animator.AddAnimation("Attack_1", Attack_1, 0, 6, 5, 0.5, 1, 37,
+            {
+                2: "HitStart",
+                4: "HitEnd"
+            });
         this.animator.AddAnimation("Attack_2", Attack_2, 0, 5, 5, 0.5, 1, 37);
         this.animator.AddAnimation("Attack_3", Attack_3, 0, 6, 5, 0.5, 1, 37);
 
@@ -71,14 +76,19 @@ export class Player extends GameObject {
 
         this.bulletPool = new ObjectPool(() => new Bullet(this.screen), 10);
 
-        this.currentState = null;
-        this.ChangeState(new IdleState(this));
-    }
+        this.animator.onEvent = (event) => {
+            if (event === "HitStart") {
+                this.attackHitBox.active = true;
+                this.attackHitBox.Update();
+            }
 
-    ChangeState(newState) {
-        if (this.currentState) this.currentState.Exit();
-        this.currentState = newState;
-        this.currentState.Enter();
+            if (event === "HitEnd") {
+                this.attackHitBox.active = false;
+            }
+        };
+
+        this.stateMachine = new StateMachine(this);
+        this.stateMachine.ChangeState(new IdleState(this));
     }
 
     IsMovingInput() {
@@ -122,10 +132,10 @@ export class Player extends GameObject {
         this.vy += this.gravity * delta;
         this.position.y += this.vy * delta;
 
-        if (this.currentState) {
-            this.currentState.Update(delta);
-        }
+        this.stateMachine.Update(delta);
+
         this.sprite.Update();
+        this.animator.Update();
     }
 
     OnDrawn() {

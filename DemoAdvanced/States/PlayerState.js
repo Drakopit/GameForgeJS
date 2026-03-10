@@ -3,7 +3,7 @@ import { ActionManager } from "../../Input/ActionManager.js";
 // Classe Base
 export class PlayerState {
     constructor(player) { this.player = player; }
-    Enter() {} Update(dt) {} Exit() {}
+    Enter() { } Update(dt) { } Exit() { }
 }
 
 // ==========================================
@@ -15,25 +15,25 @@ export class IdleState extends PlayerState {
     }
 
     Update(dt) {
-        // Se saiu de uma plataforma sem pular, entra no estado de pulo para tocar a animação
+
         if (!this.player.isGrounded && this.player.vy > 0) {
-            this.player.ChangeState(new JumpState(this.player));
+            this.player.stateMachine.ChangeState(new JumpState(this.player));
             return;
         }
 
         if (ActionManager.IsActionDown("ATTACK")) {
-            this.player.ChangeState(new AttackState(this.player));
-            return; 
+            this.player.stateMachine.ChangeState(new AttackState(this.player));
+            return;
         }
 
         if (this.player.IsMovingInput()) {
-            this.player.ChangeState(new RunState(this.player));
+            this.player.stateMachine.ChangeState(new RunState(this.player));
             return;
         }
 
         if (this.player.IsJumpInput()) {
             this.player.DoJump();
-            this.player.ChangeState(new JumpState(this.player));
+            this.player.stateMachine.ChangeState(new JumpState(this.player));
         }
     }
 }
@@ -47,24 +47,25 @@ export class RunState extends PlayerState {
     }
 
     Update(dt) {
+
         if (!this.player.isGrounded && this.player.vy > 0) {
-            this.player.ChangeState(new JumpState(this.player));
+            this.player.stateMachine.ChangeState(new JumpState(this.player));
             return;
         }
 
         if (ActionManager.IsActionDown("ATTACK")) {
-            this.player.ChangeState(new AttackState(this.player));
+            this.player.stateMachine.ChangeState(new AttackState(this.player));
             return;
         }
 
         if (!this.player.IsMovingInput()) {
-            this.player.ChangeState(new IdleState(this.player));
+            this.player.stateMachine.ChangeState(new IdleState(this.player));
             return;
         }
 
         if (this.player.IsJumpInput()) {
             this.player.DoJump();
-            this.player.ChangeState(new JumpState(this.player));
+            this.player.stateMachine.ChangeState(new JumpState(this.player));
         }
 
         this.player.ApplyMovement(dt);
@@ -80,16 +81,18 @@ export class JumpState extends PlayerState {
     }
 
     Update(dt) {
-        // Permite controlar o boneco no ar
-        this.player.ApplyMovement(dt); 
 
-        // Condição de saída: Bateu no chão
+        this.player.ApplyMovement(dt);
+
         if (this.player.isGrounded && this.player.vy >= 0) {
+
             if (this.player.IsMovingInput()) {
-                this.player.ChangeState(new RunState(this.player));
-            } else {
-                this.player.ChangeState(new IdleState(this.player));
+                this.player.stateMachine.ChangeState(new RunState(this.player));
             }
+            else {
+                this.player.stateMachine.ChangeState(new IdleState(this.player));
+            }
+
         }
     }
 }
@@ -108,18 +111,9 @@ export class AttackState extends PlayerState {
     Update(dt) {
         let index = this.player.sprite.index;
 
-        // --- FRAME DATA DA NOVA ANIMAÇÃO ---
-        // Se a animação tem 6 frames (0 a 5), a espada geralmente acerta entre o 2 e o 4
-        if (index >= 2 && index <= 4) {
-            this.player.attackHitBox.active = true;
-            this.player.attackHitBox.Update();
-        } else {
-            this.player.attackHitBox.active = false;
-        }
-
         // Fim da animação
         if (index >= this.player.sprite.frameCount - 1) {
-            this.player.ChangeState(new IdleState(this.player));
+            this.player.stateMachine.ChangeState(new IdleState(this.player));
         }
     }
 

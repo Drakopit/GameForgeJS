@@ -21,56 +21,23 @@
 	"input": {
 		"actionMappings": {
 			"ATTACK": [
-				{
-					"device": "keyboard",
-					"input": "KeyE"
-				},
-				{
-					"device": "gamepad",
-					"input": "button_2"
-				}
+				{ "device": "keyboard", "input": "KeyE" },
+				{ "device": "gamepad", "input": "button_2" }
 			],
 			"JUMP": [
-				{
-					"device": "keyboard",
-					"input": "KeyW"
-				},
-				{
-					"device": "keyboard",
-					"input": "ArrowUp"
-				},
-				{
-					"device": "gamepad",
-					"input": "button_0"
-				}
+				{ "device": "keyboard", "input": "KeyW" },
+				{ "device": "keyboard", "input": "ArrowUp" },
+				{ "device": "gamepad", "input": "button_0" }
 			],
 			"RIGHT": [
-				{
-					"device": "keyboard",
-					"input": "KeyD"
-				},
-				{
-					"device": "keyboard",
-					"input": "ArrowRight"
-				},
-				{
-					"device": "gamepad",
-					"input": "axis_0_positive"
-				}
+				{ "device": "keyboard", "input": "KeyD" },
+				{ "device": "keyboard", "input": "ArrowRight" },
+				{ "device": "gamepad", "input": "axis_0_positive" }
 			],
 			"LEFT": [
-				{
-					"device": "keyboard",
-					"input": "KeyA"
-				},
-				{
-					"device": "keyboard",
-					"input": "ArrowLeft"
-				},
-				{
-					"device": "gamepad",
-					"input": "axis_0_negative"
-				}
+				{ "device": "keyboard", "input": "KeyA" },
+				{ "device": "keyboard", "input": "ArrowLeft" },
+				{ "device": "gamepad", "input": "axis_0_negative" }
 			]
 		}
 	},

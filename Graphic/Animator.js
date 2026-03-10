@@ -12,6 +12,7 @@ export class Animator {
         this.animations = {};
         this.currentAnimation = null;
         this.currentAnimationName = null;
+        this.onEvent = null;
     }
 
     /**
@@ -21,7 +22,7 @@ export class Animator {
      * @param {number} frameCount - Quantidade de frames
      * @param {number} speed - Velocidade da animação (updatesPerFrame)
      */
-    AddAnimation(name, image, row, totalFrames, speed, pivotX = 0.5, pivotY = 1, groundOffset = 0) {
+    AddAnimation(name, image, row, totalFrames, speed, pivotX = 0.5, pivotY = 1, groundOffset = 0, events = null) {
         this.animations[name] = {
             image,
             row,
@@ -29,8 +30,24 @@ export class Animator {
             speed,
             pivotX,
             pivotY,
-            groundOffset
+            groundOffset,
+            events
         };
+    }
+
+    Update() {
+        if (!this.currentAnimation) return;
+
+        let anim = this.currentAnimation;
+        let frame = this.sprite.index;
+
+        if (anim.events && anim.events[frame]) {
+
+            if (this.onEvent) {
+                this.onEvent(anim.events[frame]);
+            }
+
+        }
     }
 
     /**
