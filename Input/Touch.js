@@ -24,6 +24,9 @@ export class Touch {
         window.addEventListener('touchstart', this.touchStartHandler);
         window.addEventListener('touchend', this.touchEndHandler);
         window.addEventListener('touchmove', this.touchMoveHandler);
+
+        if (!Touch.instance) Touch.instance = this;
+        return Touch.instance;
     }
 
     /**

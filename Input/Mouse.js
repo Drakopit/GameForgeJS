@@ -20,6 +20,10 @@ export class Mouse {
         this.clickPosition = new Vector2D(0, 0);
         this.releasePosition = new Vector2D(0, 0);
 
+        this.buttons = {};
+        this.buttonsDown = {};
+        this.buttonsUp = {};
+
         this.mouseMoveHandler = this.mouseMoveHandler.bind(this);
         this.mouseDownHandler = this.mouseDownHandler.bind(this);
         this.mouseUpHandler = this.mouseUpHandler.bind(this);
@@ -27,6 +31,9 @@ export class Mouse {
         window.addEventListener('mousemove', this.mouseMoveHandler);
         window.addEventListener('mousedown', this.mouseDownHandler);
         window.addEventListener('mouseup', this.mouseUpHandler);
+
+        if (!Mouse.instance) Mouse.instance = this;
+        return Mouse.instance;
     }
 
     /**
@@ -51,6 +58,12 @@ export class Mouse {
     mouseDownHandler(event) {
         this.clickPosition.x = event.clientX;
         this.clickPosition.y = event.clientY;
+
+        // NOVO: Registra o botão (0 = Esquerdo, 1 = Meio, 2 = Direito)
+        if (!this.buttons[event.button]) {
+            this.buttonsDown[event.button] = true;
+        }
+        this.buttons[event.button] = true;
     }
 
     /**
@@ -63,6 +76,9 @@ export class Mouse {
     mouseUpHandler(event) {
         this.releasePosition.x = event.clientX;
         this.releasePosition.y = event.clientY;
+
+        this.buttons[event.button] = false;
+        this.buttonsUp[event.button] = true;
     }
 
     /**
@@ -155,5 +171,11 @@ export class Mouse {
      */
     isColliding(point, rect) {
         return point.x >= rect.left && point.x <= rect.right && point.y >= rect.top && point.y <= rect.bottom;
+    }
+
+    // Limpa os estados de 'Down' e 'Up' a cada frame (chamado pelo Input Manager)
+    ClearFrameData() {
+        this.buttonsDown = {};
+        this.buttonsUp = {};
     }
 }

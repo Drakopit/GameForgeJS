@@ -7,6 +7,10 @@ import { AudioManager } from "../Root/AudioManager.js";
 import { DEBUG } from "../Root/Engine.js";
 import { Draw } from "../Graphic/Draw.js";
 import { HitBox } from "./Attacks/HitBox.js";
+import { IdleState } from "./States/PlayerState.js";
+import { ObjectPool } from "../Root/ObjectPool.js";
+import { Bullet } from "./Bullet.js";
+import { ActionManager } from "../Input/ActionManager.js";
 
 export class Player extends GameObject {
     constructor(screen) {
@@ -23,12 +27,13 @@ export class Player extends GameObject {
         this.gravity = 900;
         this.jumpStrength = -450;
         this.isGrounded = false;
-        this.isAttacking = false; // <--- NOVA VARIÁVEL AQUI
+        this.isAttacking = false;
 
         var Idle = AssetManager.instance.GetImage("heroi_idle");
         var Run = AssetManager.instance.GetImage("heroi_run");
         var Attack = AssetManager.instance.GetImage("heroi_attack_01");
-        // var Jump = AssetManager.instance.GetImage("heroi_jump"); // Puxa do AssetManager
+        var JumpStart = AssetManager.instance.GetImage("heroi_jump_start");
+        var JumpEnd = AssetManager.instance.GetImage("heroi_jump_end");
 
         this.sprite.sprite = Idle;
         // this.sprite.size = new Vector2D(80, 80);
@@ -37,74 +42,94 @@ export class Player extends GameObject {
         this.animator = new Animator(this.sprite);
         this.animator.AddAnimation("Idle", Idle, 0, 4, 15);
         this.animator.AddAnimation("Run", Run, 0, 8, 5);
-        this.animator.AddAnimation("Attack", Attack, 0, 8, 7);
-        // this.animator.AddAnimation("Jump", Jump, 0, 1, 10); // Registra a animação! (Ajuste os frames)
+        this.animator.AddAnimation("Attack", Attack, 0, 8, 5);
+        this.animator.AddAnimation("JumpStart", JumpStart, 0, 4, 10); // 4 frames
+        this.animator.AddAnimation("JumpEnd", JumpEnd, 0, 3, 10);     // 3 frames
 
         this.facingRight = true;
         this.attackHitBox = new HitBox(this, 20, -5, 40, 40);
+
+        // O PLAYER AGORA É DONO DA SUA PRÓPRIA MUNIÇÃO
+        this.bulletPool = new ObjectPool(() => new Bullet(this.screen), 10);
+
+        // INICIANDO A MÁQUINA DE ESTADOS
+        this.currentState = null;
+        this.ChangeState(new IdleState(this)); // Começa parado!
+    }
+
+    // Método principal da Máquina de Estados
+    ChangeState(newState) {
+        if (this.currentState) {
+            this.currentState.Exit(); // Limpa o estado atual
+        }
+        this.currentState = newState;
+        this.currentState.Enter(); // Configura o novo estado
+    }
+
+    // Métodos Auxiliares para os Estados usarem (Deixa o código limpo)
+    IsMovingInput() {
+        return ActionManager.IsAction("RIGHT") || ActionManager.IsAction("LEFT");
+    }
+
+    IsJumpInput() {
+        return (ActionManager.IsActionDown("JUMP")) && this.isGrounded;
+    }
+
+    ApplyMovement(dt) {
+        if (ActionManager.IsAction("RIGHT")) {
+            this.position.x += this.speed * dt;
+            this.facingRight = true;
+        }
+        if (ActionManager.IsAction("LEFT")) {
+            this.position.x -= this.speed * dt;
+            this.facingRight = false;
+        }
+    }
+
+    DoJump() {
+        this.vy = this.jumpStrength;
+        this.isGrounded = false;
+        let jumpSound = AssetManager.instance.GetAudio("sfx_jump");
+        AudioManager.instance.PlaySFX(jumpSound, 0.8);
+    }
+
+    // O MÉTODO SHOOT AGORA PERTENCE AO PLAYER
+    // TODO: Futuramente, você pode querer passar parâmetros para o Shoot() para diferentes tipos de ataque, direção, etc.
+    Shoot() {
+        let bullet = this.bulletPool.Get();
+        if (bullet) {
+            let dir = this.facingRight ? 1 : -1;
+
+            // O cálculo agora é muito mais limpo, pois estamos dentro do próprio Player
+            let fireX = this.position.x + (this.size.x / 2);
+            let fireY = this.position.y + (this.size.y / 2) - 2;
+
+            bullet.Fire(fireX, fireY, dir);
+
+            let laserSound = AssetManager.instance.GetAudio("sfx_laser");
+            AudioManager.instance.PlaySFX(laserSound, 0.6);
+        }
     }
 
     OnUpdate(dt) {
         const delta = dt || 0.016;
-        let isMoving = false;
 
-        // Movimento Básico e Direção
-        if (Input.GetKey("KeyD") || Input.GetKey("ArrowRight")) {
-            this.position.x += this.speed * delta;
-            this.facingRight = true;
-            isMoving = true;
-        }
-        if (Input.GetKey("KeyA") || Input.GetKey("ArrowLeft")) {
-            this.position.x -= this.speed * delta;
-            this.facingRight = false;
-            isMoving = true;
-        }
+        // VERIFICAÇÃO DE INPUT DE TIRO DIRETO NO PLAYER
+        // (Isso também poderia ir para os Estados de Idle e Run futuramente)
+        // if (ActionManager.IsActionDown("ATTACK")) {
+        //     this.Shoot();
+        // }
 
-        if (Input.GetKeyDown("KeyE") && !this.isAttacking) {
-            this.isAttacking = true;
-        }
-
-        // --- APLICANDO GRAVIDADE E PULO ---
+        // 1. A física básica (gravidade) roda independentemente do estado
         this.vy += this.gravity * delta;
         this.position.y += this.vy * delta;
 
-        if ((Input.GetKeyDown("KeyW") || Input.GetKeyDown("ArrowUp")) && this.isGrounded) {
-            this.vy = this.jumpStrength;
-            this.isGrounded = false;
-
-            let jumpSound = AssetManager.instance.GetAudio("sfx_jump");
-            AudioManager.instance.PlaySFX(jumpSound, 0.8); // 80% do volume
+        // 2. DELEGAÇÃO: O Estado atual toma todas as decisões de movimento, input e animação!
+        if (this.currentState) {
+            this.currentState.Update(delta);
         }
 
-        // --- MÁQUINA DE ESTADOS VISUAIS E HITBOX ---
-        if (this.isAttacking) {
-            this.animator.Play("Attack");
-
-            // MÁGICA DOS JOGOS DE LUTA: Frame Data!
-            // Digamos que a sua animação de ataque tenha 8 frames.
-            // O golpe só é perigoso entre o frame 3 e o 5.
-            if (this.sprite.index >= 3 && this.sprite.index <= 5) {
-                this.attackHitBox.active = true;
-                this.attackHitBox.Update(); // Atualiza a posição grudada no player
-            } else {
-                this.attackHitBox.active = false;
-            }
-
-            // Fim da animação
-            if (this.sprite.index >= this.sprite.frameCount - 1) {
-                this.isAttacking = false;
-                this.attackHitBox.active = false; // Desliga no fim
-            }
-        }
-        else if (isMoving) {
-            this.attackHitBox.active = false; // Garante que desliga
-            this.animator.Play("Run");
-        }
-        else {
-            this.attackHitBox.active = false; // Garante que desliga
-            this.animator.Play("Idle");
-        }
-
+        // 3. Atualiza os frames da sprite selecionada
         this.sprite.Update();
     }
 
@@ -128,6 +153,7 @@ export class Player extends GameObject {
                 this.attackHitBox.size.x,
                 this.attackHitBox.size.y
             );
+            this.draw.Color = "#FFFFFF"; // Reseta a cor para branco
             this.draw.Style = this.draw.TYPES.FILLED;
         }
 

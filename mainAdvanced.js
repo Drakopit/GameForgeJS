@@ -2,40 +2,70 @@ import { Engine, LevelHandler } from "./Root/Engine.js";
 import { Input } from "./Input/Input.js";
 import { AssetManager } from "./Root/AssetManager.js";
 import { AdvancedDemoLevel } from "./DemoAdvanced/AdvancedDemoLevel.js";
+import { Config } from "./Root/Config.js"; 
+import { AudioManager } from "./Root/AudioManager.js"; 
+import { ActionManager } from "./Input/ActionManager.js";
 
-try {
-    new Input();
-    // 1. Instancia o Preloader
-    const assets = new AssetManager();
+async function Bootstrap() {
+    try {
+        // 1. CARREGA O CONFIG (Resoluções, Controles, etc)
+        const config = await Config.Load("../gameforge.config.json");
 
-    // 2. Coloca os recursos na fila (usando caminhos fake, como você pediu)
-    assets.QueueImage("heroi_run", "DemoAdvanced/Assets/Player/Run.png");
-    assets.QueueImage("heroi_idle", "DemoAdvanced/Assets/Player/Idle.png");
-    assets.QueueImage("heroi_attack_01", "DemoAdvanced/Assets/Player/Attack-01.png");
-    // assets.QueueImage("heroi_jump", "DemoAdvanced/Assets/Player/Jump.png");
+        if (config && config.window) {
+            document.title = config.window.title;
+            document.body.style.backgroundColor = config.window.backgroundColor;
+            document.body.style.cursor = config.window.cursor;
+        }
 
-    // assets.QueueImage("hero", "DemoAdvanced/Assets/Hero.png");
-    assets.QueueImage("tiro_laser", "DemoAdvanced/Assets/Laser.png");
-    assets.QueueImage("background", "DemoAdvanced/Assets/background.jpg");
+        // 2. INICIALIZA SISTEMAS GLOBAIS
+        new Input();
+        ActionManager.LoadMappings(config ? config.input.actionMappings : null);
+        AudioManager.instance.Initialize();
+        
+        if (config && config.audio) {
+            AudioManager.instance.SetGlobalVolume(config.audio.masterVolume);
+        }
 
-    // Window NineSlice
-    assets.QueueImage("window_base", "DemoAdvanced/Assets/manaSoul.png");
+        // 3. INSTANCIA O PRELOADER
+        const assets = new AssetManager();
 
-    // Background Music (BGM)
-    assets.QueueAudio("bgm_fase1", "DemoAdvanced/Assets/BGM/battle_sound.mpeg");
+        // ---------------------------------------------------------
+        // 4. MÁGICA DO MANIFESTO: Lendo o resources.json dinamicamente!
+        // ---------------------------------------------------------
+        const resourceResponse = await fetch("../DemoAdvanced/resources.json");
+        if (!resourceResponse.ok) throw new Error("Não foi possível carregar resources.json");
+        
+        const manifest = await resourceResponse.json();
 
-    // Sound Effects (SFX)
-    assets.QueueAudio("sfx_jump", "DemoAdvanced/Assets/SFX/jump 1.wav");
-    assets.QueueAudio("sfx_laser", "DemoAdvanced/Assets/SFX/Blow 1V2.wav");
+        // Faz o loop automático para todas as imagens
+        if (manifest.images) {
+            manifest.images.forEach(img => {
+                assets.QueueImage(img.name, img.path);
+            });
+        }
 
-    // 3. Aguarda o download de tudo ANTES de iniciar a Engine
-    assets.LoadAll().then(() => {
+        // Faz o loop automático para todos os áudios
+        if (manifest.audios) {
+            manifest.audios.forEach(audio => {
+                assets.QueueAudio(audio.name, audio.path);
+            });
+        }
+        // ---------------------------------------------------------
+
+        // 5. AGUARDA O DOWNLOAD DE TUDO
+        await assets.LoadAll();
+
+        // 6. INICIA A ENGINE E O NÍVEL
         LevelHandler.addLevel(new AdvancedDemoLevel());
         Engine.OnStart();
-        console.log("GameForgeJS: Todos os assets carregados e Engine iniciada!");
-    }).catch(err => {
-        console.error("Erro fatal ao carregar os assets:", err);
-    });
-} catch (exception) {
-    console.error(`Exception: ${exception}`);
+
+        let projName = config ? config.project.name : "GameForgeJS";
+        let projVersion = config ? config.project.version : "1.0.0";
+        console.log(`${projName} v${projVersion}: Todos os assets carregados e Engine iniciada!`);
+
+    } catch (exception) {
+        console.error(`Erro Crítico na Inicialização (Bootstrap): ${exception}`);
+    }
 }
+
+Bootstrap();

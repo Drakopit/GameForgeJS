@@ -1,0 +1,18 @@
+{
+    "images": [
+        { "name": "heroi_run", "path": "DemoAdvanced/Assets/Player/Run.png" },
+        { "name": "heroi_idle", "path": "DemoAdvanced/Assets/Player/Idle.png" },
+        { "name": "heroi_attack_01", "path": "DemoAdvanced/Assets/Player/Attack-01.png" },
+        { "name": "heroi_jump_start", "path": "DemoAdvanced/Assets/Player/Jump-Start.png" },
+        { "name": "heroi_jump_end", "path": "DemoAdvanced/Assets/Player/Jump-End.png" },
+        { "name": "heroi_dead", "path": "DemoAdvanced/Assets/Player/Dead.png" },
+        { "name": "tiro_laser", "path": "DemoAdvanced/Assets/Laser.png" },
+        { "name": "background", "path": "DemoAdvanced/Assets/background.jpg" },
+        { "name": "window_base", "path": "DemoAdvanced/Assets/manaSoul.png" }
+    ],
+    "audios": [
+        { "name": "bgm_fase1", "path": "DemoAdvanced/Assets/BGM/battle_sound.mpeg" },
+        { "name": "sfx_jump", "path": "DemoAdvanced/Assets/SFX/jump 1.wav" },
+        { "name": "sfx_laser", "path": "DemoAdvanced/Assets/SFX/Blow 1V2.wav" }
+    ]
+}

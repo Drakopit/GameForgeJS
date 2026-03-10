@@ -11,6 +11,7 @@
 
 import { Base } from "./Base.js";
 import { Level } from "../Template/Level.js"
+import { EventEmitter } from "./EventEmitter.js";
 
 // Level Handler
 export const LevelHandler = {
@@ -58,6 +59,8 @@ export class Engine extends Base {
         super();
     }
 
+    static events = new EventEmitter();
+
     /**
      * @doc Method
      * @description Initializes the engine, loads the first level, and starts the game loop.
@@ -74,6 +77,8 @@ export class Engine extends Base {
 
         // Inicia o Level (Isso vai chamar o OnStart do Menu)
         LevelHandler.current.OnStart();
+
+        this.events.emit("EngineStarted");
 
         // Inicia o Loop passando o timestamp inicial
         window.requestAnimationFrame(this.GameLoop.bind(this));
@@ -102,6 +107,10 @@ export class Engine extends Base {
             frameCount = 0;
             fpsTime = 0;
         }
+
+        // PreUpdate Event
+        this.events.emit("PreUpdate", currentTime);
+
 
         // --- LÓGICA DE TRANSIÇÃO DE LEVEL CORRIGIDA ---
         if (LevelHandler.current && (LevelHandler.current.Next || LevelHandler.current.Back)) {
@@ -159,6 +168,7 @@ export class Engine extends Base {
 
         this.OnDrawn();
 
+        this.events.emit("PostUpdate", lastTime);
         window.requestAnimationFrame(this.GameLoop.bind(this));
     }
 

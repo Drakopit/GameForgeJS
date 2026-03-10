@@ -1,19 +1,15 @@
 import { Level } from "../Template/Level.js";
 import { Draw } from "../Graphic/Draw.js";
 import { AssetManager } from "../Root/AssetManager.js";
-import { ObjectPool } from "../Root/ObjectPool.js";
-import { Input } from "../Input/Input.js";
 import { Collide2D } from "../Math/Collide2D.js";
 import { Vector2D } from "../Math/Vector2D.js";
 import { Logger } from "../Root/Logger.js";
 import { Screen } from "../Window/Screen.js";
 import { UIWindow } from "../UI/UIWindow.js";
 import { Camera } from "../Root/Camera.js";
-import { Block } from "./Block.js";
 import { Player } from "./Player.js";
-import { Enemy } from "./Enemy.js";
-import { Bullet } from "./Bullet.js";
 import { AudioManager } from "../Root/AudioManager.js";
+import { LevelBuilder } from "./Levels/LevelBuilder.js";
 
 export class AdvancedDemoLevel extends Level {
 	constructor() {
@@ -23,6 +19,8 @@ export class AdvancedDemoLevel extends Level {
 
 	OnStart() {
 		super.OnStart();
+
+		// 1. SETUP DE SISTEMAS BÁSICOS
 		const width = this.screen ? this.screen.width : 640;
 		const height = this.screen ? this.screen.height : 480;
 		this.screen = new Screen("AdvancedDemo", width, height);
@@ -31,43 +29,41 @@ export class AdvancedDemoLevel extends Level {
 		this.GameWorld = { width: 2000, height: 600 };
 		this.camera = new Camera(new Vector2D(0, 0), new Vector2D(width, height));
 		this.camera.Init(this.screen, this.GameWorld);
-		this.bgImage = AssetManager.instance.GetImage("background");
 
 		this.player = new Player(this.screen);
 		this.AddEntity(this.player);
 
-		// LEVEL DESIGN: Blocos e Buracos
-		this.blocks = [];
-		this.blocks.push(new Block(this.screen, 0, 500, 600, 100));
-		this.blocks.push(new Block(this.screen, 750, 500, 500, 100));
-		this.blocks.push(new Block(this.screen, 1400, 500, 600, 100));
+		// O LEVEL NÃO CRIA MAIS O POOL. 
+		// Ele apenas pega os tiros do Player e joga na Engine para serem desenhados
+		this.player.bulletPool.pool.forEach(bullet => this.AddEntity(bullet));
 
-		this.blocks.push(new Block(this.screen, 400, 380, 150, 20));
-		this.blocks.push(new Block(this.screen, 900, 350, 150, 20));
-		this.blocks.forEach(b => this.AddEntity(b));
+		// 2. CONSTRUÇÃO DO CENÁRIO (Design Pattern: Builder)
+		new LevelBuilder(this)
+			.SetBackground("background")
+			// Chão principal e buracos
+			.AddPlatform(0, 500, 600, 100)
+			.AddPlatform(750, 500, 500, 100)
+			.AddPlatform(1400, 500, 600, 100)
+			// Plataformas flutuantes
+			.AddPlatform(400, 380, 150, 20)
+			.AddPlatform(900, 350, 150, 20)
+			// Inimigos
+			.AddEnemy(500, 100)
+			.AddEnemy(1000, 100)
+			.AddEnemy(1600, 100)
+			.Build();
 
-		// INIMIGOS
-		this.enemies = [];
-		this.enemies.push(new Enemy(this.screen, this.player, 500, 100));
-		this.enemies.push(new Enemy(this.screen, this.player, 1000, 100));
-		this.enemies.push(new Enemy(this.screen, this.player, 1600, 100));
-		this.enemies.forEach(e => this.AddEntity(e));
-
-		this.bulletPool = new ObjectPool(() => new Bullet(this.screen), 10);
-		this.bulletPool.pool.forEach(bullet => this.AddEntity(bullet));
-
-		// Window de HUD
+		// 3. SETUP DA INTERFACE (HUD)
 		const uiBaseImage = AssetManager.instance.GetImage("window_base");
 		this.dialogWindow = new UIWindow(this.screen, uiBaseImage, 10, 480, 400, 150, 32);
 
-		// Adicionamos os textos e eles ficam salvos internamente no array this.dialogWindow.children
-		// [0] = Título, [1] = Inimigos, [2] = Status
 		this.dialogWindow.AddText("Advanced Demo Level", 20, 40, "#FFD700", "24px", "monospace");
 		this.dialogWindow.AddText("Enemies Defeated: 0", 20, 80, "#FFFFFF", "18px", "sans-serif");
 		this.dialogWindow.AddText("Status: Running smoothly", 20, 110, "#00FF00", "16px", "sans-serif");
 
+		// 4. SETUP DE ÁUDIO
 		let bgm = AssetManager.instance.GetAudio("bgm_fase1");
-		AudioManager.instance.PlayBGM(bgm, 0.4); // Volume em 40%
+		AudioManager.instance.PlayBGM(bgm, 0.4);
 	}
 
 	ApplyBlockCollision(entity) {
@@ -141,20 +137,13 @@ export class AdvancedDemoLevel extends Level {
 			});
 		}
 
-		// 3. Vitória
-		if (this.player.position.x > 1900) {
-			Logger.log("PARABÉNS! Fase Concluída!");
-			this.Next = true;
-			// this.player.position.x = 100; 
-		}
-
-		// Checa Colisões: Tiro vs Inimigo (Tiro à distância)
-		this.bulletPool.pool.forEach(bullet => {
+		// 4. Checa Colisões: Tiro vs Inimigo 
+		// O Level age como o Árbitro de Física. Ele lê a pool do player.
+		this.player.bulletPool.pool.forEach(bullet => {
 			if (bullet.active) {
 				this.enemies.forEach(enemy => {
-					// O laser também pode aplicar o efeito de Knockback em vez de matar na hora!
 					if (enemy.active && !enemy.isTakingDamage && Collide2D.isCollidingAABB(bullet, enemy)) {
-						let dir = bullet.direction; // O tiro já tem a direção guardada
+						let dir = bullet.direction;
 						enemy.TakeDamage(dir);
 						bullet.active = false;
 					}
@@ -162,8 +151,11 @@ export class AdvancedDemoLevel extends Level {
 			}
 		});
 
-		if (Input.GetKeyDown("Space")) {
-			this.Shoot();
+		// 3. Vitória
+		if (this.player.position.x > 1900) {
+			Logger.log("PARABÉNS! Fase Concluída!");
+			this.Next = true;
+			// this.player.position.x = 100; 
 		}
 
 		// --- ATUALIZAÇÃO DOS DADOS DA INTERFACE (UI) ---
@@ -191,20 +183,6 @@ export class AdvancedDemoLevel extends Level {
 		}
 
 		this.camera.Update(this.player);
-	}
-
-	Shoot() {
-		let bullet = this.bulletPool.Get();
-		if (bullet) {
-			let dir = this.player.facingRight ? 1 : -1;
-			let fireX = this.player.position.x + (this.player.size.x / 2);
-			let fireY = this.player.position.y + (this.player.size.y / 2) - 2;
-
-			bullet.Fire(fireX, fireY, dir);
-
-			let laserSound = AssetManager.instance.GetAudio("sfx_laser");
-			AudioManager.instance.PlaySFX(laserSound, 0.6);
-		}
 	}
 
 	OnDrawn() {

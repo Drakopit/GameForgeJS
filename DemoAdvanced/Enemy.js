@@ -56,7 +56,7 @@ export class Enemy extends GameObject {
                 this.active = false; 
             }
         } 
-        else if (this.player && this.isGrounded) {
+        else if (this.player && this.isGrounded && Math.abs(this.position.x - this.player.position.x) < 200) {
             // Inteligência normal de perseguição (só acontece se NÃO estiver a sofrer dano)
             if (Math.abs(this.position.x - this.player.position.x) > 5) {
                 if (this.position.x < this.player.position.x) {

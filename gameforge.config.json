@@ -1,0 +1,106 @@
+{
+	"project": {
+		"name": "My Epic Game",
+		"version": "1.0.0",
+		"author": "Camello"
+	},
+	"window": {
+		"title": "GameForgeJS - Advanced Demo",
+		"backgroundColor": "#000000",
+		"fullScreen": false,
+		"resizable": true,
+		"cursor": "default"
+	},
+	"screen": {
+		"width": 640,
+		"height": 480,
+		"pixelArt": true,
+		"antialiasing": false,
+		"orientation": "landscape"
+	},
+	"input": {
+		"actionMappings": {
+			"ATTACK": [
+				{
+					"device": "keyboard",
+					"input": "KeyE"
+				},
+				{
+					"device": "gamepad",
+					"input": "button_2"
+				}
+			],
+			"JUMP": [
+				{
+					"device": "keyboard",
+					"input": "KeyW"
+				},
+				{
+					"device": "keyboard",
+					"input": "ArrowUp"
+				},
+				{
+					"device": "gamepad",
+					"input": "button_0"
+				}
+			],
+			"RIGHT": [
+				{
+					"device": "keyboard",
+					"input": "KeyD"
+				},
+				{
+					"device": "keyboard",
+					"input": "ArrowRight"
+				},
+				{
+					"device": "gamepad",
+					"input": "axis_0_positive"
+				}
+			],
+			"LEFT": [
+				{
+					"device": "keyboard",
+					"input": "KeyA"
+				},
+				{
+					"device": "keyboard",
+					"input": "ArrowLeft"
+				},
+				{
+					"device": "gamepad",
+					"input": "axis_0_negative"
+				}
+			]
+		}
+	},
+	"physics": {
+		"enabled": true,
+		"gravity": {
+			"x": 0,
+			"y": 9.8
+		},
+		"debug": false
+	},
+	"network": {
+		"serverUrl": "ws://localhost:3000",
+		"autoConnect": false,
+		"syncRate": 60
+	},
+	"audio": {
+		"masterVolume": 0.8,
+		"muteOnFocusLoss": true
+	},
+	"assets": {
+		"basePath": "./assets/",
+		"preload": [
+			"sprites.png",
+			"background.jpg"
+		]
+	},
+	"debug": {
+		"showFPS": true,
+		"showHitboxes": false,
+		"logLevel": "info"
+	}
+}

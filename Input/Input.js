@@ -1,3 +1,8 @@
+import { GamePad } from "./GamePad.js";
+import { Mouse } from "./Mouse.js";
+import { Touch } from "./Touch.js";
+import { Engine } from "../Root/Engine.js";
+
 /**
  * @doc Class Input
  * @namespace Input
@@ -17,7 +22,7 @@ export class Input {
         this.keys = {}; // To store the state of keys
         this.keysDown = {}; // To store the state of keys pressed
         this.keysUp = {}; // To store the state of keys released
-        
+
         // Bind methods to the context of this instance
         this.keyDownHandler = this.keyDownHandler.bind(this);
         this.keyUpHandler = this.keyUpHandler.bind(this);
@@ -26,11 +31,40 @@ export class Input {
         window.addEventListener('keydown', this.keyDownHandler);
         window.addEventListener('keyup', this.keyUpHandler);
 
+        // INSTANCIANDO OS OUTROS PERIFÉRICOS
+        this.mouse = new Mouse();
+        this.touch = new Touch();
+        this.gamepad = new GamePad();
+
+        // INSCRIÇÃO NOS EVENTOS DA ENGINE (Inversão de Controlo Perfeita!)
+        Engine.events.on("PreUpdate", () => Input.Update());
+        Engine.events.on("PostUpdate", () => Input.LateUpdate());
+
         // Singleton instance
         if (!Input.instance) {
             Input.instance = this;
         }
         return Input.instance;
+    }
+
+    /**
+     * @description Chamado pela Engine todo início de frame
+     */
+    static Update() {
+        Input.instance.gamepad.Update();
+    }
+
+    /**
+     * @description Chamado pela Engine todo fim de frame
+     */
+    static LateUpdate() {
+        Input.instance.gamepad.LateUpdate();
+        Input.instance.keysDown = {};
+        Input.instance.keysUp = {};
+        // Se implementou o ClearFrameData no Mouse.js
+        if (typeof Input.instance.mouse.ClearFrameData === "function") {
+            Input.instance.mouse.ClearFrameData();
+        }
     }
 
     keyDownHandler(event) {
