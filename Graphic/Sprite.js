@@ -19,14 +19,17 @@ export class Sprite {
 		this.position = new Vector2D(0, 0);
 		this.size = new Vector2D(32, 32);
 		this.scale = 1;
+
 		this.direction = "horizontal";
 		this.row = 0;
 		this.index = 0;
 		this.frameCount = 1;
+
 		this.updateFrame = 0;
 		this.updatesPerFrame = 2;
 
 		this.sprite = new Image();
+
 		if (spriteSrc) {
 			this.sprite.src = spriteSrc;
 		}
@@ -122,64 +125,56 @@ export class Sprite {
 	 * @example
 	 *  sprite.Animation('path/to/sprite.png', new Vector2D(100, 100), 'horizontal', 0);
 	 */
-	Animation(spriteSrc, position, direction = 'horizontal', row = 0, facingRight = true) {
-        // Atualiza a source apenas se for diferente, evitando recarregamentos no loop
-        if (spriteSrc && this.sprite.src !== new URL(spriteSrc, document.baseURI).href) {
-            this.sprite.src = spriteSrc;
-        }
+	Animation(spriteSrc, position, direction = 'horizontal', row = 0, facingRight = true, scale = 1) {
 
-        if (!this.sprite.src) {
-            throw new Error('Sprite source is not set.');
-        }
+		this.position = position;
+		this.row = row;
 
-        this.position = position;
-        this.row = row;
+		const { x, y } = this.size.GetValue();
+		const { x: posX, y: posY } = this.position.GetValue();
 
-        const { x, y } = this.size.GetValue();
-        const { x: posX, y: posY } = this.position.GetValue();
-        
-        // Calculamos a largura e altura finais com a escala aplicada
-        const finalWidth = x * this.scale;
-        const finalHeight = y * this.scale;
+		const finalWidth = x * scale;
+		const finalHeight = y * scale;
 
-        const ctx = this.screen.Context;
-        
-        // 1. Salva o estado atual do canvas para não bugar o resto do jogo
-        ctx.save(); 
+		const ctx = this.screen.Context;
 
-        // 2. Lógica de inversão
-        if (!facingRight) {
-            // Se estiver olhando para a esquerda, movemos o eixo X para a direita 
-            // (somando a largura final) e invertemos a escala.
-            ctx.translate(posX + finalWidth, posY);
-            ctx.scale(-1, 1);
-        } else {
-            // Se for direita, apenas movemos o eixo para a posição normal
-            ctx.translate(posX, posY);
-        }
+		ctx.save();
 
-        // 3. Desenho
-        // ATENÇÃO: Como o ctx já foi movido para a posição correta (posX, posY),
-        // o destino no drawImage (parâmetros 6 e 7) passa a ser 0, 0.
-        if (direction === 'horizontal') {
-            ctx.drawImage(this.sprite,
-                this.index * x, this.row * y,
-                x, y, 
-                0, 0, // <--- Relativo ao eixo transladado
-                finalWidth, finalHeight
-            );
-        } else {
-            ctx.drawImage(this.sprite,
-                0, this.index * y,
-                x, y, 
-                0, 0, // <--- Relativo ao eixo transladado
-                finalWidth, finalHeight
-            );
-        }
+		if (!facingRight) {
 
-        // 4. Restaura o estado original do canvas para desenhar as próximas entidades
-        ctx.restore(); 
-    }
+			ctx.translate(posX, posY);
+			ctx.scale(-1, 1);
+
+			ctx.drawImage(
+				this.sprite,
+				this.index * x,
+				this.row * y,
+				x,
+				y,
+				-finalWidth,
+				0,
+				finalWidth,
+				finalHeight
+			);
+
+		} else {
+
+			ctx.drawImage(
+				this.sprite,
+				this.index * x,
+				this.row * y,
+				x,
+				y,
+				posX,
+				posY,
+				finalWidth,
+				finalHeight
+			);
+
+		}
+
+		ctx.restore();
+	}
 
 	/**
 	 * @doc Method
@@ -188,12 +183,21 @@ export class Sprite {
 	 *  sprite.Update();
 	 */
 	Update() {
+
 		if (this.updateFrame >= this.updatesPerFrame) {
+
 			this.updateFrame = 0;
-			this.index = (this.index + 1) % this.frameCount;
+
+			this.index++;
+
+			if (this.index >= this.frameCount) {
+				this.index = 0;
+			}
 		}
+
 		this.updateFrame++;
 	}
+
 
 	/**
 	 * @doc Method

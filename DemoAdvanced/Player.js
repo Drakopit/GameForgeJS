@@ -1,6 +1,5 @@
 import { GameObject } from "../Root/GameObject.js";
 import { Vector2D } from "../Math/Vector2D.js";
-import { Input } from "../Input/Input.js";
 import { AssetManager } from "../Root/AssetManager.js";
 import { Animator } from "../Graphic/Animator.js";
 import { AudioManager } from "../Root/AudioManager.js";
@@ -17,12 +16,12 @@ export class Player extends GameObject {
         super();
         this.name = "Player";
         this.position = new Vector2D(100, 300);
-        this.size = new Vector2D(64, 64);
+        this.scale = 1.7; // Multiplicador visual
+        this.size = new Vector2D(26 * this.scale, 37 * this.scale);
         this.speed = 200;
         this.screen = screen;
         this.draw = new Draw(screen);
 
-        // FÍSICA DE PLATAFORMA
         this.vy = 0;
         this.gravity = 900;
         this.jumpStrength = -450;
@@ -31,42 +30,57 @@ export class Player extends GameObject {
 
         var Idle = AssetManager.instance.GetImage("heroi_idle");
         var Run = AssetManager.instance.GetImage("heroi_run");
-        var Attack = AssetManager.instance.GetImage("heroi_attack_01");
-        var JumpStart = AssetManager.instance.GetImage("heroi_jump_start");
-        var JumpEnd = AssetManager.instance.GetImage("heroi_jump_end");
+        var Walk = AssetManager.instance.GetImage("heroi_walk");
+        var Attack_1 = AssetManager.instance.GetImage("heroi_attack_01");
+        var Attack_2 = AssetManager.instance.GetImage("heroi_attack_02");
+        var Attack_3 = AssetManager.instance.GetImage("heroi_attack_03");
+        var Jump = AssetManager.instance.GetImage("heroi_jump");
+        var Death = AssetManager.instance.GetImage("heroi_death");
+        var Hurt = AssetManager.instance.GetImage("heroi_hurt");
+        var Defend = AssetManager.instance.GetImage("heroi_defend");
 
         this.sprite.sprite = Idle;
-        // this.sprite.size = new Vector2D(80, 80);
         this.sprite.screen = screen;
 
         this.animator = new Animator(this.sprite);
-        this.animator.AddAnimation("Idle", Idle, 0, 4, 15);
-        this.animator.AddAnimation("Run", Run, 0, 8, 5);
-        this.animator.AddAnimation("Attack", Attack, 0, 8, 5);
-        this.animator.AddAnimation("JumpStart", JumpStart, 0, 4, 10); // 4 frames
-        this.animator.AddAnimation("JumpEnd", JumpEnd, 0, 3, 10);     // 3 frames
+
+        // =======================================================
+        // AGORA OS OFFSETS (X, Y) SÃO APENAS AJUSTES FINOS.
+        // Como implementamos Auto-Ancoragem, a maioria começa no ZERO (0, 0)!
+        // =======================================================
+        this.animator.AddAnimation("Idle", Idle, 0, 7, 8, 0.5, 1, 37);
+        this.animator.AddAnimation("Run", Run, 0, 8, 5, 0.5, 1, 37);
+        this.animator.AddAnimation("Walk", Walk, 0, 8, 8, 0.5, 1, 37);
+        this.animator.AddAnimation("Jump", Jump, 0, 5, 8, 0.5, 1, 37);
+
+        // Ataques geralmente têm a espada "esticando" a imagem para a direita.
+        // Por isso, puxamos o corpo um pouco para trás (ex: -15) para ele não deslizar.
+        // Se a espada for MUITO grande, aumente o número negativo (-20, -30).
+        this.animator.AddAnimation("Attack_1", Attack_1, 0, 6, 5, 0.5, 1, 37);
+        this.animator.AddAnimation("Attack_2", Attack_2, 0, 5, 5, 0.5, 1, 37);
+        this.animator.AddAnimation("Attack_3", Attack_3, 0, 6, 5, 0.5, 1, 37);
+
+        this.animator.AddAnimation("Hurt", Hurt, 0, 4, 10, 0.5, 1);
+        this.animator.AddAnimation("Death", Death, 0, 12, 10, 0.5, 1);
+        this.animator.AddAnimation("Defend", Defend, 0, 6, 10, 0.5, 1);
 
         this.facingRight = true;
-        this.attackHitBox = new HitBox(this, 20, -5, 40, 40);
 
-        // O PLAYER AGORA É DONO DA SUA PRÓPRIA MUNIÇÃO
+        // HITBOX DE DANO: Coloquei para nascer 10px na frente do corpo, largura 60px para cobrir a espada.
+        this.attackHitBox = new HitBox(this, 10, 0, 60, 50);
+
         this.bulletPool = new ObjectPool(() => new Bullet(this.screen), 10);
 
-        // INICIANDO A MÁQUINA DE ESTADOS
         this.currentState = null;
-        this.ChangeState(new IdleState(this)); // Começa parado!
+        this.ChangeState(new IdleState(this));
     }
 
-    // Método principal da Máquina de Estados
     ChangeState(newState) {
-        if (this.currentState) {
-            this.currentState.Exit(); // Limpa o estado atual
-        }
+        if (this.currentState) this.currentState.Exit();
         this.currentState = newState;
-        this.currentState.Enter(); // Configura o novo estado
+        this.currentState.Enter();
     }
 
-    // Métodos Auxiliares para os Estados usarem (Deixa o código limpo)
     IsMovingInput() {
         return ActionManager.IsAction("RIGHT") || ActionManager.IsAction("LEFT");
     }
@@ -93,77 +107,69 @@ export class Player extends GameObject {
         AudioManager.instance.PlaySFX(jumpSound, 0.8);
     }
 
-    // O MÉTODO SHOOT AGORA PERTENCE AO PLAYER
-    // TODO: Futuramente, você pode querer passar parâmetros para o Shoot() para diferentes tipos de ataque, direção, etc.
     Shoot() {
         let bullet = this.bulletPool.Get();
         if (bullet) {
             let dir = this.facingRight ? 1 : -1;
-
-            // O cálculo agora é muito mais limpo, pois estamos dentro do próprio Player
             let fireX = this.position.x + (this.size.x / 2);
             let fireY = this.position.y + (this.size.y / 2) - 2;
-
             bullet.Fire(fireX, fireY, dir);
-
-            let laserSound = AssetManager.instance.GetAudio("sfx_laser");
-            AudioManager.instance.PlaySFX(laserSound, 0.6);
         }
     }
 
     OnUpdate(dt) {
         const delta = dt || 0.016;
-
-        // VERIFICAÇÃO DE INPUT DE TIRO DIRETO NO PLAYER
-        // (Isso também poderia ir para os Estados de Idle e Run futuramente)
-        // if (ActionManager.IsActionDown("ATTACK")) {
-        //     this.Shoot();
-        // }
-
-        // 1. A física básica (gravidade) roda independentemente do estado
         this.vy += this.gravity * delta;
         this.position.y += this.vy * delta;
 
-        // 2. DELEGAÇÃO: O Estado atual toma todas as decisões de movimento, input e animação!
         if (this.currentState) {
             this.currentState.Update(delta);
         }
-
-        // 3. Atualiza os frames da sprite selecionada
         this.sprite.Update();
     }
 
     OnDrawn() {
         if (DEBUG) {
-            // Desenha o hitbox para debug (caixa física real)
             this.draw.Style = this.draw.TYPES.STROKED;
-            this.draw.Color = "#00FF00"; // Verde para ver melhor
+            this.draw.Color = "#00FF00";
             this.draw.DrawRect(this.position.x, this.position.y, this.size.x, this.size.y);
-            this.draw.Color = "#FFFFFF"; // Reseta a cor para branco
+            this.draw.Color = "#FFFFFF";
             this.draw.Style = this.draw.TYPES.FILLED;
         }
 
-        // Vamos desenhar a HitBox de ataque em VERMELHO para você regular os valores!
         if (DEBUG && this.attackHitBox.active) {
             this.draw.Style = this.draw.TYPES.STROKED;
-            this.draw.Color = "#FF0000"; // Vermelho = Dano
+            this.draw.Color = "#FF0000";
             this.draw.DrawRect(
                 this.attackHitBox.position.x,
                 this.attackHitBox.position.y,
                 this.attackHitBox.size.x,
                 this.attackHitBox.size.y
             );
-            this.draw.Color = "#FFFFFF"; // Reseta a cor para branco
+            this.draw.Color = "#FFFFFF";
             this.draw.Style = this.draw.TYPES.FILLED;
         }
 
-        // Envia a direção (facingRight) para o seu método de animação atualizado
+        let anim = this.animator.currentAnimation;
+
+        let frameW = this.sprite.size.x * this.scale;
+        let frameH = this.sprite.size.y * this.scale;
+
+        let pivotX = frameW * anim.pivotX;
+        let pivotY = frameH * anim.pivotY;
+
+        let drawX = this.position.x + (this.size.x / 2) - pivotX;
+        let drawY = this.position.y + this.size.y - pivotY + anim.groundOffset;
+
+        let renderPos = new Vector2D(drawX, drawY);
+
         this.sprite.Animation(
-            this.sprite.sprite.src,
-            this.position,
+            undefined,
+            renderPos,
             "horizontal",
             this.sprite.row,
-            this.facingRight
+            this.facingRight,
+            this.scale
         );
     }
 }

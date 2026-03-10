@@ -1,18 +1,25 @@
 {
     "images": [
-        { "name": "heroi_run", "path": "DemoAdvanced/Assets/Player/Run.png" },
-        { "name": "heroi_idle", "path": "DemoAdvanced/Assets/Player/Idle.png" },
-        { "name": "heroi_attack_01", "path": "DemoAdvanced/Assets/Player/Attack-01.png" },
-        { "name": "heroi_jump_start", "path": "DemoAdvanced/Assets/Player/Jump-Start.png" },
-        { "name": "heroi_jump_end", "path": "DemoAdvanced/Assets/Player/Jump-End.png" },
-        { "name": "heroi_dead", "path": "DemoAdvanced/Assets/Player/Dead.png" },
-        { "name": "tiro_laser", "path": "DemoAdvanced/Assets/Laser.png" },
-        { "name": "background", "path": "DemoAdvanced/Assets/background.jpg" },
-        { "name": "window_base", "path": "DemoAdvanced/Assets/manaSoul.png" }
+        { "name": "heroi_run",          "path": "DemoAdvanced/Assets/Player/RUN.png" },
+        { "name": "heroi_walk",         "path": "DemoAdvanced/Assets/Player/WALK.png" },
+        { "name": "heroi_idle",         "path": "DemoAdvanced/Assets/Player/IDLE.png" },
+        { "name": "heroi_attack_01",    "path": "DemoAdvanced/Assets/Player/ATTACK 1.png" },
+        { "name": "heroi_attack_02",    "path": "DemoAdvanced/Assets/Player/ATTACK 2.png" },
+        { "name": "heroi_attack_03",    "path": "DemoAdvanced/Assets/Player/ATTACK 3.png" },
+        { "name": "heroi_jump",         "path": "DemoAdvanced/Assets/Player/JUMP.png" },
+        { "name": "heroi_death",        "path": "DemoAdvanced/Assets/Player/DEATH.png" },
+        { "name": "heroi_hurt",         "path": "DemoAdvanced/Assets/Player/HURT.png" },
+        { "name": "heroi_defend",       "path": "DemoAdvanced/Assets/Player/DEFEND.png" },
+        { "name": "tiro_laser",         "path": "DemoAdvanced/Assets/Laser.png" },
+        { "name": "background",         "path": "DemoAdvanced/Assets/background.jpg" },
+        { "name": "window_base",        "path": "DemoAdvanced/Assets/manaSoul.png" },
+        { "name": "enemy_idle",         "path": "DemoAdvanced/Assets/Kobold/IDLE.png" },
+        { "name": "enemy_run",          "path": "DemoAdvanced/Assets/Kobold/RUN.png" },
+        { "name": "enemy_hit",          "path": "DemoAdvanced/Assets/Kobold/ATTACK 1.png" }
     ],
     "audios": [
-        { "name": "bgm_fase1", "path": "DemoAdvanced/Assets/BGM/battle_sound.mpeg" },
-        { "name": "sfx_jump", "path": "DemoAdvanced/Assets/SFX/jump 1.wav" },
-        { "name": "sfx_laser", "path": "DemoAdvanced/Assets/SFX/Blow 1V2.wav" }
+        { "name": "bgm_fase1",  "path": "DemoAdvanced/Assets/BGM/battle_sound.mpeg" },
+        { "name": "sfx_jump",   "path": "DemoAdvanced/Assets/SFX/jump 1.wav" },
+        { "name": "sfx_laser",  "path": "DemoAdvanced/Assets/SFX/Blow 1V2.wav" }
     ]
 }

@@ -8,9 +8,10 @@ import { Vector2D } from "../Math/Vector2D.js";
  */
 export class Animator {
     constructor(sprite) {
-        this.sprite = sprite; // Referência à instância de Sprite.js do GameObject
+        this.sprite = sprite;
         this.animations = {};
         this.currentAnimation = null;
+        this.currentAnimationName = null;
     }
 
     /**
@@ -20,13 +21,15 @@ export class Animator {
      * @param {number} frameCount - Quantidade de frames
      * @param {number} speed - Velocidade da animação (updatesPerFrame)
      */
-    AddAnimation(name, image, row, totalFrames, speed) {
-        // Salvamos a imagem junto com os dados da animação
+    AddAnimation(name, image, row, totalFrames, speed, pivotX = 0.5, pivotY = 1, groundOffset = 0) {
         this.animations[name] = {
-            image: image,
-            row: row,
-            totalFrames: totalFrames,
-            speed: speed
+            image,
+            row,
+            totalFrames,
+            speed,
+            pivotX,
+            pivotY,
+            groundOffset
         };
     }
 
@@ -34,28 +37,24 @@ export class Animator {
      * @description Toca a animação se ela já não estiver tocando
      */
     Play(name) {
-        if (this.currentAnimationName !== name) {
-            let anim = this.animations[name];
+        if (this.currentAnimationName === name) return;
 
-            if (anim) {
-                this.currentAnimationName = name;
+        let anim = this.animations[name];
+        if (!anim) return;
 
-                this.sprite.sprite = anim.image;
-                this.sprite.row = anim.row;
-                this.sprite.frameCount = anim.totalFrames;
-                this.sprite.updatesPerFrame = anim.speed;
+        this.currentAnimationName = name;
+        this.currentAnimation = anim;
 
-                // --- A NOVA MÁGICA AQUI ---
-                // Descobre a largura exata de 1 frame automaticamente!
-                let frameWidth = anim.image.width / anim.totalFrames;
-                let frameHeight = anim.image.height;
-                // Atualiza o tamanho do recorte no Sprite
-                this.sprite.size = new Vector2D(frameWidth, frameHeight);
+        this.sprite.sprite = anim.image;
+        this.sprite.row = anim.row;
+        this.sprite.frameCount = anim.totalFrames;
+        this.sprite.updatesPerFrame = anim.speed;
 
-                this.sprite.index = 0;
-            } else {
-                console.warn(`Animator: Animação '${name}' não encontrada.`);
-            }
-        }
+        let frameWidth = anim.image.width / anim.totalFrames;
+        let frameHeight = anim.image.height;
+
+        this.sprite.size = new Vector2D(frameWidth, frameHeight);
+
+        this.sprite.index = 0;
     }
 }

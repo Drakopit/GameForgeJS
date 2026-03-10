@@ -4,7 +4,7 @@ import { AssetManager } from "../Root/AssetManager.js";
 import { Collide2D } from "../Math/Collide2D.js";
 import { Vector2D } from "../Math/Vector2D.js";
 import { Logger } from "../Root/Logger.js";
-import { Screen } from "../Window/Screen.js";
+import { PIXELATED_RENDERING, Screen } from "../Window/Screen.js";
 import { UIWindow } from "../UI/UIWindow.js";
 import { Camera } from "../Root/Camera.js";
 import { Player } from "./Player.js";

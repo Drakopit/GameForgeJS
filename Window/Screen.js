@@ -12,20 +12,22 @@
 
 import { Vector2D } from "../Math/Vector2D.js";
 
+export const PIXELATED_RENDERING = true; // Ativa o modo pixelado para gráficos 2D
+
 export class Screen {
     constructor(id, width, height) {
-		this.id = id;
-		this.ratio = width/height;
-		if (width !== undefined && height !== undefined) {
+        this.id = id;
+        this.ratio = width / height;
+        if (width !== undefined && height !== undefined) {
             this.width = width * this.ratio;
-			this.height = height * this.ratio;
-		} else {
-			this.width = window.innerWidth * this.ratio;
-			this.height = window.innerHeight * this.ratio;
-		}
+            this.height = height * this.ratio;
+        } else {
+            this.width = window.innerWidth * this.ratio;
+            this.height = window.innerHeight * this.ratio;
+        }
         this.clientWidth = window.innerWidth;
         this.clientHeight = window.innerHeight;
-		this.x = 0; this.y = 0;
+        this.x = 0; this.y = 0;
 
         // Inicializa a tela
         this.Init(this.id);
@@ -48,7 +50,7 @@ export class Screen {
      *  screen.Canvas(canvas)
      */
     set Canvas(canvas) { this.canvas = canvas; }
-    
+
     /**
      * @doc Method
      * @description Get context of the screen
@@ -92,7 +94,13 @@ export class Screen {
         this.canvas.setAttribute("id", screenName);
         this.canvas.setAttribute("width", this.width);
         this.canvas.setAttribute("height", this.height);
-		this.context = this.canvas.getContext("2d");
+        this.context = this.canvas.getContext("2d");
+        if (PIXELATED_RENDERING) {
+            // Desliga a suavização no contexto 2D
+            this.context.imageSmoothingEnabled = false;
+            // Garante que o CSS não vai embaçar a imagem se o canvas for redimensionado
+            this.canvas.style.imageRendering = "pixelated";
+        }
     }
 
     /**
@@ -103,7 +111,7 @@ export class Screen {
      * @returns number
      */
     get Width() { return this.canvas.width; }
-    
+
     /**
      * @doc Method
      * @description returns canvas height
@@ -164,6 +172,6 @@ export class Screen {
     get Position() { return new Vector2D(this.x, this.y); }
 }
 
-Screen.prototype.MDC = function(width, height) {
-    return (height == 0) ? width : this.MDC(height, width%height);
+Screen.prototype.MDC = function (width, height) {
+    return (height == 0) ? width : this.MDC(height, width % height);
 };
