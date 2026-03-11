@@ -71,6 +71,11 @@ export class Player extends GameObject {
 
         this.facingRight = true;
 
+        // Combo
+        this.comboIndex = 0;
+        this.comboTimer = 0;
+        this.comboWindow = 0.25;
+
         // HITBOX DE DANO: Coloquei para nascer 10px na frente do corpo, largura 60px para cobrir a espada.
         this.attackHitBox = new HitBox(this, 10, 0, 60, 50);
 
@@ -134,7 +139,6 @@ export class Player extends GameObject {
 
         this.stateMachine.Update(delta);
 
-        this.sprite.Update();
         this.sprite.Update();
         this.animator.Update(delta);
     }

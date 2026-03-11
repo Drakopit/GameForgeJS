@@ -4,7 +4,6 @@ import { Animator } from "../Graphic/Animator.js";
 import { AssetManager } from "../Root/AssetManager.js";
 import { Draw } from "../Graphic/Draw.js";
 import { EnemyIdleState } from "./States/EnemyStates/EnemyIdleState.js";
-import { EnemyRunState } from "./States/EnemyStates/EnemyRunState.js";
 import { EnemyHitState } from "./States/EnemyStates/EnemyHitState.js";
 import { StateMachine } from "./States/StateMachine.js";
 import { DEBUG } from "../Root/Engine.js";
@@ -14,7 +13,8 @@ export class Enemy extends GameObject {
         super();
         this.name = "Enemy";
         this.position = new Vector2D(startX, startY);
-        this.size = new Vector2D(32, 32); // Hitbox física do inimigo
+        this.scale = 1; // inimigo normalmente não escala
+        this.size = new Vector2D(64 * this.scale, 64 * this.scale); // Hitbox física do inimigo
         this.speed = 100;
         this.active = true;
         this.vy = 0;
@@ -37,13 +37,10 @@ export class Enemy extends GameObject {
         this.animator = new Animator(this.sprite);
         this.animator.AddAnimation("Idle", imgIdle, 0, 6, 10, 0.5, 1, 5);
         this.animator.AddAnimation("Run", imgRun, 0, 8, 8, 0.5, 1, 5);
-        this.animator.AddAnimation("Hit", imgHit, 0, 5, 5, 0.5, 1, 5);
+        this.animator.AddAnimation("Hit", imgHit, 0, 6, 10, 0.5, 1, 5);
+        this.animator.AddAnimation("Attack", imgHit, 0, 5, 5, 0.5, 1, 5);
 
         this.facingRight = false;
-
-        // INICIA A MÁQUINA DE ESTADOS DA IA
-        // this.currentState = null;
-        // this.ChangeState(new EnemyIdleState(this));
 
         this.stateMachine = new StateMachine(this);
         this.stateMachine.ChangeState(new EnemyIdleState(this));
@@ -58,9 +55,7 @@ export class Enemy extends GameObject {
         this.vy = -350;
         this.knockbackSpeed = 400 * dir;
 
-        this.stateMachine.ChangeState(
-            new EnemyHitState(this)
-        );
+        this.stateMachine.ChangeState(new EnemyHitState(this))
     }
 
     OnUpdate(dt) {
@@ -88,14 +83,13 @@ export class Enemy extends GameObject {
 
         let anim = this.animator.currentAnimation;
 
-        let scale = 1; // inimigo normalmente não escala
-        let frameW = this.sprite.size.x * scale;
-        let frameH = this.sprite.size.y * scale;
+        let frameW = this.sprite.size.x * this.scale;
+        let frameH = this.sprite.size.y * this.scale;
 
         let pivotX = frameW * anim.pivotX;
         let pivotY = frameH * anim.pivotY;
 
-        let drawX = this.position.x + (this.size.x / 2) - pivotX;
+        let drawX = this.position.x + (this.size.x / 2) - pivotX + (22 * (this.facingRight == true ? 1 : -1)); // A expressão "+ (22 * (this.facingRight == true ? 1 : -1))" corrige a falta. todavia, é uma péssima prática.
         let drawY = this.position.y + this.size.y - pivotY + (anim.groundOffset || 0);
 
         let renderPos = new Vector2D(drawX, drawY);
@@ -111,7 +105,7 @@ export class Enemy extends GameObject {
             "horizontal",
             this.sprite.row,
             this.facingRight,
-            scale
+            this.scale
         );
 
         this.sprite.screen.Context.globalAlpha = 1;

@@ -16,7 +16,7 @@ async function Bootstrap() {
 
         new Input();
         // Lendo diretamente o actionMappings do seu JSON Data-Driven
-        ActionManager.LoadMappings(config ? config.actionMappings : null); 
+        ActionManager.LoadMappings(config ? config.input.actionMappings : null); 
 
         LevelHandler.addLevel(new TacticalMapLevel());
         LevelHandler.addLevel(new BattleLevel());
@@ -24,8 +24,8 @@ async function Bootstrap() {
         Engine.OnStart();
         Logger.log("info", "FFT Demo iniciado com sucesso!");
 
-    } catch (e) {
-        console.error("Erro crítico no Bootstrap:", e);
+    } catch (exception) {
+        Logger.log("error", "Erro crítico no Bootstrap:", exception);
     }
 }
 

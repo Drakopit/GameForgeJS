@@ -1,7 +1,7 @@
 import { GameObject } from "../Root/GameObject.js";
 import { Vector2D } from "../Math/Vector2D.js";
 import { Draw } from "../Graphic/Draw.js";
-import { Input } from "../Input/Input.js";
+import { ActionManager } from "../Input/ActionManager.js";
 
 export class Player extends GameObject {
 	constructor(screen) {
@@ -18,10 +18,10 @@ export class Player extends GameObject {
 		let moveY = 0;
 
 		// Captura de Input usando a sua classe Input (W, A, S, D ou Setas)
-		if (Input.GetKey("KeyW") || Input.GetKey("ArrowUp")) moveY -= 1;
-		if (Input.GetKey("KeyS") || Input.GetKey("ArrowDown")) moveY += 1;
-		if (Input.GetKey("KeyA") || Input.GetKey("ArrowLeft")) moveX -= 1;
-		if (Input.GetKey("KeyD") || Input.GetKey("ArrowRight")) moveX += 1;
+		if (ActionManager.IsAction("UP")) moveY -= 1;
+		if (ActionManager.IsAction("DOWN")) moveY += 1;
+		if (ActionManager.IsAction("LEFT")) moveX -= 1;
+		if (ActionManager.IsAction("RIGHT")) moveX += 1;
 
 		// Atualiza a posição (multiplicando por dt para ser independente do FPS)
 		// Se a sua engine ainda não passar 'dt' no OnUpdate, usamos 0.016 como fallback fixo

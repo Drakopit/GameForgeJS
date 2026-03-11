@@ -18,6 +18,5 @@ export class EnemyIdleState extends State {
                 new EnemyRunState(this.owner)
             );
         }
-
     }
 }

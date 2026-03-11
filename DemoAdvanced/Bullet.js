@@ -13,7 +13,7 @@ export class Bullet extends GameObject {
         this.direction = 1; // 1 para direita, -1 para esquerda
         
         this.draw = new Draw(screen);
-        this.image = AssetManager.instance.GetImage("tiro_laser"); 
+        this.image = AssetManager.instance.GetImage("tiro_laser"); // TODO: Arrumar um outro recurso para substituir as balas.
     }
 
     // Método chamado pelo Pool quando o tiro é disparado

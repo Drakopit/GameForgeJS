@@ -2,6 +2,7 @@ import { Engine, LevelHandler } from "./Root/Engine.js";
 import { Input } from "./Input/Input.js";
 import { Config } from "./Root/Config.js";
 import { TechDemoLevel } from "./Demo/TechDemoLevel.js";
+import { ActionManager } from "./Input/ActionManager.js";
 
 async function Bootstrap() {
     try {
@@ -16,6 +17,7 @@ async function Bootstrap() {
 
         // 2. Inicializa o input
         new Input();
+        ActionManager.LoadMappings(config ? config.input.actionMappings : null);
 
         // 3. Adiciona o nível e inicia a Engine
         LevelHandler.addLevel(new TechDemoLevel());

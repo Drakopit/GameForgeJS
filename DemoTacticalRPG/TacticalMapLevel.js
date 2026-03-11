@@ -46,10 +46,20 @@ export class TacticalMapLevel extends Level {
 
         if (!BattleState.initialized) {
             BattleState.playerUnit = new GridUnit(1, 3, {
-                name: "Herói", color: "#4488FF", hp: 30, attack: 10, defense: 3, moveRange: 3
+                name: "Herói",
+                color: "#4488FF",
+                hp: 30,
+                attack: 10,
+                defense: 3,
+                moveRange: 3
             });
             BattleState.enemyUnit = new GridUnit(8, 3, {
-                name: "Inimigo", color: "#FF4444", hp: 25, attack: 8, defense: 2, moveRange: 2
+                name: "Inimigo",
+                color: "#FF4444",
+                hp: 25,
+                attack: 8,
+                defense: 2,
+                moveRange: 2
             });
             BattleState.initialized = true;
         }
