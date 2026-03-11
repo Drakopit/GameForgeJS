@@ -11,8 +11,8 @@ export class Skybox3D extends Shapes3D { // <-- Herança aplicada (Clean Archite
     }
 
     initShaders() {
-        const vsSource = AssetManager.instance.GetShader("skyboxVertex");
-        const fsSource = AssetManager.instance.GetShader("skyboxFragment");
+        const vsSource = AssetManager.instance.GetShader("SkyVertexShader");
+        const fsSource = AssetManager.instance.GetShader("SkyFragmentShader");
 
         const vertexShader = this.loadShader(this.gl.VERTEX_SHADER, vsSource);
         const fragmentShader = this.loadShader(this.gl.FRAGMENT_SHADER, fsSource);

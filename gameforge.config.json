@@ -19,42 +19,45 @@
 		"orientation": "landscape"
 	},
 	"input": {
-		"actionMappings": {
-			"ATTACK": [
-				{ "device": "keyboard", "input": "KeyE" },
-				{ "device": "gamepad", "input": "button_2" }
-			],
-			"CANCEL": [
-				{ "device": "keyboard", "input": "KeyQ" },
-				{ "device": "gamepad", "input": "button_3" }
-			],
-			"JUMP": [
-				{ "device": "keyboard", "input": "KeyW" },
-				{ "device": "keyboard", "input": "ArrowUp" },
-				{ "device": "gamepad", "input": "button_0" }
-			],
-			"RIGHT": [
-				{ "device": "keyboard", "input": "KeyD" },
-				{ "device": "keyboard", "input": "ArrowRight" },
-				{ "device": "gamepad", "input": "axis_0_positive" }
-			],
-			"LEFT": [
-				{ "device": "keyboard", "input": "KeyA" },
-				{ "device": "keyboard", "input": "ArrowLeft" },
-				{ "device": "gamepad", "input": "axis_0_negative" }
-			],
-			"DOWN": [
-				{ "device": "keyboard", "input": "KeyS" },
-				{ "device": "keyboard", "input": "ArrowDown" },
-				{ "device": "gamepad", "input": "axis_1_positive" }
-			],
-			"UP": [
-				{ "device": "keyboard", "input": "KeyW" },
-				{ "device": "keyboard", "input": "ArrowUp" },
-				{ "device": "gamepad", "input": "axis_1_negative" }
-			]
-		}
-	},
+        "actionMappings": {
+            "ATTACK": [
+                { "device": "keyboard", "input": "KeyZ" },
+                { "device": "keyboard", "input": "Enter" },
+                { "device": "keyboard", "input": "KeyE" },
+                { "device": "gamepad", "input": "button_2" }
+            ],
+            "CANCEL": [
+                { "device": "keyboard", "input": "KeyX" },
+                { "device": "keyboard", "input": "Escape" },
+                { "device": "keyboard", "input": "KeyQ" },
+                { "device": "gamepad", "input": "button_1" } 
+            ],
+            "JUMP": [
+                { "device": "keyboard", "input": "Space" },
+                { "device": "gamepad", "input": "button_0" }
+            ],
+            "RIGHT": [
+                { "device": "keyboard", "input": "KeyD" },
+                { "device": "keyboard", "input": "ArrowRight" },
+                { "device": "gamepad", "input": "axis_0_positive" }
+            ],
+            "LEFT": [
+                { "device": "keyboard", "input": "KeyA" },
+                { "device": "keyboard", "input": "ArrowLeft" },
+                { "device": "gamepad", "input": "axis_0_negative" }
+            ],
+            "DOWN": [
+                { "device": "keyboard", "input": "KeyS" },
+                { "device": "keyboard", "input": "ArrowDown" },
+                { "device": "gamepad", "input": "axis_1_positive" }
+            ],
+            "UP": [
+                { "device": "keyboard", "input": "KeyW" },
+                { "device": "keyboard", "input": "ArrowUp" },
+                { "device": "gamepad", "input": "axis_1_negative" }
+            ]
+        }
+    },
 	"physics": {
 		"enabled": true,
 		"gravity": {

@@ -8,6 +8,7 @@ import { Screen3D } from "../Window/Screen3D.js";
 import { Input } from "../Input/Input.js";
 import { AssetManager } from "../Root/AssetManager.js";
 import { Skybox3D } from "../Graphic/Skybox3D.js";
+import { Char } from "./Char.js";
 
 export class CubeGameLevel extends Level3D {
     constructor() {
@@ -40,13 +41,15 @@ export class CubeGameLevel extends Level3D {
             this.AddEntity(this.skybox);
         }
 
-        this.floor   = new Floor3D(this.screen3D);
-        this.player  = new Player3D(this.screen3D);
-        this.coin    = new Coin3D(this.screen3D);
+        this.floor  = new Floor3D(this.screen3D);
+        this.player = new Player3D(this.screen3D);
+        this.coin   = new Coin3D(this.screen3D);
+        this.model  = new Char(this.screen3D, "character"); 
 
         this.AddEntity(this.floor);
         this.AddEntity(this.player);
         this.AddEntity(this.coin);
+        this.AddEntity(this.model);
     }
 
     OnUpdate(dt) {

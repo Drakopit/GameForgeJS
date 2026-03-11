@@ -10,6 +10,7 @@ import { Camera } from "../Root/Camera.js";
 import { Player } from "./Player.js";
 import { AudioManager } from "../Root/AudioManager.js";
 import { LevelBuilder } from "./Levels/LevelBuilder.js";
+import { PlayerHUD } from "./PlayerHUD.js";
 
 export class AdvancedDemoLevel extends Level {
 	constructor() {
@@ -32,6 +33,9 @@ export class AdvancedDemoLevel extends Level {
 
 		this.player = new Player(this.screen);
 		this.AddEntity(this.player);
+
+		// INSTANCIA A HUD PASSANDO O PLAYER!
+		this.playerHUD = new PlayerHUD(this.screen, this.player);
 
 		// O LEVEL NÃO CRIA MAIS O POOL. 
 		// Ele apenas pega os tiros do Player e joga na Engine para serem desenhados
@@ -203,6 +207,14 @@ export class AdvancedDemoLevel extends Level {
 		});
 
 		this.camera.End();
+
+		// ===============================================
+        // Tudo o que está FORA (DEPOIS) da câmera é Interface UI (Estática)
+        // ===============================================
+        
+        if (this.playerHUD) {
+            this.playerHUD.OnDrawn();
+        }
 
 		// --- UI RENDERING (Static on screen) ---
 		// We draw the UI OUTSIDE of the camera block!

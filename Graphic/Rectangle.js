@@ -3,6 +3,6 @@ export class Rectangle {
         this.x = _x;
         this.y = _y;
         this.width = _width;
-        this._height = _height;
+        this.height = _height;
     }
 }

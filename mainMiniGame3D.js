@@ -6,10 +6,11 @@ import { ActionManager } from "./Input/ActionManager.js";
 import { CubeGameLevel } from "./DemoMiniGame3D/CubeGameLevel.js";
 import { MiniGame3DMenu } from "./DemoMiniGame3D/MiniGame3DMenu.js";
 import { Logger } from "./Root/Logger.js";
+import { AudioManager } from "./Root/AudioManager.js";
 
 async function Bootstrap() {
     try {
-        // 1. Carrega as configurações globais (inclui FORWARD/BACK para o Player3D)
+        // Carrega as configurações globais (inclui FORWARD/BACK para o Player3D)
         const config = await Config.Load("gameforge.config.json");
 
         if (config && config.window) {
@@ -18,21 +19,55 @@ async function Bootstrap() {
             document.body.style.cursor = config.window.cursor;
         }
 
-        // 2. Inicializa input e mapeamento de ações
+        // Inicializa input e mapeamento de ações
         new Input();
         ActionManager.LoadMappings(config ? config.input.actionMappings : null);
 
-        // 3. Carrega os assets via AssetManager
-        const assets = new AssetManager();
-        assets.QueueImage("textura_chao",    "DemoMiniGame3D/Assets/Textures/floor.jpg");
-        assets.QueueImage("textura_player",  "DemoMiniGame3D/Assets/Textures/player.jpg");
-        assets.QueueImage("textura_coin",    "DemoMiniGame3D/Assets/Textures/coin.jpg");
-        assets.QueueImage("sky_cross",       "DemoMiniGame3D/Assets/Textures/Daylight Box UV.png");
+        AudioManager.instance.Initialize();
 
-        assets.QueueShader("vertexShader",    "Shaders/VertexShader.glsl");
-        assets.QueueShader("fragmentShader",  "Shaders/FragmentShader.glsl");
-        assets.QueueShader("skyboxVertex",    "Shaders/SkyBoxVertexShader.glsl");
-        assets.QueueShader("skyboxFragment",  "Shaders/SkyBoxFragmentShader.glsl");
+        if (config && config.audio) {
+            AudioManager.instance.SetGlobalVolume(config.audio.masterVolume);
+        }
+
+        const assets = new AssetManager();
+
+        // ---------------------------------------------------------
+        // MÁGICA DO MANIFESTO: Lendo o resources.json dinamicamente!
+        // ---------------------------------------------------------
+        // const resourceResponse = await fetch("../DemoMiniGame3D/resources.json");
+        // if (!resourceResponse.ok) throw new Error("Não foi possível carregar resources.json");
+
+        // const manifest = await resourceResponse.json();
+
+        const manifest = await Config.Load("../DemoMiniGame3D/resources.json");
+
+        // Faz o loop automático para todas as imagens
+        if (manifest.images) {
+            manifest.images.forEach(img => {
+                assets.QueueImage(img.name, img.path);
+            });
+        }
+
+        // Faz o loop automático para todos os áudios
+        if (manifest.audios) {
+            manifest.audios.forEach(audio => {
+                assets.QueueAudio(audio.name, audio.path);
+            });
+        }
+
+        // Faz o loop automático para todos os shaders
+        if (manifest.shaders) {
+            manifest.shaders.forEach(shader => {
+                assets.QueueShader(shader.name, shader.path);
+            });
+        }
+
+        // Faz o loop automático para todos os modelos
+        if (manifest.models) {
+            manifest.models.forEach(model => {
+                assets.QueueModel(model.name, model.path);
+            });
+        }
 
         // 4. Aguarda o download de tudo
         await assets.LoadAll();
@@ -47,6 +82,7 @@ async function Bootstrap() {
         Logger.log("info", `${projName} v${projVersion}: Todos os assets carregados e Engine iniciada!`);
 
     } catch (exception) {
+        Logger.log("error", `Erro Crítico na Inicialização (Bootstrap): ${exception}`);
         console.error(`Erro Crítico na Inicialização (Bootstrap): ${exception}`);
     }
 }

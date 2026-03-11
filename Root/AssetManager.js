@@ -1,5 +1,8 @@
 import { Logger } from "./Logger.js";
 import { AudioManager } from "./AudioManager.js"; // <-- IMPORTANTE: Ajuste o caminho se necessário
+import { ModelLoader } from "../Graphic/ModelLoader.js";
+import { OBJLoader } from "../Graphic/OBJLoader.js";
+
 
 /**
  * @doc Class AssetManager
@@ -13,6 +16,7 @@ export class AssetManager {
         this.audioQueue = [];
         this.audios = {};
         this.shaders = {};
+        this.models = {};
         this.jsons = {};
         this.promises = []; // Guarda as promessas de imagens e shaders
 

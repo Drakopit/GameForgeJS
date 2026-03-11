@@ -1,6 +1,6 @@
 import { LevelHandler } from "../Root/Engine.js";
 import { Menu } from "../Template/Menu.js";
-import { Input } from "../Input/Input.js";
+import { ActionManager } from "../Input/ActionManager.js";
 import { Logger } from "../Root/Logger.js";
 
 export class MiniGame3DMenu extends Menu {
@@ -16,7 +16,7 @@ export class MiniGame3DMenu extends Menu {
 
     OnUpdate(dt) {
         super.OnUpdate(dt);
-        if (Input.GetKeyDown("Enter")) {
+        if (ActionManager.IsAction("ATTACK")) {
             switch (this.currentSelected) {
                 case 0:
                     LevelHandler.current.Next = true; // Inicia o jogo

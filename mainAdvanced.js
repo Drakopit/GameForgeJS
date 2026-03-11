@@ -5,10 +5,11 @@ import { AdvancedDemoLevel } from "./DemoAdvanced/AdvancedDemoLevel.js";
 import { Config } from "./Root/Config.js"; 
 import { AudioManager } from "./Root/AudioManager.js"; 
 import { ActionManager } from "./Input/ActionManager.js";
+import { Logger } from "./Root/Logger.js";
 
 async function Bootstrap() {
     try {
-        // 1. CARREGA O CONFIG (Resoluções, Controles, etc)
+        // CARREGA O CONFIG (Resoluções, Controles, etc)
         const config = await Config.Load("../gameforge.config.json");
 
         if (config && config.window) {
@@ -17,7 +18,7 @@ async function Bootstrap() {
             document.body.style.cursor = config.window.cursor;
         }
 
-        // 2. INICIALIZA SISTEMAS GLOBAIS
+        // INICIALIZA SISTEMAS GLOBAIS
         new Input();
         ActionManager.LoadMappings(config ? config.input.actionMappings : null);
         AudioManager.instance.Initialize();
@@ -26,11 +27,11 @@ async function Bootstrap() {
             AudioManager.instance.SetGlobalVolume(config.audio.masterVolume);
         }
 
-        // 3. INSTANCIA O PRELOADER
+        // INSTANCIA O PRELOADER
         const assets = new AssetManager();
 
         // ---------------------------------------------------------
-        // 4. MÁGICA DO MANIFESTO: Lendo o resources.json dinamicamente!
+        // MÁGICA DO MANIFESTO: Lendo o resources.json dinamicamente!
         // ---------------------------------------------------------
         const resourceResponse = await fetch("../DemoAdvanced/resources.json");
         if (!resourceResponse.ok) throw new Error("Não foi possível carregar resources.json");
@@ -52,18 +53,20 @@ async function Bootstrap() {
         }
         // ---------------------------------------------------------
 
-        // 5. AGUARDA O DOWNLOAD DE TUDO
+        // AGUARDA O DOWNLOAD DE TUDO
         await assets.LoadAll();
 
-        // 6. INICIA A ENGINE E O NÍVEL
+        // INICIA A ENGINE E O NÍVEL
         LevelHandler.addLevel(new AdvancedDemoLevel());
         Engine.OnStart();
 
         let projName = config ? config.project.name : "GameForgeJS";
         let projVersion = config ? config.project.version : "1.0.0";
-        console.log(`${projName} v${projVersion}: Todos os assets carregados e Engine iniciada!`);
+        Logger.log("info", `${projName} v${projVersion}: Engine iniciada!`);
+        Logger.log("info", `${projName} v${projVersion}: Todos os assets carregados e Engine iniciada!`);
 
     } catch (exception) {
+        Logger.log("error", `Erro Crítico na Inicialização (Bootstrap): ${exception}`);
         console.error(`Erro Crítico na Inicialização (Bootstrap): ${exception}`);
     }
 }

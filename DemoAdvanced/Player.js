@@ -3,7 +3,6 @@ import { Vector2D } from "../Math/Vector2D.js";
 import { AssetManager } from "../Root/AssetManager.js";
 import { Animator } from "../Graphic/Animator.js";
 import { AudioManager } from "../Root/AudioManager.js";
-import { DEBUG } from "../Root/Engine.js";
 import { Draw } from "../Graphic/Draw.js";
 import { HitBox } from "./Attacks/HitBox.js";
 import { IdleState } from "./States/PlayerStates/PlayerIdleState.js";
@@ -77,7 +76,7 @@ export class Player extends GameObject {
         this.comboWindow = 0.25;
 
         // HITBOX DE DANO: Coloquei para nascer 10px na frente do corpo, largura 60px para cobrir a espada.
-        this.attackHitBox = new HitBox(this, 10, 0, 60, 50);
+        this.attackHitBox = new HitBox(this, 10, 20, 40, 30);
 
         this.bulletPool = new ObjectPool(() => new Bullet(this.screen), 10);
 
@@ -91,6 +90,12 @@ export class Player extends GameObject {
                 this.attackHitBox.active = false;
             }
         };
+
+        // Status
+        this.hp = 100;
+        this.maxHP = this.hp;
+        this.attack = 10;
+        this.defense = 0;
 
         this.stateMachine = new StateMachine(this);
         this.stateMachine.ChangeState(new IdleState(this));
@@ -122,15 +127,15 @@ export class Player extends GameObject {
         AudioManager.instance.PlaySFX(jumpSound, 0.8);
     }
 
-    Shoot() {
-        let bullet = this.bulletPool.Get();
-        if (bullet) {
-            let dir = this.facingRight ? 1 : -1;
-            let fireX = this.position.x + (this.size.x / 2);
-            let fireY = this.position.y + (this.size.y / 2) - 2;
-            bullet.Fire(fireX, fireY, dir);
-        }
-    }
+    // Shoot() {
+    //     let bullet = this.bulletPool.Get();
+    //     if (bullet) {
+    //         let dir = this.facingRight ? 1 : -1;
+    //         let fireX = this.position.x + (this.size.x / 2);
+    //         let fireY = this.position.y + (this.size.y / 2) - 2;
+    //         bullet.Fire(fireX, fireY, dir);
+    //     }
+    // }
 
     OnUpdate(dt) {
         const delta = dt || 0.016;
@@ -144,25 +149,16 @@ export class Player extends GameObject {
     }
 
     OnDrawn() {
-        if (DEBUG()) {
-            this.draw.Style = this.draw.TYPES.STROKED;
-            this.draw.Color = "#00FF00";
-            this.draw.DrawRect(this.position.x, this.position.y, this.size.x, this.size.y);
-            this.draw.Color = "#FFFFFF";
-            this.draw.Style = this.draw.TYPES.FILLED;
-        }
+        this._debugRect(this.position.x, this.position.y, this.size.x, this.size.y, "#00FF00");
 
-        if (DEBUG() && this.attackHitBox.active) {
-            this.draw.Style = this.draw.TYPES.STROKED;
-            this.draw.Color = "#FF0000";
-            this.draw.DrawRect(
+        if (this.attackHitBox.active) {
+            this._debugRect(
                 this.attackHitBox.position.x,
                 this.attackHitBox.position.y,
                 this.attackHitBox.size.x,
-                this.attackHitBox.size.y
+                this.attackHitBox.size.y,
+                "#FF0000"
             );
-            this.draw.Color = "#FFFFFF";
-            this.draw.Style = this.draw.TYPES.FILLED;
         }
 
         let anim = this.animator.currentAnimation;

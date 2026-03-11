@@ -15,6 +15,7 @@ import { Vector2D } from "../Math/Vector2D.js";
 import { Collide2D } from "../Math/Collide2D.js";
 import { Base } from "./Base.js";
 import { Util } from "./Utils.js";
+import { DEBUG } from "./Engine.js";
 
 export class GameObject extends Base {
     constructor() {
@@ -34,7 +35,7 @@ export class GameObject extends Base {
         this.deth = null;
         this.danping = 0.5;
         this.mass = null;
-        
+
         this.sprite = new Sprite();
 
         this.Tag = "Entity";
@@ -50,4 +51,14 @@ export class GameObject extends Base {
             return () => callback;
         }
     };
+
+    _debugRect(x, y, width, height, color = "#00FF00") {
+        if (DEBUG()) {
+            this.draw.Style = this.draw.TYPES.STROKED;
+            this.draw.Color = color;
+            this.draw.DrawRect(x, y, width, height);
+            this.draw.Color = "#FFFFFF";
+            this.draw.Style = this.draw.TYPES.FILLED;
+        }
+    }
 }

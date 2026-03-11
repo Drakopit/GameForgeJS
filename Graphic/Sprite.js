@@ -139,40 +139,14 @@ export class Sprite {
 		const ctx = this.screen.Context;
 
 		ctx.save();
-
 		if (!facingRight) {
-
 			ctx.translate(posX, posY);
 			ctx.scale(-1, 1);
 
-			ctx.drawImage(
-				this.sprite,
-				this.index * x,
-				this.row * y,
-				x,
-				y,
-				-finalWidth,
-				0,
-				finalWidth,
-				finalHeight
-			);
-
+			ctx.drawImage(this.sprite, this.index * x, this.row * y, x, y, -finalWidth, 0, finalWidth, finalHeight);
 		} else {
-
-			ctx.drawImage(
-				this.sprite,
-				this.index * x,
-				this.row * y,
-				x,
-				y,
-				posX,
-				posY,
-				finalWidth,
-				finalHeight
-			);
-
+			ctx.drawImage(this.sprite, this.index * x, this.row * y, x, y, posX, posY, finalWidth, finalHeight);
 		}
-
 		ctx.restore();
 	}
 
@@ -183,18 +157,14 @@ export class Sprite {
 	 *  sprite.Update();
 	 */
 	Update() {
-
 		if (this.updateFrame >= this.updatesPerFrame) {
-
 			this.updateFrame = 0;
-
 			this.index++;
 
 			if (this.index >= this.frameCount) {
 				this.index = 0;
 			}
 		}
-
 		this.updateFrame++;
 	}
 

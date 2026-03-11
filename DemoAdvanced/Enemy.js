@@ -6,7 +6,6 @@ import { Draw } from "../Graphic/Draw.js";
 import { EnemyIdleState } from "./States/EnemyStates/EnemyIdleState.js";
 import { EnemyHitState } from "./States/EnemyStates/EnemyHitState.js";
 import { StateMachine } from "./States/StateMachine.js";
-import { DEBUG } from "../Root/Engine.js";
 
 export class Enemy extends GameObject {
     constructor(screen, playerRef, startX, startY) {
@@ -44,6 +43,12 @@ export class Enemy extends GameObject {
 
         this.stateMachine = new StateMachine(this);
         this.stateMachine.ChangeState(new EnemyIdleState(this));
+
+        // Enemy Status
+        this.hp = 30;
+        this.maxHP = this.hp;
+        this.attack = 10;
+        this.defense = 0;
     }
 
     TakeDamage(dir) {
@@ -55,7 +60,18 @@ export class Enemy extends GameObject {
         this.vy = -350;
         this.knockbackSpeed = 400 * dir;
 
+        // Dano
+        this.hp -= this.player.attack;
+
+        if (this.hp <= 0) {
+            this.Die();
+        }
+
         this.stateMachine.ChangeState(new EnemyHitState(this))
+    }
+
+    Die() {
+        this.active = false;
     }
 
     OnUpdate(dt) {
@@ -70,17 +86,47 @@ export class Enemy extends GameObject {
         this.sprite.Update();
     }
 
+    // --- NOVO MÉTODO PARA A BARRA DE VIDA ---
+    _drawHealthBar() {
+        let barWidth = 40; // Largura total da barra
+        let barHeight = 6; // Altura da barra
+
+        // Centraliza a barra no eixo X da hitbox e coloca 15px acima do topo (eixo Y)
+        let barX = this.position.x + (this.size.x / 2) - (barWidth / 2);
+        let barY = this.position.y - 15;
+
+        // Calcula a porcentagem de vida (evita números negativos)
+        let hpPercent = Math.max(0, this.hp / this.maxHP);
+
+        // 1. Desenha o fundo da barra (parte vazia/escura)
+        this.draw.Style = this.draw.TYPES.FILLED;
+        this.draw.Color = "#333333";
+        this.draw.DrawRect(barX, barY, barWidth, barHeight);
+
+        // 2. Desenha a vida atual (parte vermelha/verde)
+        // Muda para amarelo/vermelho se estiver morrendo
+        if (hpPercent > 0.5) this.draw.Color = "#00FF00"; // Verde
+        else if (hpPercent > 0.25) this.draw.Color = "#FFFF00"; // Amarelo
+        else this.draw.Color = "#FF0000"; // Vermelho
+
+        this.draw.DrawRect(barX, barY, barWidth * hpPercent, barHeight);
+
+        // 3. Desenha a borda da barra (contorno)
+        this.draw.Style = this.draw.TYPES.STROKED;
+        this.draw.Color = "#000000";
+        this.draw.DrawRect(barX, barY, barWidth, barHeight);
+
+        // Reseta o estilo para não bugar outros desenhos
+        this.draw.Style = this.draw.TYPES.FILLED;
+    }
+
     OnDrawn() {
         if (!this.active) return;
 
-        if (DEBUG()) {
-            this.draw.Style = this.draw.TYPES.STROKED;
-            this.draw.Color = "#00FF00";
-            this.draw.DrawRect(this.position.x, this.position.y, this.size.x, this.size.y);
-            this.draw.Color = "#FFFFFF";
-            this.draw.Style = this.draw.TYPES.FILLED;
+        if (typeof this._debugRect === "function") {
+            this._debugRect(this.position.x, this.position.y, this.size.x, this.size.y, "#00FF00");
         }
-
+        
         let anim = this.animator.currentAnimation;
 
         let frameW = this.sprite.size.x * this.scale;
@@ -109,5 +155,8 @@ export class Enemy extends GameObject {
         );
 
         this.sprite.screen.Context.globalAlpha = 1;
+
+        // CHAMA A BARRA DE VIDA POR ÚLTIMO PARA FICAR POR CIMA DO SPRITE
+        this._drawHealthBar();
     }
 }
