@@ -45,11 +45,12 @@ export class Logger {
 		console.log(`📌 ${message}`);
 
 		if (data !== undefined) {
-			try {
-				console.log('📎 DATA:');
-				console.log(JSON.stringify(data, null, 2));
-			} catch {
-				console.log('📎 DATA:', data);
+			console.log('📎 DATA:');
+			// Se for um objeto (e não nulo), use o console.dir para manter a interatividade do DevTools!
+			if (typeof data === 'object' && data !== null) {
+				console.dir(data, { depth: null });
+			} else {
+				console.log(data);
 			}
 		}
 

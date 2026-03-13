@@ -158,8 +158,20 @@ export class Screen {
     Resize(vector2D) {
         // this.width = vector2D.GetValue().x;
         // this.height = vector2D.GetValue().y;
-        this.canvas.width = this.width;
-        this.canvas.height = this.height;
+        this.canvas.width = vector2D.GetValue().x;
+        this.canvas.height = vector2D.GetValue().y;
+    }
+
+    FullScreen() {
+        if (this.canvas.requestFullscreen) {
+            this.canvas.requestFullscreen();
+        } else if (this.canvas.mozRequestFullScreen) {
+            this.canvas.mozRequestFullScreen();
+        } else if (this.canvas.webkitRequestFullscreen) {
+            this.canvas.webkitRequestFullscreen();
+        } else if (this.canvas.msRequestFullscreen) {
+            this.canvas.msRequestFullscreen();
+        }
     }
 
     /**

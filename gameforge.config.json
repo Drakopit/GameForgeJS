@@ -24,13 +24,14 @@
                 { "device": "keyboard", "input": "KeyZ" },
                 { "device": "keyboard", "input": "Enter" },
                 { "device": "keyboard", "input": "KeyE" },
-                { "device": "gamepad", "input": "button_2" }
+                { "device": "gamepad", "input": "button_2" } 
             ],
             "CANCEL": [
                 { "device": "keyboard", "input": "KeyX" },
                 { "device": "keyboard", "input": "Escape" },
                 { "device": "keyboard", "input": "KeyQ" },
-                { "device": "gamepad", "input": "button_1" } 
+                { "device": "gamepad", "input": "button_1" }, 
+                { "device": "gamepad", "input": "button_3" }
             ],
             "JUMP": [
                 { "device": "keyboard", "input": "Space" },
@@ -39,22 +40,26 @@
             "RIGHT": [
                 { "device": "keyboard", "input": "KeyD" },
                 { "device": "keyboard", "input": "ArrowRight" },
-                { "device": "gamepad", "input": "axis_0_positive" }
+                { "device": "gamepad", "input": "axis_0_positive" },
+                { "device": "gamepad", "input": "button_15" } 
             ],
             "LEFT": [
                 { "device": "keyboard", "input": "KeyA" },
                 { "device": "keyboard", "input": "ArrowLeft" },
-                { "device": "gamepad", "input": "axis_0_negative" }
+                { "device": "gamepad", "input": "axis_0_negative" },
+                { "device": "gamepad", "input": "button_14" } 
             ],
             "DOWN": [
                 { "device": "keyboard", "input": "KeyS" },
                 { "device": "keyboard", "input": "ArrowDown" },
-                { "device": "gamepad", "input": "axis_1_positive" }
+                { "device": "gamepad", "input": "axis_1_positive" },
+                { "device": "gamepad", "input": "button_13" } 
             ],
             "UP": [
                 { "device": "keyboard", "input": "KeyW" },
                 { "device": "keyboard", "input": "ArrowUp" },
-                { "device": "gamepad", "input": "axis_1_negative" }
+                { "device": "gamepad", "input": "axis_1_negative" },
+                { "device": "gamepad", "input": "button_12" } 
             ]
         }
     },

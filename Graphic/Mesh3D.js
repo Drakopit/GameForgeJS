@@ -17,6 +17,9 @@ export class Mesh3D {
 		this._buffers = {};
 		this.texture = null;
 
+		this.gl.getExtension('OES_element_index_uint');
+
+
 		this._initShaders();
 		this._uploadToGPU();
 		this._loadTexture();
