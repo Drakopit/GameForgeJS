@@ -15,6 +15,7 @@ import { PlayerHUD } from "./PlayerHUD.js";
 export class AdvancedDemoLevel extends Level {
 	constructor() {
 		super();
+		this.caption = "GameForgeJS - Advanced Demo";
 		this.TelaId = "AdvancedDemo";
 	}
 
@@ -49,7 +50,7 @@ export class AdvancedDemoLevel extends Level {
 			.AddPlatform(750, 500, 500, 100)
 			.AddPlatform(1400, 500, 600, 100)
 			// Plataformas flutuantes
-			.AddPlatform(400, 380, 150, 20)
+			.AddPlatform(400, 400, 150, 20)
 			.AddPlatform(900, 350, 150, 20)
 			// Inimigos
 			.AddEnemy(500, 100)
@@ -73,29 +74,49 @@ export class AdvancedDemoLevel extends Level {
 	ApplyBlockCollision(entity) {
 		entity.isGrounded = false;
 		for (let block of this.blocks) {
-			if (Collide2D.isCollidingAABB(entity, block)) {
-				if (entity.vy > 0) { // Resolve apenas caindo no chão
-					entity.position.y = block.position.y - entity.size.y;
-					entity.vy = 0;
-					entity.isGrounded = true;
-				}
+			if (!Collide2D.isCollidingAABB(entity, block) || entity.vy < 0) {
+				continue;
+			}
+
+			const previousY = entity.previousPosition?.y ?? entity.position.y;
+			const previousBottom = previousY + entity.size.y;
+			const blockTop = block.position.y;
+			const entityLeft = entity.position.x;
+			const entityRight = entity.position.x + entity.size.x;
+			const blockLeft = block.position.x;
+			const blockRight = block.position.x + block.size.x;
+			const overlapsHorizontally = entityRight > blockLeft && entityLeft < blockRight;
+			const cameFromAbove = previousBottom <= blockTop + 4;
+
+			if (overlapsHorizontally && cameFromAbove) {
+				entity.position.y = blockTop - entity.size.y;
+				entity.vy = 0;
+				entity.isGrounded = true;
 			}
 		}
 	}
 
 	ResetLevel() {
-		Logger.log("GAME OVER! Reiniciando...");
+		Logger.log("info", "GAME OVER! Reiniciando...");
 		this.player.position = new Vector2D(100, 300);
+		this.player.previousPosition = new Vector2D(100, 300);
 		this.player.vy = 0;
 
 		this.enemies[0].position = new Vector2D(500, 100);
 		this.enemies[1].position = new Vector2D(1000, 100);
 		this.enemies[2].position = new Vector2D(1600, 100);
+		this.enemies[0].previousPosition = new Vector2D(500, 100);
+		this.enemies[1].previousPosition = new Vector2D(1000, 100);
+		this.enemies[2].previousPosition = new Vector2D(1600, 100);
 
 		// Revive todo mundo e reseta o TakingDamage
 		this.enemies.forEach(e => {
 			e.active = true;
 			e.isTakingDamage = false;
+			e.hp = e.maxHP;
+			e.vy = 0;
+			e.knockbackSpeed = 0;
+			e.isGrounded = false;
 		});
 	}
 
@@ -157,7 +178,7 @@ export class AdvancedDemoLevel extends Level {
 
 		// 3. Vitória
 		if (this.player.position.x > 1900) {
-			Logger.log("PARABÉNS! Fase Concluída!");
+			Logger.log("info", "PARABÉNS! Fase Concluída!");
 			this.Next = true;
 			// this.player.position.x = 100; 
 		}

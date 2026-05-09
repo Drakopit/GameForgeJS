@@ -106,6 +106,19 @@ export class AssetManager {
         );
     }
 
+    QueueJson(name, url) {
+        const promise = fetch(url)
+            .then(response => {
+                if (!response.ok) throw new Error(`Erro no JSON: ${url}`);
+                return response.json();
+            })
+            .then(json => {
+                this.jsons[name] = json;
+            });
+
+        this.promises.push(promise);
+    }
+
     GetModel(name) {
         if (!this.models?.[name]) console.warn(`AssetManager: Modelo '${name}' não encontrado.`);
         return this.models?.[name] ?? null;
@@ -139,5 +152,14 @@ export class AssetManager {
     GetImage(name) {
         if (!this.images[name]) console.warn(`AssetManager: Imagem '${name}' não encontrada.`);
         return this.images[name];
+    }
+
+    HasImage(name) {
+        return Boolean(this.images[name]);
+    }
+
+    GetJson(name) {
+        if (!this.jsons[name]) console.warn(`AssetManager: JSON '${name}' nao encontrado.`);
+        return this.jsons[name];
     }
 }

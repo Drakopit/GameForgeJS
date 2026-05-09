@@ -1,96 +1,80 @@
-/**
- * @doc TacticalMapLevel
- * @summary Mapa tático de grade com movimento suave usando MathExt.LerpSnap.
- *          Cada unidade tem posição lógica (col/row) e posição visual (pixelX/Y).
- *          O input só é aceito quando a animação de movimento terminar.
- *
- * Controles:
- *   Setas     → mover cursor
- *   Z / Space → confirmar seleção / destino
- *   X / Esc   → cancelar
- */
 import { Level } from "../Template/Level.js";
 import { Screen } from "../Window/Screen.js";
 import { Draw } from "../Graphic/Draw.js";
 import { MathExt } from "../Math/MathExt.js";
-import { GridUnit } from "./GridUnit.js";
-import { BattleState } from "./BattleState.js";
+import { aStar } from "../Pathfinding/AStar.js";
 import { ActionManager } from "../Input/ActionManager.js";
+import { BattleState } from "./BattleState.js";
+import { GridUnit } from "./GridUnit.js";
 
-const W = 640, H = 480;
-const COLS = 10, ROWS = 7, CELL = 60;
-const OX = 20, OY = 10;
+const W = 640;
+const H = 480;
+const COLS = 10;
+const ROWS = 7;
+const CELL = 60;
+const OX = 20;
+const OY = 10;
 const MOVE_SPEED = 12;
 
 const PHASE = {
-    PLAYER_SELECT: "PLAYER_SELECT",
-    PLAYER_MOVE: "PLAYER_MOVE",
+    SELECT_UNIT: "SELECT_UNIT",
+    MOVE_TARGET: "MOVE_TARGET",
+    ACTION_TARGET: "ACTION_TARGET",
     ANIMATING: "ANIMATING",
-    ENEMY_WAIT: "ENEMY_WAIT",
 };
 
-function tileToPixel(col, row) {
-    return { x: OX + col * CELL + CELL / 2, y: OY + row * CELL + CELL / 2 };
+const BLOCKED_TILES = new Set([
+    "4,2",
+    "4,3",
+    "4,4",
+    "5,4",
+]);
+
+function TileKey(col, row) {
+    return `${col},${row}`;
+}
+
+function TileToPixel(col, row) {
+    return {
+        x: OX + col * CELL + CELL / 2,
+        y: OY + row * CELL + CELL / 2,
+    };
+}
+
+function Manhattan(a, b) {
+    return Math.abs(a.col - b.col) + Math.abs(a.row - b.row);
 }
 
 export class TacticalMapLevel extends Level {
     constructor() {
         super();
-        this.caption = "FFT Demo - Mapa Tático";
+        this.caption = "FFT Demo - Tactical Map";
         this.TelaId = "TacticalMap";
     }
 
     OnStart() {
         this.screen = new Screen("TacticalMap", W, H);
-        this.draw = new Draw(this.screen); // Usando a nossa API de Desenho!
+        this.draw = new Draw(this.screen);
 
-        if (!BattleState.initialized) {
-            BattleState.playerUnit = new GridUnit(1, 3, {
-                name: "Herói",
-                color: "#4488FF",
-                hp: 30,
-                attack: 10,
-                defense: 3,
-                moveRange: 3
-            });
-            BattleState.enemyUnit = new GridUnit(8, 3, {
-                name: "Inimigo",
-                color: "#FF4444",
-                hp: 25,
-                attack: 8,
-                defense: 2,
-                moveRange: 2
-            });
-            BattleState.initialized = true;
-        }
-
+        this._ensureBattleState();
         this.player = BattleState.playerUnit;
-        this.enemy = BattleState.enemyUnit;
+        this.enemies = BattleState.enemies;
 
         this._syncPixelPos(this.player);
-        this._syncPixelPos(this.enemy);
-
-        this.message = "Selecione o Herói (Z)";
-
-        if (BattleState.result === "PLAYER_WIN") {
-            this.message = "Vitória! Inimigo derrotado!";
-            BattleState.result = null;
-        } else if (BattleState.result === "ENEMY_WIN") {
-            this.player.Reset();
-            this.enemy.Reset();
-            this._syncPixelPos(this.player);
-            this._syncPixelPos(this.enemy);
-            this.message = "Derrota... Recomeçando!";
-            BattleState.result = null;
-        }
+        this.enemies.forEach(enemy => this._syncPixelPos(enemy));
 
         this.cursor = { col: this.player.col, row: this.player.row };
-        this.phase = PHASE.PLAYER_SELECT;
-        this.reachable = [];
-        this.enemyTimer = 0;
+        this.phase = PHASE.SELECT_UNIT;
+        this.moveArea = [];
+        this.actionArea = [];
+        this.pathPreview = [];
+        this._pathQueue = [];
         this._animUnit = null;
+        this._animTarget = null;
         this._animCallback = null;
+        this.message = "Selecione o Hero com Z.";
 
+        this._handleBattleReturn();
         super.OnStart();
     }
 
@@ -98,59 +82,282 @@ export class TacticalMapLevel extends Level {
         if (this.screen?.Canvas) this.screen.Canvas.remove();
     }
 
+    _ensureBattleState() {
+        if (BattleState.initialized) return;
+
+        const player = new GridUnit(1, 3, {
+            name: "Hero",
+            color: "#4488FF",
+            hp: 30,
+            attack: 10,
+            defense: 3,
+            moveRange: 3,
+            attackRange: 1,
+        });
+
+        const enemy = new GridUnit(8, 3, {
+            name: "Enemy",
+            color: "#FF4444",
+            hp: 25,
+            attack: 8,
+            defense: 2,
+            moveRange: 2,
+            attackRange: 1,
+        });
+
+        BattleState.playerUnit = player;
+        BattleState.enemyUnit = enemy;
+        BattleState.enemies = [enemy];
+        BattleState.initialized = true;
+    }
+
+    _handleBattleReturn() {
+        if (BattleState.result === "PLAYER_WIN") {
+            this.message = this._hasLivingEnemies()
+                ? "Inimigo derrotado. Selecione o Hero com Z."
+                : "Vitoria! Todos os inimigos foram derrotados.";
+            BattleState.ClearResult();
+        } else if (BattleState.result === "ENEMY_WIN") {
+            BattleState.ResetAll();
+            this.player = BattleState.playerUnit;
+            this.enemies = BattleState.enemies;
+            this._syncPixelPos(this.player);
+            this.enemies.forEach(enemy => this._syncPixelPos(enemy));
+            this.cursor = { col: this.player.col, row: this.player.row };
+            this.message = "Derrota. As unidades foram reiniciadas.";
+            BattleState.ClearResult();
+        }
+    }
+
     _syncPixelPos(unit) {
-        const p = tileToPixel(unit.col, unit.row);
+        const p = TileToPixel(unit.col, unit.row);
         unit.pixelX = p.x;
         unit.pixelY = p.y;
     }
 
-    _startMove(unit, targetCol, targetRow, onComplete) {
-        unit.col = targetCol;
-        unit.row = targetRow;
+    _isInside(col, row) {
+        return col >= 0 && row >= 0 && col < COLS && row < ROWS;
+    }
+
+    _isBlocked(col, row) {
+        return BLOCKED_TILES.has(TileKey(col, row));
+    }
+
+    _hasLivingEnemies() {
+        return this.enemies.some(enemy => enemy.IsAlive());
+    }
+
+    _findLivingEnemyAt(col, row) {
+        return this.enemies.find(enemy => enemy.IsAlive() && enemy.IsAt(col, row)) ?? null;
+    }
+
+    _readCursorInput() {
+        let dc = 0;
+        let dr = 0;
+
+        if (ActionManager.IsActionDown("UP")) dr = -1;
+        else if (ActionManager.IsActionDown("DOWN")) dr = 1;
+        else if (ActionManager.IsActionDown("LEFT")) dc = -1;
+        else if (ActionManager.IsActionDown("RIGHT")) dc = 1;
+
+        if (dc === 0 && dr === 0) return;
+
+        this.cursor.col = Math.max(0, Math.min(COLS - 1, this.cursor.col + dc));
+        this.cursor.row = Math.max(0, Math.min(ROWS - 1, this.cursor.row + dr));
+        this._refreshPathPreview();
+    }
+
+    _buildPathGrid({ includeEnemies = true } = {}) {
+        const grid = Array.from({ length: COLS }, () => Array.from({ length: ROWS }, () => 0));
+
+        for (const key of BLOCKED_TILES) {
+            const [col, row] = key.split(",").map(Number);
+            grid[col][row] = 1;
+        }
+
+        if (includeEnemies) {
+            for (const enemy of this.enemies) {
+                if (enemy.IsAlive()) {
+                    grid[enemy.col][enemy.row] = 1;
+                }
+            }
+        }
+
+        grid[this.player.col][this.player.row] = 0;
+        return grid;
+    }
+
+    _findPathTo(targetCol, targetRow) {
+        if (!this._isInside(targetCol, targetRow) || this._isBlocked(targetCol, targetRow)) {
+            return null;
+        }
+
+        const enemyOnTarget = this._findLivingEnemyAt(targetCol, targetRow);
+        if (enemyOnTarget) return null;
+
+        return aStar(
+            this._buildPathGrid(),
+            { x: this.player.col, y: this.player.row },
+            { x: targetCol, y: targetRow }
+        );
+    }
+
+    _computeMoveArea(unit) {
+        const area = [{ col: unit.col, row: unit.row, cost: 0 }];
+
+        for (let col = 0; col < COLS; col++) {
+            for (let row = 0; row < ROWS; row++) {
+                if (col === unit.col && row === unit.row) continue;
+
+                const path = this._findPathTo(col, row);
+                if (!path) continue;
+
+                const cost = path.length - 1;
+                if (cost <= unit.moveRange) {
+                    area.push({ col, row, cost });
+                }
+            }
+        }
+
+        return area;
+    }
+
+    _computeActionArea(unit) {
+        const range = unit.attackRange ?? 1;
+        const area = [];
+
+        for (let col = 0; col < COLS; col++) {
+            for (let row = 0; row < ROWS; row++) {
+                const distance = Manhattan(unit, { col, row });
+                if (distance > 0 && distance <= range) {
+                    area.push({ col, row });
+                }
+            }
+        }
+
+        return area;
+    }
+
+    _isInArea(area, col, row) {
+        return area.some(tile => tile.col === col && tile.row === row);
+    }
+
+    _selectPlayer() {
+        this.moveArea = this._computeMoveArea(this.player);
+        this.actionArea = [];
+        this.pathPreview = [];
+        this.phase = PHASE.MOVE_TARGET;
+        this.message = "Area azul: movimento. Escolha destino com Z. X cancela.";
+        this._refreshPathPreview();
+    }
+
+    _confirmMoveTarget() {
+        const { col, row } = this.cursor;
+        if (!this._isInArea(this.moveArea, col, row)) {
+            this.message = "Destino fora da area de movimento.";
+            return;
+        }
+
+        const path = this._findPathTo(col, row);
+        if (!path || path.length < 1 || path.length - 1 > this.player.moveRange) {
+            this.message = "Caminho invalido.";
+            return;
+        }
+
+        this.moveArea = [];
+        this.pathPreview = path.slice(1);
+        this._startPathMove(this.player, path, () => {
+            this.pathPreview = [];
+            this.actionArea = this._computeActionArea(this.player);
+            this.phase = PHASE.ACTION_TARGET;
+            this.message = "Area vermelha: acao. Z ataca alvo. X encerra.";
+        });
+    }
+
+    _confirmActionTarget() {
+        const { col, row } = this.cursor;
+        const enemy = this._findLivingEnemyAt(col, row);
+
+        if (!this._isInArea(this.actionArea, col, row)) {
+            this.message = "Alvo fora da area de acao.";
+            return;
+        }
+
+        if (!enemy) {
+            this.message = "Nenhum inimigo nesse tile.";
+            return;
+        }
+
+        if (BattleState.StartEncounter(this.player, enemy)) {
+            this.Next = true;
+        }
+    }
+
+    _cancelCurrentPhase() {
+        if (this.phase === PHASE.MOVE_TARGET) {
+            this.moveArea = [];
+            this.pathPreview = [];
+            this.cursor = { col: this.player.col, row: this.player.row };
+            this.phase = PHASE.SELECT_UNIT;
+            this.message = "Selecione o Hero com Z.";
+            return;
+        }
+
+        if (this.phase === PHASE.ACTION_TARGET) {
+            this.actionArea = [];
+            this.cursor = { col: this.player.col, row: this.player.row };
+            this.phase = PHASE.SELECT_UNIT;
+            this.message = "Turno encerrado. Selecione o Hero com Z.";
+        }
+    }
+
+    _refreshPathPreview() {
+        if (this.phase !== PHASE.MOVE_TARGET) return;
+
+        const { col, row } = this.cursor;
+        if (!this._isInArea(this.moveArea, col, row)) {
+            this.pathPreview = [];
+            return;
+        }
+
+        const path = this._findPathTo(col, row);
+        this.pathPreview = path ? path.slice(1) : [];
+    }
+
+    _startPathMove(unit, path, onComplete) {
+        this._pathQueue = path.slice(1);
         this._animUnit = unit;
-        this._animTarget = tileToPixel(targetCol, targetRow);
         this._animCallback = onComplete;
         this.phase = PHASE.ANIMATING;
+        this._advancePathStep();
+    }
+
+    _advancePathStep() {
+        const next = this._pathQueue.shift();
+
+        if (!next) {
+            const callback = this._animCallback;
+            this._animUnit = null;
+            this._animTarget = null;
+            this._animCallback = null;
+            if (callback) callback();
+            return;
+        }
+
+        this._animUnit.MoveTo(next.x, next.y);
+        this._animTarget = TileToPixel(next.x, next.y);
     }
 
     _updateAnimation(dt) {
-        if (!this._animUnit) return;
+        if (!this._animUnit || !this._animTarget) return;
+
         const t = MOVE_SPEED * dt;
         this._animUnit.pixelX = MathExt.LerpSnap(this._animUnit.pixelX, this._animTarget.x, t);
         this._animUnit.pixelY = MathExt.LerpSnap(this._animUnit.pixelY, this._animTarget.y, t);
 
         if (this._animUnit.pixelX === this._animTarget.x && this._animUnit.pixelY === this._animTarget.y) {
-            const cb = this._animCallback;
-            this._animUnit = null;
-            this._animCallback = null;
-            if (cb) cb();
+            this._advancePathStep();
         }
-    }
-
-    _getReachable(unit) {
-        const visited = new Set([`${unit.col},${unit.row}`]);
-        const queue = [{ col: unit.col, row: unit.row, steps: 0 }];
-        const result = [];
-
-        while (queue.length > 0) {
-            const { col, row, steps } = queue.shift();
-            if (steps > 0) result.push({ col, row });
-            if (steps >= unit.moveRange) continue;
-
-            for (const [dc, dr] of [[0, 1], [0, -1], [1, 0], [-1, 0]]) {
-                const nc = col + dc, nr = row + dr;
-                const key = `${nc},${nr}`;
-                if (nc >= 0 && nc < COLS && nr >= 0 && nr < ROWS && !visited.has(key)) {
-                    visited.add(key);
-                    queue.push({ col: nc, row: nr, steps: steps + 1 });
-                }
-            }
-        }
-        return result;
-    }
-
-    _isReachable(col, row) {
-        return this.reachable.some(t => t.col === col && t.row === row);
     }
 
     OnUpdate(dt) {
@@ -161,157 +368,132 @@ export class TacticalMapLevel extends Level {
             return;
         }
 
-        if (this.phase === PHASE.ENEMY_WAIT) {
-            this.enemyTimer -= dt;
-            if (this.enemyTimer <= 0) this._doEnemyTurn();
+        if (!this._hasLivingEnemies()) {
+            this.moveArea = [];
+            this.actionArea = [];
+            this.pathPreview = [];
+            this.message = "Vitoria! Todos os inimigos foram derrotados.";
             return;
         }
 
-        // ADAPTAÇÃO: Usar IsActionDown para o cursor não correr rápido demais!
-        if (ActionManager.IsActionDown("UP")) this.cursor.row = Math.max(0, this.cursor.row - 1);
-        if (ActionManager.IsActionDown("DOWN")) this.cursor.row = Math.min(ROWS - 1, this.cursor.row + 1);
-        if (ActionManager.IsActionDown("LEFT")) this.cursor.col = Math.max(0, this.cursor.col - 1);
-        if (ActionManager.IsActionDown("RIGHT")) this.cursor.col = Math.min(COLS - 1, this.cursor.col + 1);
+        this._readCursorInput();
 
-        const confirm = ActionManager.IsActionDown("ATTACK"); // Assumindo ATTACK como "Confirmar"
-        const cancel = ActionManager.IsActionDown("JUMP");    // Assumindo JUMP como "Cancelar/Voltar"
-
-        if (this.phase === PHASE.PLAYER_SELECT) {
-            if (confirm && this.cursor.col === this.player.col && this.cursor.row === this.player.row) {
-                this.reachable = this._getReachable(this.player);
-                this.phase = PHASE.PLAYER_MOVE;
-                this.message = "Escolha o destino (Z: mover | X: cancelar)";
-            }
-        }
-        else if (this.phase === PHASE.PLAYER_MOVE) {
-            if (cancel) {
-                this.reachable = [];
-                this.phase = PHASE.PLAYER_SELECT;
-                this.message = "Selecione o Herói (Z)";
-            }
-
-            if (confirm) {
-                const { col, row } = this.cursor;
-
-                if (col === this.enemy.col && row === this.enemy.row && this.enemy.IsAlive() && this._isReachable(col, row)) {
-                    this.reachable = [];
-                    const adjCol = this.player.col + Math.sign(col - this.player.col);
-                    const adjRow = this.player.row + Math.sign(row - this.player.row);
-                    this._startMove(this.player, adjCol, adjRow, () => this._triggerBattle());
-                    return;
-                }
-
-                if (this._isReachable(col, row)) {
-                    this.reachable = [];
-                    this._startMove(this.player, col, row, () => {
-                        this.phase = PHASE.ENEMY_WAIT;
-                        this.enemyTimer = 0.6;
-                        this.message = "Turno do inimigo...";
-                    });
-                }
-            }
-        }
-    }
-
-    _doEnemyTurn() {
-        const dx = Math.sign(this.player.col - this.enemy.col);
-        const dy = Math.sign(this.player.row - this.enemy.row);
-
-        for (const [dc, dr] of (dx !== 0 ? [[dx, 0], [0, dy]] : [[0, dy], [dx, 0]])) {
-            if (dc === 0 && dr === 0) continue;
-            const nc = this.enemy.col + dc;
-            const nr = this.enemy.row + dr;
-            if (nc < 0 || nc >= COLS || nr < 0 || nr >= ROWS) continue;
-
-            if (nc === this.player.col && nr === this.player.row) {
-                this._startMove(this.enemy, nc, nr, () => this._triggerBattle());
-                return;
-            }
-
-            this._startMove(this.enemy, nc, nr, () => {
-                this.phase = PHASE.PLAYER_SELECT;
-                this.message = "Selecione o Herói (Z)";
-            });
+        if (ActionManager.IsActionDown("CANCEL")) {
+            this._cancelCurrentPhase();
             return;
         }
-        this.phase = PHASE.PLAYER_SELECT;
-        this.message = "Selecione o Herói (Z)";
-    }
 
-    _triggerBattle() {
-        BattleState.playerUnit = this.player;
-        BattleState.enemyUnit = this.enemy;
-        this.Next = true;
+        if (!ActionManager.IsActionDown("ATTACK")) return;
+
+        if (this.phase === PHASE.SELECT_UNIT) {
+            if (this.player.IsAt(this.cursor.col, this.cursor.row)) {
+                this._selectPlayer();
+            } else {
+                this.message = "Mova o cursor ate o Hero e pressione Z.";
+            }
+            return;
+        }
+
+        if (this.phase === PHASE.MOVE_TARGET) {
+            this._confirmMoveTarget();
+            return;
+        }
+
+        if (this.phase === PHASE.ACTION_TARGET) {
+            this._confirmActionTarget();
+        }
     }
 
     OnDrawn() {
         this.screen.Refresh();
-
-        // Desenhando a Grade usando This.Draw
-        for (let r = 0; r < ROWS; r++) {
-            for (let c = 0; c < COLS; c++) {
-                const x = OX + c * CELL;
-                const y = OY + r * CELL;
-                const isReachable = this._isReachable(c, r);
-                const isEnemyTile = this.enemy.IsAlive() && c === this.enemy.col && r === this.enemy.row;
-                const isCursor = this.cursor.col === c && this.cursor.row === r;
-
-                // Fundo da célula
-                this.draw.Style = this.draw.TYPES.FILLED;
-                if (isReachable && isEnemyTile) this.draw.Color = "#5A1A1A";
-                else if (isReachable) this.draw.Color = "#1A3A5C";
-                else this.draw.Color = (r + c) % 2 === 0 ? "#2C4A2C" : "#1E361E";
-                this.draw.DrawRect(x, y, CELL, CELL);
-
-                // Borda da célula
-                this.draw.Style = this.draw.TYPES.STROKED;
-                this.draw.Color = "#000000";
-                this.draw.DrawRect(x, y, CELL, CELL);
-
-                // Cursor Tático
-                if (isCursor) {
-                    this.draw.Color = "#FFFF00";
-                    this.draw.DrawRect(x + 2, y + 2, CELL - 4, CELL - 4);
-                }
-            }
-        }
-
-        this._drawMapUnit(this.player);
-        if (this.enemy.IsAlive()) this._drawMapUnit(this.enemy);
+        this._drawGrid();
+        this._drawArea(this.moveArea, "rgba(62, 145, 255, 0.42)");
+        this._drawArea(this.actionArea, "rgba(255, 72, 72, 0.42)");
+        this._drawPathPreview();
+        this._drawUnit(this.player);
+        this.enemies.filter(enemy => enemy.IsAlive()).forEach(enemy => this._drawUnit(enemy));
+        this._drawCursor();
     }
 
-    _drawMapUnit(unit) {
+    _drawGrid() {
+        for (let row = 0; row < ROWS; row++) {
+            for (let col = 0; col < COLS; col++) {
+                const x = OX + col * CELL;
+                const y = OY + row * CELL;
+                const blocked = this._isBlocked(col, row);
+
+                this.draw.Style = this.draw.TYPES.FILLED;
+                this.draw.Color = blocked
+                    ? "#20242C"
+                    : (row + col) % 2 === 0 ? "#2C4A2C" : "#1E361E";
+                this.draw.DrawRect(x, y, CELL, CELL);
+
+                this.draw.Style = this.draw.TYPES.STROKED;
+                this.draw.Color = "#0B130B";
+                this.draw.DrawRect(x, y, CELL, CELL);
+            }
+        }
+    }
+
+    _drawArea(area, color) {
+        if (!area.length) return;
+
+        this.draw.Style = this.draw.TYPES.FILLED;
+        this.draw.Color = color;
+        for (const tile of area) {
+            this.draw.DrawRect(OX + tile.col * CELL + 5, OY + tile.row * CELL + 5, CELL - 10, CELL - 10);
+        }
+    }
+
+    _drawPathPreview() {
+        if (!this.pathPreview.length) return;
+
+        this.draw.Style = this.draw.TYPES.FILLED;
+        this.draw.Color = "rgba(255, 226, 74, 0.75)";
+        for (const step of this.pathPreview) {
+            this.draw.DrawRect(OX + step.x * CELL + 18, OY + step.y * CELL + 18, CELL - 36, CELL - 36);
+        }
+    }
+
+    _drawCursor() {
+        const x = OX + this.cursor.col * CELL;
+        const y = OY + this.cursor.row * CELL;
+
+        this.draw.Style = this.draw.TYPES.STROKED;
+        this.draw.Color = "#FFD84A";
+        this.draw.DrawRect(x + 2, y + 2, CELL - 4, CELL - 4);
+        this.draw.DrawRect(x + 5, y + 5, CELL - 10, CELL - 10);
+        this.draw.Style = this.draw.TYPES.FILLED;
+    }
+
+    _drawUnit(unit) {
         const half = CELL / 2 - 8;
         const x = unit.pixelX - half;
         const y = unit.pixelY - half;
         const size = half * 2;
 
         this.draw.Style = this.draw.TYPES.FILLED;
-
-        // Corpo da Unidade
         this.draw.Color = unit.color;
         this.draw.DrawRect(x, y, size, size);
 
-        // Detalhe de iluminação
         this.draw.Color = "rgba(255,255,255,0.2)";
         this.draw.DrawRect(x + 2, y + 2, size / 3, size - 4);
 
-        // Nome
         this.draw.Color = "#FFFFFF";
-        this.draw.Font = "bold 10px monospace";
+        this.draw.FontSize = "10px";
+        this.draw.Font = "monospace";
         this.draw.SetTextAlign("center");
         this.draw.DrawText(unit.name, unit.pixelX, unit.pixelY + 4);
 
-        // Barra de Vida
-        const bx = unit.pixelX - half;
-        const by = unit.pixelY + half - 6;
-        const pct = unit.hp / unit.maxHp;
+        const barX = unit.pixelX - half;
+        const barY = unit.pixelY + half - 6;
+        const pct = Math.max(0, unit.hp / unit.maxHp);
 
         this.draw.Color = "#111111";
-        this.draw.DrawRect(bx, by, size, 5);
+        this.draw.DrawRect(barX, barY, size, 5);
 
         this.draw.Color = pct > 0.5 ? "#44FF44" : pct > 0.25 ? "#FFAA00" : "#FF3333";
-        this.draw.DrawRect(bx, by, size * pct, 5);
+        this.draw.DrawRect(barX, barY, size * pct, 5);
     }
 
     OnGUI() {
@@ -322,31 +504,17 @@ export class TacticalMapLevel extends Level {
         this.draw.DrawRect(0, barY, W, H - barY);
 
         this.draw.Color = "#FFFFFF";
-        this.draw.Font = "14px monospace";
+        this.draw.FontSize = "14px";
+        this.draw.Font = "monospace";
         this.draw.SetTextAlign("left");
         this.draw.DrawText(this.message, 10, barY + 22);
 
         this.draw.Color = "#888888";
-        this.draw.Font = "11px monospace";
-        this.draw.DrawText("Setas: cursor | Z: confirmar | X: cancelar", 10, barY + 42);
+        this.draw.FontSize = "11px";
+        this.draw.DrawText("Setas: cursor | Z: confirmar | X/Esc: cancelar | azul: movimento | vermelho: acao", 10, barY + 42);
 
         this.draw.Color = "#AAAAAA";
         this.draw.SetTextAlign("right");
         this.draw.DrawText(`FPS: ${this.FPS}`, W - 10, barY + 22);
-
-        if (this.phase === PHASE.PLAYER_MOVE) {
-            this.draw.SetTextAlign("left");
-            this.draw.Color = "#1A3A5C";
-            this.draw.DrawRect(W - 180, barY + 8, 14, 14);
-
-            this.draw.Color = "#CCCCCC";
-            this.draw.DrawText("Alcançável", W - 160, barY + 20);
-
-            this.draw.Color = "#5A1A1A";
-            this.draw.DrawRect(W - 180, barY + 26, 14, 14);
-
-            this.draw.Color = "#CCCCCC";
-            this.draw.DrawText("Atacar", W - 160, barY + 38);
-        }
     }
 }

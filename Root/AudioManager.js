@@ -5,6 +5,8 @@ export class AudioManager {
     static instance = new AudioManager();
 
     constructor() {
+        if(!AudioManager.instance) AudioManager.instance = this;
+
         window.AudioContext = window.AudioContext || window.webkitAudioContext;
         this.context = null;
 

@@ -51,7 +51,7 @@ export class Player extends GameObject {
         this.animator.AddAnimation("Idle", Idle, 0, 7, 8, 0.5, 1, 37);
         this.animator.AddAnimation("Run", Run, 0, 8, 5, 0.5, 1, 37);
         this.animator.AddAnimation("Walk", Walk, 0, 8, 8, 0.5, 1, 37);
-        this.animator.AddAnimation("Jump", Jump, 0, 5, 8, 0.5, 1, 37);
+        this.animator.AddAnimation("Jump", Jump, 0, 5, 8, 0.5, 1, 37, null, { loop: false });
 
         // Ataques geralmente têm a espada "esticando" a imagem para a direita.
         // Por isso, puxamos o corpo um pouco para trás (ex: -15) para ele não deslizar.
@@ -60,12 +60,14 @@ export class Player extends GameObject {
             {
                 2: "HitStart",
                 4: "HitEnd"
-            });
-        this.animator.AddAnimation("Attack_2", Attack_2, 0, 5, 5, 0.5, 1, 37);
-        this.animator.AddAnimation("Attack_3", Attack_3, 0, 6, 5, 0.5, 1, 37);
+            },
+            { loop: false }
+        );
+        this.animator.AddAnimation("Attack_2", Attack_2, 0, 5, 5, 0.5, 1, 37, null, { loop: false });
+        this.animator.AddAnimation("Attack_3", Attack_3, 0, 6, 5, 0.5, 1, 37, null, { loop: false });
 
-        this.animator.AddAnimation("Hurt", Hurt, 0, 4, 10, 0.5, 1);
-        this.animator.AddAnimation("Death", Death, 0, 12, 10, 0.5, 1);
+        this.animator.AddAnimation("Hurt", Hurt, 0, 4, 10, 0.5, 1, 0, null, { loop: false });
+        this.animator.AddAnimation("Death", Death, 0, 12, 10, 0.5, 1, 0, null, { loop: false });
         this.animator.AddAnimation("Defend", Defend, 0, 6, 10, 0.5, 1);
 
         this.facingRight = true;
@@ -139,6 +141,8 @@ export class Player extends GameObject {
 
     OnUpdate(dt) {
         const delta = dt || 0.016;
+        this.previousPosition = new Vector2D(this.position.x, this.position.y);
+
         this.vy += this.gravity * delta;
         this.position.y += this.vy * delta;
 

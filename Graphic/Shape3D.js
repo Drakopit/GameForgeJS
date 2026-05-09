@@ -1,4 +1,4 @@
-import { mat4 } from 'https://cdn.jsdelivr.net/npm/gl-matrix@3.4.3/+esm';
+import { Mat4 } from '../Math/Mat4.js';
 import { AssetManager } from '../Root/AssetManager.js';
 
 export class Shapes3D {
@@ -141,15 +141,15 @@ export class Shapes3D {
         }
 
         // --- MATRIZES ---
-        const modelMatrix = mat4.create();
-        mat4.translate(modelMatrix, modelMatrix, position);
-        mat4.rotate(modelMatrix, modelMatrix, rotation.x, [1, 0, 0]);
-        mat4.rotate(modelMatrix, modelMatrix, rotation.y, [0, 1, 0]);
-        mat4.rotate(modelMatrix, modelMatrix, rotation.z, [0, 0, 1]);
-        mat4.scale(modelMatrix, modelMatrix, scale);
+        const modelMatrix = Mat4.create();
+        Mat4.translate(modelMatrix, modelMatrix, position);
+        Mat4.rotate(modelMatrix, modelMatrix, rotation.x, [1, 0, 0]);
+        Mat4.rotate(modelMatrix, modelMatrix, rotation.y, [0, 1, 0]);
+        Mat4.rotate(modelMatrix, modelMatrix, rotation.z, [0, 0, 1]);
+        Mat4.scale(modelMatrix, modelMatrix, scale);
 
-        const modelViewMatrix = mat4.create();
-        mat4.multiply(modelViewMatrix, camera.viewMatrix, modelMatrix);
+        const modelViewMatrix = Mat4.create();
+        Mat4.multiply(modelViewMatrix, camera.viewMatrix, modelMatrix);
 
         this.gl.uniformMatrix4fv(this.programInfo.uniformLocations.projectionMatrix, false, camera.projectionMatrix);
         this.gl.uniformMatrix4fv(this.programInfo.uniformLocations.modelViewMatrix, false, modelViewMatrix);

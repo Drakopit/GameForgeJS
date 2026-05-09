@@ -14,14 +14,9 @@ import { Vector2D } from "../Math/Vector2D.js";
 export class Screen3D {
     constructor(id, width, height) {
         this.id = id;
-        this.ratio = width / height;
-        if (width !== undefined && height !== undefined) {
-            this.width = width * this.ratio;
-            this.height = height * this.ratio;
-        } else {
-            this.width = window.innerWidth * this.ratio;
-            this.height = window.innerHeight * this.ratio;
-        }
+        this.width = width ?? window.innerWidth;
+        this.height = height ?? window.innerHeight;
+        this.ratio = this.width / this.height;
         this.clientWidth = window.innerWidth;
         this.clientHeight = window.innerHeight;
         this.x = 0;

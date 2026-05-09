@@ -27,7 +27,7 @@ export class Animator {
      * @param {number} frameCount - Quantidade de frames
      * @param {number} speed - Velocidade da animação (updatesPerFrame)
      */
-    AddAnimation(name, image, row, totalFrames, speed, pivotX = 0.5, pivotY = 1, groundOffset = 0, events = null) {
+    AddAnimation(name, image, row, totalFrames, speed, pivotX = 0.5, pivotY = 1, groundOffset = 0, events = null, options = {}) {
         this.animations[name] = {
             image,
             row,
@@ -36,7 +36,8 @@ export class Animator {
             pivotX,
             pivotY,
             groundOffset,
-            events
+            events,
+            loop: options.loop ?? true
         };
     }
 
@@ -78,8 +79,13 @@ export class Animator {
                 this.sprite.row = anim.row;
                 this.sprite.frameCount = anim.totalFrames;
                 this.sprite.updatesPerFrame = anim.speed;
+                this.sprite.loop = anim.loop;
+                this.sprite.size = new Vector2D(
+                    anim.image.width / anim.totalFrames,
+                    anim.image.height
+                );
 
-                this.sprite.index = 0;
+                this.sprite.Reset();
 
                 this.nextAnimation = null;
                 this.lastFrame = -1;
@@ -120,13 +126,14 @@ export class Animator {
         this.sprite.row = anim.row;
         this.sprite.frameCount = anim.totalFrames;
         this.sprite.updatesPerFrame = anim.speed;
+        this.sprite.loop = anim.loop;
 
         let frameWidth = anim.image.width / anim.totalFrames;
         let frameHeight = anim.image.height;
 
         this.sprite.size = new Vector2D(frameWidth, frameHeight);
 
-        this.sprite.index = 0;
+        this.sprite.Reset();
         this.lastFrame = -1;
     }
 }

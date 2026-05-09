@@ -1,4 +1,4 @@
-import { mat4 } from 'https://cdn.jsdelivr.net/npm/gl-matrix@3.4.3/+esm';
+import { Mat4 } from '../Math/Mat4.js';
 import { Shapes3D } from "./Shape3D.js"; // <-- Importamos a classe pai
 import { AssetManager } from '../Root/AssetManager.js';
 
@@ -80,16 +80,16 @@ export class Skybox3D extends Shapes3D { // <-- Herança aplicada (Clean Archite
         this.gl.bindTexture(this.gl.TEXTURE_CUBE_MAP, this.texture);
         this.gl.uniform1i(this.programInfo.uniformLocations.uSampler, 0);
 
-        const viewMatrix = mat4.clone(camera.viewMatrix);
+        const viewMatrix = Mat4.clone(camera.viewMatrix);
         viewMatrix[12] = 0;
         viewMatrix[13] = 0;
         viewMatrix[14] = 0;
 
-        const modelMatrix = mat4.create();
-        mat4.scale(modelMatrix, modelMatrix, [50.0, 50.0, 50.0]);
+        const modelMatrix = Mat4.create();
+        Mat4.scale(modelMatrix, modelMatrix, [50.0, 50.0, 50.0]);
 
-        const modelViewMatrix = mat4.create();
-        mat4.multiply(modelViewMatrix, viewMatrix, modelMatrix);
+        const modelViewMatrix = Mat4.create();
+        Mat4.multiply(modelViewMatrix, viewMatrix, modelMatrix);
 
         this.gl.uniformMatrix4fv(this.programInfo.uniformLocations.projectionMatrix, false, camera.projectionMatrix);
         this.gl.uniformMatrix4fv(this.programInfo.uniformLocations.modelViewMatrix, false, modelViewMatrix);

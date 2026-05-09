@@ -29,15 +29,13 @@ export const LevelHandler = {
      */
     addLevel(level) {
         this.levels.push(level);
-        this.index = this.levels.length - 1;
+        if (this.levels.length === 1) {
+            this.index = 0;
+        }
     },
 
-    getCurrent(index) {
-        if (!this.current) {
-            this.current = this.levels[0];
-        } else {
-            this.current = this.levels[index];
-        }
+    getCurrent(index = this.index) {
+        this.current = this.levels[index] ?? null;
         return this.current;
     }
 };
@@ -71,7 +69,11 @@ export class Engine extends Base {
      */
     static OnStart() {
         // Pega a primeira fase (que no seu caso é o Menu)
+        LevelHandler.index = 0;
         LevelHandler.current = LevelHandler.getCurrent(0);
+        if (!LevelHandler.current) {
+            throw new Error("Engine.OnStart requires at least one level.");
+        }
 
         // Configura o handler
         LevelHandler.current.LEVEL_HANDLER = LevelHandler;

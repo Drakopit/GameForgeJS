@@ -89,8 +89,8 @@ GameForgeJS/
 │   ├── Screen.js           # 2D Canvas DOM Element manager
 │   ├── Screen3D.js         # WebGL Canvas DOM Element manager
 │   └── ScreenUI.js         # Hybrid Absolute-Positioned 2D Canvas over 3D
-├── mainAdvanced.js         # Async Bootstrapper Entry Point (2D Demo)
-├── mainDemo3D.js           # Async Bootstrapper Entry Point (3D Demo)
+├── DemoAdvanced/mainAdvanced.js       # Async Bootstrapper Entry Point (2D Demo)
+├── Demo3D/mainDemo3D.js               # Async Bootstrapper Entry Point (3D Demo)
 └── server.js               # Local development server for testing
 
 ```

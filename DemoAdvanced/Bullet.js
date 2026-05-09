@@ -13,7 +13,9 @@ export class Bullet extends GameObject {
         this.direction = 1; // 1 para direita, -1 para esquerda
         
         this.draw = new Draw(screen);
-        this.image = AssetManager.instance.GetImage("tiro_laser"); // TODO: Arrumar um outro recurso para substituir as balas.
+        this.image = AssetManager.instance.HasImage("tiro_laser")
+            ? AssetManager.instance.GetImage("tiro_laser")
+            : null;
     }
 
     // Método chamado pelo Pool quando o tiro é disparado
@@ -37,6 +39,13 @@ export class Bullet extends GameObject {
 
     OnDrawn() {
         if (!this.active) return;
-        this.draw.DrawSprite(this.image, this.position.x, this.position.y);
+
+        if (this.image) {
+            this.draw.DrawSprite(this.image, this.position.x, this.position.y);
+            return;
+        }
+
+        this.draw.Color = "#69D2FF";
+        this.draw.DrawRect(this.position.x, this.position.y, this.size.x, this.size.y);
     }
 }

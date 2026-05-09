@@ -24,6 +24,8 @@ export class Sprite {
 		this.row = 0;
 		this.index = 0;
 		this.frameCount = 1;
+		this.loop = true;
+		this.finished = false;
 
 		this.updateFrame = 0;
 		this.updatesPerFrame = 2;
@@ -157,12 +159,19 @@ export class Sprite {
 	 *  sprite.Update();
 	 */
 	Update() {
+		if (!this.loop && this.finished) return;
+
 		if (this.updateFrame >= this.updatesPerFrame) {
 			this.updateFrame = 0;
 			this.index++;
 
 			if (this.index >= this.frameCount) {
-				this.index = 0;
+				if (this.loop) {
+					this.index = 0;
+				} else {
+					this.index = Math.max(0, this.frameCount - 1);
+					this.finished = true;
+				}
 			}
 		}
 		this.updateFrame++;
@@ -178,5 +187,6 @@ export class Sprite {
 	Reset() {
 		this.index = 0;
 		this.updateFrame = 0;
+		this.finished = false;
 	}
 }

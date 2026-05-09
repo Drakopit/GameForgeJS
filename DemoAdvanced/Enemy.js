@@ -36,8 +36,8 @@ export class Enemy extends GameObject {
         this.animator = new Animator(this.sprite);
         this.animator.AddAnimation("Idle", imgIdle, 0, 6, 10, 0.5, 1, 5);
         this.animator.AddAnimation("Run", imgRun, 0, 8, 8, 0.5, 1, 5);
-        this.animator.AddAnimation("Hit", imgHit, 0, 6, 10, 0.5, 1, 5);
-        this.animator.AddAnimation("Attack", imgHit, 0, 5, 5, 0.5, 1, 5);
+        this.animator.AddAnimation("Hit", imgHit, 0, 6, 10, 0.5, 1, 5, null, { loop: false });
+        this.animator.AddAnimation("Attack", imgHit, 0, 5, 5, 0.5, 1, 5, null, { loop: false });
 
         this.facingRight = false;
 
@@ -77,6 +77,7 @@ export class Enemy extends GameObject {
     OnUpdate(dt) {
         if (!this.active) return;
         const delta = dt || 0.016;
+        this.previousPosition = new Vector2D(this.position.x, this.position.y);
 
         this.vy += this.gravity * delta;
         this.position.y += this.vy * delta;
@@ -84,6 +85,7 @@ export class Enemy extends GameObject {
         this.stateMachine.Update(delta);
 
         this.sprite.Update();
+        this.animator.Update(delta);
     }
 
     // --- NOVO MÉTODO PARA A BARRA DE VIDA ---

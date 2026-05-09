@@ -1,4 +1,4 @@
-import { mat4 } from 'https://cdn.jsdelivr.net/npm/gl-matrix@3.4.3/+esm';
+import { Mat4 } from "../Math/Mat4.js";
 
 export class Camera3D {
     constructor(screen) {
@@ -13,8 +13,8 @@ export class Camera3D {
         // Qual direção é "para cima" (Geralmente o eixo Y positivo)
         this.up = [0, 1, 0];
 
-        this.viewMatrix = mat4.create();
-        this.projectionMatrix = mat4.create();
+        this.viewMatrix = Mat4.create();
+        this.projectionMatrix = Mat4.create();
 
         this.CalculateProjection();
     }
@@ -22,7 +22,7 @@ export class Camera3D {
     CalculateProjection() {
         // Calcula a perspectiva da lente (FOV de 45 graus)
         const aspect = (this.screen.width || this.screen.Width) / (this.screen.height || this.screen.Height);
-        mat4.perspective(this.projectionMatrix, (45 * Math.PI) / 180, aspect, 0.1, 100.0);
+        Mat4.perspective(this.projectionMatrix, (45 * Math.PI) / 180, aspect, 0.1, 100.0);
     }
 
     /**
@@ -30,7 +30,7 @@ export class Camera3D {
      */
     Update() {
         // Cria a matriz de câmera olhando da 'position' para o 'target'
-        mat4.lookAt(this.viewMatrix, this.position, this.target, this.up);
+        Mat4.lookAt(this.viewMatrix, this.position, this.target, this.up);
     }
 
     /**

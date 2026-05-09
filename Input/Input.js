@@ -18,39 +18,43 @@ import { Engine } from "../Root/Engine.js";
  * @returns {Object}
  */
 export class Input {
-    constructor() {
-        this.keys = {}; // To store the state of keys
-        this.keysDown = {}; // To store the state of keys pressed
-        this.keysUp = {}; // To store the state of keys released
+    static instance = null;
 
-        // Bind methods to the context of this instance
+    static Initialize() {
+        if (!Input.instance) {
+            Input.instance = new Input();
+        }
+        return Input.instance;
+    }
+
+    constructor() {
+        if (Input.instance) return Input.instance;
+
+        this.keys = {};
+        this.keysDown = {};
+        this.keysUp = {};
+
         this.keyDownHandler = this.keyDownHandler.bind(this);
         this.keyUpHandler = this.keyUpHandler.bind(this);
 
-        // Add event listeners
-        window.addEventListener('keydown', this.keyDownHandler);
-        window.addEventListener('keyup', this.keyUpHandler);
+        window.addEventListener("keydown", this.keyDownHandler);
+        window.addEventListener("keyup", this.keyUpHandler);
 
-        // INSTANCIANDO OS OUTROS PERIFÉRICOS
         this.mouse = new Mouse();
         this.touch = new Touch();
         this.gamepad = new GamePad();
 
-        // INSCRIÇÃO NOS EVENTOS DA ENGINE (Inversão de Controlo Perfeita!)
         Engine.events.on("PreUpdate", () => Input.Update());
         Engine.events.on("PostUpdate", () => Input.LateUpdate());
 
-        // Singleton instance
-        if (!Input.instance) {
-            Input.instance = this;
-        }
-        return Input.instance;
+        Input.instance = this;
     }
 
     /**
      * @description Chamado pela Engine todo início de frame
      */
     static Update() {
+        if (!Input.instance) return;
         Input.instance.gamepad.Update();
     }
 
@@ -58,6 +62,7 @@ export class Input {
      * @description Chamado pela Engine todo fim de frame
      */
     static LateUpdate() {
+        if (!Input.instance) return;
         Input.instance.gamepad.LateUpdate();
         Input.instance.keysDown = {};
         Input.instance.keysUp = {};
@@ -90,7 +95,7 @@ export class Input {
      * }
      */
     static GetKey(key) {
-        return Input.instance.keys[key] === true;
+        return Input.instance?.keys[key] === true;
     }
 
     /**
@@ -104,7 +109,7 @@ export class Input {
      * }
      */
     static GetKeyDown(key) {
-        const result = Input.instance.keysDown[key] === true;
+        const result = Input.instance?.keysDown[key] === true;
         // Clear the keyDown state after reading
         if (result) {
             delete Input.instance.keysDown[key];
@@ -123,7 +128,7 @@ export class Input {
      * }
      */
     static GetKeyUp(key) {
-        const result = Input.instance.keysUp[key] === true;
+        const result = Input.instance?.keysUp[key] === true;
         // Clear the keyUp state after reading
         if (result) {
             delete Input.instance.keysUp[key];
@@ -131,6 +136,3 @@ export class Input {
         return result;
     }
 }
-
-// Initialize the singleton instance
-Input.instance = new Input();

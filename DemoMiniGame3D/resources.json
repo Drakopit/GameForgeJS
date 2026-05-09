@@ -7,7 +7,7 @@
     ],
     "audios": [
         { "name": "bgm_fase1",  "path": "DemoAdvanced/Assets/BGM/battle_sound.mpeg" },
-        { "name": "sfx_jump",   "path": "DemoAdvanced/Assets/SFX/jump 1.wav" },
+        { "name": "sfx_jump",   "path": "DemoAdvanced/Assets/SFX/Jump 1.wav" },
         { "name": "sfx_laser",  "path": "DemoAdvanced/Assets/SFX/Blow 1V2.wav" }
     ],
     "shaders": [

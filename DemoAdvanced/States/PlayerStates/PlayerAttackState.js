@@ -8,6 +8,7 @@ import { IdleState } from "./PlayerIdleState.js";
 export class AttackState extends State {
     Enter() {
         this.locked = true;
+        this.owner.isAttacking = true;
         this.owner.animator.Play("Attack_1");
     }
 

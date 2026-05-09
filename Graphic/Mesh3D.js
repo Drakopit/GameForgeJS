@@ -3,7 +3,7 @@
 //    Recebe qualquer ParsedModel e envia para a GPU
 // ============================================================
 
-import { mat4 } from 'https://cdn.jsdelivr.net/npm/gl-matrix@3.4.3/+esm';
+import { Mat4 } from '../Math/Mat4.js';
 import { AssetManager } from '../Root/AssetManager.js';
 
 export class Mesh3D {
@@ -174,20 +174,20 @@ export class Mesh3D {
 		gl.uniform3fv(locs.uLightDir, lightDir);
 
 		// --- Matrizes ---
-		const modelMatrix = mat4.create();
-		mat4.translate(modelMatrix, modelMatrix, transform.position);
-		mat4.rotateX(modelMatrix, modelMatrix, transform.rotation.x);
-		mat4.rotateY(modelMatrix, modelMatrix, transform.rotation.y);
-		mat4.rotateZ(modelMatrix, modelMatrix, transform.rotation.z);
-		mat4.scale(modelMatrix, modelMatrix, transform.scale);
+		const modelMatrix = Mat4.create();
+		Mat4.translate(modelMatrix, modelMatrix, transform.position);
+		Mat4.rotateX(modelMatrix, modelMatrix, transform.rotation.x);
+		Mat4.rotateY(modelMatrix, modelMatrix, transform.rotation.y);
+		Mat4.rotateZ(modelMatrix, modelMatrix, transform.rotation.z);
+		Mat4.scale(modelMatrix, modelMatrix, transform.scale);
 
-		const modelViewMatrix = mat4.create();
-		mat4.multiply(modelViewMatrix, camera.viewMatrix, modelMatrix);
+		const modelViewMatrix = Mat4.create();
+		Mat4.multiply(modelViewMatrix, camera.viewMatrix, modelMatrix);
 
 		// Normal matrix: inversa-transposta da model matrix (corrige distorção de normais com scale)
-		const normalMatrix = mat4.create();
-		mat4.invert(normalMatrix, modelMatrix);
-		mat4.transpose(normalMatrix, normalMatrix);
+		const normalMatrix = Mat4.create();
+		Mat4.invert(normalMatrix, modelMatrix);
+		Mat4.transpose(normalMatrix, normalMatrix);
 
 		gl.uniformMatrix4fv(locs.uProjection, false, camera.projectionMatrix);
 		gl.uniformMatrix4fv(locs.uModelView, false, modelViewMatrix);
