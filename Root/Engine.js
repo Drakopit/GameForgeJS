@@ -59,6 +59,16 @@ export class Engine extends Base {
     }
 
     static events = new EventEmitter();
+    static timeScale = 1;
+    static hitStopRemaining = 0;
+
+    static HitStop(duration = 0.06) {
+        this.hitStopRemaining = Math.max(this.hitStopRemaining, Math.max(0, duration));
+    }
+
+    static IsHitStopped() {
+        return this.hitStopRemaining > 0;
+    }
 
     /**
      * @doc Method
@@ -100,7 +110,14 @@ export class Engine extends Base {
         if (deltaTime > 0.25) deltaTime = 0.25;
 
         lastTime = currentTime;
-        accumulator += deltaTime;
+
+        let gameDeltaTime = deltaTime * this.timeScale;
+        if (this.hitStopRemaining > 0) {
+            this.hitStopRemaining = Math.max(0, this.hitStopRemaining - deltaTime);
+            gameDeltaTime = 0;
+        }
+
+        accumulator += gameDeltaTime;
 
         // Cálculo de FPS
         frameCount++;
@@ -153,13 +170,15 @@ export class Engine extends Base {
             LevelHandler.current.FPS = fps.toFixed(2);
 
             // Chama os métodos da fase com checagem de segurança (Duck Typing seguro)
-            if (typeof LevelHandler.current.OnUpdate === "function")
-                LevelHandler.current.OnUpdate(deltaTime);
+            if (gameDeltaTime > 0 && typeof LevelHandler.current.OnUpdate === "function")
+                LevelHandler.current.OnUpdate(gameDeltaTime);
 
-            while (accumulator >= TIME_STEP) {
-                if (typeof LevelHandler.current.OnFixedUpdate === "function")
-                    LevelHandler.current.OnFixedUpdate(TIME_STEP);
-                accumulator -= TIME_STEP;
+            if (gameDeltaTime > 0) {
+                while (accumulator >= TIME_STEP) {
+                    if (typeof LevelHandler.current.OnFixedUpdate === "function")
+                        LevelHandler.current.OnFixedUpdate(TIME_STEP);
+                    accumulator -= TIME_STEP;
+                }
             }
 
             if (typeof LevelHandler.current.OnDrawn === "function")

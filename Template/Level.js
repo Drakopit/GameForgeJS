@@ -46,7 +46,11 @@ export class Level extends Base {
         document.title = this.caption;
 
         // Initialize entities
-        this.entities.forEach(entity => entity.OnStart());
+        this.entities.forEach(entity => {
+            if (typeof entity.OnStart === "function") {
+                entity.OnStart();
+            }
+        });
     }
 
     /**
@@ -56,9 +60,13 @@ export class Level extends Base {
      *  level.OnUpdate();
      * @returns {void}
      */
-    OnUpdate() {
+    OnUpdate(deltaTime) {
         // Update all entities
-        this.entities.forEach(entity => entity.OnUpdate());
+        this.entities.forEach(entity => {
+            if (typeof entity.OnUpdate === "function") {
+                entity.OnUpdate(deltaTime);
+            }
+        });
     }
 
     /**
@@ -71,7 +79,11 @@ export class Level extends Base {
      */
     OnFixedUpdate(deltaTime) {
         // Fixed update for all entities
-        this.entities.forEach(entity => entity.OnFixedUpdate(deltaTime));
+        this.entities.forEach(entity => {
+            if (typeof entity.OnFixedUpdate === "function") {
+                entity.OnFixedUpdate(deltaTime);
+            }
+        });
     }
 
     /**
@@ -104,7 +116,11 @@ export class Level extends Base {
      */
     OnGUI() {
         // Draw the GUI for all entities
-        this.entities.forEach(entity => entity.OnGUI());
+        this.entities.forEach(entity => {
+            if (typeof entity.OnGUI === "function") {
+                entity.OnGUI();
+            }
+        });
     }
 
     /**

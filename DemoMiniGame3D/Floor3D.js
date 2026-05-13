@@ -2,35 +2,46 @@ import { GameObject3D } from "../Root/GameObject3D.js";
 import { Shapes3D } from "../Graphic/Shape3D.js";
 import { AssetManager } from "../Root/AssetManager.js";
 
+const DEFAULT_ARENA = {
+    minX: -4.0,
+    maxX: 4.0,
+    minZ: -12.0,
+    maxZ: -3.0,
+};
+
 export class Floor3D extends GameObject3D {
-    constructor(screen3D) {
+    constructor(screen3D, arena = DEFAULT_ARENA) {
         super();
         this.name = "Floor";
         this.shapes = new Shapes3D(screen3D);
 
-        // Posição: Fica abaixo do jogador (Y = -1.0) e centralizado no meio da nossa arena (Z = -7.5)
-        this.transform.position = [0.0, -1.0, -7.5];
+        const width = arena.maxX - arena.minX;
+        const depth = arena.maxZ - arena.minZ;
+        this.transform.position = [
+            (arena.minX + arena.maxX) / 2,
+            -0.55,
+            (arena.minZ + arena.maxZ) / 2,
+        ];
+        this.transform.scale = [width / 2 + 0.25, 0.08, depth / 2 + 0.25];
 
-        // Escala: Largo (X = 10), Achatado como um papel (Y = 0.1) e Profundo (Z = 10)
-        this.transform.scale = [5.0, 0.1, 5.0];
-
-        // 1. Vai buscar a imagem HTML carregada na memória
         const htmlImage = AssetManager.instance.GetImage("textura_chao");
-        
-        // 2. Converte essa imagem HTML numa Textura WebGL (mantendo a referência)
         if (htmlImage) {
             this.myTexture = this.shapes.CreateTexture(htmlImage);
         }
     }
-    
-    // Exemplo no Player3D.js (Faça o mesmo nas outras entidades)
-    OnDrawn(camera) {
+
+    OnDrawn(camera, lighting) {
         this.shapes.DrawCube(
             this.transform.position,
             this.transform.rotation,
             this.transform.scale,
-            camera, // <-- Passa a câmera para renderizar no referencial correto
-            this.myTexture // <-- Passa a textura para renderizar
+            camera,
+            this.myTexture,
+            lighting,
         );
+    }
+
+    OnExit() {
+        this.shapes.Dispose();
     }
 }

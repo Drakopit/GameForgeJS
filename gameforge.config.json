@@ -89,7 +89,7 @@
 	},
 	"debug": {
 		"showFPS": true,
-		"showHitboxes": true,
+		"showHitboxes": false,
 		"logLevel": "info"
 	}
 }

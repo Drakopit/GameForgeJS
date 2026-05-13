@@ -15,7 +15,7 @@ export class EnemyHitState extends State {
 
         this.owner.position.x += this.owner.knockbackSpeed * dt;
 
-        this.owner.knockbackSpeed *= 0.9;
+        this.owner.knockbackSpeed *= this.owner.knockbackDrag;
 
         if (this.owner.isGrounded && this.owner.vy >= 0) {
 

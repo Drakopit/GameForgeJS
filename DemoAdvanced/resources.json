@@ -23,5 +23,10 @@
         { "name": "bgm_fase1",  "path": "DemoAdvanced/Assets/BGM/battle_sound.mpeg" },
         { "name": "sfx_jump",   "path": "DemoAdvanced/Assets/SFX/Jump 1.wav" },
         { "name": "sfx_laser",  "path": "DemoAdvanced/Assets/SFX/Blow 1V2.wav" }
+    ],
+    "jsons": [
+        { "name": "advanced_level", "path": "DemoAdvanced/Assets/Manifests/advanced.level.json" },
+        { "name": "player_boxes", "path": "DemoAdvanced/Assets/Manifests/player.boxes.json" },
+        { "name": "enemy_boxes",  "path": "DemoAdvanced/Assets/Manifests/enemy.boxes.json" }
     ]
 }

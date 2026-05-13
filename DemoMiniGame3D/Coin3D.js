@@ -3,44 +3,60 @@ import { Shapes3D } from "../Graphic/Shape3D.js";
 import { AssetManager } from "../Root/AssetManager.js";
 
 export class Coin3D extends GameObject3D {
-    constructor(screen3D) {
+    constructor(screen3D, { position = [0.0, -8.0], value = 10 } = {}) {
         super();
         this.name = "CoinCube";
         this.shapes = new Shapes3D(screen3D);
+        this.value = value;
+        this.radius = 0.28;
+        this.active = true;
+        this.animationTime = 0;
+        this.baseY = -0.05;
 
-        // Escala menorzinha (como se fosse um item)
-        this.transform.scale = [0.1, 0.1, 0.1];
+        this.transform.scale = [0.18, 0.18, 0.18];
+        this.SetPosition(position[0], position[1]);
+
         const htmlImage = AssetManager.instance.GetImage("textura_coin");
-
-        // 2. Converte essa imagem HTML numa Textura WebGL (mantendo a referência)
         if (htmlImage) {
             this.myTexture = this.shapes.CreateTexture(htmlImage);
         }
-        this.Respawn();
     }
 
-    Respawn() {
-        // Nasce em posições aleatórias dentro dos limites da nossa "Arena"
-        const randomX = (Math.random() * 8) - 4.0;    // Entre -4.0 e 4.0
-        const randomZ = (Math.random() * -9) - 3.0;   // Entre -3.0 e -12.0
+    SetPosition(x, z) {
+        this.active = true;
+        this.animationTime = 0;
+        this.transform.position = [x, this.baseY, z];
+        this.transform.rotation = { x: 0.0, y: 0.0, z: 0.0 };
+    }
 
-        this.transform.position = [randomX, 0.0, randomZ];
+    Collect() {
+        this.active = false;
     }
 
     OnUpdate(dt) {
+        if (!this.active) return;
+
         const delta = dt || 0.016;
-        // Gira loucamente para chamar a atenção do jogador
-        this.transform.rotation.x += 3.0 * delta;
-        this.transform.rotation.y += 3.0 * delta;
+        this.animationTime += delta;
+        this.transform.position[1] = this.baseY + Math.sin(this.animationTime * 4.0) * 0.08;
+        this.transform.rotation.x += 2.6 * delta;
+        this.transform.rotation.y += 4.2 * delta;
     }
 
-    OnDrawn(camera) {
+    OnDrawn(camera, lighting) {
+        if (!this.active) return;
+
         this.shapes.DrawCube(
             this.transform.position,
             this.transform.rotation,
             this.transform.scale,
             camera,
-            this.myTexture
+            this.myTexture,
+            lighting,
         );
     }
-}                                                                                                                                                           
+
+    OnExit() {
+        this.shapes.Dispose();
+    }
+}

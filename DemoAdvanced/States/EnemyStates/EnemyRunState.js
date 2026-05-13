@@ -8,21 +8,22 @@ export class EnemyRunState extends State {
     }
 
     Update(dt) {
+        if (this.owner.isTakingDamage) return;
 
         let dist = this.owner.position.x - this.owner.player.position.x;
 
-        if (Math.abs(dist) > 200) {
+        if (Math.abs(dist) > this.owner.aggroRange) {
             this.owner.stateMachine.ChangeState(
                 new EnemyIdleState(this.owner)
             );
             return;
         }
 
-        if (dist > 5) {
+        if (dist > this.owner.stopDistance) {
             this.owner.position.x -= this.owner.speed * dt;
             this.owner.facingRight = false;
         }
-        else if (dist < -5) {
+        else if (dist < -this.owner.stopDistance) {
             this.owner.position.x += this.owner.speed * dt;
             this.owner.facingRight = true;
         }

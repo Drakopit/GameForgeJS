@@ -1,0 +1,76 @@
+{
+  "version": 1,
+  "origin": "entity-top-left",
+  "collisionboxes": {
+    "*": [
+      { "name": "body", "x": 0, "y": 0, "w": 44, "h": 63 }
+    ]
+  },
+  "hurtboxes": {
+    "*": [
+      { "name": "torso", "x": 5, "y": 6, "w": 34, "h": 52 }
+    ],
+    "Jump": [
+      { "name": "air_body", "x": 7, "y": 8, "w": 30, "h": 48 }
+    ],
+    "Attack_1": [
+      { "name": "attack_body", "x": 4, "y": 8, "w": 34, "h": 50 }
+    ],
+    "Attack_2": [
+      { "name": "attack_body", "x": 4, "y": 8, "w": 34, "h": 50 }
+    ],
+    "Attack_3": [
+      { "name": "attack_body", "x": 3, "y": 7, "w": 36, "h": 52 }
+    ]
+  },
+  "hitboxes": {
+    "Attack_1": [
+      {
+        "name": "slash",
+        "frames": [2, 3],
+        "x": 32,
+        "y": 18,
+        "w": 52,
+        "h": 28,
+        "damage": 10,
+        "hitStop": 0.06,
+        "hitStun": 0.16,
+        "stagger": false,
+        "knockback": { "x": 0, "y": 0 },
+        "oncePerTarget": true
+      }
+    ],
+    "Attack_2": [
+      {
+        "name": "backhand_slash",
+        "frames": [2, 3],
+        "x": 28,
+        "y": 14,
+        "w": 60,
+        "h": 34,
+        "damage": 14,
+        "hitStop": 0.08,
+        "hitStun": 0.18,
+        "stagger": false,
+        "knockback": { "x": 0, "y": 0 },
+        "oncePerTarget": true
+      }
+    ],
+    "Attack_3": [
+      {
+        "name": "finisher",
+        "frames": [3, 4],
+        "x": 34,
+        "y": 8,
+        "w": 74,
+        "h": 44,
+        "damage": 22,
+        "hitStop": 0.11,
+        "hitStun": 0.24,
+        "stagger": true,
+        "knockback": { "x": 620, "y": -430 },
+        "oncePerTarget": true
+      }
+    ]
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "origin": "entity-top-left",
+  "collisionboxes": {
+    "*": [
+      { "name": "body", "x": 0, "y": 0, "w": 64, "h": 64 }
+    ]
+  },
+  "hurtboxes": {
+    "*": [
+      { "name": "body", "x": 8, "y": 6, "w": 48, "h": 56 }
+    ],
+    "Hit": [
+      { "name": "stagger", "x": 10, "y": 9, "w": 44, "h": 52 }
+    ]
+  },
+  "hitboxes": {}
+}

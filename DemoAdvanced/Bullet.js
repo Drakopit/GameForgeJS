@@ -3,37 +3,44 @@ import { Vector2D } from "../Math/Vector2D.js";
 import { AssetManager } from "../Root/AssetManager.js";
 import { Draw } from "../Graphic/Draw.js";
 
+const DEFAULT_BULLET_CONFIG = {
+    width: 10,
+    height: 5,
+    speed: 600,
+    despawnLeft: -1000,
+    despawnRight: 3000,
+    color: "#69D2FF",
+};
+
 export class Bullet extends GameObject {
-    constructor(screen) {
+    constructor(screen, config = {}) {
         super();
+        this.config = { ...DEFAULT_BULLET_CONFIG, ...config };
         this.name = "Bullet";
-        this.size = new Vector2D(10, 5);
-        this.speed = 600; 
-        this.active = false; 
-        this.direction = 1; // 1 para direita, -1 para esquerda
-        
+        this.size = new Vector2D(this.config.width, this.config.height);
+        this.speed = this.config.speed;
+        this.active = false;
+        this.direction = 1;
+
         this.draw = new Draw(screen);
         this.image = AssetManager.instance.HasImage("tiro_laser")
             ? AssetManager.instance.GetImage("tiro_laser")
             : null;
     }
 
-    // Método chamado pelo Pool quando o tiro é disparado
     Fire(startX, startY, direction) {
         this.position = new Vector2D(startX, startY);
-        this.direction = direction; // Salva a direção que o player estava olhando
+        this.direction = direction;
         this.active = true;
     }
 
     OnUpdate(dt) {
-        if (!this.active) return; 
+        if (!this.active) return;
 
-        // Move o tiro na direção correta
         this.position.x += (this.speed * this.direction) * (dt || 0.016);
 
-        // Limpa o tiro da memória se for muito longe pros lados
-        if (this.position.x > 3000 || this.position.x < -1000) {
-            this.active = false; 
+        if (this.position.x > this.config.despawnRight || this.position.x < this.config.despawnLeft) {
+            this.active = false;
         }
     }
 
@@ -45,7 +52,7 @@ export class Bullet extends GameObject {
             return;
         }
 
-        this.draw.Color = "#69D2FF";
+        this.draw.Color = this.config.color;
         this.draw.DrawRect(this.position.x, this.position.y, this.size.x, this.size.y);
     }
 }

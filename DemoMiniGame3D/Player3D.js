@@ -3,62 +3,72 @@ import { Shapes3D } from "../Graphic/Shape3D.js";
 import { ActionManager } from "../Input/ActionManager.js";
 import { AssetManager } from "../Root/AssetManager.js";
 
+const DEFAULT_ARENA = {
+    minX: -4.0,
+    maxX: 4.0,
+    minZ: -12.0,
+    maxZ: -3.0,
+};
+
 export class Player3D extends GameObject3D {
-    constructor(screen3D) {
+    constructor(screen3D, arena = DEFAULT_ARENA) {
         super();
         this.name = "PlayerCube";
         this.shapes = new Shapes3D(screen3D);
+        this.arena = arena;
+        this.radius = 0.45;
+        this.speed = 4.4;
+        this.rotationSpeed = 2.8;
 
-        // Posição inicial: Centro da tela (X=0, Y=0), afastado da câmera (Z=-6)
-        this.transform.position = [0.0, 0.0, -6.0];
-        // Um pouco menor para termos espaço para andar
-        this.transform.scale = [0.5, 0.5, 0.5];
-
-        this.speed = 5.0; // Velocidade de movimento em unidades 3D por segundo
+        this.transform.scale = [0.45, 0.45, 0.45];
+        this.Reset();
 
         const htmlImage = AssetManager.instance.GetImage("textura_player");
-
         if (htmlImage) {
             this.myTexture = this.shapes.CreateTexture(htmlImage);
         }
     }
 
-    OnUpdate(dt) {
-        const delta = dt || 0.016;
-        const rotationSpeed = 3.0;
-
-        // Girar para os lados usa LEFT/RIGHT do ActionManager
-        if (ActionManager.IsAction("LEFT")) {
-            this.transform.rotation.y += rotationSpeed * delta;
-        }
-        if (ActionManager.IsAction("RIGHT")) {
-            this.transform.rotation.y -= rotationSpeed * delta;
-        }
-
-        // Andar frente/trás usa FORWARD/BACK do ActionManager
-        if (ActionManager.IsAction("FORWARD")) {
-            this.transform.position[0] -= this.speed * Math.sin(this.transform.rotation.y) * delta;
-            this.transform.position[2] -= this.speed * Math.cos(this.transform.rotation.y) * delta;
-        }
-        if (ActionManager.IsAction("BACK")) {
-            this.transform.position[0] += this.speed * Math.sin(this.transform.rotation.y) * delta;
-            this.transform.position[2] += this.speed * Math.cos(this.transform.rotation.y) * delta;
-        }
-
-        // Limites da Arena
-        if (this.transform.position[0] < -4.0) this.transform.position[0] = -4.0;
-        if (this.transform.position[0] >  4.0) this.transform.position[0] =  4.0;
-        if (this.transform.position[2] < -12.0) this.transform.position[2] = -12.0;
-        if (this.transform.position[2] >  -3.0) this.transform.position[2] =  -3.0;
+    Reset() {
+        this.transform.position = [0.0, 0.0, -6.0];
+        this.transform.rotation = { x: 0.0, y: 0.0, z: 0.0 };
     }
 
-    OnDrawn(camera) {
+    OnUpdate(dt) {
+        const delta = dt || 0.016;
+        const turn = Number(ActionManager.IsAction("LEFT")) - Number(ActionManager.IsAction("RIGHT"));
+        const move = Number(ActionManager.IsAction("UP") || ActionManager.IsAction("FORWARD"))
+            - Number(ActionManager.IsAction("DOWN") || ActionManager.IsAction("BACK"));
+
+        this.transform.rotation.y += turn * this.rotationSpeed * delta;
+
+        if (move !== 0) {
+            const directionX = -Math.sin(this.transform.rotation.y);
+            const directionZ = -Math.cos(this.transform.rotation.y);
+            this.transform.position[0] += directionX * move * this.speed * delta;
+            this.transform.position[2] += directionZ * move * this.speed * delta;
+        }
+
+        this.ClampToArena();
+    }
+
+    ClampToArena() {
+        this.transform.position[0] = Math.min(this.arena.maxX, Math.max(this.arena.minX, this.transform.position[0]));
+        this.transform.position[2] = Math.min(this.arena.maxZ, Math.max(this.arena.minZ, this.transform.position[2]));
+    }
+
+    OnDrawn(camera, lighting) {
         this.shapes.DrawCube(
             this.transform.position,
             this.transform.rotation,
             this.transform.scale,
             camera,
-            this.myTexture
+            this.myTexture,
+            lighting,
         );
+    }
+
+    OnExit() {
+        this.shapes.Dispose();
     }
 }

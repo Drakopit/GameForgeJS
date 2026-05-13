@@ -58,8 +58,11 @@ export class Mesh3D {
 			uNormalMatrix: gl.getUniformLocation(this.program, "uNormalMatrix"),
 			uSampler: gl.getUniformLocation(this.program, "uSampler"),
 			uLightDir: gl.getUniformLocation(this.program, "uLightDir"),
+			uLightColor: gl.getUniformLocation(this.program, "uLightColor"),
 			uBaseColor: gl.getUniformLocation(this.program, "uBaseColor"),
 			uHasTexture: gl.getUniformLocation(this.program, "uHasTexture"),
+			uLightIntensity: gl.getUniformLocation(this.program, "uLightIntensity"),
+			uAmbientStrength: gl.getUniformLocation(this.program, "uAmbientStrength"),
 		};
 	}
 
@@ -139,7 +142,11 @@ export class Mesh3D {
 	Draw(transform, camera, options = {}) {
 		const gl = this.gl;
 		const locs = this.locs;
-		const lightDir = options.lightDir ?? [0.5, 1.0, 0.75];
+		const lighting = options.lighting?.GetUniforms ? options.lighting.GetUniforms() : options;
+		const lightDir = lighting.direction ?? options.lightDir ?? [0.5, 1.0, 0.75];
+		const lightColor = lighting.color ?? [1.0, 1.0, 1.0];
+		const lightIntensity = lighting.intensity ?? 0.7;
+		const ambientStrength = lighting.ambientStrength ?? 0.3;
 		const baseColor = options.baseColor ?? [0.8, 0.8, 0.8, 1.0];
 
 		gl.useProgram(this.program);
@@ -172,6 +179,9 @@ export class Mesh3D {
 		}
 		gl.uniform4fv(locs.uBaseColor, baseColor);
 		gl.uniform3fv(locs.uLightDir, lightDir);
+		gl.uniform3fv(locs.uLightColor, lightColor);
+		gl.uniform1f(locs.uLightIntensity, lightIntensity);
+		gl.uniform1f(locs.uAmbientStrength, ambientStrength);
 
 		// --- Matrizes ---
 		const modelMatrix = Mat4.create();
@@ -186,8 +196,9 @@ export class Mesh3D {
 
 		// Normal matrix: inversa-transposta da model matrix (corrige distorção de normais com scale)
 		const normalMatrix = Mat4.create();
-		Mat4.invert(normalMatrix, modelMatrix);
-		Mat4.transpose(normalMatrix, normalMatrix);
+		if (Mat4.invert(normalMatrix, modelMatrix)) {
+			Mat4.transpose(normalMatrix, normalMatrix);
+		}
 
 		gl.uniformMatrix4fv(locs.uProjection, false, camera.projectionMatrix);
 		gl.uniformMatrix4fv(locs.uModelView, false, modelViewMatrix);
