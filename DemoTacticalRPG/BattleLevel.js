@@ -1,22 +1,22 @@
 import { Level } from "../Template/Level.js";
 import { Screen } from "../Window/Screen.js";
 import { Draw } from "../Graphic/Draw.js";
-import { ActionManager } from "../Input/ActionManager.js";
 import { BattleState } from "./BattleState.js";
 
 const W = 640;
 const H = 480;
 
 const PHASE = {
-    PLAYER_MENU: "PLAYER_MENU",
-    ENEMY_WAITING: "ENEMY_WAITING",
-    BATTLE_OVER: "BATTLE_OVER",
+    INTRO: "INTRO",
+    PLAYER_STRIKE: "PLAYER_STRIKE",
+    ENEMY_COUNTER: "ENEMY_COUNTER",
+    RETURNING: "RETURNING",
 };
 
 export class BattleLevel extends Level {
     constructor() {
         super();
-        this.caption = "FFT Demo - Battle";
+        this.caption = "Tactical RPG - Fire Emblem Battle";
         this.TelaId = "BattleScreen";
     }
 
@@ -27,15 +27,12 @@ export class BattleLevel extends Level {
         this.player = BattleState.playerUnit;
         this.enemy = BattleState.enemyUnit;
         this.invalidEncounter = !BattleState.CanStartBattle();
-
-        this.menuOptions = ["Atacar", "Esperar"];
-        this.selectedOption = 0;
-        this.phase = this.invalidEncounter ? PHASE.BATTLE_OVER : PHASE.PLAYER_MENU;
+        this.phase = PHASE.INTRO;
+        this.stepTimer = this.invalidEncounter ? 0.35 : 0.55;
+        this.dmg = { value: 0, target: null, timer: 0, color: "#FFEE66" };
         this.log = this.invalidEncounter
             ? "Encontro invalido. Voltando ao mapa..."
-            : "Batalha iniciada! Escolha uma acao.";
-        this.enemyTimer = 0;
-        this.dmg = { value: 0, target: null, timer: 0 };
+            : `${this.player.name} entra em combate contra ${this.enemy.name}.`;
 
         super.OnStart();
     }
@@ -49,91 +46,87 @@ export class BattleLevel extends Level {
         return defender.TakeDamage(attacker);
     }
 
+    _canCounter() {
+        return this.enemy?.IsAlive?.()
+            && this.player?.IsAlive?.()
+            && this.enemy.DistanceTo(this.player) <= (this.enemy.attackRange ?? 1);
+    }
+
     OnUpdate(dt) {
         super.OnUpdate(dt);
+
+        if (this.dmg.timer > 0) this.dmg.timer = Math.max(0, this.dmg.timer - dt);
+
+        this.stepTimer -= dt;
+        if (this.stepTimer > 0) return;
 
         if (this.invalidEncounter) {
             this.Back = true;
             return;
         }
 
-        if (this.dmg.timer > 0) this.dmg.timer -= dt;
-
-        switch (this.phase) {
-            case PHASE.PLAYER_MENU:
-                this._updatePlayerMenu();
-                break;
-
-            case PHASE.ENEMY_WAITING:
-                this._updateEnemyTurn(dt);
-                break;
-
-            case PHASE.BATTLE_OVER:
-                if (ActionManager.IsActionDown("ATTACK")) {
-                    this.Back = true;
-                }
-                break;
-        }
-    }
-
-    _updatePlayerMenu() {
-        if (ActionManager.IsActionDown("UP")) {
-            this.selectedOption = (this.selectedOption - 1 + this.menuOptions.length) % this.menuOptions.length;
+        if (this.phase === PHASE.INTRO) {
+            this._playerStrike();
+            return;
         }
 
-        if (ActionManager.IsActionDown("DOWN")) {
-            this.selectedOption = (this.selectedOption + 1) % this.menuOptions.length;
-        }
-
-        if (!ActionManager.IsActionDown("ATTACK")) return;
-
-        if (this.selectedOption === 0) {
-            const dmg = this._calcDamage(this.player, this.enemy);
-            this.dmg = { value: dmg, target: "enemy", timer: 1.2 };
-            this.log = `${this.player.name} ataca. ${this.enemy.name} recebe ${dmg} de dano.`;
-
-            if (!this.enemy.IsAlive()) {
-                this.log += " Inimigo derrotado.";
-                BattleState.FinishEncounter("PLAYER_WIN");
-                this.phase = PHASE.BATTLE_OVER;
+        if (this.phase === PHASE.PLAYER_STRIKE) {
+            if (this._canCounter()) {
+                this._enemyCounter();
                 return;
             }
 
-            this.phase = PHASE.ENEMY_WAITING;
-            this.enemyTimer = 1.2;
+            this._finish("ROUND_END", "Ataque resolvido. Voltando ao mapa...");
             return;
         }
 
-        this.log = `${this.player.name} espera. Turno do inimigo.`;
-        this.phase = PHASE.ENEMY_WAITING;
-        this.enemyTimer = 1.0;
+        if (this.phase === PHASE.ENEMY_COUNTER) {
+            this._finish("ROUND_END", "Troca de golpes resolvida. Voltando ao mapa...");
+            return;
+        }
+
+        if (this.phase === PHASE.RETURNING) {
+            this.Back = true;
+        }
     }
 
-    _updateEnemyTurn(dt) {
-        this.enemyTimer -= dt;
-        if (this.enemyTimer > 0) return;
+    _playerStrike() {
+        const dmg = this._calcDamage(this.player, this.enemy);
+        this.dmg = { value: dmg, target: "enemy", timer: 1.0, color: "#FFEE66" };
+        this.log = `${this.player.name} ataca. ${this.enemy.name} recebe ${dmg} de dano.`;
+        this.phase = PHASE.PLAYER_STRIKE;
+        this.stepTimer = 0.85;
 
+        if (!this.enemy.IsAlive()) {
+            this._finish("PLAYER_WIN", `${this.enemy.name} foi derrotado. Voltando ao mapa...`);
+        }
+    }
+
+    _enemyCounter() {
         const dmg = this._calcDamage(this.enemy, this.player);
-        this.dmg = { value: dmg, target: "player", timer: 1.2 };
-        this.log = `${this.enemy.name} ataca. ${this.player.name} recebe ${dmg} de dano.`;
+        this.dmg = { value: dmg, target: "player", timer: 1.0, color: "#FF6666" };
+        this.log = `${this.enemy.name} contra-ataca. ${this.player.name} recebe ${dmg} de dano.`;
+        this.phase = PHASE.ENEMY_COUNTER;
+        this.stepTimer = 0.85;
 
         if (!this.player.IsAlive()) {
-            this.log += " Voce foi derrotado.";
-            BattleState.FinishEncounter("ENEMY_WIN");
-            this.phase = PHASE.BATTLE_OVER;
-            return;
+            this._finish("ENEMY_WIN", `${this.player.name} caiu em combate. Voltando ao mapa...`);
         }
+    }
 
-        this.log += " Seu turno.";
-        this.phase = PHASE.PLAYER_MENU;
+    _finish(result, message) {
+        BattleState.FinishEncounter(result);
+        this.log = message;
+        this.phase = PHASE.RETURNING;
+        this.stepTimer = 1.05;
     }
 
     OnDrawn() {
         this.screen.Refresh();
 
         const sky = this.screen.Context.createLinearGradient(0, 0, 0, H * 0.65);
-        sky.addColorStop(0, "#0a0a1e");
-        sky.addColorStop(1, "#1a1a3e");
+        sky.addColorStop(0, "#09101d");
+        sky.addColorStop(1, "#18283a");
         this.screen.Context.fillStyle = sky;
         this.screen.Context.fillRect(0, 0, W, H * 0.65);
 
@@ -141,7 +134,7 @@ export class BattleLevel extends Level {
         this.draw.Color = "#2d4a1e";
         this.draw.DrawRect(0, H * 0.65, W, H * 0.35);
         this.draw.Color = "#1e3414";
-        this.draw.DrawRect(0, H * 0.7, W, H * 0.3);
+        this.draw.DrawRect(0, H * 0.72, W, H * 0.28);
 
         if (!this.player || !this.enemy) return;
 
@@ -155,13 +148,13 @@ export class BattleLevel extends Level {
 
         const isPlayer = this.dmg.target === "player";
         const ux = isPlayer ? 160 : 480;
-        const elapsed = 1.2 - this.dmg.timer;
-        const floatY = 180 - elapsed * 50;
+        const elapsed = 1.0 - this.dmg.timer;
+        const floatY = 178 - elapsed * 48;
         const alpha = Math.min(1, this.dmg.timer);
 
         this.screen.Context.globalAlpha = alpha;
-        this.draw.Color = "#FF2222";
-        this.draw.FontSize = "36px";
+        this.draw.Color = this.dmg.color;
+        this.draw.FontSize = "34px";
         this.draw.Font = "monospace";
         this.draw.SetTextAlign("center");
         this.draw.DrawText(`-${this.dmg.value}`, ux, floatY);
@@ -216,65 +209,22 @@ export class BattleLevel extends Level {
 
     OnGUI() {
         this.draw.Style = this.draw.TYPES.FILLED;
-
-        if (this.phase === PHASE.PLAYER_MENU) {
-            this._drawMenu();
-        }
-
-        const turnLabel = this.phase === PHASE.PLAYER_MENU
-            ? "SEU TURNO"
-            : this.phase === PHASE.ENEMY_WAITING ? "INIMIGO AGUARDA..." : "";
-
-        if (turnLabel) {
-            this.draw.Color = this.phase === PHASE.PLAYER_MENU ? "#44FF88" : "#FF6666";
-            this.draw.FontSize = "13px";
-            this.draw.Font = "monospace";
-            this.draw.SetTextAlign("right");
-            this.draw.DrawText(turnLabel, W - 15, 375);
-        }
-
         this.draw.Color = "rgba(0,0,0,0.88)";
-        this.draw.DrawRect(0, 422, W, 58);
+        this.draw.DrawRect(0, 420, W, 60);
 
         this.draw.Style = this.draw.TYPES.STROKED;
         this.draw.Color = "#444444";
-        this.draw.DrawRect(0, 422, W, 58);
+        this.draw.DrawRect(0, 420, W, 60);
 
         this.draw.Style = this.draw.TYPES.FILLED;
-        this.draw.Color = "#FFFFFF";
-        this.draw.FontSize = "14px";
+        this.draw.Color = "#FFD84A";
+        this.draw.FontSize = "12px";
         this.draw.Font = "monospace";
         this.draw.SetTextAlign("left");
-        this.draw.DrawText(this.log, 14, 448);
+        this.draw.DrawText("MODO FIRE EMBLEM", 14, 442);
 
-        if (this.phase === PHASE.BATTLE_OVER && !this.invalidEncounter) {
-            this.draw.Color = "#FFD700";
-            this.draw.FontSize = "12px";
-            this.draw.DrawText("Pressione Z para voltar ao mapa", 14, 470);
-        }
-    }
-
-    _drawMenu() {
-        const mx = 20;
-        const my = 355;
-        const mw = 160;
-        const mh = this.menuOptions.length * 38 + 16;
-
-        this.draw.Color = "rgba(0,0,0,0.85)";
-        this.draw.DrawRect(mx, my, mw, mh);
-
-        this.draw.Style = this.draw.TYPES.STROKED;
-        this.draw.Color = "#AAAAAA";
-        this.draw.DrawRect(mx, my, mw, mh);
-
-        this.draw.Style = this.draw.TYPES.FILLED;
-        for (let i = 0; i < this.menuOptions.length; i++) {
-            const selected = i === this.selectedOption;
-            this.draw.Color = selected ? "#FFD700" : "#CCCCCC";
-            this.draw.FontSize = "16px";
-            this.draw.Font = "monospace";
-            this.draw.SetTextAlign("left");
-            this.draw.DrawText((selected ? "> " : "  ") + this.menuOptions[i], mx + 12, my + 30 + i * 38);
-        }
+        this.draw.Color = "#FFFFFF";
+        this.draw.FontSize = "14px";
+        this.draw.DrawText(this.log, 14, 466);
     }
 }

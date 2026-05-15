@@ -28,9 +28,7 @@ export class ActionManager {
                         let axisIndex = parseInt(parts[1]);
                         let direction = parts[2];
                         
-                        let val = GamePad.instance.GetAxis(axisIndex, padIndex);
-                        if (direction === 'positive' && val > 0.5) return true;
-                        if (direction === 'negative' && val < -0.5) return true;
+                        if (GamePad.instance.GetAxisDown(axisIndex, direction, padIndex)) return true;
                     }
                 }
             }

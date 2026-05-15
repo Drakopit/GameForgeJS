@@ -39,6 +39,7 @@
         { "name": "advanced_level", "path": "DemoAdvanced/Assets/Manifests/advanced.level.json" },
         { "name": "advanced_second_level", "path": "DemoAdvanced/Assets/Manifests/advanced.second.level.json" },
         { "name": "advanced_boss_level", "path": "DemoAdvanced/Assets/Manifests/advanced.boss.level.json" },
+        { "name": "advanced_stage_default", "path": "DemoAdvanced/Assets/Manifests/advanced/stage-default.json" },
         { "name": "advanced_core", "path": "DemoAdvanced/Assets/Manifests/advanced/core.json" },
         { "name": "advanced_stage", "path": "DemoAdvanced/Assets/Manifests/advanced/stage.json" },
         { "name": "advanced_player", "path": "DemoAdvanced/Assets/Manifests/advanced/player.json" },

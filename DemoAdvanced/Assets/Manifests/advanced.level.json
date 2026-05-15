@@ -1,6 +1,7 @@
 {
   "id": "advanced_snow_demo",
   "compose": [
+    "advanced_stage_default",
     "advanced_core",
     "advanced_stage",
     "advanced_player",

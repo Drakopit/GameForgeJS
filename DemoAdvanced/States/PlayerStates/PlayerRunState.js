@@ -25,14 +25,15 @@ export class RunState extends State {
             return;
         }
 
-        if (!this.owner.IsMovingInput()) {
-            this.owner.stateMachine.ChangeState(new IdleState(this.owner));
-            return;
-        }
-
         if (this.owner.IsJumpInput()) {
             this.owner.DoJump();
             this.owner.stateMachine.ChangeState(new JumpState(this.owner));
+            return;
+        }
+
+        if (!this.owner.IsMovingInput()) {
+            this.owner.stateMachine.ChangeState(new IdleState(this.owner));
+            return;
         }
 
         this.owner.ApplyMovement(dt);

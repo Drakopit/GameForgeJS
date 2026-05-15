@@ -1,242 +1,218 @@
 # GameForgeJS
 
-## Overview
+GameForgeJS e uma engine/framework experimental em JavaScript puro para jogos de navegador. O objetivo e permitir criar demos, jogos 2D/3D e ferramentas sem prender o runtime a dependencias externas.
 
-Welcome to **GameForgeJS**, a powerful and lightweight JavaScript framework for creating browser-based games! This guide will walk you through the essentials of using our framework to develop your own games.
+O Node.js e opcional: ele entra apenas como servidor local de desenvolvimento para evitar CORS ao carregar JSON, imagens, audio, shaders e modelos.
 
-Originally built for 2D Canvas rendering, GameForgeJS has evolved into a robust **Data-Driven Engine** with **Hybrid 2D/3D Support**. It fully supports WebGL for 3D environments, custom GLSL Shaders, and an overlaid 2D HUD system. The framework is built strictly with pure JavaScript (ES6 Modules) utilizing professional Design Patterns (State, Builder, Observer, Facade), ensuring high performance, clean architecture, and zero heavy third-party dependencies.
+## Principios
 
-## Table of Contents
+- Runtime independente, baseado em JavaScript nativo e APIs do navegador.
+- Cada jogo/demo tem sua propria configuracao de janela, tela e comandos.
+- Assets e fases devem caminhar para manifests data-driven.
+- A engine deve aceitar heranca classica e evoluir gradualmente para componentizacao.
+- Ferramentas como o WorldEditor devem ficar fora das demos, para servir qualquer projeto.
 
-1. [Getting Started](https://www.google.com/search?q=%23getting-started)
-2. [Project Structure](https://www.google.com/search?q=%23project-structure)
-3. [Setup and Installation](https://www.google.com/search?q=%23setup-and-installation)
-4. [Usage & Architecture](https://www.google.com/search?q=%23usage--architecture)
-5. [Input & Action Mapping](https://www.google.com/search?q=%23input--action-mapping)
-6. [Key Features](https://www.google.com/search?q=%23key-features)
-7. [Examples](https://www.google.com/search?q=%23examples)
-8. [Contributing](https://www.google.com/search?q=%23contributing)
-9. [License](https://www.google.com/search?q=%23license)
-10. [Contact](https://www.google.com/search?q=%23contact)
-
-## Getting Started
-
-To get started with GameForgeJS, you will need a basic understanding of JavaScript (ES6 Classes, Modules, and Promises/Async Await), HTML, and CSS. This guide will walk you through the setup process, the new lifecycle hooks, and key features of the framework.
-
-## Project Structure
-
-Here's an overview of the engine's highly modular directory structure:
-
-```text
-GameForgeJS/
-├── gameforge.config.json   # Core Engine settings (Screen, Physics, Mappings)
-├── DemoAdvanced/
-│   ├── Assets/             # Textures, BGM, and SFX
-│   │   ├── BGM/
-│   │   ├── Player/
-│   │   └── SFX/
-│   ├── Attacks/
-│   │   └── HitBox.js       # Melee combat collision logic
-│   ├── Levels/
-│   │   └── LevelBuilder.js # Fluent interface for level creation
-│   ├── States/
-│   │   └── PlayerState.js  # State Machine logic for entities
-│   ├── AdvancedDemoLevel.js
-│   ├── Bullet.js
-│   ├── Enemy.js
-│   ├── Player.js
-│   └── resources.json      # Asset Manifest for this specific demo
-├── Graphic/
-│   ├── Animator.js
-│   ├── Draw.js             # 2D Canvas Drawing API
-│   ├── Shape3D.js          # WebGL 3D Geometry
-│   ├── Skybox3D.js         # 360° Seamless Environment rendering
-│   └── Sprite.js
-├── Input/
-│   ├── ActionManager.js    # Multi-device action virtualizer
-│   ├── GamePad.js          # Polling-based gamepad handler
-│   ├── Input.js            # Hardware-agnostic Event listener
-│   ├── KeyCode.js
-│   ├── Mouse.js
-│   └── Touch.js            # Mobile touch support
-├── Math/
-│   ├── Collide2D.js
-│   ├── Physic2D.js
-│   ├── Vector2D.js
-│   └── Vector3D.js
-├── Root/
-│   ├── AssetManager.js     # Async Preloader for assets
-│   ├── AudioManager.js     # Global sound and BGM manager
-│   ├── Config.js           # Global configuration singleton
-│   ├── Engine.js           # Core GameLoop and LevelHandler
-│   ├── EventEmitter.js     # Event Bus (Observer Pattern)
-│   ├── GameObject.js
-│   ├── ObjectPool.js       # Memory management for repetitive entities
-│   └── Scene.js
-├── Shaders/                # Raw GLSL files
-│   ├── FragmentShader.glsl
-│   └── VertexShader.glsl
-├── Template/
-│   ├── Level.js            # Base State/Scene for 2D 
-│   ├── Level3D.js          # Base State/Scene for WebGL 3D
-│   └── Menu.js
-├── UI/
-│   ├── Button.js
-│   ├── NineSlice.js        # Scalable UI panels
-│   ├── TextBox.js
-│   └── UIWindow.js         # Overlay dialogs and HUD
-├── Window/
-│   ├── Screen.js           # 2D Canvas DOM Element manager
-│   ├── Screen3D.js         # WebGL Canvas DOM Element manager
-│   └── ScreenUI.js         # Hybrid Absolute-Positioned 2D Canvas over 3D
-├── DemoAdvanced/mainAdvanced.js       # Async Bootstrapper Entry Point (2D Demo)
-├── Demo3D/mainDemo3D.js               # Async Bootstrapper Entry Point (3D Demo)
-└── server.js               # Local development server for testing
-
-```
-
-## Setup and Installation
-
-1. **Clone the repository:**
+## Como Rodar
 
 ```sh
-git clone https://github.com/Drakopit/GameForgeJS.git
-
+npm run start
 ```
 
-2. **Run a Local Web Server:**
-*Due to WebGL and `fetch` API security policies (CORS) for loading external configs, shaders, and textures, you MUST run a local server.*
+Depois abra:
 
-* If using VSCode: Install the **Live Server** extension and click "Go Live".
-* If using NodeJS: Run `npx http-server`.
-* If using Python: Run `python -m http.server`.
-
-3. **Open the project in your browser:**
-Navigate to `http://localhost:8080/main.html` (or your corresponding local port).
-
-## Usage & Architecture
-
-### Main Components
-
-1. **Engine & Event Bus**: The core state machine now utilizes an `EventEmitter`. Instead of hardcoded updates, systems subscribe to `PreUpdate` and `PostUpdate` lifecycle hooks.
-2. **Config & Asset Manifest**: The engine is entirely **Data-Driven**. Settings like gravity, screen size, and controls are loaded from `config.json`, while assets are dynamically fetched via `resources.json`.
-3. **LevelBuilder**: Game levels are now constructed using the **Builder Pattern**, allowing fluent and clean level design without bloating the initialization code.
-
-### Initializing the Engine (Async Bootstrapper)
-
-GameForgeJS uses an asynchronous bootstrapper to ensure all configurations and assets are loaded before the first frame is ever drawn.
-
-```javascript
-import { Engine, LevelHandler } from "./Root/Engine.js";
-import { Config } from "./Root/Config.js";
-import { Input } from "./Input/Input.js";
-import { ActionManager } from "./Input/ActionManager.js";
-import { AssetManager } from "./Root/AssetManager.js";
-import { AdvancedDemoLevel } from "./DemoAdvanced/AdvancedDemoLevel.js";
-
-async function Bootstrap() {
-    try {
-        // 1. Load Data-Driven Configurations
-        const config = await Config.Load("config.json");
-
-        // 2. Initialize Hardware & Virtual Mappings
-        new Input(); 
-        ActionManager.LoadMappings(config.actionMappings);
-
-        // 3. Asset Manifest Dynamic Loading
-        const assets = new AssetManager();
-        const manifest = await (await fetch("resources.json")).json();
-        
-        manifest.images?.forEach(img => assets.QueueImage(img.name, img.path));
-        manifest.audios?.forEach(snd => assets.QueueAudio(snd.name, snd.path));
-
-        // 4. Wait for all downloads
-        await assets.LoadAll();
-
-        // 5. Start the Engine
-        LevelHandler.addLevel(new AdvancedDemoLevel());
-        Engine.OnStart();
-
-    } catch (exception) {
-        console.error(`Fatal Exception during Bootstrap: ${exception}`);
-    }
-}
-
-Bootstrap();
-
+```txt
+http://localhost:8080/Main.html
 ```
 
-## Input & Action Mapping
+Sem query string, `Main.html` abre o Admin Mode, uma tela para escolher qual demo ou ferramenta rodar.
 
-GameForgeJS features a professional **Multi-Device Virtualization System**. Your gameplay code never needs to ask if the user pressed the "Spacebar" or a "Gamepad Button". Instead, it asks the `ActionManager` if a logical action occurred.
+Links diretos continuam funcionando:
 
-**1. Define in `config.json`:**
+```txt
+http://localhost:8080/Main.html?demo=advanced
+http://localhost:8080/Main.html?demo=tactical
+http://localhost:8080/Main.html?demo=fighting2d
+http://localhost:8080/Main.html?demo=demo3d
+http://localhost:8080/Main.html?demo=mini3d
+http://localhost:8080/Main.html?demo=immature
+http://localhost:8080/WorldEditor_v4.html
+```
+
+## Demos
+
+| Demo | Entrada | Config | Descricao |
+| --- | --- | --- | --- |
+| Advanced | `DemoAdvanced/mainAdvanced.js` | `DemoAdvanced/advanced.config.json` | Plataforma/RPG 2D com manifests, fases, inventario, skill tree, hitboxes e HUD. |
+| Tactical RPG | `DemoTacticalRPG/mainTacticalRPG.js` | `DemoTacticalRPG/tactical.config.json` | Grid tatico com AStar, area de movimento, acao e batalha. |
+| Fighting 2D | `DemoFightingGame2D/mainFightingGame2D.js` | `DemoFightingGame2D/fighting.config.json` | Menu, arcade, versus, selecao de personagem, teclado e gamepad configuravel. |
+| Demo 3D | `Demo3D/mainDemo3D.js` | `Demo3D/demo3d.config.json` | Validacao WebGL/3D. |
+| MiniGame 3D | `DemoMiniGame3D/mainMiniGame3D.js` | `DemoMiniGame3D/mini3d.config.json` | Mini jogo 3D com coleta, camera e iluminacao. |
+| Immature | `Demo/mainImmature.js` | `Demo/immature.config.json` | Exemplo simples de movimentacao e colisao. |
+
+## Estrutura
+
+```txt
+GameForgeJS/
+  Root/                  Core, bootstrap, config, loop, assets, scene, component
+  Input/                 Teclado, mouse, touch, gamepad e ActionManager
+  Graphic/               Canvas/WebGL, sprites, animacao, modelos e luz
+  Math/                  Vetores, colisao e utilitarios matematicos
+  Collision/             Hitbox/hurtbox/collisionbox 2D
+  Combat/                ComboController e suporte a combate
+  Effects/               Efeitos reutilizaveis como texto flutuante
+  Template/              Bases de Level/Menu/Level3D
+  UI/                    Controles de interface
+  WorldEditorV4/         Editor visual modular na raiz do projeto
+  docs/                  Guias tecnicos
+  DemoAdvanced/          Demo plataforma/RPG data-driven
+  DemoFightingGame2D/    Demo de luta 2D
+  DemoTacticalRPG/       Demo tatico
+  Demo3D/                Demo WebGL
+  DemoMiniGame3D/        Mini game 3D
+```
+
+## Criando Um Projeto
+
+Um projeto novo deve ter entrada propria, config proprio e, quando houver assets, um `resources.json`.
+
+```txt
+MyGame/
+  mygame.config.json
+  resources.json
+  mainMyGame.js
+  Levels/
+    FirstLevel.js
+  Entities/
+    Player.js
+  Assets/
+```
+
+Entrada minima:
+
+```js
+import { BootstrapGame } from "../Root/Bootstrap.js";
+import { FirstLevel } from "./Levels/FirstLevel.js";
+
+BootstrapGame({
+    configPath: ["gameforge.config.json", "MyGame/mygame.config.json"],
+    manifestPath: "MyGame/resources.json",
+    levels: [
+        new FirstLevel(),
+    ],
+});
+```
+
+`gameforge.config.json` guarda apenas defaults da engine. O arquivo `MyGame/mygame.config.json` substitui os detalhes do jogo: titulo, tamanho de tela, audio, comandos e configuracoes especificas.
+
+Exemplo de comando por jogo:
 
 ```json
-"actionMappings": {
-    "JUMP": [
-        { "device": "keyboard", "input": "Space" },
-        { "device": "keyboard", "input": "ArrowUp" },
+{
+  "input": {
+    "actionMappings": {
+      "ATTACK": [
+        { "device": "keyboard", "input": "KeyZ" },
         { "device": "gamepad", "input": "button_0" }
-    ],
-    "RIGHT": [
-        { "device": "keyboard", "input": "KeyD" },
-        { "device": "gamepad", "input": "axis_0_positive" }
-    ]
-}
-
-```
-
-**2. Query in your Game Logic (e.g., `Player.js` or `PlayerState.js`):**
-
-```javascript
-import { ActionManager } from "../Input/ActionManager.js";
-
-export class Player {
-    OnUpdate(dt) {
-        // Automatically supports Keyboard, Touch, and Gamepads seamlessly!
-        if (ActionManager.IsAction("RIGHT")) {
-            this.position.x += this.speed * dt;
-        }
-
-        if (ActionManager.IsActionDown("JUMP") && this.isGrounded) {
-            this.DoJump();
-        }
+      ],
+      "RIGHT": [
+        { "device": "keyboard", "input": "ArrowRight" },
+        { "device": "gamepad", "input": "axis_0_positive" },
+        { "device": "gamepad", "input": "button_15" }
+      ]
     }
+  }
 }
-
 ```
 
-## Key Features
+## Assets E Manifests
 
-* **Data-Driven Core**: Configure resolution, physics gravity, inputs, and asset manifests via JSON. No more hardcoded paths or magic numbers.
-* **Universal Action Mapper**: Seamlessly plug-and-play Keyboards, Mice, Gamepads, and Mobile Touch controls without altering entity logic.
-* **Design Patterns Embedded**: Built with State Machines (for complex animations and logic), Builder Patterns (for level design), and Observer Patterns (Event Bus decoupled architecture).
-* **Hybrid Rendering Pipeline**: Overlay 2D Canvas APIs (`Draw.js`) on top of 3D WebGL contexts (`Screen3D.js`) for perfect UI/HUD integration.
-* **Object Pooling**: Avoid garbage collection spikes and maintain 60 FPS by reusing instantiated objects (like bullets or particles) via `ObjectPool.js`.
+Assets sao carregados por `ResourceManifestLoader`:
 
-## Examples
+```json
+{
+  "images": [
+    { "name": "player_idle", "path": "MyGame/Assets/Player/IDLE.png" }
+  ],
+  "audios": [
+    { "name": "jump", "path": "MyGame/Assets/Audio/Jump.wav" }
+  ],
+  "jsons": [
+    { "name": "first_level", "path": "MyGame/Assets/Manifests/first.level.json" }
+  ]
+}
+```
 
-Explore the `DemoAdvanced` directory to see examples of a complete game cycle:
+No AdvancedDemo, fases sao compostas por manifests menores. Configuracoes comuns ficam em:
 
-* `AdvancedDemoLevel.js` demonstrates the **LevelBuilder** and Engine Lifecycle.
-* `Player.js` and `PlayerState.js` demonstrate the **State Machine** pattern for animations and attacks.
-* `resources.json` demonstrates how to use the **Asset Manifest**.
+```txt
+DemoAdvanced/Assets/Manifests/advanced/stage-default.json
+```
 
-## Contributing
+E a fase compoe defaults + partes especificas:
 
-We welcome contributions! If you have suggestions, bug fixes, or improvements, please fork the repository and submit a pull request. For major changes, please open an issue first to discuss what you would like to change.
+```json
+{
+  "id": "advanced_snow_demo",
+  "compose": [
+    "advanced_stage_default",
+    "advanced_core",
+    "advanced_stage",
+    "advanced_player",
+    "advanced_enemies",
+    "advanced_effects",
+    "advanced_ui"
+  ]
+}
+```
 
-Remember to follow the existing architecture rules (**SOLID** principles and Clean Code) when creating PRs.
+## Componentizacao
 
-## License
+`GameObject` ainda aceita o fluxo classico com `OnStart`, `OnUpdate`, `OnFixedUpdate`, `OnDrawn` e `OnGUI`, mas agora tambem pode receber componentes reutilizaveis.
 
-This project is licensed under the MIT License. See the [LICENSE](https://www.google.com/search?q=LICENSE) file for details.
+```js
+import { GameObject } from "./Root/GameObject.js";
+import { BoundsComponent, HealthComponent, TransformComponent } from "./Root/Component.js";
 
-## Contact
+const entity = new GameObject();
+entity.AddComponent(new TransformComponent({ x: 80, y: 120 }));
+entity.AddComponent(new BoundsComponent({ width: 32, height: 32 }));
+entity.AddComponent(new HealthComponent({ hp: 100 }));
+```
 
-For any questions or feedback, feel free to contact the author, Patrick Faustino Camello, at [patrickcamelo@yahoo.com.br](mailto:patrickcamelo@yahoo.com.br).
+Veja o guia completo em [Componentizacao](docs/components.md). Esse e o caminho para evoluir para um modelo ECS-lite sem quebrar as demos atuais.
 
----
+## WorldEditor
 
-Thank you for using **GameForgeJS**! We hope it empowers you to forge amazing web experiences. Happy coding!
+O WorldEditor v4 agora fica na raiz:
+
+```txt
+WorldEditor_v4.html
+WorldEditorV4/
+```
+
+Ele carrega manifests por `fetch`, possui fallback embutido e permite escolher perfil ou informar caminhos manualmente. O perfil atual `Advanced Snow` aponta para:
+
+```txt
+DemoAdvanced/Assets/Manifests/advanced/
+DemoAdvanced/Assets/Manifests/snow/
+```
+
+## Documentacao
+
+- [Criando um projeto](docs/new-project.md)
+- [Configuracao de input por jogo](docs/input-config.md)
+- [Cola de gamepad](GAMEPAD_COLA.md)
+- [Componentizacao](docs/components.md)
+- [Advanced Stage Manifest](docs/advanced-stage-manifest.md)
+- [Hitbox Manifest 2D](docs/hitbox-manifest.md)
+- [WorldEditor v4](docs/world-editor-v4.md)
+
+## Direcao Do Projeto
+
+O caminho mais forte agora e:
+
+- consolidar `GameObject + Component`
+- criar sistemas reutilizaveis para render, fisica, input e animacao
+- transformar entidades em dados serializaveis
+- evoluir o WorldEditor para criar e editar projetos inteiros
+- finalizar um jogo pequeno usando a engine como validacao real

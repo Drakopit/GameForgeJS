@@ -113,12 +113,7 @@ export class Input {
      * }
      */
     static GetKeyDown(key) {
-        const result = Input.instance?.keysDown[key] === true;
-        // Clear the keyDown state after reading
-        if (result) {
-            delete Input.instance.keysDown[key];
-        }
-        return result;
+        return Input.instance?.keysDown[key] === true;
     }
 
     /**
@@ -132,11 +127,6 @@ export class Input {
      * }
      */
     static GetKeyUp(key) {
-        const result = Input.instance?.keysUp[key] === true;
-        // Clear the keyUp state after reading
-        if (result) {
-            delete Input.instance.keysUp[key];
-        }
-        return result;
+        return Input.instance?.keysUp[key] === true;
     }
 }

@@ -1,7 +1,8 @@
 import { Level } from "../Template/Level.js";
 import { Screen } from "../Window/Screen.js";
-import { Input } from "../Input/Input.js";
 import { FIGHTING_GAME_FLOW, FightingGameSession, GoToFightingLevel } from "./FightingGameState.js";
+import { GetFightingControls } from "./FightingControls.js";
+import { anyGamepadButtonDown, anyGamepadDirectionDown, keyboardDown } from "./FightingInput.js";
 
 const SCREEN = Object.freeze({
     width: 960,
@@ -43,21 +44,32 @@ export class FightingGameMenuLevel extends Level {
         const delta = dt ?? 0.016;
         this.pulse += delta;
 
-        if (this.IsAnyKeyDown(["ArrowUp", "KeyW"])) {
+        if (this.IsUpPressed()) {
             this.selectedIndex = (this.selectedIndex + MENU_OPTIONS.length - 1) % MENU_OPTIONS.length;
         }
 
-        if (this.IsAnyKeyDown(["ArrowDown", "KeyS"])) {
+        if (this.IsDownPressed()) {
             this.selectedIndex = (this.selectedIndex + 1) % MENU_OPTIONS.length;
         }
 
-        if (this.IsAnyKeyDown(["Enter", "Space", "KeyJ", "KeyZ"])) {
+        if (this.IsConfirmPressed()) {
             this.ActivateOption(MENU_OPTIONS[this.selectedIndex]);
         }
     }
 
-    IsAnyKeyDown(keys) {
-        return keys.some(key => Input.GetKeyDown(key));
+    IsUpPressed() {
+        const controls = GetFightingControls().menu;
+        return keyboardDown(controls.up) || anyGamepadDirectionDown("up", controls.gamepad?.up);
+    }
+
+    IsDownPressed() {
+        const controls = GetFightingControls().menu;
+        return keyboardDown(controls.down) || anyGamepadDirectionDown("down", controls.gamepad?.down);
+    }
+
+    IsConfirmPressed() {
+        const controls = GetFightingControls().menu;
+        return keyboardDown(controls.confirm) || anyGamepadButtonDown(controls.gamepad?.confirm);
     }
 
     ActivateOption(option) {

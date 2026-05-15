@@ -1,0 +1,17 @@
+{
+  "screen": {
+    "width": 640,
+    "height": 480
+  },
+  "collision": {
+    "floorSnapTolerance": 4
+  },
+  "background": "background",
+  "audio": {
+    "bgm": "bgm_fase1",
+    "bgmVolume": 0.4
+  },
+  "victory": {
+    "requireAllEnemies": false
+  }
+}

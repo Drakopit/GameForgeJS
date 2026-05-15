@@ -4,7 +4,7 @@ import { Draw } from "../Graphic/Draw.js";
 import { MathExt } from "../Math/MathExt.js";
 import { aStar } from "../Pathfinding/AStar.js";
 import { ActionManager } from "../Input/ActionManager.js";
-import { BattleState } from "./BattleState.js";
+import { BATTLE_MODES, BattleState } from "./BattleState.js";
 import { GridUnit } from "./GridUnit.js";
 
 const W = 640;
@@ -19,6 +19,7 @@ const MOVE_SPEED = 12;
 const PHASE = {
     SELECT_UNIT: "SELECT_UNIT",
     MOVE_TARGET: "MOVE_TARGET",
+    ACTION_MENU: "ACTION_MENU",
     ACTION_TARGET: "ACTION_TARGET",
     ANIMATING: "ANIMATING",
 };
@@ -48,7 +49,7 @@ function Manhattan(a, b) {
 export class TacticalMapLevel extends Level {
     constructor() {
         super();
-        this.caption = "FFT Demo - Tactical Map";
+        this.caption = "Tactical RPG - Tactical Map";
         this.TelaId = "TacticalMap";
     }
 
@@ -67,12 +68,16 @@ export class TacticalMapLevel extends Level {
         this.phase = PHASE.SELECT_UNIT;
         this.moveArea = [];
         this.actionArea = [];
+        this.actionOptions = this._buildActionOptions();
+        this.selectedActionIndex = 0;
+        this.selectedAction = null;
         this.pathPreview = [];
+        this.floatText = { value: 0, col: 0, row: 0, timer: 0, color: "#FFFFFF" };
         this._pathQueue = [];
         this._animUnit = null;
         this._animTarget = null;
         this._animCallback = null;
-        this.message = "Selecione o Hero com Z.";
+        this.message = `Modo ${this._battleModeLabel()}. Selecione o Hero com Z.`;
 
         this._handleBattleReturn();
         super.OnStart();
@@ -117,6 +122,9 @@ export class TacticalMapLevel extends Level {
                 ? "Inimigo derrotado. Selecione o Hero com Z."
                 : "Vitoria! Todos os inimigos foram derrotados.";
             BattleState.ClearResult();
+        } else if (BattleState.result === "ROUND_END") {
+            this.message = "Troca de golpes resolvida. Selecione o Hero com Z.";
+            BattleState.ClearResult();
         } else if (BattleState.result === "ENEMY_WIN") {
             BattleState.ResetAll();
             this.player = BattleState.playerUnit;
@@ -127,6 +135,39 @@ export class TacticalMapLevel extends Level {
             this.message = "Derrota. As unidades foram reiniciadas.";
             BattleState.ClearResult();
         }
+    }
+
+    _buildActionOptions() {
+        return [
+            {
+                id: "attack",
+                label: "Atacar",
+                range: this.player?.attackRange ?? 1,
+                color: "rgba(255, 72, 72, 0.42)",
+                verb: "ataca",
+                bonus: 0,
+            },
+            {
+                id: "magic",
+                label: "Magia",
+                range: 3,
+                color: "rgba(142, 96, 255, 0.38)",
+                verb: "conjura",
+                bonus: 5,
+            },
+            {
+                id: "wait",
+                label: "Esperar",
+            },
+        ];
+    }
+
+    _isFftMode() {
+        return BattleState.battleMode === BATTLE_MODES.FINAL_FANTASY_TACTICS;
+    }
+
+    _battleModeLabel() {
+        return this._isFftMode() ? "Final Fantasy Tactics" : "Fire Emblem";
     }
 
     _syncPixelPos(unit) {
@@ -222,8 +263,7 @@ export class TacticalMapLevel extends Level {
         return area;
     }
 
-    _computeActionArea(unit) {
-        const range = unit.attackRange ?? 1;
+    _computeActionArea(unit, range = unit.attackRange ?? 1) {
         const area = [];
 
         for (let col = 0; col < COLS; col++) {
@@ -245,6 +285,7 @@ export class TacticalMapLevel extends Level {
     _selectPlayer() {
         this.moveArea = this._computeMoveArea(this.player);
         this.actionArea = [];
+        this.selectedAction = null;
         this.pathPreview = [];
         this.phase = PHASE.MOVE_TARGET;
         this.message = "Area azul: movimento. Escolha destino com Z. X cancela.";
@@ -268,10 +309,44 @@ export class TacticalMapLevel extends Level {
         this.pathPreview = path.slice(1);
         this._startPathMove(this.player, path, () => {
             this.pathPreview = [];
-            this.actionArea = this._computeActionArea(this.player);
-            this.phase = PHASE.ACTION_TARGET;
-            this.message = "Area vermelha: acao. Z ataca alvo. X encerra.";
+            this._openPostMoveAction();
         });
+    }
+
+    _openPostMoveAction() {
+        this.actionOptions = this._buildActionOptions();
+
+        if (this._isFftMode()) {
+            this.selectedActionIndex = 0;
+            this.selectedAction = null;
+            this.actionArea = [];
+            this.phase = PHASE.ACTION_MENU;
+            this.message = "Escolha acao no mapa. Atacar e Magia resolvem sem trocar de tela.";
+            return;
+        }
+
+        this._openActionTarget(this.actionOptions[0]);
+        this.message = "Area vermelha: escolha alvo. Z abre arena Fire Emblem. X encerra.";
+    }
+
+    _openActionTarget(action) {
+        this.selectedAction = action;
+        this.actionArea = this._computeActionArea(this.player, action.range ?? this.player.attackRange ?? 1);
+        this.phase = PHASE.ACTION_TARGET;
+        this.message = action.id === "magic"
+            ? "Area roxa: escolha alvo para magia. X volta ao menu."
+            : "Area vermelha: escolha alvo para ataque. X volta.";
+    }
+
+    _confirmActionMenu() {
+        const action = this.actionOptions[this.selectedActionIndex];
+
+        if (action.id === "wait") {
+            this._endTurn("Turno encerrado. Selecione o Hero com Z.");
+            return;
+        }
+
+        this._openActionTarget(action);
     }
 
     _confirmActionTarget() {
@@ -288,9 +363,46 @@ export class TacticalMapLevel extends Level {
             return;
         }
 
+        if (this._isFftMode()) {
+            this._resolveMapAction(enemy);
+            return;
+        }
+
         if (BattleState.StartEncounter(this.player, enemy)) {
             this.Next = true;
         }
+    }
+
+    _resolveMapAction(enemy) {
+        const action = this.selectedAction ?? this.actionOptions[0];
+        const attacker = action.id === "magic"
+            ? { attack: this.player.attack + (action.bonus ?? 0) }
+            : this.player;
+        const dmg = enemy.TakeDamage(attacker);
+
+        this.floatText = {
+            value: dmg,
+            col: enemy.col,
+            row: enemy.row,
+            timer: 1.1,
+            color: action.id === "magic" ? "#B694FF" : "#FFEE66",
+        };
+
+        this.message = enemy.IsAlive()
+            ? `${this.player.name} ${action.verb} ${enemy.name}. ${dmg} de dano.`
+            : `${enemy.name} derrotado por ${action.label.toLowerCase()}.`;
+
+        this._endTurn(this.message);
+    }
+
+    _endTurn(message) {
+        this.moveArea = [];
+        this.actionArea = [];
+        this.pathPreview = [];
+        this.selectedAction = null;
+        this.cursor = { col: this.player.col, row: this.player.row };
+        this.phase = PHASE.SELECT_UNIT;
+        this.message = message;
     }
 
     _cancelCurrentPhase() {
@@ -298,16 +410,38 @@ export class TacticalMapLevel extends Level {
             this.moveArea = [];
             this.pathPreview = [];
             this.cursor = { col: this.player.col, row: this.player.row };
-            this.phase = PHASE.SELECT_UNIT;
-            this.message = "Selecione o Hero com Z.";
+            this._endTurn("Selecione o Hero com Z.");
             return;
         }
 
         if (this.phase === PHASE.ACTION_TARGET) {
             this.actionArea = [];
-            this.cursor = { col: this.player.col, row: this.player.row };
-            this.phase = PHASE.SELECT_UNIT;
-            this.message = "Turno encerrado. Selecione o Hero com Z.";
+            if (this._isFftMode()) {
+                this.phase = PHASE.ACTION_MENU;
+                this.message = "Escolha uma acao ou Esperar.";
+                return;
+            }
+
+            this._endTurn("Turno encerrado. Selecione o Hero com Z.");
+        }
+    }
+
+    _updateActionMenu() {
+        if (ActionManager.IsActionDown("CANCEL")) {
+            this._endTurn("Acao cancelada. Selecione o Hero com Z.");
+            return;
+        }
+
+        if (ActionManager.IsActionDown("UP")) {
+            this.selectedActionIndex = (this.selectedActionIndex - 1 + this.actionOptions.length) % this.actionOptions.length;
+        }
+
+        if (ActionManager.IsActionDown("DOWN")) {
+            this.selectedActionIndex = (this.selectedActionIndex + 1) % this.actionOptions.length;
+        }
+
+        if (ActionManager.IsActionDown("ATTACK")) {
+            this._confirmActionMenu();
         }
     }
 
@@ -368,11 +502,20 @@ export class TacticalMapLevel extends Level {
             return;
         }
 
+        if (this.floatText.timer > 0) {
+            this.floatText.timer = Math.max(0, this.floatText.timer - dt);
+        }
+
         if (!this._hasLivingEnemies()) {
             this.moveArea = [];
             this.actionArea = [];
             this.pathPreview = [];
             this.message = "Vitoria! Todos os inimigos foram derrotados.";
+            return;
+        }
+
+        if (this.phase === PHASE.ACTION_MENU) {
+            this._updateActionMenu();
             return;
         }
 
@@ -408,10 +551,11 @@ export class TacticalMapLevel extends Level {
         this.screen.Refresh();
         this._drawGrid();
         this._drawArea(this.moveArea, "rgba(62, 145, 255, 0.42)");
-        this._drawArea(this.actionArea, "rgba(255, 72, 72, 0.42)");
+        this._drawArea(this.actionArea, this.selectedAction?.color ?? "rgba(255, 72, 72, 0.42)");
         this._drawPathPreview();
         this._drawUnit(this.player);
         this.enemies.filter(enemy => enemy.IsAlive()).forEach(enemy => this._drawUnit(enemy));
+        this._drawMapDamageText();
         this._drawCursor();
     }
 
@@ -496,6 +640,23 @@ export class TacticalMapLevel extends Level {
         this.draw.DrawRect(barX, barY, size * pct, 5);
     }
 
+    _drawMapDamageText() {
+        if (this.floatText.timer <= 0) return;
+
+        const p = TileToPixel(this.floatText.col, this.floatText.row);
+        const elapsed = 1.1 - this.floatText.timer;
+        const y = p.y - 30 - elapsed * 28;
+        const alpha = Math.min(1, this.floatText.timer);
+
+        this.screen.Context.globalAlpha = alpha;
+        this.draw.Color = this.floatText.color;
+        this.draw.FontSize = "20px";
+        this.draw.Font = "monospace";
+        this.draw.SetTextAlign("center");
+        this.draw.DrawText(`-${this.floatText.value}`, p.x, y);
+        this.screen.Context.globalAlpha = 1;
+    }
+
     OnGUI() {
         const barY = OY + ROWS * CELL + 4;
 
@@ -511,10 +672,40 @@ export class TacticalMapLevel extends Level {
 
         this.draw.Color = "#888888";
         this.draw.FontSize = "11px";
-        this.draw.DrawText("Setas: cursor | Z: confirmar | X/Esc: cancelar | azul: movimento | vermelho: acao", 10, barY + 42);
+        this.draw.DrawText(`Modo: ${this._battleModeLabel()} | Setas: cursor | Z/A: confirmar | X/B: cancelar`, 10, barY + 42);
 
         this.draw.Color = "#AAAAAA";
         this.draw.SetTextAlign("right");
         this.draw.DrawText(`FPS: ${this.FPS}`, W - 10, barY + 22);
+
+        if (this.phase === PHASE.ACTION_MENU) {
+            this._drawActionMenu();
+        }
+    }
+
+    _drawActionMenu() {
+        const mx = W - 178;
+        const my = 76;
+        const mw = 150;
+        const mh = this.actionOptions.length * 30 + 18;
+
+        this.draw.Style = this.draw.TYPES.FILLED;
+        this.draw.Color = "rgba(0,0,0,0.86)";
+        this.draw.DrawRect(mx, my, mw, mh);
+
+        this.draw.Style = this.draw.TYPES.STROKED;
+        this.draw.Color = "#D8D8D8";
+        this.draw.DrawRect(mx, my, mw, mh);
+
+        this.draw.Style = this.draw.TYPES.FILLED;
+        this.draw.SetTextAlign("left");
+        this.draw.Font = "monospace";
+
+        for (let i = 0; i < this.actionOptions.length; i++) {
+            const selected = i === this.selectedActionIndex;
+            this.draw.Color = selected ? "#FFD84A" : "#E8E8E8";
+            this.draw.FontSize = "14px";
+            this.draw.DrawText(`${selected ? "> " : "  "}${this.actionOptions[i].label}`, mx + 12, my + 28 + i * 30);
+        }
     }
 }

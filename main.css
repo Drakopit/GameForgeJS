@@ -1,7 +1,144 @@
 body {
     background-color: #000000;
+    color: #f8fafc;
+    font-family: Arial, Helvetica, sans-serif;
 }
+
 canvas {
     border: 1px solid white;
     display: block;
+}
+
+.admin-mode {
+    min-height: 100vh;
+    background:
+        linear-gradient(180deg, rgba(15, 23, 42, 0.92), rgba(2, 6, 23, 0.96)),
+        url("engrenagem.png") right 8vw top 6vh / min(38vw, 420px) auto no-repeat;
+}
+
+.admin-shell {
+    box-sizing: border-box;
+    width: min(1120px, calc(100vw - 32px));
+    margin: 0 auto;
+    padding: 42px 0;
+}
+
+.admin-hero {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 26px;
+}
+
+.admin-kicker {
+    margin: 0 0 8px;
+    color: #7dd3fc;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0;
+    text-transform: uppercase;
+}
+
+.admin-hero h1 {
+    max-width: 680px;
+    margin: 0;
+    color: #ffffff;
+    font-size: clamp(32px, 6vw, 64px);
+    line-height: 0.98;
+    letter-spacing: 0;
+}
+
+.admin-copy {
+    max-width: 640px;
+    margin: 16px 0 0;
+    color: #cbd5e1;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+.admin-copy code {
+    color: #bae6fd;
+}
+
+.admin-tool,
+.admin-card a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    border: 1px solid rgba(125, 211, 252, 0.42);
+    border-radius: 8px;
+    background: rgba(14, 165, 233, 0.14);
+    color: #e0f2fe;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.admin-tool {
+    flex: 0 0 220px;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 14px 16px;
+}
+
+.admin-tool small {
+    margin-top: 4px;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.admin-message {
+    margin: 0 0 18px;
+    padding: 12px 14px;
+    border: 1px solid rgba(248, 113, 113, 0.5);
+    border-radius: 8px;
+    background: rgba(127, 29, 29, 0.45);
+    color: #fecaca;
+}
+
+.admin-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(245px, 1fr));
+    gap: 14px;
+}
+
+.admin-card {
+    min-height: 178px;
+    padding: 18px;
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    border-radius: 8px;
+    background: rgba(15, 23, 42, 0.76);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+}
+
+.admin-card h2 {
+    margin: 0 0 10px;
+    color: #ffffff;
+    font-size: 20px;
+    letter-spacing: 0;
+}
+
+.admin-card p {
+    min-height: 70px;
+    margin: 0 0 18px;
+    color: #cbd5e1;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.admin-card a {
+    width: 100%;
+}
+
+@media (max-width: 720px) {
+    .admin-hero {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .admin-tool {
+        flex-basis: auto;
+    }
 }

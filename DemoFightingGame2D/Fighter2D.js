@@ -119,6 +119,11 @@ export class Fighter2D {
         this.invulnerableTimer = 0;
         this.hitOnce = false;
         this.currentAttackName = null;
+        this.attackHeld = {
+            light: false,
+            heavy: false,
+            special: false,
+        };
         this.cpuThinkTimer = 0;
         this.cpuPlan = this.EmptyInput();
     }

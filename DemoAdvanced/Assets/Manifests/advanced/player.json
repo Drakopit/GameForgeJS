@@ -1,8 +1,14 @@
 {
   "player": {
-    "spawn": { "x": 100, "y": 300 },
+    "spawn": {
+      "x": 75,
+      "y": 360
+    },
     "scale": 1.7,
-    "bodySize": { "width": 26, "height": 37 },
+    "bodySize": {
+      "width": 26,
+      "height": 37
+    },
     "movement": {
       "speed": 200,
       "gravity": 900,
@@ -21,38 +27,120 @@
       "contactDamage": {
         "damage": 7,
         "hitStop": 0.04,
-        "knockback": { "x": 220, "y": -280 }
+        "knockback": {
+          "x": 220,
+          "y": -280
+        }
       },
       "bulletHit": {
         "hitStop": 0.045,
-        "knockback": { "x": 380, "y": -320 }
+        "knockback": {
+          "x": 380,
+          "y": -320
+        }
       }
     },
     "inventory": {
       "maxSlots": 8,
       "items": [
-        { "id": "small_potion", "name": "Small Potion", "quantity": 2, "maxStack": 5, "effect": { "type": "heal", "amount": 28 } },
-        { "id": "frost_shard", "name": "Frost Shard", "quantity": 1, "maxStack": 9, "effect": { "type": "skillPoint", "amount": 1 } }
+        {
+          "id": "small_potion",
+          "name": "Small Potion",
+          "quantity": 2,
+          "maxStack": 5,
+          "effect": {
+            "type": "heal",
+            "amount": 28
+          }
+        },
+        {
+          "id": "frost_shard",
+          "name": "Frost Shard",
+          "quantity": 1,
+          "maxStack": 9,
+          "effect": {
+            "type": "skillPoint",
+            "amount": 1
+          }
+        }
       ],
       "enemyDefeatReward": {
         "skillPoints": 1,
         "skillPointEvery": 2,
         "itemEvery": 2,
-        "item": { "id": "frost_shard", "name": "Frost Shard", "quantity": 1, "maxStack": 9, "effect": { "type": "skillPoint", "amount": 1 } }
+        "item": {
+          "id": "frost_shard",
+          "name": "Frost Shard",
+          "quantity": 1,
+          "maxStack": 9,
+          "effect": {
+            "type": "skillPoint",
+            "amount": 1
+          }
+        }
       }
     },
     "skillTree": {
       "points": 1,
       "nodes": [
-        { "id": "vitality", "name": "Vitality", "description": "+20 Max HP", "cost": 1, "effects": [{ "type": "maxHp", "amount": 20, "heal": true }] },
-        { "id": "edge", "name": "Keen Edge", "description": "+4 ATK", "cost": 1, "requires": ["vitality"], "effects": [{ "type": "attack", "amount": 4 }] },
-        { "id": "guard", "name": "Iron Guard", "description": "+2 DEF", "cost": 1, "requires": ["vitality"], "effects": [{ "type": "defense", "amount": 2 }] }
+        {
+          "id": "vitality",
+          "name": "Vitality",
+          "description": "+20 Max HP",
+          "cost": 1,
+          "effects": [
+            {
+              "type": "maxHp",
+              "amount": 20,
+              "heal": true
+            }
+          ]
+        },
+        {
+          "id": "edge",
+          "name": "Keen Edge",
+          "description": "+4 ATK",
+          "cost": 1,
+          "requires": [
+            "vitality"
+          ],
+          "effects": [
+            {
+              "type": "attack",
+              "amount": 4
+            }
+          ]
+        },
+        {
+          "id": "guard",
+          "name": "Iron Guard",
+          "description": "+2 DEF",
+          "cost": 1,
+          "requires": [
+            "vitality"
+          ],
+          "effects": [
+            {
+              "type": "defense",
+              "amount": 2
+            }
+          ]
+        }
       ]
     },
     "combo": [
-      { "animation": "Attack_1", "chainFromFrame": 3 },
-      { "animation": "Attack_2", "chainFromFrame": 2 },
-      { "animation": "Attack_3", "chainFromFrame": 3 }
+      {
+        "animation": "Attack_1",
+        "chainFromFrame": 3
+      },
+      {
+        "animation": "Attack_2",
+        "chainFromFrame": 2
+      },
+      {
+        "animation": "Attack_3",
+        "chainFromFrame": 3
+      }
     ],
     "projectile": {
       "width": 10,

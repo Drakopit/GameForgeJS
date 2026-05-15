@@ -1,7 +1,10 @@
 {
   "enemyDefaults": {
     "scale": 1,
-    "bodySize": { "width": 64, "height": 64 },
+    "bodySize": {
+      "width": 64,
+      "height": 64
+    },
     "movement": {
       "speed": 76,
       "gravity": 900
@@ -23,11 +26,17 @@
         "enabled": true,
         "hitStop": 0.045,
         "hitStun": 0.16,
-        "knockback": { "x": 210, "y": -230 }
+        "knockback": {
+          "x": 210,
+          "y": -230
+        }
       },
       "hitStunFallback": 0.18,
       "knockbackDrag": 0.9,
-      "staggerKnockback": { "x": 340, "y": -320 }
+      "staggerKnockback": {
+        "x": 340,
+        "y": -320
+      }
     },
     "render": {
       "drawOffsetX": 22
@@ -39,10 +48,30 @@
     }
   },
   "enemies": [
-    { "id": "kobold_01", "x": 560, "y": 100 },
-    { "id": "kobold_02", "x": 1120, "y": 120 },
-    { "id": "kobold_03", "x": 1840, "y": 100 },
-    { "id": "kobold_04", "x": 2550, "y": 90 },
-    { "id": "kobold_05", "x": 3060, "y": 100 }
+    {
+      "id": "kobold_01",
+      "x": 555,
+      "y": 335
+    },
+    {
+      "id": "kobold_02",
+      "x": 1260,
+      "y": 325
+    },
+    {
+      "id": "kobold_03",
+      "x": 1865,
+      "y": 435
+    },
+    {
+      "id": "kobold_04",
+      "x": 2685,
+      "y": 330
+    },
+    {
+      "id": "kobold_05",
+      "x": 3210,
+      "y": 430
+    }
   ]
 }

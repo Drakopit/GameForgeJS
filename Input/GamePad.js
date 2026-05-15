@@ -16,18 +16,21 @@ export class GamePad {
     constructor() {
         this.gamepads = {};
         this.previousButtons = {};
+        this.previousAxes = {};
 
         // Ouve apenas as conexões
         window.addEventListener("gamepadconnected", (e) => {
             Logger.log("info", `GameForgeJS: Gamepad conectado no índice ${e.gamepad.index}: ${e.gamepad.id}`, e.gamepad);
             this.gamepads[e.gamepad.index] = e.gamepad;
             this.previousButtons[e.gamepad.index] = [];
+            this.previousAxes[e.gamepad.index] = [];
         });
 
         window.addEventListener("gamepaddisconnected", (e) => {
             Logger.log(`GameForgeJS: Gamepad desconectado do índice ${e.gamepad.index}`);
             delete this.gamepads[e.gamepad.index];
             delete this.previousButtons[e.gamepad.index];
+            delete this.previousAxes[e.gamepad.index];
         });
 
         if (!GamePad.instance) GamePad.instance = this;
@@ -46,9 +49,13 @@ export class GamePad {
                 // Inicializa o estado anterior se não existir
                 if (!this.previousButtons[i]) {
                     this.previousButtons[i] = [];
+                    this.previousAxes[i] = [];
                     // Adiciona proteção: só inicializa se buttons for iterável
                     if (pads[i].buttons) {
                         for (let b = 0; b < pads[i].buttons.length; b++) this.previousButtons[i].push(false);
+                    }
+                    if (pads[i].axes) {
+                        for (let a = 0; a < pads[i].axes.length; a++) this.previousAxes[i].push(0);
                     }
                 }
             }
@@ -68,6 +75,13 @@ export class GamePad {
                     } else {
                         this.previousButtons[index][b] = false;
                     }
+                }
+            }
+
+            if (pad && pad.axes) {
+                if (!this.previousAxes[index]) this.previousAxes[index] = [];
+                for (let a = 0; a < pad.axes.length; a++) {
+                    this.previousAxes[index][a] = this.ApplyDeadzone(pad.axes[a]);
                 }
             }
         }
@@ -101,7 +115,19 @@ export class GamePad {
         if (!pad || !pad.axes || typeof pad.axes[axisIndex] === 'undefined') return 0;
 
         // Adiciona uma "Deadzone" para controles com analógico desgastado
-        let val = pad.axes[axisIndex];
-        return Math.abs(val) > 0.2 ? val : 0;
+        return this.ApplyDeadzone(pad.axes[axisIndex]);
+    }
+
+    GetAxisDown(axisIndex, direction, padIndex = 0, threshold = 0.5) {
+        const current = this.GetAxis(axisIndex, padIndex);
+        const previous = this.previousAxes?.[padIndex]?.[axisIndex] ?? 0;
+
+        if (direction === "positive") return current > threshold && previous <= threshold;
+        if (direction === "negative") return current < -threshold && previous >= -threshold;
+        return false;
+    }
+
+    ApplyDeadzone(value) {
+        return Math.abs(value) > 0.2 ? value : 0;
     }
 }

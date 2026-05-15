@@ -25,14 +25,14 @@ export class IdleState extends State {
             return;
         }
 
-        if (this.owner.IsMovingInput()) {
-            this.owner.stateMachine.ChangeState(new RunState(this.owner));
-            return;
-        }
-
         if (this.owner.IsJumpInput()) {
             this.owner.DoJump();
             this.owner.stateMachine.ChangeState(new JumpState(this.owner));
+            return;
+        }
+
+        if (this.owner.IsMovingInput()) {
+            this.owner.stateMachine.ChangeState(new RunState(this.owner));
         }
     }
 }

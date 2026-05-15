@@ -204,7 +204,7 @@ export class Player extends GameObject {
     }
 
     IsJumpInput() {
-        return (ActionManager.IsActionDown("JUMP")) && this.isGrounded;
+        return ActionManager.IsActionDown("JUMP") && this.isGrounded;
     }
 
     IsInvulnerable() {

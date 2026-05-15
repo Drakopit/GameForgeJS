@@ -37,13 +37,65 @@ export class GameObject extends Base {
         this.mass = null;
 
         this.sprite = new Sprite();
+        this.components = [];
 
         this.Tag = "Entity";
         this.name = "Drako";
     }
 
-    OnUpdate() {
+    AddComponent(component) {
+        if (!component) return null;
+
+        component.Attach?.(this);
+        component.owner ??= this;
+        this.components.push(component);
+        return component;
+    }
+
+    GetComponent(typeOrName) {
+        return this.components.find(component => {
+            if (typeof typeOrName === "string") return component.constructor.name === typeOrName;
+            return component instanceof typeOrName;
+        }) ?? null;
+    }
+
+    RemoveComponent(typeOrInstance) {
+        const index = this.components.findIndex(component => (
+            component === typeOrInstance
+            || (typeof typeOrInstance === "string" && component.constructor.name === typeOrInstance)
+            || (typeof typeOrInstance === "function" && component instanceof typeOrInstance)
+        ));
+
+        if (index < 0) return null;
+
+        const [component] = this.components.splice(index, 1);
+        component.Detach?.();
+        return component;
+    }
+
+    OnStart() {
+        this.components.forEach(component => {
+            if (component.enabled !== false && typeof component.OnStart === "function") component.OnStart();
+        });
+    }
+
+    OnUpdate(deltaTime) {
         this.isMoving ? this.sprite.Update() : this.sprite.Reset();
+        this.components.forEach(component => {
+            if (component.enabled !== false && typeof component.OnUpdate === "function") component.OnUpdate(deltaTime);
+        });
+    }
+
+    OnFixedUpdate(deltaTime) {
+        this.components.forEach(component => {
+            if (component.enabled !== false && typeof component.OnFixedUpdate === "function") component.OnFixedUpdate(deltaTime);
+        });
+    }
+
+    OnDrawn() {
+        this.components.forEach(component => {
+            if (component.enabled !== false && typeof component.OnDrawn === "function") component.OnDrawn();
+        });
     }
 
     OnCollision(other, callback) {

@@ -6,7 +6,8 @@
 
 O manifest da fase fica dividido por dominio:
 
-- `advanced/core.json`: tela, mundo, colisao, audio e vitoria.
+- `advanced/stage-default.json`: tela, colisao, background, audio base e defaults comuns.
+- `advanced/core.json`: mundo, vitoria e overrides especificos da fase.
 - `advanced/stage.json`: parallax, materiais, plataformas e objetos.
 - `advanced/player.json`: spawn, movimento, stats, combate e combo.
 - `advanced/enemies.json`: defaults e spawns dos inimigos.
@@ -26,6 +27,7 @@ O indice usa `compose`:
 {
   "id": "advanced_snow_demo",
   "compose": [
+    "advanced_stage_default",
     "advanced_core",
     "advanced_stage",
     "advanced_player",
@@ -51,7 +53,7 @@ O player tambem carrega sistemas opcionais pelo manifest:
 - `player.skillTree`: pontos iniciais, nos, custo, requisitos e efeitos aplicados ao player.
 - `ui.progressHud`: posicao do resumo e do painel de inventario/skills.
 
-Os inputs ficam no `gameforge.config.json`: `INVENTORY` abre a bag e `SKILL_TREE` abre a arvore. Enquanto um painel esta aberto, a fase pausa as entidades de gameplay.
+Os inputs ficam no `DemoAdvanced/advanced.config.json`: `INVENTORY` abre a bag e `SKILL_TREE` abre a arvore. Enquanto um painel esta aberto, a fase pausa as entidades de gameplay.
 
 ## Camera Shake
 

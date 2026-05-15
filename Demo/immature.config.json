@@ -1,0 +1,47 @@
+{
+    "project": {
+        "name": "GameForgeJS Immature Demo",
+        "version": "1.0.0",
+        "author": "Camello"
+    },
+    "window": {
+        "title": "GameForgeJS - Immature Demo",
+        "backgroundColor": "#000000",
+        "cursor": "default"
+    },
+    "screen": {
+        "width": 640,
+        "height": 480,
+        "pixelArt": true,
+        "antialiasing": false,
+        "orientation": "landscape"
+    },
+    "input": {
+        "actionMappings": {
+            "RIGHT": [
+                { "device": "keyboard", "input": "KeyD" },
+                { "device": "keyboard", "input": "ArrowRight" },
+                { "device": "gamepad", "input": "axis_0_positive" },
+                { "device": "gamepad", "input": "button_15" }
+            ],
+            "LEFT": [
+                { "device": "keyboard", "input": "KeyA" },
+                { "device": "keyboard", "input": "ArrowLeft" },
+                { "device": "gamepad", "input": "axis_0_negative" },
+                { "device": "gamepad", "input": "button_14" }
+            ],
+            "DOWN": [
+                { "device": "keyboard", "input": "KeyS" },
+                { "device": "keyboard", "input": "ArrowDown" },
+                { "device": "gamepad", "input": "axis_1_positive" },
+                { "device": "gamepad", "input": "button_13" }
+            ],
+            "UP": [
+                { "device": "keyboard", "input": "KeyW" },
+                { "device": "keyboard", "input": "ArrowUp" },
+                { "device": "gamepad", "input": "axis_1_negative" },
+                { "device": "gamepad", "input": "button_12" }
+            ]
+        }
+    }
+}

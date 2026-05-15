@@ -1,0 +1,72 @@
+{
+    "project": {
+        "name": "GameForgeJS MiniGame 3D",
+        "version": "1.0.0",
+        "author": "Camello"
+    },
+    "window": {
+        "title": "GameForgeJS - MiniGame 3D",
+        "backgroundColor": "#000000",
+        "cursor": "default"
+    },
+    "screen": {
+        "width": 640,
+        "height": 480,
+        "pixelArt": true,
+        "antialiasing": false,
+        "orientation": "landscape"
+    },
+    "input": {
+        "actionMappings": {
+            "ATTACK": [
+                { "device": "keyboard", "input": "KeyZ" },
+                { "device": "keyboard", "input": "Enter" },
+                { "device": "keyboard", "input": "Space" },
+                { "device": "gamepad", "input": "button_0" },
+                { "device": "gamepad", "input": "button_9" }
+            ],
+            "CANCEL": [
+                { "device": "keyboard", "input": "Escape" },
+                { "device": "keyboard", "input": "Backspace" },
+                { "device": "gamepad", "input": "button_1" },
+                { "device": "gamepad", "input": "button_8" }
+            ],
+            "FORWARD": [
+                { "device": "keyboard", "input": "KeyW" },
+                { "device": "keyboard", "input": "ArrowUp" },
+                { "device": "gamepad", "input": "axis_1_negative" },
+                { "device": "gamepad", "input": "button_12" }
+            ],
+            "BACK": [
+                { "device": "keyboard", "input": "KeyS" },
+                { "device": "keyboard", "input": "ArrowDown" },
+                { "device": "gamepad", "input": "axis_1_positive" },
+                { "device": "gamepad", "input": "button_13" }
+            ],
+            "UP": [
+                { "device": "keyboard", "input": "KeyW" },
+                { "device": "keyboard", "input": "ArrowUp" },
+                { "device": "gamepad", "input": "axis_1_negative" },
+                { "device": "gamepad", "input": "button_12" }
+            ],
+            "DOWN": [
+                { "device": "keyboard", "input": "KeyS" },
+                { "device": "keyboard", "input": "ArrowDown" },
+                { "device": "gamepad", "input": "axis_1_positive" },
+                { "device": "gamepad", "input": "button_13" }
+            ],
+            "RIGHT": [
+                { "device": "keyboard", "input": "KeyD" },
+                { "device": "keyboard", "input": "ArrowRight" },
+                { "device": "gamepad", "input": "axis_0_positive" },
+                { "device": "gamepad", "input": "button_15" }
+            ],
+            "LEFT": [
+                { "device": "keyboard", "input": "KeyA" },
+                { "device": "keyboard", "input": "ArrowLeft" },
+                { "device": "gamepad", "input": "axis_0_negative" },
+                { "device": "gamepad", "input": "button_14" }
+            ]
+        }
+    }
+}

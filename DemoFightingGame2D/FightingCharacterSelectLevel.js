@@ -1,13 +1,14 @@
 import { Level } from "../Template/Level.js";
 import { Screen } from "../Window/Screen.js";
 import { AssetManager } from "../Root/AssetManager.js";
-import { Input } from "../Input/Input.js";
 import {
     FIGHTING_GAME_CHARACTERS,
     FIGHTING_GAME_FLOW,
     FightingGameSession,
     GoToFightingLevel,
 } from "./FightingGameState.js";
+import { GetFightingControls } from "./FightingControls.js";
+import { anyGamepadButtonDown, anyGamepadDirectionDown, keyboardDown } from "./FightingInput.js";
 
 const SCREEN = Object.freeze({
     width: 960,
@@ -49,27 +50,27 @@ export class FightingCharacterSelectLevel extends Level {
     OnUpdate(dt) {
         this.pulse += dt ?? 0.016;
 
-        if (this.IsAnyKeyDown(["ArrowLeft", "KeyA"])) {
+        if (this.IsDirectionPressed("left")) {
             this.MoveCursor(-1);
         }
 
-        if (this.IsAnyKeyDown(["ArrowRight", "KeyD"])) {
+        if (this.IsDirectionPressed("right")) {
             this.MoveCursor(1);
         }
 
-        if (this.IsAnyKeyDown(["ArrowUp", "KeyW"])) {
+        if (this.IsDirectionPressed("up")) {
             this.MoveCursor(-2);
         }
 
-        if (this.IsAnyKeyDown(["ArrowDown", "KeyS"])) {
+        if (this.IsDirectionPressed("down")) {
             this.MoveCursor(2);
         }
 
-        if (this.IsAnyKeyDown(["Escape", "Backspace"])) {
+        if (this.IsCancelPressed()) {
             this.Cancel();
         }
 
-        if (this.IsAnyKeyDown(["Enter", "Space", "KeyJ", "KeyZ"])) {
+        if (this.IsConfirmPressed()) {
             this.Confirm();
         }
     }
@@ -112,8 +113,19 @@ export class FightingCharacterSelectLevel extends Level {
         return (index + 1) % FIGHTING_GAME_CHARACTERS.length;
     }
 
-    IsAnyKeyDown(keys) {
-        return keys.some(key => Input.GetKeyDown(key));
+    IsDirectionPressed(direction) {
+        const controls = GetFightingControls().menu;
+        return keyboardDown(controls[direction]) || anyGamepadDirectionDown(direction, controls.gamepad?.[direction]);
+    }
+
+    IsCancelPressed() {
+        const controls = GetFightingControls().menu;
+        return keyboardDown(controls.cancel) || anyGamepadButtonDown(controls.gamepad?.cancel);
+    }
+
+    IsConfirmPressed() {
+        const controls = GetFightingControls().menu;
+        return keyboardDown(controls.confirm) || anyGamepadButtonDown(controls.gamepad?.confirm);
     }
 
     OnDrawn() {

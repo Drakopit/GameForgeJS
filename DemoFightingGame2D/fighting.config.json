@@ -1,0 +1,77 @@
+{
+    "project": {
+        "name": "GameForgeJS Fighting 2D Demo",
+        "version": "1.0.0",
+        "author": "Camello"
+    },
+    "window": {
+        "title": "GameForgeJS - Fighting 2D",
+        "backgroundColor": "#000000",
+        "cursor": "default"
+    },
+    "screen": {
+        "width": 960,
+        "height": 540,
+        "pixelArt": true,
+        "antialiasing": false,
+        "orientation": "landscape"
+    },
+    "fighting": {
+        "controls": {
+            "menu": {
+                "left": ["ArrowLeft", "KeyA"],
+                "right": ["ArrowRight", "KeyD"],
+                "up": ["ArrowUp", "KeyW"],
+                "down": ["ArrowDown", "KeyS"],
+                "confirm": ["Enter", "Space", "KeyJ", "KeyZ"],
+                "cancel": ["Escape", "Backspace"],
+                "gamepad": {
+                    "up": { "buttons": [12], "axes": [{ "index": 1, "direction": "negative" }] },
+                    "down": { "buttons": [13], "axes": [{ "index": 1, "direction": "positive" }] },
+                    "left": { "buttons": [14], "axes": [{ "index": 0, "direction": "negative" }] },
+                    "right": { "buttons": [15], "axes": [{ "index": 0, "direction": "positive" }] },
+                    "confirm": [0, 9],
+                    "cancel": [1, 8]
+                }
+            },
+            "playerOne": {
+                "left": ["KeyA"],
+                "right": ["KeyD"],
+                "up": ["KeyW"],
+                "down": ["KeyS"],
+                "light": ["KeyJ", "KeyZ"],
+                "heavy": ["KeyK", "KeyX"],
+                "special": ["KeyL", "KeyC"],
+                "gamepad": {
+                    "index": 0,
+                    "left": { "buttons": [14], "axes": [{ "index": 0, "direction": "negative" }] },
+                    "right": { "buttons": [15], "axes": [{ "index": 0, "direction": "positive" }] },
+                    "up": { "buttons": [12], "axes": [{ "index": 1, "direction": "negative" }] },
+                    "down": { "buttons": [13], "axes": [{ "index": 1, "direction": "positive" }] },
+                    "light": [2],
+                    "heavy": [3],
+                    "special": [5]
+                }
+            },
+            "playerTwo": {
+                "left": ["ArrowLeft"],
+                "right": ["ArrowRight"],
+                "up": ["ArrowUp"],
+                "down": ["ArrowDown"],
+                "light": ["Digit1", "Numpad1"],
+                "heavy": ["Digit2", "Numpad2"],
+                "special": ["Digit3", "Numpad3"],
+                "gamepad": {
+                    "index": 1,
+                    "left": { "buttons": [14], "axes": [{ "index": 0, "direction": "negative" }] },
+                    "right": { "buttons": [15], "axes": [{ "index": 0, "direction": "positive" }] },
+                    "up": { "buttons": [12], "axes": [{ "index": 1, "direction": "negative" }] },
+                    "down": { "buttons": [13], "axes": [{ "index": 1, "direction": "positive" }] },
+                    "light": [2],
+                    "heavy": [3],
+                    "special": [5]
+                }
+            }
+        }
+    }
+}

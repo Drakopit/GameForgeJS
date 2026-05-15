@@ -1,87 +1,96 @@
-# Novo formato de projeto GameForgeJS
+# Novo Formato De Projeto GameForgeJS
 
-Este formato mantem a engine sem dependencias externas. O projeto declara apenas configuracao, manifest de assets e fases iniciais.
+Este formato mantem a engine sem dependencias externas. O projeto declara sua entrada, sua configuracao, seus manifests de assets e seus levels iniciais.
 
-## Estrutura sugerida
+## Estrutura Sugerida Dentro Do Repositorio
 
-```text
+```txt
 MyGame/
-  Main.html
-  gameforge.config.json
+  mygame.config.json
   resources.json
-  main.js
+  mainMyGame.js
   Assets/
     Player/
     Audio/
-    Shaders/
-  Source/
-    Entities/
-      Player.js
-      Enemy.js
-    Levels/
-      FirstLevel.js
+  Entities/
+    Player.js
+    Enemy.js
+  Levels/
+    FirstLevel.js
 ```
 
-## main.js
+## Entrada
 
-```javascript
-import { BootstrapGame } from "../GameForgeJS/Root/Bootstrap.js";
-import { FirstLevel } from "./Source/Levels/FirstLevel.js";
+```js
+import { BootstrapGame } from "../Root/Bootstrap.js";
+import { FirstLevel } from "./Levels/FirstLevel.js";
 
 BootstrapGame({
-    configPath: "gameforge.config.json",
-    manifestPath: "resources.json",
+    configPath: ["gameforge.config.json", "MyGame/mygame.config.json"],
+    manifestPath: "MyGame/resources.json",
     levels: [
         new FirstLevel(),
     ],
 });
 ```
 
+`gameforge.config.json` fica na raiz e contem defaults da engine. `MyGame/mygame.config.json` pertence ao jogo e deve conter titulo, tela, comandos e qualquer configuracao especifica.
+
 ## resources.json
 
 ```json
 {
-    "images": [
-        { "name": "player_idle", "path": "Assets/Player/IDLE.png" }
-    ],
-    "audios": [
-        { "name": "jump", "path": "Assets/Audio/Jump.wav" }
-    ],
-    "shaders": [
-        { "name": "vertexShader", "path": "Assets/Shaders/VertexShader.glsl" }
-    ],
-    "models": [
-        { "name": "hero", "path": "Assets/Models/hero.glb" }
-    ]
+  "images": [
+    { "name": "player_idle", "path": "MyGame/Assets/Player/IDLE.png" }
+  ],
+  "audios": [
+    { "name": "jump", "path": "MyGame/Assets/Audio/Jump.wav" }
+  ],
+  "jsons": [
+    { "name": "first_level", "path": "MyGame/Assets/Manifests/first.level.json" }
+  ]
 }
 ```
 
-## Desenvolvimento local opcional
+## Config De Input
+
+```json
+{
+  "input": {
+    "actionMappings": {
+      "ATTACK": [
+        { "device": "keyboard", "input": "KeyZ" },
+        { "device": "gamepad", "input": "button_0" }
+      ],
+      "LEFT": [
+        { "device": "keyboard", "input": "ArrowLeft" },
+        { "device": "gamepad", "input": "axis_0_negative" },
+        { "device": "gamepad", "input": "button_14" }
+      ]
+    }
+  }
+}
+```
+
+## Admin Mode
+
+Durante o desenvolvimento, `Main.html` sem query string abre o Admin Mode:
+
+```txt
+http://localhost:8080/Main.html
+```
+
+Para abrir direto:
+
+```txt
+http://localhost:8080/Main.html?demo=advanced
+http://localhost:8080/Main.html?demo=fighting2d
+```
+
+## Servidor Local Opcional
 
 ```sh
 npm run start
 ```
 
-O comando acima usa apenas o `server.js` local para evitar problemas de CORS durante o desenvolvimento. Ele nao e necessario para a engine funcionar em producao.
-
-## Demos no repositorio
-
-As demos do repositorio seguem o mesmo principio: cada uma tem sua entrada dentro da propria pasta.
-
-```text
-DemoAdvanced/mainAdvanced.js
-Demo3D/mainDemo3D.js
-DemoMiniGame3D/mainMiniGame3D.js
-DemoTacticalRPG/mainTacticalRPG.js
-Demo/mainImmature.js
-```
-
-Durante o desenvolvimento, `Main.html` usa `Root/DemoLauncher.js` para escolher a demo por query string:
-
-```text
-Main.html?demo=advanced
-Main.html?demo=tactical
-Main.html?demo=demo3d
-Main.html?demo=mini3d
-Main.html?demo=immature
-```
+O comando usa apenas `server.js` para servir arquivos locais e evitar CORS. A engine em si continua independente de Node.js.

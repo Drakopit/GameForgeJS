@@ -3,9 +3,18 @@ import { Screen } from "../Window/Screen.js";
 import { Draw } from "../Graphic/Draw.js";
 import { AssetManager } from "../Root/AssetManager.js";
 import { Engine } from "../Root/Engine.js";
-import { Input } from "../Input/Input.js";
 import { Fighter2D } from "./Fighter2D.js";
+import { GetFightingControls } from "./FightingControls.js";
 import { FIGHTING_GAME_FLOW, FightingGameSession, GoToFightingLevel } from "./FightingGameState.js";
+import {
+    anyGamepadButtonDown,
+    gamepadButtonHeld,
+    gamepadButtonDown,
+    gamepadDirectionDown,
+    gamepadDirectionHeld,
+    keyboardDown,
+    keyboardHeld,
+} from "./FightingInput.js";
 
 const SCREEN = Object.freeze({
     width: 960,
@@ -25,26 +34,6 @@ const ROUND = Object.freeze({
     endDelay: 2.1,
     maxTime: 99,
     winsToMatch: 2,
-});
-
-const PLAYER_ONE_KEYS = Object.freeze({
-    left: ["KeyA"],
-    right: ["KeyD"],
-    up: ["KeyW"],
-    down: ["KeyS"],
-    light: ["KeyJ", "KeyZ"],
-    heavy: ["KeyK", "KeyX"],
-    special: ["KeyL", "KeyC"],
-});
-
-const PLAYER_TWO_KEYS = Object.freeze({
-    left: ["ArrowLeft"],
-    right: ["ArrowRight"],
-    up: ["ArrowUp"],
-    down: ["ArrowDown"],
-    light: ["Digit1", "Numpad1"],
-    heavy: ["Digit2", "Numpad2"],
-    special: ["Digit3", "Numpad3"],
 });
 
 export class FightingGame2DLevel extends Level {
@@ -84,6 +73,7 @@ export class FightingGame2DLevel extends Level {
     CreateFighters() {
         const playerOneCharacter = FightingGameSession.GetP1();
         const playerTwoCharacter = FightingGameSession.GetP2();
+        const controls = GetFightingControls();
         const isVersus = FightingGameSession.mode === "versus";
 
         this.playerOne = new Fighter2D({
@@ -94,7 +84,7 @@ export class FightingGame2DLevel extends Level {
             x: 272,
             groundY: ARENA.groundY,
             facingRight: true,
-            input: PLAYER_ONE_KEYS,
+            input: controls.playerOne,
             controlledByPlayer: true,
         });
 
@@ -106,7 +96,7 @@ export class FightingGame2DLevel extends Level {
             x: 688,
             groundY: ARENA.groundY,
             facingRight: false,
-            input: PLAYER_TWO_KEYS,
+            input: controls.playerTwo,
             controlledByPlayer: isVersus ? true : false,
         });
 
@@ -135,7 +125,8 @@ export class FightingGame2DLevel extends Level {
         const delta = Math.min(dt ?? 0.016, 0.05);
         this.UpdateShake(delta);
 
-        if (Input.GetKeyDown("Escape") || Input.GetKeyDown("Backspace")) {
+        const menuControls = GetFightingControls().menu;
+        if (keyboardDown(menuControls.cancel) || anyGamepadButtonDown(menuControls.gamepad?.cancel)) {
             GoToFightingLevel(this, FIGHTING_GAME_FLOW.menuIndex);
             return;
         }
@@ -209,11 +200,11 @@ export class FightingGame2DLevel extends Level {
 
     ReadFighterInput(fighter, delta) {
         if (fighter.controlledByPlayer === true) {
-            return this.ReadPlayerInput(fighter.input);
+            return this.ReadPlayerInput(fighter);
         }
 
         if (fighter.controlledByPlayer === "hybrid") {
-            const playerInput = this.ReadPlayerInput(fighter.input);
+            const playerInput = this.ReadPlayerInput(fighter);
             if (this.HasAnyInput(playerInput)) {
                 fighter.humanOverrideTimer = 2;
                 return playerInput;
@@ -228,30 +219,39 @@ export class FightingGame2DLevel extends Level {
         return this.ReadCpuInput(fighter, delta);
     }
 
-    ReadPlayerInput(keys) {
+    ReadPlayerInput(fighter) {
+        const keys = fighter.input;
+
         return {
-            left: this.IsAnyKeyPressed(keys.left),
-            right: this.IsAnyKeyPressed(keys.right),
-            up: this.IsAnyKeyDown(keys.up),
-            down: this.IsAnyKeyPressed(keys.down),
-            light: this.IsAnyKeyDown(keys.light),
-            heavy: this.IsAnyKeyDown(keys.heavy),
-            special: this.IsAnyKeyDown(keys.special),
+            left: keyboardHeld(keys.left) || gamepadDirectionHeld("left", keys.gamepad?.index, keys.gamepad?.left),
+            right: keyboardHeld(keys.right) || gamepadDirectionHeld("right", keys.gamepad?.index, keys.gamepad?.right),
+            up: keyboardDown(keys.up) || gamepadDirectionDown("up", keys.gamepad?.index, keys.gamepad?.up),
+            down: keyboardHeld(keys.down) || gamepadDirectionHeld("down", keys.gamepad?.index, keys.gamepad?.down),
+            light: this.ReadAttackButton(fighter, "light"),
+            heavy: this.ReadAttackButton(fighter, "heavy"),
+            special: this.ReadAttackButton(fighter, "special"),
         };
     }
 
+    ReadAttackButton(fighter, attackName) {
+        const keys = fighter.input;
+        const gamepad = keys.gamepad ?? {};
+        const keyboardPressed = keyboardDown(keys[attackName]);
+        const gamepadPressed = gamepadButtonDown(gamepad[attackName], gamepad.index);
+        const held = keyboardHeld(keys[attackName]) || gamepadButtonHeld(gamepad[attackName], gamepad.index);
+        const wasHeld = fighter.attackHeld?.[attackName] ?? false;
+
+        if (!fighter.attackHeld) {
+            fighter.attackHeld = {};
+        }
+
+        fighter.attackHeld[attackName] = held;
+        return keyboardPressed || gamepadPressed || (held && !wasHeld);
+    }
+
     IsConfirmPressed() {
-        return this.IsAnyKeyDown(["Enter", "Space", "KeyJ", "KeyZ", "Digit1", "Numpad1"]);
-    }
-
-    IsAnyKeyPressed(keys) {
-        const keyList = Array.isArray(keys) ? keys : [keys];
-        return keyList.some(key => Input.GetKey(key));
-    }
-
-    IsAnyKeyDown(keys) {
-        const keyList = Array.isArray(keys) ? keys : [keys];
-        return keyList.some(key => Input.GetKeyDown(key));
+        const menuControls = GetFightingControls().menu;
+        return keyboardDown(menuControls.confirm) || anyGamepadButtonDown(menuControls.gamepad?.confirm);
     }
 
     HasAnyInput(input) {

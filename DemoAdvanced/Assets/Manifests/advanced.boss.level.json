@@ -1,6 +1,7 @@
 {
   "id": "advanced_boss_snow_demo",
   "compose": [
+    "advanced_stage_default",
     "advanced_boss_core",
     "advanced_boss_stage",
     "advanced_player",

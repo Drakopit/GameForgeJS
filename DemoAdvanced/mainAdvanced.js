@@ -8,7 +8,7 @@ import { AdvancedDemoPhaseSelector } from "./AdvancedDemoPhaseSelector.js";
 import { AdvancedDemoSecondLevel } from "./AdvancedDemoSecondLevel.js";
 
 BootstrapGame({
-    configPath: "gameforge.config.json",
+    configPath: ["gameforge.config.json", "DemoAdvanced/advanced.config.json"],
     manifestPath: "DemoAdvanced/resources.json",
     levels: [
         new AdvancedDemoMenu(),

@@ -4,7 +4,7 @@ import { FightingGame2DLevel } from "./FightingGame2DLevel.js";
 import { FightingGameMenuLevel } from "./FightingGameMenuLevel.js";
 
 BootstrapGame({
-    configPath: "gameforge.config.json",
+    configPath: ["gameforge.config.json", "DemoFightingGame2D/fighting.config.json"],
     manifestPath: "DemoFightingGame2D/resources.json",
     levels: [
         new FightingGameMenuLevel(),

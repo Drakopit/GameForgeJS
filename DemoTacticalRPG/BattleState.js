@@ -1,3 +1,8 @@
+export const BATTLE_MODES = Object.freeze({
+    FIRE_EMBLEM: "fire-emblem",
+    FINAL_FANTASY_TACTICS: "final-fantasy-tactics",
+});
+
 export const BattleState = {
     initialized: false,
     playerUnit: null,
@@ -5,6 +10,16 @@ export const BattleState = {
     enemies: [],
     encounterActive: false,
     result: null,
+    battleMode: BATTLE_MODES.FIRE_EMBLEM,
+
+    SetBattleMode(mode) {
+        this.battleMode = Object.values(BATTLE_MODES).includes(mode)
+            ? mode
+            : BATTLE_MODES.FIRE_EMBLEM;
+        this.result = null;
+        this.encounterActive = false;
+        if (this.initialized) this.ResetAll();
+    },
 
     StartEncounter(playerUnit, enemyUnit) {
         if (!playerUnit?.IsAlive?.() || !enemyUnit?.IsAlive?.()) {
