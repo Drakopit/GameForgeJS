@@ -1,0 +1,49 @@
+{
+  "enemyDefaults": {
+    "scale": 1,
+    "bodySize": { "width": 64, "height": 64 },
+    "movement": {
+      "speed": 86,
+      "gravity": 900
+    },
+    "ai": {
+      "aggroRange": 185,
+      "stopDistance": 66,
+      "attackRange": 88,
+      "attackVerticalRange": 54,
+      "attackCooldown": 1.18
+    },
+    "stats": {
+      "hp": 30,
+      "attack": 8,
+      "defense": 0
+    },
+    "combat": {
+      "attack": {
+        "enabled": true,
+        "hitStop": 0.05,
+        "hitStun": 0.16,
+        "knockback": { "x": 220, "y": -235 }
+      },
+      "hitStunFallback": 0.16,
+      "knockbackDrag": 0.9,
+      "staggerKnockback": { "x": 360, "y": -330 }
+    },
+    "render": {
+      "drawOffsetX": 22
+    },
+    "healthBar": {
+      "width": 44,
+      "height": 6,
+      "offsetY": -15
+    }
+  },
+  "enemies": [
+    { "id": "second_kobold_01", "x": 420, "y": 100 },
+    { "id": "second_kobold_02", "x": 1010, "y": 120 },
+    { "id": "second_kobold_03", "x": 1610, "y": 100 },
+    { "id": "second_kobold_04", "x": 2350, "y": 100 },
+    { "id": "second_kobold_05", "x": 3040, "y": 90 },
+    { "id": "second_kobold_06", "x": 3650, "y": 100 }
+  ]
+}

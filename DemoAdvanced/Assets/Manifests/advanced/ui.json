@@ -1,0 +1,32 @@
+{
+  "ui": {
+    "playerHud": {
+      "x": 16,
+      "y": 16,
+      "width": 298,
+      "height": 92
+    },
+    "progressHud": {
+      "summaryX": 16,
+      "summaryY": 116,
+      "summaryWidth": 298,
+      "summaryHeight": 34,
+      "panelX": 330,
+      "panelY": 18,
+      "panelWidth": 292,
+      "panelHeight": 214
+    },
+    "statusWindow": {
+      "x": 10,
+      "y": 480,
+      "width": 400,
+      "height": 150,
+      "cornerSize": 32,
+      "texts": [
+        { "text": "Advanced Demo Level", "x": 20, "y": 40, "color": "#FFD700", "fontSize": "24px", "font": "monospace" },
+        { "text": "Enemies Defeated: 0", "x": 20, "y": 80, "color": "#FFFFFF", "fontSize": "18px", "font": "sans-serif" },
+        { "text": "Status: Running smoothly", "x": 20, "y": 110, "color": "#00FF00", "fontSize": "16px", "font": "sans-serif" }
+      ]
+    }
+  }
+}

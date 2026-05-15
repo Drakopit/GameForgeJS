@@ -17,6 +17,7 @@ const DEFAULT_FLOATING_TEXT = {
 export class FloatingText {
     constructor(screen) {
         this.name = "FloatingText";
+        this.zIndex = 80;
         this.draw = new Draw(screen);
         this.position = new Vector2D(0, 0);
         this.velocity = new Vector2D(DEFAULT_FLOATING_TEXT.velocityX, DEFAULT_FLOATING_TEXT.velocityY);

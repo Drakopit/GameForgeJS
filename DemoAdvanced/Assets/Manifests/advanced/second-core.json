@@ -1,0 +1,21 @@
+{
+  "screen": {
+    "width": 640,
+    "height": 480
+  },
+  "world": {
+    "width": 4000,
+    "height": 660
+  },
+  "collision": {
+    "floorSnapTolerance": 4
+  },
+  "background": "background",
+  "victory": {
+    "x": 3830
+  },
+  "audio": {
+    "bgm": "bgm_fase1",
+    "bgmVolume": 0.42
+  }
+}

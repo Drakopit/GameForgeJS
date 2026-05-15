@@ -60,6 +60,16 @@
                 { "device": "keyboard", "input": "ArrowUp" },
                 { "device": "gamepad", "input": "axis_1_negative" },
                 { "device": "gamepad", "input": "button_12" } 
+            ],
+            "INVENTORY": [
+                { "device": "keyboard", "input": "KeyI" },
+                { "device": "keyboard", "input": "Tab" },
+                { "device": "gamepad", "input": "button_4" }
+            ],
+            "SKILL_TREE": [
+                { "device": "keyboard", "input": "KeyK" },
+                { "device": "keyboard", "input": "KeyC" },
+                { "device": "gamepad", "input": "button_5" }
             ]
         }
     },
@@ -89,7 +99,7 @@
 	},
 	"debug": {
 		"showFPS": true,
-		"showHitboxes": false,
+		"showHitboxes": true,
 		"logLevel": "info"
 	}
 }

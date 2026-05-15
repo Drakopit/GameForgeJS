@@ -159,4 +159,32 @@ export class Draw {
             console.error("DrawSprite: O parâmetro 'sprite' deve ser uma Image previamente carregada.");
         }
     }
+
+    DrawSpriteStretched(sprite, x, y, width, height) {
+        if (sprite instanceof HTMLImageElement || sprite instanceof Image) {
+            this.screen.Context.drawImage(sprite, x, y, width, height);
+            return;
+        }
+
+        console.error("DrawSpriteStretched: O parametro 'sprite' deve ser uma Image previamente carregada.");
+    }
+
+    DrawSpritePart(sprite, source, destination) {
+        if (!(sprite instanceof HTMLImageElement || sprite instanceof Image)) {
+            console.error("DrawSpritePart: O parametro 'sprite' deve ser uma Image previamente carregada.");
+            return;
+        }
+
+        this.screen.Context.drawImage(
+            sprite,
+            source.x,
+            source.y,
+            source.width,
+            source.height,
+            destination.x,
+            destination.y,
+            destination.width,
+            destination.height
+        );
+    }
 }

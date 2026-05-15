@@ -1,0 +1,21 @@
+{
+  "floatingText": {
+    "poolSize": 18,
+    "normalColor": "#FFD76A",
+    "strongColor": "#FF9F43",
+    "strongDamageThreshold": 20,
+    "normalFontSize": 18,
+    "strongFontSize": 22,
+    "normalVelocityX": -6,
+    "strongVelocityX": 10,
+    "velocityY": -70,
+    "normalLifeTime": 0.75,
+    "strongLifeTime": 0.9,
+    "spawnOffsetY": -10
+  },
+  "cameraShake": {
+    "light": { "duration": 0.08, "intensity": 2.5, "frequency": 38 },
+    "strong": { "duration": 0.13, "intensity": 5, "frequency": 46 },
+    "playerDamage": { "duration": 0.16, "intensity": 6, "frequency": 42 }
+  }
+}

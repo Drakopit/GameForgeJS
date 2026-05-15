@@ -1,0 +1,11 @@
+{
+  "id": "advanced_second_snow_demo",
+  "compose": [
+    "advanced_second_core",
+    "advanced_second_stage",
+    "advanced_player",
+    "advanced_second_enemies",
+    "advanced_effects",
+    "advanced_ui"
+  ]
+}

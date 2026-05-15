@@ -107,6 +107,7 @@ export class Player extends GameObject {
 
         this.config = mergePlayerConfig(config);
         this.name = "Player";
+        this.zIndex = 50;
         this.spawn = new Vector2D(this.config.spawn.x, this.config.spawn.y);
         this.position = new Vector2D(this.spawn.x, this.spawn.y);
         this.previousPosition = new Vector2D(this.spawn.x, this.spawn.y);
@@ -249,6 +250,30 @@ export class Player extends GameObject {
         this.animator.Play(this.hp <= 0 ? "Death" : "Hurt");
 
         return true;
+    }
+
+    Heal(amount = 0) {
+        if (this.hp <= 0 || amount <= 0) return false;
+
+        this.hp = Math.min(this.maxHP, this.hp + amount);
+        return true;
+    }
+
+    IncreaseMaxHP(amount = 0, heal = false) {
+        if (amount <= 0) return;
+
+        this.maxHP += amount;
+        if (heal) {
+            this.hp = Math.min(this.maxHP, this.hp + amount);
+        }
+    }
+
+    AddAttack(amount = 0) {
+        this.attack = Math.max(0, this.attack + amount);
+    }
+
+    AddDefense(amount = 0) {
+        this.defense = Math.max(0, this.defense + amount);
     }
 
     InterruptCurrentState() {

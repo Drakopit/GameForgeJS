@@ -33,6 +33,8 @@ export class Input {
         this.keys = {};
         this.keysDown = {};
         this.keysUp = {};
+        this.pendingKeysDown = {};
+        this.pendingKeysUp = {};
 
         this.keyDownHandler = this.keyDownHandler.bind(this);
         this.keyUpHandler = this.keyUpHandler.bind(this);
@@ -55,6 +57,10 @@ export class Input {
      */
     static Update() {
         if (!Input.instance) return;
+        Input.instance.keysDown = Input.instance.pendingKeysDown;
+        Input.instance.keysUp = Input.instance.pendingKeysUp;
+        Input.instance.pendingKeysDown = {};
+        Input.instance.pendingKeysUp = {};
         Input.instance.gamepad.Update();
     }
 
@@ -64,8 +70,6 @@ export class Input {
     static LateUpdate() {
         if (!Input.instance) return;
         Input.instance.gamepad.LateUpdate();
-        Input.instance.keysDown = {};
-        Input.instance.keysUp = {};
         // Se implementou o ClearFrameData no Mouse.js
         if (typeof Input.instance.mouse.ClearFrameData === "function") {
             Input.instance.mouse.ClearFrameData();
@@ -74,14 +78,14 @@ export class Input {
 
     keyDownHandler(event) {
         if (!this.keys[event.code]) {
-            this.keysDown[event.code] = true;
+            this.pendingKeysDown[event.code] = true;
         }
         this.keys[event.code] = true;
     }
 
     keyUpHandler(event) {
         this.keys[event.code] = false;
-        this.keysUp[event.code] = true;
+        this.pendingKeysUp[event.code] = true;
     }
 
     /**

@@ -1,0 +1,15 @@
+{
+  "atlases": {
+    "standards": {
+      "sprite": "snow_standards",
+      "animations": {
+        "blue_flag": {
+          "source": { "x": 13, "y": 0, "width": 22, "height": 32 },
+          "frames": 5,
+          "frameStepX": 32,
+          "speed": 8
+        }
+      }
+    }
+  }
+}

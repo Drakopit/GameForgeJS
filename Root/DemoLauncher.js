@@ -3,6 +3,8 @@ const demos = {
     tactical: "../DemoTacticalRPG/mainTacticalRPG.js",
     demo3d: "../Demo3D/mainDemo3D.js",
     mini3d: "../DemoMiniGame3D/mainMiniGame3D.js",
+    fighting2d: "../DemoFightingGame2D/mainFightingGame2D.js",
+    fighting: "../DemoFightingGame2D/mainFightingGame2D.js",
     immature: "../Demo/mainImmature.js",
 };
 

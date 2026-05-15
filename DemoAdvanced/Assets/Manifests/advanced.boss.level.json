@@ -1,0 +1,11 @@
+{
+  "id": "advanced_boss_snow_demo",
+  "compose": [
+    "advanced_boss_core",
+    "advanced_boss_stage",
+    "advanced_player",
+    "advanced_boss_enemies",
+    "advanced_effects",
+    "advanced_ui"
+  ]
+}

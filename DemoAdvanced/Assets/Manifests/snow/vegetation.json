@@ -1,0 +1,13 @@
+{
+  "atlases": {
+    "vegetation": {
+      "sprite": "snow_vegetation",
+      "sprites": {
+        "pine_large": { "x": 18, "y": 32, "width": 44, "height": 54 },
+        "pine_medium": { "x": 71, "y": 44, "width": 34, "height": 42 },
+        "pine_small": { "x": 119, "y": 44, "width": 34, "height": 42 },
+        "snow_bush": { "x": 162, "y": 74, "width": 44, "height": 12 }
+      }
+    }
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "parallax": {
+    "layers": [
+      { "id": "sky", "sprite": "snow_sky", "x": 0, "y": 0, "width": 640, "height": 480, "scrollRatioX": 0, "scrollRatioY": 0, "repeatX": true },
+      { "id": "mountain_far", "sprite": "snow_mountain_02", "x": 0, "y": 86, "width": 374, "height": 158, "scrollRatioX": 0.08, "scrollRatioY": 0.018, "repeatX": true },
+      { "id": "mountain_near", "sprite": "snow_mountain_01", "x": 0, "y": 156, "width": 638, "height": 176, "scrollRatioX": 0.2, "scrollRatioY": 0.04, "repeatX": true },
+      { "id": "snow_far", "sprite": "snow_03", "x": 0, "y": 302, "width": 640, "height": 88, "scrollRatioX": 0.34, "scrollRatioY": 0.06, "repeatX": true },
+      { "id": "snow_mid", "sprite": "snow_02", "x": 0, "y": 356, "width": 640, "height": 92, "scrollRatioX": 0.5, "scrollRatioY": 0.08, "repeatX": true },
+      { "id": "snow_near", "sprite": "snow_01", "x": 0, "y": 416, "width": 640, "height": 78, "scrollRatioX": 0.72, "scrollRatioY": 0.1, "repeatX": true }
+    ]
+  },
+  "materials": [
+    { "ground": 1 },
+    { "steel": 2 },
+    { "ice": 3 }
+  ],
+  "platforms": [
+    { "id": "ground_start", "x": 0, "y": 500, "width": 560, "height": 160, "solid": true, "visible": true, "material": "ground", "terrain": "snow_ground" },
+    { "id": "ground_low_01", "x": 720, "y": 525, "width": 520, "height": 135, "solid": true, "visible": true, "material": "ground", "terrain": "snow_ground" },
+    { "id": "ground_rise_01", "x": 1400, "y": 500, "width": 560, "height": 160, "solid": true, "visible": true, "material": "ground", "terrain": "snow_ground" },
+    { "id": "ground_low_02", "x": 2120, "y": 520, "width": 500, "height": 140, "solid": true, "visible": true, "material": "ground", "terrain": "snow_ground" },
+    { "id": "ground_ridge", "x": 2780, "y": 485, "width": 550, "height": 175, "solid": true, "visible": true, "material": "ground", "terrain": "snow_ground" },
+    { "id": "ground_goal", "x": 3500, "y": 500, "width": 500, "height": 160, "solid": true, "visible": true, "material": "ground", "terrain": "snow_ground" },
+    { "id": "step_01", "x": 520, "y": 410, "width": 140, "height": 20, "solid": true, "visible": true, "material": "ice", "terrain": "snow_platform" },
+    { "id": "step_02", "x": 1255, "y": 425, "width": 150, "height": 20, "solid": true, "visible": true, "material": "ice", "terrain": "snow_platform" },
+    { "id": "step_03", "x": 1965, "y": 398, "width": 150, "height": 20, "solid": true, "visible": true, "material": "ice", "terrain": "snow_platform" },
+    { "id": "step_04", "x": 2630, "y": 428, "width": 150, "height": 20, "solid": true, "visible": true, "material": "ice", "terrain": "snow_platform" },
+    { "id": "step_05", "x": 3335, "y": 392, "width": 150, "height": 20, "solid": true, "visible": true, "material": "ice", "terrain": "snow_platform" }
+  ],
+  "objects": [
+    { "id": "pine_large_02_01", "spriteRef": "pine_large", "x": 260, "y": 392, "width": 88, "height": 108, "visible": true, "solid": false, "zIndex": 25 },
+    { "id": "snow_bush_02_01", "spriteRef": "snow_bush", "x": 840, "y": 501, "width": 88, "height": 24, "visible": true, "solid": false, "zIndex": 25 },
+    { "id": "pine_medium_02_01", "spriteRef": "pine_medium", "x": 1510, "y": 416, "width": 68, "height": 84, "visible": true, "solid": false, "zIndex": 25 },
+    { "id": "igloo_02_01", "spriteRef": "igloo", "x": 2260, "y": 440, "width": 102, "height": 80, "visible": true, "solid": false, "zIndex": 25 },
+    { "id": "pine_large_02_02", "spriteRef": "pine_large", "x": 2910, "y": 362, "width": 100, "height": 123, "visible": true, "solid": false, "zIndex": 24 },
+    { "id": "snowman_02_01", "spriteRef": "snowman", "x": 3180, "y": 437, "width": 46, "height": 48, "visible": true, "solid": false, "zIndex": 25 },
+    { "id": "blue_flag_02_01", "animationRef": "blue_flag", "x": 3828, "y": 436, "width": 44, "height": 64, "visible": true, "solid": false, "zIndex": 35 }
+  ]
+}

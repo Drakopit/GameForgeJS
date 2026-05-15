@@ -17,6 +17,7 @@ export class Bullet extends GameObject {
         super();
         this.config = { ...DEFAULT_BULLET_CONFIG, ...config };
         this.name = "Bullet";
+        this.zIndex = 60;
         this.size = new Vector2D(this.config.width, this.config.height);
         this.speed = this.config.speed;
         this.active = false;

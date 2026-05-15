@@ -18,6 +18,9 @@ const DEFAULT_ENEMY_CONFIG = {
     ai: {
         aggroRange: 200,
         stopDistance: 5,
+        attackRange: 82,
+        attackVerticalRange: 46,
+        attackCooldown: 1.15,
     },
     stats: {
         hp: 30,
@@ -25,6 +28,12 @@ const DEFAULT_ENEMY_CONFIG = {
         defense: 0,
     },
     combat: {
+        attack: {
+            enabled: true,
+            hitStop: 0.045,
+            hitStun: 0.16,
+            knockback: { x: 210, y: -230 },
+        },
         hitStunFallback: 0.14,
         knockbackDrag: 0.9,
         staggerKnockback: { x: 400, y: -350 },
@@ -64,6 +73,14 @@ function mergeEnemyConfig(config = {}) {
         combat: {
             ...DEFAULT_ENEMY_CONFIG.combat,
             ...config.combat,
+            attack: {
+                ...DEFAULT_ENEMY_CONFIG.combat.attack,
+                ...config.combat?.attack,
+                knockback: {
+                    ...DEFAULT_ENEMY_CONFIG.combat.attack.knockback,
+                    ...config.combat?.attack?.knockback,
+                },
+            },
             staggerKnockback: {
                 ...DEFAULT_ENEMY_CONFIG.combat.staggerKnockback,
                 ...config.combat?.staggerKnockback,
@@ -80,6 +97,7 @@ export class Enemy extends GameObject {
 
         this.config = mergeEnemyConfig(config);
         this.name = "Enemy";
+        this.zIndex = 50;
         this.spawn = new Vector2D(spawn.x, spawn.y);
         this.position = new Vector2D(this.spawn.x, this.spawn.y);
         this.previousPosition = new Vector2D(this.spawn.x, this.spawn.y);
@@ -94,11 +112,16 @@ export class Enemy extends GameObject {
         this.gravity = this.config.movement.gravity;
         this.isGrounded = false;
         this.isTakingDamage = false;
+        this.isAttacking = false;
+        this.attackCooldownRemaining = 0;
         this.hitStunRemaining = 0;
         this.knockbackSpeed = 0;
         this.knockbackDrag = this.config.combat.knockbackDrag;
         this.aggroRange = this.config.ai.aggroRange;
         this.stopDistance = this.config.ai.stopDistance;
+        this.attackRange = this.config.ai.attackRange;
+        this.attackVerticalRange = this.config.ai.attackVerticalRange;
+        this.attackCooldown = this.config.ai.attackCooldown;
         this.player = playerRef;
 
         this.draw = new Draw(screen);
@@ -152,6 +175,8 @@ export class Enemy extends GameObject {
         this.previousPosition = new Vector2D(this.spawn.x, this.spawn.y);
         this.active = true;
         this.isTakingDamage = false;
+        this.isAttacking = false;
+        this.attackCooldownRemaining = 0;
         this.hp = this.maxHP;
         this.vy = 0;
         this.knockbackSpeed = 0;
@@ -161,8 +186,55 @@ export class Enemy extends GameObject {
         this.stateMachine.ChangeState(new EnemyIdleState(this));
     }
 
+    UsesAttackHitbox() {
+        return this.config.combat.attack?.enabled !== false;
+    }
+
+    FacePlayer() {
+        if (!this.player) return;
+
+        const enemyCenter = this.position.x + (this.size.x / 2);
+        const playerCenter = this.player.position.x + (this.player.size.x / 2);
+        this.facingRight = playerCenter >= enemyCenter;
+    }
+
+    CanAttackPlayer() {
+        if (!this.UsesAttackHitbox()) return false;
+        if (this.isTakingDamage || this.isAttacking || this.attackCooldownRemaining > 0) return false;
+        if (!this.player || this.player.hp <= 0) return false;
+
+        const enemyCenterX = this.position.x + (this.size.x / 2);
+        const playerCenterX = this.player.position.x + (this.player.size.x / 2);
+        const enemyCenterY = this.position.y + (this.size.y / 2);
+        const playerCenterY = this.player.position.y + (this.player.size.y / 2);
+        const horizontalDistance = Math.abs(enemyCenterX - playerCenterX);
+        const verticalDistance = Math.abs(enemyCenterY - playerCenterY);
+
+        return horizontalDistance <= this.attackRange && verticalDistance <= this.attackVerticalRange;
+    }
+
+    BeginAttack() {
+        this.isAttacking = true;
+        this.attackCooldownRemaining = this.attackCooldown;
+        this.boxes.ResetHitMemory();
+    }
+
+    FinishAttack() {
+        if (!this.isAttacking) return;
+
+        this.isAttacking = false;
+        this.boxes.ResetHitMemory();
+    }
+
+    GetAttackHitDefaults() {
+        return {
+            damage: this.attack,
+            ...this.config.combat.attack,
+        };
+    }
+
     TakeDamage(dir, hit = null) {
-        if (!this.active) return;
+        if (!this.active) return { damage: 0, killed: false };
 
         const hitbox = hit?.hitbox ?? hit ?? {};
         const shouldStagger = hit?.stagger ?? hitbox.stagger ?? true;
@@ -173,12 +245,12 @@ export class Enemy extends GameObject {
 
         if (this.hp <= 0) {
             this.Die();
-            return;
+            return { damage, killed: true };
         }
 
         if (!shouldStagger) {
             this.ApplyHitStun(hit, hitbox);
-            return;
+            return { damage, killed: false };
         }
 
         this.isTakingDamage = true;
@@ -187,6 +259,7 @@ export class Enemy extends GameObject {
         this.knockbackSpeed = (hit?.knockback?.x ?? hitbox.knockback?.x ?? this.config.combat.staggerKnockback.x) * dir;
         this.InterruptLockedState();
         this.stateMachine.ChangeState(new EnemyHitState(this));
+        return { damage, killed: false };
     }
 
     ApplyHitStun(hit, hitbox) {
@@ -229,6 +302,7 @@ export class Enemy extends GameObject {
 
         const delta = dt || 0.016;
         this.previousPosition = new Vector2D(this.position.x, this.position.y);
+        this.attackCooldownRemaining = Math.max(0, this.attackCooldownRemaining - delta);
 
         this.vy += this.gravity * delta;
         this.position.y += this.vy * delta;
@@ -275,7 +349,7 @@ export class Enemy extends GameObject {
     OnDrawn() {
         if (!this.active) return;
 
-        this.boxes.DrawDebug(this.draw, { hit: false });
+        this.boxes.DrawDebug(this.draw);
 
         let anim = this.animator.currentAnimation;
         let frameW = this.sprite.size.x * this.scale;

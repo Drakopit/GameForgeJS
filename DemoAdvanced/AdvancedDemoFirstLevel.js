@@ -10,10 +10,16 @@ import { UIWindow } from "../UI/UIWindow.js";
 import { Camera } from "../Root/Camera.js";
 import { Player } from "./Player.js";
 import { AudioManager } from "../Root/AudioManager.js";
+import { JsonManifestComposer } from "../Root/JsonManifestComposer.js";
 import { LevelBuilder } from "./Levels/LevelBuilder.js";
 import { PlayerStatusHUD } from "./UI/PlayerStatusHUD.js";
 import { CombatResolver2D } from "../Collision/CombatResolver2D.js";
 import { FloatingText } from "../Effects/FloatingText.js";
+import { ParallaxLayer2D } from "./Environment/ParallaxLayer2D.js";
+import { AdvancedDemoProgress } from "./AdvancedDemoProgress.js";
+import { InventorySystem } from "./Systems/InventorySystem.js";
+import { SkillTreeSystem } from "./Systems/SkillTreeSystem.js";
+import { PlayerProgressHUD } from "./UI/PlayerProgressHUD.js";
 
 const STATUS_TEXT_INDEX = {
     defeated: 1,
@@ -27,40 +33,54 @@ const PLAYER_STATUS = {
     damaged: { text: "Recovering!", color: "#FF9F43" },
 };
 
-export class AdvancedDemoLevel extends Level {
-    constructor() {
+export class AdvancedDemoFirstLevel extends Level {
+    constructor(options = {}) {
         super();
-        this.caption = "GameForgeJS - Advanced Demo";
-        this.TelaId = "AdvancedDemo";
+        this.caption = options.caption ?? "GameForgeJS - Advanced Demo: Fase 1";
+        this.TelaId = options.screenId ?? "AdvancedDemoFirstLevel";
+        this.manifestName = options.manifestName ?? "advanced_level";
+        this.phaseId = options.phaseId ?? "first";
+        this.unlocksPhaseId = options.unlocksPhaseId ?? "second";
+        this.returnToPhaseSelector = options.returnToPhaseSelector ?? true;
+        this.completionTarget = options.completionTarget ?? null;
         this.levelConfig = null;
+        this.hasFinished = false;
     }
 
     OnStart() {
+        this.hasFinished = false;
         this.entities = [];
         this.blocks = [];
         this.enemies = [];
         this.damageNumbers = [];
         this.player = null;
         this.playerStatusHUD = null;
+        this.progressHUD = null;
+        this.inventory = null;
+        this.skillTree = null;
         this.dialogWindow = null;
-        this.levelConfig = AssetManager.instance.GetJson("advanced_level");
+        this.parallaxLayers = [];
+        this.rewardedEnemies = new Set();
+        this.levelConfig = JsonManifestComposer.Compose(this.manifestName);
 
         if (!this.levelConfig) {
-            throw new Error("AdvancedDemoLevel: manifest 'advanced_level' nao foi carregado.");
+            throw new Error(`AdvancedDemoFirstLevel: manifest '${this.manifestName}' nao foi carregado.`);
         }
 
         super.OnStart();
 
         const width = this.levelConfig.screen.width;
         const height = this.levelConfig.screen.height;
-        this.screen = new Screen("AdvancedDemo", width, height);
+        this.screen = new Screen(this.TelaId, width, height);
         this.draw = new Draw(this.screen);
 
         this.GameWorld = { ...this.levelConfig.world };
         this.camera = new Camera(new Vector2D(0, 0), new Vector2D(width, height));
         this.camera.Init(this.screen, this.GameWorld);
 
+        this.CreateParallaxLayers();
         this.CreatePlayer();
+        this.CreateProgressionSystems();
         this.BuildScenario();
         this.CreateDamageTextPool();
         this.CreateUI();
@@ -75,12 +95,47 @@ export class AdvancedDemoLevel extends Level {
         this.player.bulletPool.pool.forEach(bullet => this.AddEntity(bullet));
     }
 
+    CreateProgressionSystems() {
+        this.inventory = new InventorySystem(this.levelConfig.player.inventory);
+        this.skillTree = new SkillTreeSystem(this.levelConfig.player.skillTree);
+        const savedProgress = AdvancedDemoProgress.LoadPlayerProgress();
+        this.inventory.Restore(savedProgress?.inventory);
+        this.skillTree.Restore(savedProgress?.skillTree);
+        this.skillTree.ApplyUnlockedEffects(this.player);
+        this.progressHUD = new PlayerProgressHUD(
+            this.screen,
+            this.player,
+            this.inventory,
+            this.skillTree,
+            this.levelConfig.ui?.progressHud
+        );
+    }
+
+    PersistProgressionIfDirty(force = false) {
+        if (!this.inventory || !this.skillTree) return;
+        if (!force && !this.inventory.dirty && !this.skillTree.dirty) return;
+
+        AdvancedDemoProgress.SavePlayerProgress({
+            inventory: this.inventory.ToState(),
+            skillTree: this.skillTree.ToState(),
+        });
+
+        this.inventory.dirty = false;
+        this.skillTree.dirty = false;
+    }
+
     BuildScenario() {
         new LevelBuilder(this)
             .SetBackground(this.levelConfig.background)
             .AddPlatforms(this.levelConfig.platforms)
+            .AddObjects(this.levelConfig.objects)
             .AddEnemies(this.levelConfig.enemies, this.levelConfig.enemyDefaults)
             .Build();
+    }
+
+    CreateParallaxLayers() {
+        const layers = this.levelConfig.parallax?.layers ?? [];
+        this.parallaxLayers = layers.map(layer => new ParallaxLayer2D(this.screen, layer));
     }
 
     CreateDamageTextPool() {
@@ -155,6 +210,7 @@ export class AdvancedDemoLevel extends Level {
     }
 
     ResetLevel(reason = "defeat") {
+        this.hasFinished = false;
         const message = reason === "victory"
             ? "Fase concluida. Reiniciando demo..."
             : "GAME OVER! Reiniciando...";
@@ -168,6 +224,22 @@ export class AdvancedDemoLevel extends Level {
         this.damageNumbers?.forEach(text => {
             text.active = false;
         });
+
+        this.rewardedEnemies?.clear();
+    }
+
+    FailLevel(reason = "defeat") {
+        if (this.hasFinished) return;
+
+        this.hasFinished = true;
+        Logger.log("info", reason === "fall" ? "GAME OVER! Queda fora da fase." : "GAME OVER! Jogador derrotado.");
+
+        if ((this.LEVEL_HANDLER?.levels?.length ?? 0) > 1) {
+            AdvancedDemoProgress.GoToGameOver(this);
+            return;
+        }
+
+        this.ResetLevel(reason);
     }
 
     SpawnDamageNumber(amount, x, y) {
@@ -194,6 +266,26 @@ export class AdvancedDemoLevel extends Level {
 
         this.SpawnDamageNumber(damage, position.x, position.y);
         Engine.HitStop(hit.hitStop ?? hit.hitbox?.hitStop ?? fallbackHitStop);
+        this.ApplyCameraShake(damage);
+    }
+
+    ApplyCameraShake(damage, type = null) {
+        const shakeConfig = this.levelConfig.cameraShake;
+        if (!shakeConfig || !this.camera) return;
+
+        const textConfig = this.levelConfig.floatingText;
+        const key = type ?? (damage >= textConfig.strongDamageThreshold ? "strong" : "light");
+        const shake = shakeConfig[key];
+        if (!shake) return;
+
+        this.camera.Shake(shake.duration, shake.intensity, shake.frequency);
+    }
+
+    HandleEnemyDefeated(enemy) {
+        if (!enemy || this.rewardedEnemies.has(enemy)) return;
+
+        this.rewardedEnemies.add(enemy);
+        this.inventory?.OnEnemyDefeated(this.skillTree);
     }
 
     HandlePlayerEnemyContact() {
@@ -201,6 +293,7 @@ export class AdvancedDemoLevel extends Level {
 
         for (const enemy of this.enemies) {
             if (!enemy.active || enemy.isTakingDamage) continue;
+            if (enemy.UsesAttackHitbox?.()) continue;
             if (!Collide2D.isCollidingAABB(this.player, enemy)) continue;
 
             const direction = this.player.position.x < enemy.position.x ? -1 : 1;
@@ -210,9 +303,10 @@ export class AdvancedDemoLevel extends Level {
 
             this.SpawnDamageNumber(contactHit.damage, this.player.position.x + (this.player.size.x / 2), this.player.position.y);
             Engine.HitStop(contactHit.hitStop);
+            this.ApplyCameraShake(contactHit.damage, "playerDamage");
 
             if (this.player.hp <= 0) {
-                this.ResetLevel("defeat");
+                this.FailLevel("defeat");
             }
 
             return;
@@ -228,9 +322,45 @@ export class AdvancedDemoLevel extends Level {
             onHit: (hit) => {
                 const { defender } = hit;
                 const dir = this.player.facingRight ? 1 : -1;
-                defender.owner.TakeDamage(dir, hit);
+                const result = defender.owner.TakeDamage(dir, hit);
                 this.ApplyDamageFeedback(hit);
+                if (result?.killed) this.HandleEnemyDefeated(defender.owner);
             }
+        });
+    }
+
+    ResolveEnemyAttacks() {
+        const activeAttackers = this.enemies.filter(enemy => enemy.active && enemy.isAttacking);
+
+        activeAttackers.forEach(enemy => {
+            const attack = enemy.GetAttackHitDefaults();
+
+            CombatResolver2D.Resolve(enemy.boxes, this.player.boxes, {
+                defaultDamage: attack.damage,
+                defaultKnockback: attack.knockback,
+                defaultHitStop: attack.hitStop,
+                defaultHitStun: attack.hitStun,
+                defaultStagger: attack.stagger,
+                onHit: (hit) => {
+                    const direction = enemy.facingRight ? 1 : -1;
+                    const hitApplied = this.player.TakeDamage(direction, hit);
+                    if (!hitApplied) return;
+
+                    const damage = hit.damage ?? attack.damage;
+                    const position = hit.position ?? {
+                        x: this.player.position.x + (this.player.size.x / 2),
+                        y: this.player.position.y,
+                    };
+
+                    this.SpawnDamageNumber(damage, position.x, position.y);
+                    Engine.HitStop(hit.hitStop ?? attack.hitStop);
+                    this.ApplyCameraShake(damage, "playerDamage");
+
+                    if (this.player.hp <= 0) {
+                        this.FailLevel("defeat");
+                    }
+                },
+            });
         });
     }
 
@@ -254,8 +384,9 @@ export class AdvancedDemoLevel extends Level {
                     },
                 };
 
-                enemy.TakeDamage(bullet.direction, hit);
+                const result = enemy.TakeDamage(bullet.direction, hit);
                 this.ApplyDamageFeedback(hit);
+                if (result?.killed) this.HandleEnemyDefeated(enemy);
                 bullet.active = false;
             });
         });
@@ -284,7 +415,22 @@ export class AdvancedDemoLevel extends Level {
     }
 
     OnUpdate(dt) {
-        super.OnUpdate(dt);
+        this.progressHUD?.OnUpdate(dt);
+        this.PersistProgressionIfDirty();
+        const isUiBlocking = this.progressHUD?.BlocksGameplay() ?? false;
+
+        if (!isUiBlocking) {
+            super.OnUpdate(dt);
+        }
+
+        this.parallaxLayers.forEach(layer => layer.OnUpdate(dt));
+
+        if (isUiBlocking) {
+            this.UpdateStatusWindow();
+            this.playerStatusHUD?.OnUpdate(dt);
+            this.camera.Update(this.player, dt);
+            return;
+        }
 
         this.ApplyBlockCollision(this.player);
         this.enemies.forEach(enemy => {
@@ -292,41 +438,58 @@ export class AdvancedDemoLevel extends Level {
         });
 
         if (this.player.position.y > this.GameWorld.height) {
-            this.ResetLevel("fall");
+            this.FailLevel("fall");
+            return;
         }
 
         this.ResolvePlayerAttacks();
-        this.HandlePlayerEnemyContact();
-        this.HandleBulletCollisions();
+        this.ResolveEnemyAttacks();
+        if (this.hasFinished) return;
 
-        if (this.player.position.x > this.levelConfig.victory.x) {
+        this.HandlePlayerEnemyContact();
+        if (this.hasFinished) return;
+
+        this.HandleBulletCollisions();
+        if (this.hasFinished) return;
+        this.PersistProgressionIfDirty();
+
+        if (this.CanCompleteLevel()) {
             this.CompleteLevel();
         }
 
         this.UpdateStatusWindow();
         this.playerStatusHUD?.OnUpdate(dt);
-        this.camera.Update(this.player);
+        this.camera.Update(this.player, dt);
     }
 
     OnDrawn() {
         if (this.screen) this.screen.Refresh();
 
+        const hasParallax = this.parallaxLayers.length > 0;
+        if (hasParallax) {
+            this.parallaxLayers.forEach(layer => layer.OnDrawn(this.camera));
+        }
+
         this.camera.Begin();
 
-        if (this.bgImage) {
+        if (!hasParallax && this.bgImage) {
             let bgWidth = this.bgImage.width || this.levelConfig.screen.width;
             for (let i = 0; i < this.GameWorld.width; i += bgWidth) {
                 this.draw.DrawSprite(this.bgImage, i, 0);
             }
         }
 
-        this.entities.forEach(entity => {
-            if (typeof entity.OnDrawn === "function") entity.OnDrawn();
-        });
+        this.entities
+            .slice()
+            .sort((a, b) => (a.zIndex ?? 0) - (b.zIndex ?? 0))
+            .forEach(entity => {
+                if (typeof entity.OnDrawn === "function") entity.OnDrawn();
+            });
 
         this.camera.End();
 
         this.playerStatusHUD?.OnDrawn();
+        this.progressHUD?.OnDrawn();
 
         if (this.dialogWindow) {
             this.dialogWindow.OnDrawn();
@@ -334,7 +497,22 @@ export class AdvancedDemoLevel extends Level {
     }
 
     CompleteLevel() {
+        if (this.hasFinished) return;
+
+        this.hasFinished = true;
         Logger.log("info", "PARABENS! Fase concluida.");
+        this.PersistProgressionIfDirty(true);
+        AdvancedDemoProgress.Complete(this.phaseId, this.unlocksPhaseId);
+
+        if (this.completionTarget === "congratulations") {
+            AdvancedDemoProgress.GoToCongratulations(this);
+            return;
+        }
+
+        if (this.returnToPhaseSelector && this.LEVEL_HANDLER?.levels?.length > 1) {
+            AdvancedDemoProgress.GoToPhaseSelector(this);
+            return;
+        }
 
         if ((this.LEVEL_HANDLER?.levels?.length ?? 0) > 1) {
             this.Next = true;
@@ -344,7 +522,20 @@ export class AdvancedDemoLevel extends Level {
         this.ResetLevel("victory");
     }
 
+    CanCompleteLevel() {
+        const victory = this.levelConfig.victory ?? {};
+        const reachedGoal = this.player.position.x > victory.x;
+        const defeatedAllEnemies = this.enemies.every(enemy => !enemy.active);
+
+        if (victory.requireAllEnemies) {
+            return reachedGoal && defeatedAllEnemies;
+        }
+
+        return reachedGoal;
+    }
+
     OnExit() {
+        this.PersistProgressionIfDirty(true);
         super.OnExit();
         this.entities = [];
         this.blocks = [];
@@ -352,7 +543,12 @@ export class AdvancedDemoLevel extends Level {
         this.damageNumbers = [];
         this.player = null;
         this.playerStatusHUD = null;
+        this.progressHUD = null;
+        this.inventory = null;
+        this.skillTree = null;
         this.dialogWindow = null;
+        this.parallaxLayers = [];
+        this.rewardedEnemies = null;
         this.screen = null;
         this.levelConfig = null;
     }

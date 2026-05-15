@@ -1,0 +1,89 @@
+{
+  "enemyDefaults": {
+    "scale": 1.1,
+    "bodySize": { "width": 64, "height": 64 },
+    "movement": {
+      "speed": 78,
+      "gravity": 900
+    },
+    "ai": {
+      "aggroRange": 230,
+      "stopDistance": 70,
+      "attackRange": 92,
+      "attackVerticalRange": 56,
+      "attackCooldown": 1.12
+    },
+    "stats": {
+      "hp": 34,
+      "attack": 9,
+      "defense": 1
+    },
+    "combat": {
+      "attack": {
+        "enabled": true,
+        "hitStop": 0.055,
+        "hitStun": 0.18,
+        "knockback": { "x": 230, "y": -245 }
+      },
+      "hitStunFallback": 0.15,
+      "knockbackDrag": 0.88,
+      "staggerKnockback": { "x": 370, "y": -330 }
+    },
+    "render": {
+      "drawOffsetX": 22
+    },
+    "healthBar": {
+      "width": 50,
+      "height": 6,
+      "offsetY": -18
+    }
+  },
+  "enemies": [
+    {
+      "id": "boss_guard_left",
+      "x": 980,
+      "y": 100
+    },
+    {
+      "id": "frost_boss",
+      "x": 1580,
+      "y": 80,
+      "config": {
+        "scale": 1.45,
+        "bodySize": { "width": 64, "height": 64 },
+        "movement": {
+          "speed": 58
+        },
+        "ai": {
+          "aggroRange": 320,
+          "stopDistance": 90,
+          "attackRange": 128,
+          "attackVerticalRange": 74,
+          "attackCooldown": 1.35
+        },
+        "stats": {
+          "hp": 120,
+          "attack": 12,
+          "defense": 2
+        },
+        "combat": {
+          "attack": {
+            "hitStop": 0.075,
+            "hitStun": 0.2,
+            "knockback": { "x": 280, "y": -260 }
+          }
+        },
+        "healthBar": {
+          "width": 92,
+          "height": 8,
+          "offsetY": -24
+        }
+      }
+    },
+    {
+      "id": "boss_guard_right",
+      "x": 2100,
+      "y": 100
+    }
+  ]
+}

@@ -30,6 +30,14 @@ export class Camera extends Base {
         this.GameWorld = null;
         this.screen = null;
         this.draw = null;
+        this.shake = {
+            remaining: 0,
+            duration: 0,
+            intensity: 0,
+            frequency: 36,
+            elapsed: 0,
+            offset: new Vector2D(0, 0),
+        };
     }
 
     /**
@@ -104,7 +112,10 @@ export class Camera extends Base {
     Begin() {
         if (this.screen && this.screen.Context) {
             this.screen.Context.save();
-            this.screen.Context.translate(-this.position.x, -this.position.y);
+            this.screen.Context.translate(
+                -this.position.x + this.shake.offset.x,
+                -this.position.y + this.shake.offset.y
+            );
         }
     }
 
@@ -123,9 +134,46 @@ export class Camera extends Base {
      * @param {Object} char - The character or object to focus the camera on.
      * @description Updates the camera position and zoom based on the given object.
      */
-    Update(char) {
+    Update(char, deltaTime = 1 / 60) {
         this.LookAt(char);
         this.StrictLimit();
+        this.UpdateShake(deltaTime);
+    }
+
+    Shake(duration = 0.1, intensity = 4, frequency = 36) {
+        const normalizedDuration = Math.max(0, duration);
+        if (normalizedDuration <= 0 || intensity <= 0) return;
+
+        this.shake.remaining = Math.max(this.shake.remaining, normalizedDuration);
+        this.shake.duration = Math.max(this.shake.duration, normalizedDuration);
+        this.shake.intensity = Math.max(this.shake.intensity, intensity);
+        this.shake.frequency = frequency;
+        this.ApplyShakeOffset();
+    }
+
+    UpdateShake(deltaTime = 1 / 60) {
+        if (this.shake.remaining <= 0) {
+            this.shake.offset.x = 0;
+            this.shake.offset.y = 0;
+            this.shake.duration = 0;
+            this.shake.intensity = 0;
+            return;
+        }
+
+        this.shake.elapsed += deltaTime;
+        this.shake.remaining = Math.max(0, this.shake.remaining - deltaTime);
+        this.ApplyShakeOffset();
+    }
+
+    ApplyShakeOffset() {
+        const progress = this.shake.duration > 0
+            ? this.shake.remaining / this.shake.duration
+            : 0;
+        const strength = this.shake.intensity * progress;
+        const wave = this.shake.elapsed * this.shake.frequency;
+
+        this.shake.offset.x = Math.sin(wave) * strength;
+        this.shake.offset.y = Math.cos(wave * 1.37) * strength * 0.65;
     }
 
     /**
