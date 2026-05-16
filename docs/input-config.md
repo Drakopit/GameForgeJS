@@ -4,20 +4,25 @@ Os comandos nao devem morar no `gameforge.config.json`. Esse arquivo e global da
 
 ## ActionManager
 
-Demos que usam `ActionManager` devem declarar `input.actionMappings`:
+Demos que usam `ActionManager` declaram `input.actionMappings`. O gamepad aceita tanto tokens crus (`button_0`, `axis_0_positive`) quanto aliases legiveis:
 
 ```json
 {
   "input": {
+    "gamepadProfile": "xbox",
     "actionMappings": {
       "ATTACK": [
         { "device": "keyboard", "input": "KeyZ" },
-        { "device": "gamepad", "input": "button_0" }
+        { "device": "gamepad", "input": "X" }
+      ],
+      "JUMP": [
+        { "device": "keyboard", "input": "Space" },
+        { "device": "gamepad", "input": "A" }
       ],
       "LEFT": [
         { "device": "keyboard", "input": "ArrowLeft" },
-        { "device": "gamepad", "input": "axis_0_negative" },
-        { "device": "gamepad", "input": "button_14" }
+        { "device": "gamepad", "input": "LEFT_STICK_LEFT" },
+        { "device": "gamepad", "input": "DPAD_LEFT" }
       ]
     }
   }
@@ -35,41 +40,85 @@ BootstrapGame({
 });
 ```
 
-## Gamepad
+## Perfis
 
-A cola completa de equivalencia entre `button_N`, Xbox e PlayStation fica em [`../GAMEPAD_COLA.md`](../GAMEPAD_COLA.md).
+`input.gamepadProfile` muda o significado dos nomes curtos `A`, `B`, `X` e `Y`:
 
-Convencao recomendada nas demos:
+| Perfil | Botao sul | Botao direito | Botao esquerdo | Botao norte |
+| --- | --- | --- | --- | --- |
+| `xbox` | `A` | `B` | `X` | `Y` |
+| `playstation` | `X` / `CROSS` | `CIRCLE` | `SQUARE` | `TRIANGLE` |
+| `nintendo` | `B` | `A` | `Y` | `X` |
 
-```txt
-button_0 = confirmar / pular
-button_1 = cancelar
-button_2 = ataque leve
-button_3 = ataque forte
-button_5 = especial
-button_8 = back/select
-button_9 = start
-button_12 = d-pad up
-button_13 = d-pad down
-button_14 = d-pad left
-button_15 = d-pad right
+Quando quiser remover qualquer ambiguidade, use aliases explicitos:
+
+```json
+{ "device": "gamepad", "input": "XBOX_A" }
+{ "device": "gamepad", "input": "PS_CROSS" }
+{ "device": "gamepad", "input": "NINTENDO_B" }
 ```
 
-Eixos:
+## Aliases Comuns
 
 ```txt
-axis_0_negative = analogico esquerdo para esquerda
-axis_0_positive = analogico esquerdo para direita
-axis_1_negative = analogico esquerdo para cima
-axis_1_positive = analogico esquerdo para baixo
+A / B / X / Y       dependem do gamepadProfile
+LB / RB / LT / RT   ombros e gatilhos Xbox-style
+L1 / R1 / L2 / R2   ombros e gatilhos PlayStation-style
+BACK / START        botoes de menu
+DPAD_UP             direcional para cima
+DPAD_DOWN           direcional para baixo
+DPAD_LEFT           direcional para esquerda
+DPAD_RIGHT          direcional para direita
+LEFT_STICK_UP       analogico esquerdo para cima
+LEFT_STICK_DOWN     analogico esquerdo para baixo
+LEFT_STICK_LEFT     analogico esquerdo para esquerda
+LEFT_STICK_RIGHT    analogico esquerdo para direita
 ```
 
-## Demo De Luta
+A cola completa fica em [`../GAMEPAD_COLA.md`](../GAMEPAD_COLA.md).
 
-A demo de luta usa uma configuracao propria em `fighting.controls`, porque possui dois jogadores, menu, arcade e versus:
+## Extend Por Jogo
+
+Cada jogo pode criar aliases sem mexer na engine:
 
 ```json
 {
+  "input": {
+    "gamepadProfile": "xbox",
+    "gamepadAliases": {
+      "LIGHT_ATTACK": "X",
+      "HEAVY_ATTACK": "Y",
+      "SPECIAL": "RB",
+      "DODGE": "B"
+    },
+    "actionMappings": {
+      "ATTACK": [
+        { "device": "gamepad", "input": "LIGHT_ATTACK" }
+      ],
+      "SKILL": [
+        { "device": "gamepad", "input": "SPECIAL" }
+      ]
+    }
+  }
+}
+```
+
+Aliases podem apontar para outros aliases. Por exemplo, `LIGHT_ATTACK -> X -> button_2` no perfil Xbox.
+
+## Demo De Luta
+
+A demo de luta usa uma configuracao propria em `fighting.controls`, porque possui dois jogadores, menu, arcade e versus. Ela tambem resolve aliases de gamepad:
+
+```json
+{
+  "input": {
+    "gamepadProfile": "xbox",
+    "gamepadAliases": {
+      "LIGHT_ATTACK": "X",
+      "HEAVY_ATTACK": "Y",
+      "SPECIAL": "RB"
+    }
+  },
   "fighting": {
     "controls": {
       "playerOne": {
@@ -78,9 +127,9 @@ A demo de luta usa uma configuracao propria em `fighting.controls`, porque possu
         "light": ["KeyJ"],
         "gamepad": {
           "index": 0,
-          "left": { "buttons": [14], "axes": [{ "index": 0, "direction": "negative" }] },
-          "right": { "buttons": [15], "axes": [{ "index": 0, "direction": "positive" }] },
-          "light": [2]
+          "left": { "buttons": ["DPAD_LEFT"], "axes": ["LEFT_STICK_LEFT"] },
+          "right": { "buttons": ["DPAD_RIGHT"], "axes": ["LEFT_STICK_RIGHT"] },
+          "light": ["LIGHT_ATTACK"]
         }
       }
     }

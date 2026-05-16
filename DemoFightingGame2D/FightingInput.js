@@ -1,11 +1,13 @@
 import { Input } from "../Input/Input.js";
 import { GamePad } from "../Input/GamePad.js";
+import { GamepadAlias } from "../Input/GamepadAlias.js";
+import { Config } from "../Root/Config.js";
 
 const DEFAULT_DIRECTIONS = Object.freeze({
-    up: { buttons: [12], axes: [{ index: 1, direction: "negative" }] },
-    down: { buttons: [13], axes: [{ index: 1, direction: "positive" }] },
-    left: { buttons: [14], axes: [{ index: 0, direction: "negative" }] },
-    right: { buttons: [15], axes: [{ index: 0, direction: "positive" }] },
+    up: { buttons: ["DPAD_UP"], axes: ["LEFT_STICK_UP"] },
+    down: { buttons: ["DPAD_DOWN"], axes: ["LEFT_STICK_DOWN"] },
+    left: { buttons: ["DPAD_LEFT"], axes: ["LEFT_STICK_LEFT"] },
+    right: { buttons: ["DPAD_RIGHT"], axes: ["LEFT_STICK_RIGHT"] },
 });
 
 export function keyboardHeld(keys) {
@@ -19,13 +21,13 @@ export function keyboardDown(keys) {
 export function gamepadButtonHeld(buttons, padIndex = 0) {
     const pad = GamePad.instance;
     if (!pad) return false;
-    return asList(buttons).some(button => pad.GetButton(button, padIndex));
+    return asButtonIndexes(buttons).some(button => pad.GetButton(button, padIndex));
 }
 
 export function gamepadButtonDown(buttons, padIndex = 0) {
     const pad = GamePad.instance;
     if (!pad) return false;
-    return asList(buttons).some(button => pad.GetButtonDown(button, padIndex));
+    return asButtonIndexes(buttons).some(button => pad.GetButtonDown(button, padIndex));
 }
 
 export function anyGamepadButtonDown(buttons) {
@@ -40,9 +42,9 @@ export function gamepadDirectionHeld(direction, padIndex = 0, binding = null) {
     if (!pad) return false;
 
     const resolved = directionBinding(direction, binding);
-    if (asList(resolved.buttons).some(button => pad.GetButton(button, padIndex))) return true;
+    if (asButtonIndexes(resolved.buttons).some(button => pad.GetButton(button, padIndex))) return true;
 
-    return asList(resolved.axes).some(axis => {
+    return asAxisBindings(resolved.axes).some(axis => {
         const axisValue = pad.GetAxis(axis.index, padIndex);
         return axis.direction === "positive" ? axisValue > 0.5 : axisValue < -0.5;
     });
@@ -53,9 +55,9 @@ export function gamepadDirectionDown(direction, padIndex = 0, binding = null) {
     if (!pad) return false;
 
     const resolved = directionBinding(direction, binding);
-    if (asList(resolved.buttons).some(button => pad.GetButtonDown(button, padIndex))) return true;
+    if (asButtonIndexes(resolved.buttons).some(button => pad.GetButtonDown(button, padIndex))) return true;
 
-    return asList(resolved.axes).some(axis => pad.GetAxisDown(axis.index, axis.direction, padIndex));
+    return asAxisBindings(resolved.axes).some(axis => pad.GetAxisDown(axis.index, axis.direction, padIndex));
 }
 
 export function anyGamepadDirectionDown(direction, binding = null) {
@@ -66,8 +68,36 @@ export function anyGamepadDirectionDown(direction, binding = null) {
 }
 
 function directionBinding(direction, binding) {
+    if (typeof binding === "string" || typeof binding === "number") {
+        return { buttons: [binding], axes: [binding] };
+    }
+
     if (binding) return binding;
     return DEFAULT_DIRECTIONS[direction] ?? { buttons: [], axes: [] };
+}
+
+function asButtonIndexes(value) {
+    const options = gamepadAliasOptions();
+    return asList(value)
+        .map(input => GamepadAlias.ResolveButtonIndex(input, options))
+        .filter(index => index !== null);
+}
+
+function asAxisBindings(value) {
+    const options = gamepadAliasOptions();
+    return asList(value)
+        .map(input => GamepadAlias.ResolveAxis(input, options))
+        .filter(Boolean);
+}
+
+function gamepadAliasOptions() {
+    return {
+        profile: Config.data?.input?.gamepadProfile ?? Config.data?.fighting?.gamepadProfile,
+        aliases: {
+            ...(Config.data?.input?.gamepadAliases ?? {}),
+            ...(Config.data?.fighting?.gamepadAliases ?? {}),
+        },
+    };
 }
 
 function asList(value) {

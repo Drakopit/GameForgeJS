@@ -17,44 +17,45 @@
         "orientation": "landscape"
     },
     "input": {
+        "gamepadProfile": "xbox",
         "actionMappings": {
             "ATTACK": [
                 { "device": "keyboard", "input": "KeyZ" },
                 { "device": "keyboard", "input": "Enter" },
                 { "device": "keyboard", "input": "Space" },
-                { "device": "gamepad", "input": "button_0" },
-                { "device": "gamepad", "input": "button_9" }
+                { "device": "gamepad", "input": "A" },
+                { "device": "gamepad", "input": "START" }
             ],
             "CANCEL": [
                 { "device": "keyboard", "input": "KeyX" },
                 { "device": "keyboard", "input": "Escape" },
                 { "device": "keyboard", "input": "Backspace" },
-                { "device": "gamepad", "input": "button_1" },
-                { "device": "gamepad", "input": "button_8" }
+                { "device": "gamepad", "input": "B" },
+                { "device": "gamepad", "input": "BACK" }
             ],
             "RIGHT": [
                 { "device": "keyboard", "input": "ArrowRight" },
                 { "device": "keyboard", "input": "KeyD" },
-                { "device": "gamepad", "input": "axis_0_positive" },
-                { "device": "gamepad", "input": "button_15" }
+                { "device": "gamepad", "input": "LEFT_STICK_RIGHT" },
+                { "device": "gamepad", "input": "DPAD_RIGHT" }
             ],
             "LEFT": [
                 { "device": "keyboard", "input": "ArrowLeft" },
                 { "device": "keyboard", "input": "KeyA" },
-                { "device": "gamepad", "input": "axis_0_negative" },
-                { "device": "gamepad", "input": "button_14" }
+                { "device": "gamepad", "input": "LEFT_STICK_LEFT" },
+                { "device": "gamepad", "input": "DPAD_LEFT" }
             ],
             "DOWN": [
                 { "device": "keyboard", "input": "ArrowDown" },
                 { "device": "keyboard", "input": "KeyS" },
-                { "device": "gamepad", "input": "axis_1_positive" },
-                { "device": "gamepad", "input": "button_13" }
+                { "device": "gamepad", "input": "LEFT_STICK_DOWN" },
+                { "device": "gamepad", "input": "DPAD_DOWN" }
             ],
             "UP": [
                 { "device": "keyboard", "input": "ArrowUp" },
                 { "device": "keyboard", "input": "KeyW" },
-                { "device": "gamepad", "input": "axis_1_negative" },
-                { "device": "gamepad", "input": "button_12" }
+                { "device": "gamepad", "input": "LEFT_STICK_UP" },
+                { "device": "gamepad", "input": "DPAD_UP" }
             ]
         }
     }

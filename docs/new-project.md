@@ -57,15 +57,16 @@ BootstrapGame({
 ```json
 {
   "input": {
+    "gamepadProfile": "xbox",
     "actionMappings": {
       "ATTACK": [
         { "device": "keyboard", "input": "KeyZ" },
-        { "device": "gamepad", "input": "button_0" }
+        { "device": "gamepad", "input": "X" }
       ],
       "LEFT": [
         { "device": "keyboard", "input": "ArrowLeft" },
-        { "device": "gamepad", "input": "axis_0_negative" },
-        { "device": "gamepad", "input": "button_14" }
+        { "device": "gamepad", "input": "LEFT_STICK_LEFT" },
+        { "device": "gamepad", "input": "DPAD_LEFT" }
       ]
     }
   }

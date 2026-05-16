@@ -113,15 +113,16 @@ Exemplo de comando por jogo:
 ```json
 {
   "input": {
+    "gamepadProfile": "xbox",
     "actionMappings": {
       "ATTACK": [
         { "device": "keyboard", "input": "KeyZ" },
-        { "device": "gamepad", "input": "button_0" }
+        { "device": "gamepad", "input": "X" }
       ],
       "RIGHT": [
         { "device": "keyboard", "input": "ArrowRight" },
-        { "device": "gamepad", "input": "axis_0_positive" },
-        { "device": "gamepad", "input": "button_15" }
+        { "device": "gamepad", "input": "LEFT_STICK_RIGHT" },
+        { "device": "gamepad", "input": "DPAD_RIGHT" }
       ]
     }
   }
