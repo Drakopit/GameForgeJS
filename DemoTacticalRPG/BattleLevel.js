@@ -1,6 +1,7 @@
 import { Level } from "../Template/Level.js";
 import { Screen } from "../Window/Screen.js";
 import { Draw } from "../Graphic/Draw.js";
+import { AssetManager } from "../Root/AssetManager.js";
 import { BattleState } from "./BattleState.js";
 
 const W = 640;
@@ -23,12 +24,14 @@ export class BattleLevel extends Level {
     OnStart() {
         this.screen = new Screen("BattleScreen", W, H);
         this.draw = new Draw(this.screen);
+        this.assets = AssetManager.instance;
 
         this.player = BattleState.playerUnit;
         this.enemy = BattleState.enemyUnit;
         this.invalidEncounter = !BattleState.CanStartBattle();
         this.phase = PHASE.INTRO;
         this.stepTimer = this.invalidEncounter ? 0.35 : 0.55;
+        this.animTime = 0;
         this.dmg = { value: 0, target: null, timer: 0, color: "#FFEE66" };
         this.log = this.invalidEncounter
             ? "Encontro invalido. Voltando ao mapa..."
@@ -54,6 +57,7 @@ export class BattleLevel extends Level {
 
     OnUpdate(dt) {
         super.OnUpdate(dt);
+        this.animTime += dt;
 
         if (this.dmg.timer > 0) this.dmg.timer = Math.max(0, this.dmg.timer - dt);
 
@@ -124,17 +128,7 @@ export class BattleLevel extends Level {
     OnDrawn() {
         this.screen.Refresh();
 
-        const sky = this.screen.Context.createLinearGradient(0, 0, 0, H * 0.65);
-        sky.addColorStop(0, "#09101d");
-        sky.addColorStop(1, "#18283a");
-        this.screen.Context.fillStyle = sky;
-        this.screen.Context.fillRect(0, 0, W, H * 0.65);
-
-        this.draw.Style = this.draw.TYPES.FILLED;
-        this.draw.Color = "#2d4a1e";
-        this.draw.DrawRect(0, H * 0.65, W, H * 0.35);
-        this.draw.Color = "#1e3414";
-        this.draw.DrawRect(0, H * 0.72, W, H * 0.28);
+        this._drawTinySwordsBackdrop();
 
         if (!this.player || !this.enemy) return;
 
@@ -162,6 +156,12 @@ export class BattleLevel extends Level {
     }
 
     _drawBattleUnit(unit, cx, groundY) {
+        const image = this._image(unit.asset);
+        if (image?.complete && image.naturalWidth) {
+            this._drawSpriteBattleUnit(unit, image, cx, groundY);
+            return;
+        }
+
         const w = 70;
         const h = 110;
         const x = cx - w / 2;
@@ -205,6 +205,126 @@ export class BattleLevel extends Level {
         this.draw.Color = "#FFFFFF";
         this.draw.FontSize = "11px";
         this.draw.DrawText(`${unit.hp} / ${unit.maxHp}`, cx, barY + 11);
+    }
+
+    _drawTinySwordsBackdrop() {
+        const ctx = this.screen.Context;
+        const sky = ctx.createLinearGradient(0, 0, 0, H * 0.65);
+        sky.addColorStop(0, "#11223b");
+        sky.addColorStop(1, "#273f4f");
+        ctx.fillStyle = sky;
+        ctx.fillRect(0, 0, W, H * 0.65);
+
+        const tilemap = this._image("tactical_tilemap_color1");
+        if (tilemap?.complete && tilemap.naturalWidth) {
+            for (let y = Math.floor(H * 0.62); y < 420; y += 64) {
+                for (let x = 0; x < W; x += 64) {
+                    ctx.drawImage(tilemap, 64, 64, 64, 64, x, y, 64, 64);
+                }
+            }
+        } else {
+            this.draw.Style = this.draw.TYPES.FILLED;
+            this.draw.Color = "#2d4a1e";
+            this.draw.DrawRect(0, H * 0.65, W, H * 0.35);
+            this.draw.Color = "#1e3414";
+            this.draw.DrawRect(0, H * 0.72, W, H * 0.28);
+        }
+
+        this._drawBackdropProp("blue_house1", 22, 210, 92, 138, 0.55);
+        this._drawBackdropProp("red_barracks", W - 132, 205, 106, 144, 0.55);
+        this._drawBackdropProp("tree_1", 110, 234, 74, 74, 0.8, { width: 256, height: 256 });
+        this._drawBackdropProp("tree_2", W - 198, 238, 72, 72, 0.8, { width: 256, height: 256 });
+    }
+
+    _drawBackdropProp(asset, x, y, width, height, alpha = 1, frame = null) {
+        const image = this._image(asset);
+        if (!image?.complete || !image.naturalWidth) return;
+
+        this.screen.Context.save();
+        this.screen.Context.globalAlpha = alpha;
+        this.screen.Context.drawImage(
+            image,
+            frame?.x ?? 0,
+            frame?.y ?? 0,
+            frame?.width ?? image.naturalWidth,
+            frame?.height ?? image.naturalHeight,
+            x,
+            y,
+            width,
+            height
+        );
+        this.screen.Context.restore();
+    }
+
+    _drawSpriteBattleUnit(unit, image, cx, groundY) {
+        const frame = unit.frame ?? {
+            x: 0,
+            y: 0,
+            width: image.naturalHeight,
+            height: image.naturalHeight,
+        };
+        const frameWidth = frame.width ?? image.naturalWidth / (frame.frames ?? 1);
+        const frameHeight = frame.height ?? image.naturalHeight;
+        const frames = Math.max(1, frame.frames ?? Math.floor(image.naturalWidth / frameWidth));
+        const frameIndex = unit.IsAlive() ? Math.floor(this.animTime * 5) % frames : 0;
+        const scale = Math.max(0.8, Number(unit.scale ?? 1) * 2.35);
+        const drawWidth = frameWidth * scale;
+        const drawHeight = frameHeight * scale;
+        const x = cx - drawWidth / 2;
+        const y = groundY - drawHeight + 35;
+
+        this.draw.Style = this.draw.TYPES.FILLED;
+        this.draw.Color = "rgba(0,0,0,0.3)";
+        this.draw.DrawCircle(cx, groundY + 6, 36);
+
+        this.screen.Context.drawImage(
+            image,
+            (frame.x ?? 0) + frameIndex * frameWidth,
+            frame.y ?? 0,
+            frameWidth,
+            frameHeight,
+            x,
+            y,
+            drawWidth,
+            drawHeight
+        );
+
+        this._drawUnitPanel(unit, cx, y);
+    }
+
+    _drawUnitPanel(unit, cx, topY) {
+        this.draw.Color = "rgba(0,0,0,0.7)";
+        this.draw.DrawRect(cx - 58, topY - 28, 116, 22);
+
+        this.draw.Color = "#FFFFFF";
+        this.draw.FontSize = "13px";
+        this.draw.Font = "monospace";
+        this.draw.SetTextAlign("center");
+        this.draw.DrawText(unit.name, cx, topY - 11);
+
+        const barW = 120;
+        const barX = cx - barW / 2;
+        const barY = topY - 48;
+        const pct = Math.max(0, unit.hp / unit.maxHp);
+
+        this.draw.Color = "#222222";
+        this.draw.DrawRect(barX, barY, barW, 14);
+
+        this.draw.Color = pct > 0.5 ? "#44DD44" : pct > 0.25 ? "#FFAA00" : "#FF3333";
+        this.draw.DrawRect(barX, barY, barW * pct, 14);
+
+        this.draw.Style = this.draw.TYPES.STROKED;
+        this.draw.Color = "#888888";
+        this.draw.DrawRect(barX, barY, barW, 14);
+
+        this.draw.Style = this.draw.TYPES.FILLED;
+        this.draw.Color = "#FFFFFF";
+        this.draw.FontSize = "11px";
+        this.draw.DrawText(`${unit.hp} / ${unit.maxHp}`, cx, barY + 11);
+    }
+
+    _image(name) {
+        return name ? this.assets?.images?.[name] ?? null : null;
     }
 
     OnGUI() {

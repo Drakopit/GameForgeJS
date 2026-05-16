@@ -12,6 +12,12 @@ export class GridUnit {
         this.defense = config.defense ?? 2;
         this.moveRange = config.moveRange ?? 3;
         this.attackRange = config.attackRange ?? 1;
+        this.asset = config.asset ?? null;
+        this.runAsset = config.runAsset ?? null;
+        this.frame = config.frame ?? null;
+        this.scale = config.scale ?? 1;
+        this.bodySize = config.bodySize ?? null;
+        this.team = config.team ?? null;
         this.active = true;
     }
 

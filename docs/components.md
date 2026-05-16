@@ -73,3 +73,17 @@ Um prefab data-driven poderia ficar assim:
   ]
 }
 ```
+
+## Exemplo Jogavel
+
+A demo `DemoAdventure2D` usa esse modelo de forma mais completa:
+
+- `AdventurePlayer` combina `TransformComponent`, `BoundsComponent`, `HealthComponent`, `ActionInputComponent`, movimento top-down, ataque melee e renderer.
+- `Slime` combina `TransformComponent`, `BoundsComponent`, `HealthComponent`, `WanderComponent` e renderer.
+- `CameraRig` usa `RoomCameraComponent` para fazer transicao suave entre salas.
+
+Abra com:
+
+```txt
+http://localhost:8080/Main.html?demo=adventure2d
+```

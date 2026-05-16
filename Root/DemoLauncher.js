@@ -14,6 +14,11 @@ const demos = Object.freeze({
         description: "Jogo de luta 2D com menu, selecao de personagem, arcade, versus e gamepad.",
         path: "../DemoFightingGame2D/mainFightingGame2D.js",
     },
+    adventure2d: {
+        label: "Adventure Component Demo",
+        description: "Top-down adventure com entidades componentizadas e camera por salas com transicao suave.",
+        path: "../DemoAdventure2D/mainAdventure2D.js",
+    },
     demo3d: {
         label: "Demo 3D",
         description: "Cena WebGL para validar camera, modelos, shaders e renderizacao 3D.",
@@ -33,6 +38,8 @@ const demos = Object.freeze({
 
 const aliases = Object.freeze({
     fighting: "fighting2d",
+    adventure: "adventure2d",
+    zelda: "adventure2d",
 });
 
 const params = new URLSearchParams(window.location.search);

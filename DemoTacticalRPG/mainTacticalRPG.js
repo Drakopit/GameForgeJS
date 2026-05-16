@@ -5,6 +5,7 @@ import { TacticalModeMenuLevel } from "./TacticalModeMenuLevel.js";
 
 BootstrapGame({
     configPath: ["gameforge.config.json", "DemoTacticalRPG/tactical.config.json"],
+    manifestPath: "DemoTacticalRPG/resources.json",
     levels: [
         new TacticalModeMenuLevel(),
         new TacticalMapLevel(),

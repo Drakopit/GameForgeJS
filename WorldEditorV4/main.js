@@ -1,6 +1,7 @@
 import { loadImages } from "./asset-loader.js";
+import { BuildAtlasManifest } from "./atlas-mapper.js";
 import { AssetCatalog } from "./catalog.js";
-import { PHASES } from "./config.js";
+import { DEFAULT_PROFILE_ID, EDITOR_PROFILES } from "./config.js";
 import { loadEditorData } from "./data-source.js";
 import { EditorState } from "./editor-state.js";
 import { CanvasInteractions } from "./interactions.js";
@@ -23,15 +24,18 @@ async function bootstrap() {
     const canvas = element("canvas");
     const wrap = element("canvasWrap");
     const hud = element("hud");
-    const initialData = await loadEditorData("first");
+    const initialProfile = EDITOR_PROFILES[DEFAULT_PROFILE_ID];
+    const initialData = await loadEditorData(initialProfile.defaultPhaseId, { profileId: initialProfile.id });
 
     catalog = new AssetCatalog(initialData.snow);
-    state.loadPhase("first", initialData);
-    state.images = loadImages(() => renderer?.draw());
+    state.loadPhase(initialData.phaseId, initialData);
+    state.images = loadImages(() => renderer?.draw(), initialData.profile.imageMap);
 
     renderer = new WorldRenderer({ canvas, wrap, hud, state, catalog });
     ui = new EditorUI({ state, catalog });
     ui.onSelectionChange = () => renderer.draw();
+    ui.fillProfiles();
+    ui.fillPhaseOptions(initialData.profileId);
 
     bindToolbar();
     new CanvasInteractions({ canvas, state, renderer, onChange: renderAll });
@@ -39,7 +43,7 @@ async function bootstrap() {
     ui.fillCatalog();
     renderer.resize();
     renderAll();
-    ui.setStatus("Fase carregada: Fase 1");
+    ui.setStatus(`Fase carregada: ${initialData.phase.label}`);
 }
 
 function bindToolbar() {
@@ -63,12 +67,14 @@ function bindToolbar() {
     });
 
     element("loadPhaseBtn").onclick = loadSelectedPhase;
-    element("phaseSelect").onchange = () => ui.syncManifestFields(PHASES[element("phaseSelect").value] ?? PHASES.first);
-    element("manifestProfileSelect").onchange = () => ui.syncManifestFields(PHASES[element("phaseSelect").value] ?? PHASES.first);
+    element("phaseSelect").onchange = () => ui.syncManifestFields(ui.currentPhaseConfig());
+    element("manifestProfileSelect").onchange = () => ui.fillPhaseOptions(element("manifestProfileSelect").value);
     element("addPlatformBtn").onclick = () => mutate(() => state.addPlatform());
     element("addObjectBtn").onclick = () => mutate(() => state.addObject(ui.selectedCatalogItem()));
     element("addEnemyBtn").onclick = () => mutate(() => state.addEnemy());
     element("addParallaxBtn").onclick = () => mutate(() => state.addParallax());
+    element("loadAtlasImageBtn").onclick = loadAtlasImage;
+    element("generateAtlasCatalogBtn").onclick = generateAtlasCatalog;
     element("deleteBtn").onclick = deleteSelected;
     element("duplicateBtn").onclick = () => mutate(() => state.duplicateSelected());
     element("exportStageBtn").onclick = () => downloadJson(state.stageFileName(), state.stage);
@@ -97,12 +103,58 @@ function bindToolbar() {
     };
 }
 
+function loadAtlasImage() {
+    const name = element("atlasImageNameInput").value.trim();
+    const path = element("atlasImagePathInput").value.trim();
+    if (!name || !path) {
+        ui.setStatus("Informe nome e caminho da imagem.");
+        return;
+    }
+
+    const image = new Image();
+    image.onload = () => {
+        renderAll();
+        ui.setStatus(`Imagem carregada: ${name}`);
+    };
+    image.onerror = () => ui.setStatus(`Falha ao carregar imagem: ${path}`);
+    image.src = path;
+    state.images[name] = image;
+}
+
+function generateAtlasCatalog() {
+    const imageName = element("atlasImageNameInput").value.trim();
+    if (!imageName) {
+        ui.setStatus("Informe o nome da imagem antes de gerar o catalogo.");
+        return;
+    }
+
+    const doc = BuildAtlasManifest({
+        imageName,
+        prefix: element("atlasPrefixInput").value.trim() || "tile",
+        tileWidth: Math.max(1, Number(element("atlasTileWidthInput").value) || 64),
+        tileHeight: Math.max(1, Number(element("atlasTileHeightInput").value) || 64),
+        columns: Math.max(1, Number(element("atlasColumnsInput").value) || 1),
+        rows: Math.max(1, Number(element("atlasRowsInput").value) || 1),
+        kind: element("atlasKindSelect").value,
+    });
+
+    catalog.rebuild({
+        ...(catalog.snowData ?? {}),
+        [`generated_${imageName}`]: doc,
+    });
+    element("atlasOutputBox").value = JSON.stringify(doc, null, 2);
+    ui.fillCatalog();
+    renderAll();
+    ui.setStatus(`Catalogo gerado para ${imageName}.`);
+}
+
 async function loadSelectedPhase() {
     const phaseId = element("phaseSelect").value;
-    const phaseConfig = PHASES[phaseId] ?? PHASES.first;
+    const phaseConfig = ui.currentPhaseConfig();
     const data = await loadEditorData(phaseId, ui.manifestRequest(phaseConfig));
     catalog.rebuild(data.snow);
-    state.loadPhase(phaseId, data);
+    state.loadPhase(data.phaseId, data);
+    state.images = loadImages(() => renderer?.draw(), data.profile.imageMap);
     ui.fillCatalog();
     renderAll();
     ui.setStatus(`Fase carregada: ${data.phase.label}`);

@@ -72,6 +72,54 @@
                             <input id="playerFileInput" value="player.json" />
                         </div>
                         <div class="sep"></div>
+                        <h2>Mapear imagem</h2>
+                        <div class="field full">
+                            <label>Caminho da imagem</label>
+                            <input id="atlasImagePathInput" value="DemoTacticalRPG/Assets/Tiny Swords/Terrain/Tileset/Tilemap_color1.png" />
+                        </div>
+                        <div class="grid2">
+                            <div class="field">
+                                <label>Nome</label>
+                                <input id="atlasImageNameInput" value="custom_tileset" />
+                            </div>
+                            <div class="field">
+                                <label>Prefixo</label>
+                                <input id="atlasPrefixInput" value="tile" />
+                            </div>
+                        </div>
+                        <div class="grid2">
+                            <div class="field">
+                                <label>Tile W</label>
+                                <input id="atlasTileWidthInput" type="number" value="64" min="1" />
+                            </div>
+                            <div class="field">
+                                <label>Tile H</label>
+                                <input id="atlasTileHeightInput" type="number" value="64" min="1" />
+                            </div>
+                        </div>
+                        <div class="grid2">
+                            <div class="field">
+                                <label>Colunas</label>
+                                <input id="atlasColumnsInput" type="number" value="9" min="1" />
+                            </div>
+                            <div class="field">
+                                <label>Linhas</label>
+                                <input id="atlasRowsInput" type="number" value="6" min="1" />
+                            </div>
+                        </div>
+                        <div class="field full">
+                            <label>Tipo</label>
+                            <select id="atlasKindSelect">
+                                <option value="tiles">Tileset</option>
+                                <option value="sprites">Sprites</option>
+                            </select>
+                        </div>
+                        <div class="grid2">
+                            <button class="btn" id="loadAtlasImageBtn">Carregar imagem</button>
+                            <button class="btn" id="generateAtlasCatalogBtn">Gerar catalogo</button>
+                        </div>
+                        <textarea id="atlasOutputBox" spellcheck="false" rows="7"></textarea>
+                        <div class="sep"></div>
                         <h2>Adicionar</h2>
                         <div class="grid2">
                             <button class="btn ok" id="addPlatformBtn">+ Plataforma</button>

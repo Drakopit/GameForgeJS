@@ -43,6 +43,7 @@ export class WorldRenderer {
         ctx.fillRect(0, 0, rect.width, rect.height);
 
         this.drawParallax();
+        this.drawTilemapGrid();
         this.drawPlatforms();
         this.drawObjects();
         this.drawEnemies();
@@ -260,17 +261,90 @@ export class WorldRenderer {
             ?? item.terrainSet.tiles?.top;
     }
 
+    drawTilemapGrid() {
+        const world = this.state.stage.world;
+        const tilemap = this.state.stage.tilemap;
+        if (!world || !tilemap || !(this.state.filter === "all" || this.state.filter === "platform")) return;
+
+        const image = this.state.images[tilemap.sprite];
+        const tileWidth = tilemap.tileWidth ?? world.cell ?? 64;
+        const tileHeight = tilemap.tileHeight ?? world.cell ?? 64;
+        const groundTiles = tilemap.groundTiles ?? [{ x: 0, y: 0 }];
+        const tiles = tilemap.tiles ?? {};
+        const blockedTile = tilemap.blockedTile ?? tiles[tilemap.blockedTileId] ?? groundTiles[0];
+        const terrainRows = tilemap.terrainRows ?? tilemap.terrain ?? null;
+        const blocked = new Set(tilemap.blockedTiles ?? []);
+        const cell = world.cell ?? 64;
+        const originX = world.originX ?? 0;
+        const originY = world.originY ?? 0;
+
+        for (let row = 0; row < (world.rows ?? 0); row += 1) {
+            for (let col = 0; col < (world.cols ?? 0); col += 1) {
+                const x = originX + col * cell;
+                const y = originY + row * cell;
+                const tileId = terrainRows?.[row]?.[col] ?? null;
+                const tile = tileId
+                    ? (tiles[tileId] ?? groundTiles[0])
+                    : blocked.has(`${col},${row}`)
+                        ? blockedTile
+                        : groundTiles[(row * 3 + col * 5) % groundTiles.length];
+
+                if (image?.complete && image.naturalWidth) {
+                    this.ctx.drawImage(
+                        image,
+                        tile.x ?? 0,
+                        tile.y ?? 0,
+                        tile.width ?? tileWidth,
+                        tile.height ?? tileHeight,
+                        this.screenX(x),
+                        this.screenY(y),
+                        cell * this.state.camera.zoom,
+                        cell * this.state.camera.zoom
+                    );
+                } else {
+                    this.ctx.fillStyle = blocked.has(`${col},${row}`)
+                        ? "rgba(148, 163, 184, 0.28)"
+                        : "rgba(34, 197, 94, 0.18)";
+                    this.ctx.fillRect(
+                        this.screenX(x),
+                        this.screenY(y),
+                        cell * this.state.camera.zoom,
+                        cell * this.state.camera.zoom
+                    );
+                }
+
+                this.ctx.strokeStyle = blocked.has(`${col},${row}`)
+                    ? "rgba(15, 23, 42, 0.55)"
+                    : "rgba(15, 23, 42, 0.28)";
+                this.ctx.strokeRect(
+                    this.screenX(x),
+                    this.screenY(y),
+                    cell * this.state.camera.zoom,
+                    cell * this.state.camera.zoom
+                );
+            }
+        }
+    }
+
     drawEntitySprite(type, ref) {
-        const config = type === "player" ? PLAYER_PREVIEW : ENEMY_PREVIEW;
+        const profilePreview = type === "player"
+            ? this.state.profile?.playerPreview ?? PLAYER_PREVIEW
+            : this.state.profile?.enemyPreview ?? ENEMY_PREVIEW;
+        const manifestRoot = type === "player" ? this.state.player.player ?? {} : this.state.enemies.enemyDefaults ?? {};
+        const config = {
+            ...profilePreview,
+            asset: ref.asset ?? manifestRoot.asset ?? profilePreview.asset,
+        };
         const image = this.state.images[config.asset];
         const body = this.entityBody(type, ref);
         if (!image?.complete || !image.naturalWidth) return false;
 
         const scale = type === "player"
             ? Number(this.state.player.player?.scale ?? 1.7)
-            : Number(this.state.enemies.enemyDefaults?.scale ?? 1);
-        const frameWidth = config.frameW ?? image.naturalWidth / config.frames;
-        const frameHeight = config.frameH ?? image.naturalHeight;
+            : Number(ref.scale ?? this.state.enemies.enemyDefaults?.scale ?? 1);
+        const frame = ref.frame ?? manifestRoot.frame ?? null;
+        const frameWidth = frame?.width ?? config.frameW ?? image.naturalWidth / config.frames;
+        const frameHeight = frame?.height ?? config.frameH ?? image.naturalHeight;
         const drawWidth = frameWidth * scale;
         const drawHeight = frameHeight * scale;
         const drawOffsetX = type === "enemy" ? (this.state.enemies.enemyDefaults?.render?.drawOffsetX ?? 0) : 0;
@@ -279,8 +353,8 @@ export class WorldRenderer {
 
         this.ctx.drawImage(
             image,
-            0,
-            0,
+            frame?.x ?? 0,
+            frame?.y ?? 0,
             frameWidth,
             frameHeight,
             this.screenX(drawX),

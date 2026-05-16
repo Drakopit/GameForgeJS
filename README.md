@@ -36,6 +36,7 @@ Links diretos continuam funcionando:
 http://localhost:8080/Main.html?demo=advanced
 http://localhost:8080/Main.html?demo=tactical
 http://localhost:8080/Main.html?demo=fighting2d
+http://localhost:8080/Main.html?demo=adventure2d
 http://localhost:8080/Main.html?demo=demo3d
 http://localhost:8080/Main.html?demo=mini3d
 http://localhost:8080/Main.html?demo=immature
@@ -49,6 +50,7 @@ http://localhost:8080/WorldEditor_v4.html
 | Advanced | `DemoAdvanced/mainAdvanced.js` | `DemoAdvanced/advanced.config.json` | Plataforma/RPG 2D com manifests, fases, inventario, skill tree, hitboxes e HUD. |
 | Tactical RPG | `DemoTacticalRPG/mainTacticalRPG.js` | `DemoTacticalRPG/tactical.config.json` | Grid tatico com AStar, area de movimento, acao e batalha. |
 | Fighting 2D | `DemoFightingGame2D/mainFightingGame2D.js` | `DemoFightingGame2D/fighting.config.json` | Menu, arcade, versus, selecao de personagem, teclado e gamepad configuravel. |
+| Adventure 2D | `DemoAdventure2D/mainAdventure2D.js` | `DemoAdventure2D/adventure.config.json` | Top-down adventure componentizado com transicao de camera entre salas. |
 | Demo 3D | `Demo3D/mainDemo3D.js` | `Demo3D/demo3d.config.json` | Validacao WebGL/3D. |
 | MiniGame 3D | `DemoMiniGame3D/mainMiniGame3D.js` | `DemoMiniGame3D/mini3d.config.json` | Mini jogo 3D com coleta, camera e iluminacao. |
 | Immature | `Demo/mainImmature.js` | `Demo/immature.config.json` | Exemplo simples de movimentacao e colisao. |
@@ -70,6 +72,7 @@ GameForgeJS/
   docs/                  Guias tecnicos
   DemoAdvanced/          Demo plataforma/RPG data-driven
   DemoFightingGame2D/    Demo de luta 2D
+  DemoAdventure2D/        Demo top-down adventure componentizada
   DemoTacticalRPG/       Demo tatico
   Demo3D/                Demo WebGL
   DemoMiniGame3D/        Mini game 3D

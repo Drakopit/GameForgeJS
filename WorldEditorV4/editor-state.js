@@ -1,16 +1,19 @@
-import { PHASES } from "./config.js";
+import { DEFAULT_PROFILE_ID, EDITOR_PROFILES, PHASES } from "./config.js";
 import { clone, snapValue } from "./utils.js";
 
 export class EditorState {
     constructor() {
-        this.phaseId = "first";
+        this.profile = EDITOR_PROFILES[DEFAULT_PROFILE_ID];
+        this.profileId = this.profile.id;
+        this.phases = this.profile.phases ?? PHASES;
+        this.phaseId = this.profile.defaultPhaseId ?? "first";
         this.stage = normalizeStage();
         this.enemies = normalizeEnemies();
         this.player = normalizePlayer();
         this.mode = "all";
         this.filter = "all";
         this.selectedRef = null;
-        this.camera = { x: 0, y: 120, zoom: 0.85 };
+        this.camera = { ...(this.profile.camera ?? { x: 0, y: 120, zoom: 0.85 }) };
         this.drag = null;
         this.mouse = { x: 0, y: 0, wx: 0, wy: 0 };
         this.snap = 5;
@@ -18,21 +21,27 @@ export class EditorState {
     }
 
     loadPhase(phaseId, data) {
-        this.phaseId = PHASES[phaseId] ? phaseId : "first";
+        this.profile = data.profile ?? EDITOR_PROFILES[DEFAULT_PROFILE_ID];
+        this.profileId = this.profile.id;
+        this.phases = this.profile.phases ?? PHASES;
+        const targetPhaseId = data.phaseId ?? phaseId;
+        this.phaseId = this.phases[targetPhaseId]
+            ? targetPhaseId
+            : (this.profile.defaultPhaseId ?? Object.keys(this.phases)[0] ?? "first");
         this.stage = normalizeStage(clone(data.stage));
         this.enemies = normalizeEnemies(clone(data.enemies));
         this.player = normalizePlayer(clone(data.player));
         this.selectedRef = null;
-        this.camera = { x: 0, y: 120, zoom: 0.85 };
+        this.camera = { ...(this.profile.camera ?? { x: 0, y: 120, zoom: 0.85 }) };
         this.drag = null;
     }
 
     stageFileName() {
-        return PHASES[this.phaseId]?.stageFile ?? PHASES.first.stageFile;
+        return this.phases[this.phaseId]?.stageFile ?? PHASES.first.stageFile;
     }
 
     enemiesFileName() {
-        return PHASES[this.phaseId]?.enemiesFile ?? PHASES.first.enemiesFile;
+        return this.phases[this.phaseId]?.enemiesFile ?? PHASES.first.enemiesFile;
     }
 
     activeDocument(key) {
@@ -88,17 +97,18 @@ export class EditorState {
     }
 
     addPlatform() {
+        const defaults = this.profile.defaults?.platform ?? {};
         this.stage.platforms ??= [];
         this.stage.platforms.push({
             id: `platform_${this.stage.platforms.length + 1}`,
             x: this.snapWorld(this.camera.x + 120),
             y: this.snapWorld(this.camera.y + 330),
-            width: 180,
-            height: 24,
+            width: defaults.width ?? 180,
+            height: defaults.height ?? 24,
             solid: true,
             visible: true,
-            material: "ice",
-            terrain: "snow_platform",
+            material: defaults.material ?? "ice",
+            terrain: defaults.terrain ?? "snow_platform",
         });
         this.select("platform", this.stage.platforms.length - 1);
     }
@@ -123,25 +133,39 @@ export class EditorState {
     }
 
     addEnemy() {
+        const defaults = this.profile.defaults?.enemy ?? {};
+        const x = this.snapWorld(this.camera.x + 220);
+        const y = this.snapWorld(this.camera.y + 200);
+        const world = this.stage.world;
+        const width = defaults.width ?? this.enemies.enemyDefaults?.bodySize?.width ?? 48;
+        const height = defaults.height ?? this.enemies.enemyDefaults?.bodySize?.height ?? 56;
+        const cell = world?.cell ?? 1;
+        const col = world ? Math.round((x + width / 2 - (world.originX ?? 0) - cell / 2) / cell) : undefined;
+        const row = world ? Math.round((y + height / 2 - (world.originY ?? 0) - cell / 2) / cell) : undefined;
         this.enemies.enemies ??= [];
-        this.enemies.enemies.push({
-            id: `kobold_${String(this.enemies.enemies.length + 1).padStart(2, "0")}`,
-            x: this.snapWorld(this.camera.x + 220),
-            y: this.snapWorld(this.camera.y + 200),
-        });
+        const enemy = {
+            id: `${defaults.idPrefix ?? "kobold"}_${String(this.enemies.enemies.length + 1).padStart(2, "0")}`,
+            x,
+            y,
+        };
+        if (defaults.asset) enemy.asset = defaults.asset;
+        if (Number.isFinite(col)) enemy.col = col;
+        if (Number.isFinite(row)) enemy.row = row;
+        this.enemies.enemies.push(enemy);
         this.select("enemy", this.enemies.enemies.length - 1);
     }
 
     addParallax() {
+        const defaults = this.profile.defaults?.parallax ?? {};
         this.stage.parallax ??= { layers: [] };
         this.stage.parallax.layers ??= [];
         this.stage.parallax.layers.push({
             id: `layer_${this.stage.parallax.layers.length + 1}`,
-            sprite: "snow_03",
+            sprite: defaults.sprite ?? "snow_03",
             x: 0,
-            y: 300,
-            width: 640,
-            height: 88,
+            y: defaults.y ?? 300,
+            width: defaults.width ?? 640,
+            height: defaults.height ?? 88,
             scrollRatioX: 0.3,
             scrollRatioY: 0.05,
             repeatX: true,

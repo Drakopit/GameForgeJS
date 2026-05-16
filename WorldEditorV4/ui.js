@@ -1,3 +1,4 @@
+import { DEFAULT_PROFILE_ID, EDITOR_PROFILES } from "./config.js";
 import { escapeHtml } from "./utils.js";
 
 const TYPE_LABELS = Object.freeze({
@@ -29,6 +30,52 @@ export class EditorUI {
             enemiesFileInput: element("enemiesFileInput"),
             playerFileInput: element("playerFileInput"),
         };
+    }
+
+    fillProfiles() {
+        const select = this.elements.manifestProfileSelect;
+        const selected = select.value || this.state.profileId || DEFAULT_PROFILE_ID;
+        select.innerHTML = "";
+
+        for (const [id, profile] of Object.entries(EDITOR_PROFILES)) {
+            const option = document.createElement("option");
+            option.value = id;
+            option.textContent = profile.label;
+            select.appendChild(option);
+        }
+
+        select.value = EDITOR_PROFILES[selected] ? selected : DEFAULT_PROFILE_ID;
+    }
+
+    fillPhaseOptions(profileId = this.elements.manifestProfileSelect.value) {
+        const select = this.elements.phaseSelect;
+        const profile = EDITOR_PROFILES[profileId] ?? EDITOR_PROFILES[DEFAULT_PROFILE_ID];
+        const selected = select.value;
+        select.innerHTML = "";
+
+        for (const [id, phase] of Object.entries(profile.phases ?? {})) {
+            const option = document.createElement("option");
+            option.value = id;
+            option.textContent = phase.label;
+            select.appendChild(option);
+        }
+
+        select.value = profile.phases?.[selected]
+            ? selected
+            : (profile.defaultPhaseId ?? Object.keys(profile.phases ?? {})[0] ?? "");
+        this.syncManifestFields(this.currentPhaseConfig());
+    }
+
+    currentProfile() {
+        return EDITOR_PROFILES[this.elements.manifestProfileSelect.value] ?? EDITOR_PROFILES[DEFAULT_PROFILE_ID];
+    }
+
+    currentPhaseConfig() {
+        const profile = this.currentProfile();
+        return profile.phases?.[this.elements.phaseSelect.value]
+            ?? profile.phases?.[profile.defaultPhaseId]
+            ?? Object.values(profile.phases ?? {})[0]
+            ?? {};
     }
 
     setStatus(message) {
@@ -131,6 +178,7 @@ export class EditorUI {
                 field(entity, "width", "width", "number"),
                 field(entity, "height", "height", "number"),
                 field(entity, "zIndex", "zIndex", "number"),
+                field(entity, "asset", "asset"),
                 field(entity, "solid", "solid", "bool"),
                 field(entity, "visible", "visible", "bool"),
                 refNameField(entity, this.catalog.objectOptions().map(item => item.name)),
@@ -142,6 +190,9 @@ export class EditorUI {
                 field(entity, "id", "id"),
                 field(entity, "x", "x", "number"),
                 field(entity, "y", "y", "number"),
+                field(entity, "col", "grid col", "number"),
+                field(entity, "row", "grid row", "number"),
+                field(entity, "asset", "asset"),
                 `<div class="field full"><label>Observacao</label><input value="usa enemyDefaults quando so tem id/x/y" disabled></div>`,
             ].join("");
         }
@@ -150,6 +201,9 @@ export class EditorUI {
             return [
                 field(entity, "x", "spawn x", "number"),
                 field(entity, "y", "spawn y", "number"),
+                field(entity, "col", "spawn col", "number"),
+                field(entity, "row", "spawn row", "number"),
+                playerTextField("playerRoot", "asset", "asset", this.state.player.player.asset ?? ""),
                 playerField("playerRoot", "scale", "scale", this.state.player.player.scale ?? 1, 0.1),
                 playerField("movement", "speed", "speed", this.state.player.player.movement?.speed ?? 0),
                 playerField("movement", "jumpStrength", "jumpStrength", this.state.player.player.movement?.jumpStrength ?? 0),
@@ -228,10 +282,11 @@ export class EditorUI {
         const profile = this.elements.manifestProfileSelect.value;
 
         if (profile !== "custom") {
-            return {};
+            return { profileId: profile };
         }
 
         return {
+            profileId: "custom",
             basePath: this.ensureTrailingSlash(this.elements.manifestBaseInput.value.trim()),
             stageFile: this.elements.stageFileInput.value.trim() || phaseConfig.stageFile,
             enemiesFile: this.elements.enemiesFileInput.value.trim() || phaseConfig.enemiesFile,
@@ -240,16 +295,17 @@ export class EditorUI {
     }
 
     syncManifestFields(phaseConfig) {
+        const profile = this.currentProfile();
         if (this.elements.manifestProfileSelect.value !== "custom") {
-            this.elements.manifestBaseInput.value = "DemoAdvanced/Assets/Manifests/advanced/";
+            this.elements.manifestBaseInput.value = profile.basePath;
             this.elements.stageFileInput.value = phaseConfig.stageFile;
             this.elements.enemiesFileInput.value = phaseConfig.enemiesFile;
-            this.elements.playerFileInput.value = "player.json";
+            this.elements.playerFileInput.value = profile.playerFile ?? "player.json";
         }
     }
 
     ensureTrailingSlash(value) {
-        if (!value) return "DemoAdvanced/Assets/Manifests/advanced/";
+        if (!value) return this.currentProfile().basePath ?? "DemoAdvanced/Assets/Manifests/advanced/";
         return value.endsWith("/") ? value : `${value}/`;
     }
 }
@@ -299,4 +355,8 @@ function refNameField(entity, options) {
 function playerField(doc, key, label, value, step = null) {
     const stepAttr = step ? ` step="${step}"` : "";
     return `<div class="field"><label>${escapeHtml(label)}</label><input data-doc="${doc}" data-k="${key}" type="number"${stepAttr} value="${escapeHtml(value)}"></div>`;
+}
+
+function playerTextField(doc, key, label, value) {
+    return `<div class="field"><label>${escapeHtml(label)}</label><input data-doc="${doc}" data-k="${key}" type="text" value="${escapeHtml(value)}"></div>`;
 }
