@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/assets/gameforgejs-banner.png" alt="GameForgeJS Banner" width="100%" />
+</p>
+
 # GameForgeJS
 
 GameForgeJS e uma engine/framework experimental em JavaScript puro para jogos de navegador. O objetivo e permitir criar demos, jogos 2D/3D e ferramentas sem prender o runtime a dependencias externas.
