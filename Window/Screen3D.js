@@ -85,8 +85,11 @@ export class Screen3D {
         this.canvas.setAttribute("width", this.width);
         this.canvas.setAttribute("height", this.height);
 
-        // Initialize WebGL context
-        this.gl = this.canvas.getContext("webgl") || this.canvas.getContext("experimental-webgl");
+        // Initialize WebGL context. WebGL2 is preferred by Render3D, while the
+        // legacy 3D helpers still work with the same returned context.
+        this.gl = this.canvas.getContext("webgl2")
+            || this.canvas.getContext("webgl")
+            || this.canvas.getContext("experimental-webgl");
 
         if (!this.gl) {
             console.error('WebGL not supported');

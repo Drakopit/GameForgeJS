@@ -3,7 +3,9 @@
         { "name": "textura_chao",   "path": "DemoMiniGame3D/Assets/Textures/floor.jpg"},
         { "name": "textura_player", "path": "DemoMiniGame3D/Assets/Textures/player.jpg" },
         { "name": "textura_coin",   "path": "DemoMiniGame3D/Assets/Textures/coin.jpg"},
-        { "name": "sky_cross",      "path": "DemoMiniGame3D/Assets/Textures/Daylight Box UV.png"}
+        { "name": "sky_cross",      "path": "DemoMiniGame3D/Assets/Textures/Daylight Box UV.png"},
+        { "name": "grid_albedo",    "path": "DemoMiniGame3D/Assets/TemplateGrid/TemplateGrid_albedo.png"},
+        { "name": "grid_normal",    "path": "DemoMiniGame3D/Assets/TemplateGrid/TemplateGrid_normal.png"}
     ],
     "audios": [
         { "name": "bgm_fase1",  "path": "DemoAdvanced/Assets/BGM/battle_sound.mpeg" },

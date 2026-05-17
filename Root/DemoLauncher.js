@@ -24,6 +24,11 @@ const demos = Object.freeze({
         description: "Cena WebGL para validar camera, modelos, shaders e renderizacao 3D.",
         path: "../Demo3D/mainDemo3D.js",
     },
+    solar3d: {
+        label: "Sistema Solar 3D",
+        description: "Demo Render3D com shader procedural de planetas, luz solar e orbitas.",
+        path: "../DemoSolarSystem/mainSolarSystem.js",
+    },
     mini3d: {
         label: "MiniGame 3D",
         description: "Mini jogo 3D jogavel com coleta de moedas, camera e iluminacao.",
@@ -40,6 +45,7 @@ const aliases = Object.freeze({
     fighting: "fighting2d",
     adventure: "adventure2d",
     zelda: "adventure2d",
+    solar: "solar3d",
 });
 
 const params = new URLSearchParams(window.location.search);
@@ -78,8 +84,8 @@ function renderAdminMode(message = "") {
                     <p class="admin-copy">Use esta tela para validar demos sem alterar codigo. Links diretos com <code>?demo=advanced</code> continuam funcionando.</p>
                 </div>
                 <a class="admin-tool" href="WorldEditor_v4.html">
-                    <span>WorldEditor v4</span>
-                    <small>Editar manifests de fases</small>
+                    <span>WorldEditor externo</span>
+                    <small>Abrir instrucoes do app desktop</small>
                 </a>
             </section>
             ${message ? `<p class="admin-message">${escapeHtml(message)}</p>` : ""}

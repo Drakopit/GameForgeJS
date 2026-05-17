@@ -1,20 +1,27 @@
-import { Level3D } from "../Template/Level3D.js";
-import { ScreenUI } from "../Window/ScreenUI.js";
-import { Player3D } from "./Player3D.js";
-import { Coin3D } from "./Coin3D.js";
-import { Floor3D } from "./Floor3D.js";
-import { Camera3D } from "../Root/Camera3D.js";
-import { Screen3D } from "../Window/Screen3D.js";
 import { ActionManager } from "../Input/ActionManager.js";
 import { AssetManager } from "../Root/AssetManager.js";
-import { Skybox3D } from "../Graphic/Skybox3D.js";
-import { DirectionalLight3D } from "../Graphic/Light3D.js";
-import { Char } from "./Char.js";
+import {
+    AmbientLight,
+    BoxCollider3D,
+    DirectionalLight,
+    HemisphereLight,
+    Level3D,
+    Mesh,
+    ModelMeshFactory,
+    PerspectiveCamera,
+    PointLight,
+    PrimitiveMesh,
+    Rigidbody3D,
+    SphereCollider3D,
+    StandardMaterial,
+    Texture,
+    UnlitMaterial,
+} from "../Core3D/index.js";
 
 const ARENA = {
-    minX: -4.0,
-    maxX: 4.0,
-    minZ: -12.0,
+    minX: -4.2,
+    maxX: 4.2,
+    minZ: -12.2,
     maxZ: -3.0,
 };
 
@@ -28,58 +35,148 @@ const COIN_SPAWNS = [
 
 export class CubeGameLevel extends Level3D {
     constructor() {
-        super();
+        super({
+            width: 720,
+            height: 480,
+            clearColor: [0.04, 0.055, 0.08, 1],
+            usePhysics: true,
+        });
         this.TelaId = "CubeGame";
         this.caption = "GameForgeJS - 3D Mini Game";
         this.goalCoins = COIN_SPAWNS.length;
         this.score = 0;
         this.collectedCoins = 0;
-        this.coinSpawnIndex = 0;
         this.gameState = "PLAYING";
+        this.time = 0;
     }
 
-    OnStart() {
-        this.entities = [];
-        this.score = 0;
-        this.collectedCoins = 0;
-        this.coinSpawnIndex = 0;
-        this.gameState = "PLAYING";
+    BuildScene() {
+        this.physics.gravity = [0, -16, 0];
+        this.physics.bounds = ARENA;
 
-        const width = 640;
-        const height = 480;
-        this.screen3D = new Screen3D("gameCanvas3D", width, height);
-        this.ui = new ScreenUI("gameCanvasUI", width, height);
+        this.camera = new PerspectiveCamera({
+            fov: 52,
+            aspect: this.width / this.height,
+            near: 0.1,
+            far: 80,
+            position: [0, 4.7, 4.4],
+            target: [0, 0, -7.4],
+        });
+        this.scene.Add(this.camera);
 
-        this.screen3D.Canvas.style.position = "absolute";
-        this.screen3D.Canvas.style.left = "0px";
-        this.screen3D.Canvas.style.top = "0px";
-        this.screen3D.Canvas.style.zIndex = "1";
-
-        this.mainCamera = new Camera3D(this.screen3D);
-        this.lighting = new DirectionalLight3D({
-            direction: [-0.45, 0.85, 0.35],
-            color: [1.0, 0.95, 0.82],
+        this.scene.Add(new AmbientLight({ color: [0.85, 0.92, 1.0], intensity: 0.1 }));
+        this.scene.Add(new HemisphereLight({
+            skyColor: [0.55, 0.72, 1.0],
+            groundColor: [0.18, 0.2, 0.16],
+            intensity: 0.42,
+        }));
+        this.scene.Add(new DirectionalLight({
+            direction: [-0.45, -1.0, -0.35],
+            color: [1.0, 0.94, 0.78],
+            intensity: 1.7,
+            castShadow: true,
+            shadowMapSize: 1024,
+            shadowDistance: 18,
+        }));
+        this.scene.Add(new PointLight({
+            position: [0, 2.2, -7.5],
+            color: [0.42, 0.72, 1.0],
             intensity: 0.85,
-            ambientStrength: 0.34,
+            range: 7,
+        }));
+
+        this.CreateFloor();
+        this.CreatePlayer();
+        this.CreateCoins();
+    }
+
+    CreateFloor() {
+        const assets = AssetManager.instance;
+        const floorTexture = assets.HasImage("grid_albedo")
+            ? Texture.FromImage(assets.GetImage("grid_albedo"))
+            : Texture.FromImage(assets.GetImage("textura_chao"));
+        const normalTexture = assets.HasImage("grid_normal")
+            ? Texture.FromImage(assets.GetImage("grid_normal"))
+            : null;
+        const width = ARENA.maxX - ARENA.minX;
+        const depth = ARENA.maxZ - ARENA.minZ;
+
+        this.floor = Mesh.FromGeometry(
+            PrimitiveMesh.Plane(width, depth, { subdivisions: 8 }),
+            new StandardMaterial({
+                name: "MiniGameFloor",
+                albedoMap: floorTexture,
+                normalMap: normalTexture,
+                roughness: 0.88,
+            }),
+            { name: "ArenaFloor", castShadow: false, receiveShadow: true },
+        );
+        this.floor.transform.SetPosition(
+            (ARENA.minX + ARENA.maxX) / 2,
+            -0.5,
+            (ARENA.minZ + ARENA.maxZ) / 2,
+        );
+        this.scene.Add(this.floor);
+
+        this.physics.AddBody({
+            object: this.floor,
+            collider: new BoxCollider3D({ size: [width, 0.2, depth], offset: [0, -0.02, 0] }),
+            tag: "floor",
+        });
+    }
+
+    CreatePlayer() {
+        const material = new StandardMaterial({
+            name: "CharacterMaterial",
+            albedoMap: Texture.FromImage(AssetManager.instance.GetImage("textura_player")),
+            roughness: 0.62,
+            metallic: 0,
         });
 
-        super.OnStart();
+        this.playerModel = ModelMeshFactory.FromAsset("character", { material, name: "PlayerCharacter" });
+        this.playerModel
+            .SetPosition(0, 0.08, -6.0)
+            .SetScale(0.72)
+            .SetRotation(0, Math.PI, 0)
+            .AddTo(this.scene);
 
-        const skyImageCross = AssetManager.instance.GetImage("sky_cross");
-        if (skyImageCross) {
-            this.skybox = new Skybox3D(this.screen3D, skyImageCross);
-            this.AddEntity(this.skybox);
-        }
+        this.playerBody = new Rigidbody3D({
+            mass: 1,
+            damping: 0.84,
+            bounciness: 0,
+        });
+        this.physics.AddBody({
+            object: this.playerModel,
+            rigidbody: this.playerBody,
+            collider: new SphereCollider3D({ radius: 0.38, offset: [0, 0.38, 0] }),
+            tag: "player",
+        });
+        this.playerRadius = 0.46;
+        this.playerFacing = Math.PI;
+    }
 
-        this.floor = new Floor3D(this.screen3D, ARENA);
-        this.player = new Player3D(this.screen3D, ARENA);
-        this.coin = new Coin3D(this.screen3D, { position: COIN_SPAWNS[0], value: 10 });
-        this.model = new Char(this.screen3D, "character");
+    CreateCoins() {
+        const coinTexture = AssetManager.instance.HasImage("textura_coin")
+            ? Texture.FromImage(AssetManager.instance.GetImage("textura_coin"))
+            : null;
 
-        this.AddEntity(this.floor);
-        this.AddEntity(this.player);
-        this.AddEntity(this.coin);
-        this.AddEntity(this.model);
+        this.coins = COIN_SPAWNS.map(([x, z], index) => {
+            const coin = Mesh.FromGeometry(
+                PrimitiveMesh.Sphere(0.22, { widthSegments: 24, heightSegments: 12 }),
+                new StandardMaterial({
+                    name: `CoinMaterial_${index}`,
+                    albedoMap: coinTexture,
+                    albedoColor: [1.0, 0.78, 0.22, 1],
+                    roughness: 0.22,
+                    metallic: 0.15,
+                    emissiveColor: [0.16, 0.09, 0.01],
+                }),
+                { name: `Coin_${index}`, castShadow: true, receiveShadow: false },
+            );
+            coin.transform.SetPosition(x, 0.04, z);
+            this.scene.Add(coin);
+            return { mesh: coin, active: true, value: 10, radius: 0.28, baseY: 0.04 };
+        });
     }
 
     OnUpdate(dt) {
@@ -89,73 +186,95 @@ export class CubeGameLevel extends Level3D {
         }
 
         if (this.gameState === "WON") {
-            if (ActionManager.IsActionDown("ATTACK")) {
-                this.ResetGame();
-            }
+            if (ActionManager.IsActionDown("ATTACK")) this.ResetGame();
             this.UpdateCamera();
             return;
         }
 
+        this.time += dt || 0.016;
+        this.UpdatePlayerInput(dt || 0.016);
         super.OnUpdate(dt);
+        this.playerModel.ApplyTransform();
+        this.UpdateCoins(dt || 0.016);
         this.CheckCoinCollision();
         this.UpdateCamera();
+    }
+
+    UpdatePlayerInput(dt) {
+        const turn = Number(ActionManager.IsAction("RIGHT")) - Number(ActionManager.IsAction("LEFT"));
+        const move = Number(ActionManager.IsAction("UP") || ActionManager.IsAction("FORWARD"))
+            - Number(ActionManager.IsAction("DOWN") || ActionManager.IsAction("BACK"));
+        const speed = 4.8;
+
+        this.playerFacing -= turn * 2.9 * dt;
+        this.playerModel.transform.rotation.y = this.playerFacing;
+
+        const directionX = Math.sin(this.playerFacing);
+        const directionZ = Math.cos(this.playerFacing);
+        this.playerBody.velocity[0] = directionX * move * speed;
+        this.playerBody.velocity[2] = directionZ * move * speed;
+
+        if (ActionManager.IsActionDown("ATTACK") && this.playerBody.grounded) {
+            this.playerBody.velocity[1] = 5.4;
+        }
+    }
+
+    UpdateCoins(dt) {
+        this.coins.forEach((coin, index) => {
+            if (!coin.active) return;
+
+            coin.mesh.transform.position[1] = coin.baseY + Math.sin(this.time * 4 + index) * 0.08;
+            coin.mesh.transform.rotation.y += dt * 3.2;
+        });
+    }
+
+    CheckCoinCollision() {
+        const playerPosition = this.playerModel.transform.position;
+
+        this.coins.forEach(coin => {
+            if (!coin.active) return;
+
+            const coinPosition = coin.mesh.transform.position;
+            const distance = Math.hypot(coinPosition[0] - playerPosition[0], coinPosition[2] - playerPosition[2]);
+            if (distance <= this.playerRadius + coin.radius) {
+                coin.active = false;
+                coin.mesh.visible = false;
+                this.score += coin.value;
+                this.collectedCoins++;
+            }
+        });
+
+        if (this.collectedCoins >= this.goalCoins) {
+            this.gameState = "WON";
+        }
     }
 
     ResetGame() {
         this.score = 0;
         this.collectedCoins = 0;
-        this.coinSpawnIndex = 0;
         this.gameState = "PLAYING";
-        this.player.Reset();
-        this.coin.SetPosition(COIN_SPAWNS[0][0], COIN_SPAWNS[0][1]);
-    }
+        this.playerFacing = Math.PI;
+        this.playerModel.SetPosition(0, 0.08, -6.0).SetRotation(0, this.playerFacing, 0);
+        this.playerBody.velocity = [0, 0, 0];
 
-    CheckCoinCollision() {
-        if (!this.coin.active) return;
-
-        const p1 = this.player.transform.position;
-        const p2 = this.coin.transform.position;
-        const distance = Math.hypot(p2[0] - p1[0], p2[2] - p1[2]);
-
-        if (distance <= this.player.radius + this.coin.radius) {
-            this.CollectCoin();
-        }
-    }
-
-    CollectCoin() {
-        this.score += this.coin.value;
-        this.collectedCoins++;
-
-        if (this.collectedCoins >= this.goalCoins) {
-            this.gameState = "WON";
-            this.coin.Collect();
-            return;
-        }
-
-        this.coinSpawnIndex = (this.coinSpawnIndex + 1) % COIN_SPAWNS.length;
-        const [x, z] = COIN_SPAWNS[this.coinSpawnIndex];
-        this.coin.SetPosition(x, z);
+        this.coins.forEach((coin, index) => {
+            const [x, z] = COIN_SPAWNS[index];
+            coin.active = true;
+            coin.mesh.visible = true;
+            coin.mesh.transform.SetPosition(x, coin.baseY, z);
+        });
     }
 
     UpdateCamera() {
-        if (!this.mainCamera || !this.player) return;
+        if (!this.camera || !this.playerModel) return;
 
-        this.mainCamera.Follow(this.player);
-        this.mainCamera.Update();
-    }
-
-    OnDrawn() {
-        this.screen3D.Refresh();
-
-        this.entities.forEach(entity => {
-            if (typeof entity.OnDrawn === "function") {
-                entity.OnDrawn(this.mainCamera, this.lighting);
-            }
-        });
-
-        if (this.ui) {
-            this.ui.Refresh();
-        }
+        const playerPosition = this.playerModel.transform.position;
+        this.camera.position = [
+            playerPosition[0],
+            playerPosition[1] + 4.3,
+            playerPosition[2] + 6.5,
+        ];
+        this.camera.LookAt([playerPosition[0], playerPosition[1] + 0.45, playerPosition[2] - 0.9]);
     }
 
     OnGUI() {
@@ -165,9 +284,9 @@ export class CubeGameLevel extends Level3D {
         const ctx = draw.screen.Context;
 
         ctx.save();
-        ctx.globalAlpha = 0.45;
-        draw.Color = "#000000";
-        draw.DrawRect(12, 12, 190, 72);
+        ctx.globalAlpha = 0.46;
+        draw.Color = "#05070D";
+        draw.DrawRect(12, 12, 210, 76);
         ctx.restore();
 
         draw.SetTextAlign("left");
@@ -181,34 +300,23 @@ export class CubeGameLevel extends Level3D {
 
         draw.Color = "#DDE7FF";
         draw.FontSize = "14px";
-        draw.DrawText("W/S ou setas: mover | A/D: girar | Esc: menu", 18, 456);
+        draw.DrawText("W/S ou setas: mover | A/D: girar | Space/A: pular | Esc/B: menu", 18, 456);
 
         if (this.gameState === "WON") {
             ctx.save();
             ctx.globalAlpha = 0.72;
             draw.Color = "#05070D";
-            draw.DrawRect(145, 178, 350, 110);
+            draw.DrawRect(170, 176, 390, 112);
             ctx.restore();
 
             draw.SetTextAlign("center");
             draw.Color = "#FFD76A";
             draw.FontSize = "26px";
-            draw.DrawText("Objetivo concluido!", 320, 220);
+            draw.DrawText("Objetivo concluido!", 365, 220);
             draw.Color = "#FFFFFF";
             draw.FontSize = "15px";
-            draw.DrawText("Pressione Z/Enter para jogar novamente", 320, 252);
+            draw.DrawText("Pressione Space/Enter/A para jogar novamente", 365, 252);
+            draw.SetTextAlign("left");
         }
-    }
-
-    OnExit() {
-        this.entities.forEach(entity => {
-            if (typeof entity.OnExit === "function") {
-                entity.OnExit();
-            }
-        });
-        this.entities = [];
-
-        if (this.screen3D?.Canvas) this.screen3D.Canvas.remove();
-        if (this.ui?.Screen?.Canvas) this.ui.Screen.Canvas.remove();
     }
 }

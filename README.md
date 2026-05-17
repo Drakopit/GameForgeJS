@@ -38,9 +38,9 @@ http://localhost:8080/Main.html?demo=tactical
 http://localhost:8080/Main.html?demo=fighting2d
 http://localhost:8080/Main.html?demo=adventure2d
 http://localhost:8080/Main.html?demo=demo3d
+http://localhost:8080/Main.html?demo=solar3d
 http://localhost:8080/Main.html?demo=mini3d
 http://localhost:8080/Main.html?demo=immature
-http://localhost:8080/WorldEditor_v4.html
 ```
 
 ## Demos
@@ -51,30 +51,33 @@ http://localhost:8080/WorldEditor_v4.html
 | Tactical RPG | `DemoTacticalRPG/mainTacticalRPG.js` | `DemoTacticalRPG/tactical.config.json` | Grid tatico com AStar, area de movimento, acao e batalha. |
 | Fighting 2D | `DemoFightingGame2D/mainFightingGame2D.js` | `DemoFightingGame2D/fighting.config.json` | Menu, arcade, versus, selecao de personagem, teclado e gamepad configuravel. |
 | Adventure 2D | `DemoAdventure2D/mainAdventure2D.js` | `DemoAdventure2D/adventure.config.json` | Top-down adventure componentizado com transicao de camera entre salas. |
-| Demo 3D | `Demo3D/mainDemo3D.js` | `Demo3D/demo3d.config.json` | Validacao WebGL/3D. |
-| MiniGame 3D | `DemoMiniGame3D/mainMiniGame3D.js` | `DemoMiniGame3D/mini3d.config.json` | Mini jogo 3D com coleta, camera e iluminacao. |
+| Demo 3D | `Demo3D/mainDemo3D.js` | `Demo3D/demo3d.config.json` | Validacao da camada Render3D com WebGL2, luz, normal map e sombra. |
+| Sistema Solar 3D | `DemoSolarSystem/mainSolarSystem.js` | `DemoSolarSystem/solar.config.json` | Demo Render3D com shader procedural de planetas, luz solar e orbitas. |
+| MiniGame 3D | `DemoMiniGame3D/mainMiniGame3D.js` | `DemoMiniGame3D/mini3d.config.json` | Mini jogo 3D com modelo GLB, fisica, coleta, camera e iluminacao. |
 | Immature | `Demo/mainImmature.js` | `Demo/immature.config.json` | Exemplo simples de movimentacao e colisao. |
 
 ## Estrutura
 
 ```txt
 GameForgeJS/
+  Core2D/                Fachada do core 2D atual
+  Core3D/                Core 3D oficial: Level3D, modelos, fisica e exports Render3D
   Root/                  Core, bootstrap, config, loop, assets, scene, component
   Input/                 Teclado, mouse, touch, gamepad e ActionManager
-  Graphic/               Canvas/WebGL, sprites, animacao, modelos e luz
+  Graphic/               Canvas/WebGL, sprites, animacao, modelos, luz e Render3D
   Math/                  Vetores, colisao e utilitarios matematicos
   Collision/             Hitbox/hurtbox/collisionbox 2D
   Combat/                ComboController e suporte a combate
   Effects/               Efeitos reutilizaveis como texto flutuante
   Template/              Bases de Level/Menu/Level3D
   UI/                    Controles de interface
-  WorldEditorV4/         Editor visual modular na raiz do projeto
   docs/                  Guias tecnicos
   DemoAdvanced/          Demo plataforma/RPG data-driven
   DemoFightingGame2D/    Demo de luta 2D
   DemoAdventure2D/        Demo top-down adventure componentizada
   DemoTacticalRPG/       Demo tatico
   Demo3D/                Demo WebGL
+  DemoSolarSystem/       Demo de sistema solar em Render3D
   DemoMiniGame3D/        Mini game 3D
 ```
 
@@ -191,19 +194,20 @@ Veja o guia completo em [Componentizacao](docs/components.md). Esse e o caminho 
 
 ## WorldEditor
 
-O WorldEditor v4 agora fica na raiz:
+O WorldEditor/WorldMaker agora e ferramenta externa ao runtime:
 
 ```txt
-WorldEditor_v4.html
-WorldEditorV4/
+C:\Projects\GameForgeJsEditor
 ```
 
-Ele carrega manifests por `fetch`, possui fallback embutido e permite escolher perfil ou informar caminhos manualmente. O perfil atual `Advanced Snow` aponta para:
+Para rodar:
 
-```txt
-DemoAdvanced/Assets/Manifests/advanced/
-DemoAdvanced/Assets/Manifests/snow/
+```sh
+cd C:\Projects\GameForgeJsEditor
+npm run dev
 ```
+
+O editor desktop pode abrir qualquer pasta, detectar configuracoes existentes ou criar uma estrutura nova. `gameforge.editor.json` e apenas opcional.
 
 ## Documentacao
 
@@ -211,6 +215,7 @@ DemoAdvanced/Assets/Manifests/snow/
 - [Configuracao de input por jogo](docs/input-config.md)
 - [Cola de gamepad](GAMEPAD_COLA.md)
 - [Componentizacao](docs/components.md)
+- [Render3D](docs/render3d.md)
 - [Advanced Stage Manifest](docs/advanced-stage-manifest.md)
 - [Hitbox Manifest 2D](docs/hitbox-manifest.md)
 - [WorldEditor v4](docs/world-editor-v4.md)
@@ -222,5 +227,5 @@ O caminho mais forte agora e:
 - consolidar `GameObject + Component`
 - criar sistemas reutilizaveis para render, fisica, input e animacao
 - transformar entidades em dados serializaveis
-- evoluir o WorldEditor para criar e editar projetos inteiros
+- manter ferramentas de autoria separadas do runtime
 - finalizar um jogo pequeno usando a engine como validacao real
