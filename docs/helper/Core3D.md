@@ -26,7 +26,7 @@ Documented exports: **40/40**.
 | [`Mesh`](#mesh) | `class` | Renderable geometry instance with a material, transform and shadow flags. |
 | [`Mesh3D`](#mesh3d) | `class` | Deprecated compatibility API. |
 | [`Model3D`](#model3d) | `class` | Group of Render3D meshes sharing a convenient model-level transform. |
-| [`ModelLoader`](#modelloader) | `class` | Loads GLTF and GLB model parts for Render3D through `AssetManager`. The returned parts can be converted into scene meshes by `ModelMeshFactory`. |
+| [`ModelLoader`](#modelloader) | `class` | glTF/GLB loader for Render3D model assets. The loader keeps GameForgeJS dependency-free while following the glTF 2.0 object model: mesh primitives reference accessors, materials reference textures/images/samplers, and skins/animations remain available for a future skeletal renderer. |
 | [`ModelMeshFactory`](#modelmeshfactory) | `class` | Converts model asset parts already loaded by `AssetManager` into Render3D meshes. |
 | [`OBJLoader`](#objloader) | `class` | Minimal Wavefront OBJ asset loader producing mesh-part buffer data. Materials and textures remain game-owned resources loaded separately. |
 | [`PerspectiveCamera`](#perspectivecamera) | `class` | Perspective camera holding view and projection matrices for Render3D. |
@@ -77,9 +77,9 @@ Axis-aligned box collision volume for platforms and solid scenery.
 | `[options.size]` | `number[]` | Width, height and depth. |
 | `[options.offset]` | `number[]` | Local center offset. |
 
-### Documented Methods
+### Methods
 
-#### `GetBounds()`
+#### `GetBounds(transform)`
 
 Computes axis-aligned minimum and maximum world corners.
 
@@ -99,12 +99,15 @@ Deprecated compatibility API.
 
 > Deprecated: Use `PerspectiveCamera` from `Core3D/index.js`.
 
-### Documented Methods
+### Methods
 
+#### `CalculateProjection()`
+
+JSDoc pending.
 #### `Update()`
 
 Atualiza a matriz de visualização a cada frame
-#### `Follow()`
+#### `Follow(targetObject)`
 
 Faz a câmera seguir um objeto dinamicamente
 
@@ -146,9 +149,9 @@ Base collision volume offset from a Render3D object's transform.
 | `[options.offset]` | `number[]` | Local center offset. |
 | `[options.isTrigger=false]` | `boolean` | Trigger-only marker for games. |
 
-### Documented Methods
+### Methods
 
-#### `GetCenter()`
+#### `GetCenter(transform)`
 
 Computes the collision center in world coordinates.
 
@@ -175,9 +178,21 @@ Normalized RGBA color value with array and hexadecimal conversion helpers.
 | `[b=1]` | `number` | Blue channel from zero to one. |
 | `[a=1]` | `number` | Alpha channel from zero to one. |
 
-### Documented Methods
+### Methods
 
-#### `static FromHex()`
+#### `ToArray3()`
+
+JSDoc pending.
+#### `ToArray4()`
+
+JSDoc pending.
+#### `static White()`
+
+JSDoc pending.
+#### `static Black()`
+
+JSDoc pending.
+#### `static FromHex(hex, alpha = 1)`
 
 Converts a CSS-style hexadecimal value to normalized channels.
 
@@ -189,6 +204,12 @@ Converts a CSS-style hexadecimal value to normalized channels.
 | `[alpha=1]` | `number` | Alpha channel. |
 
 **Returns:** `Color` - Parsed color.
+#### `static ToArray3(value, fallback = [1, 1, 1])`
+
+JSDoc pending.
+#### `static ToArray4(value, fallback = [1, 1, 1, 1])`
+
+JSDoc pending.
 
 ## DirectionalLight
 
@@ -206,9 +227,9 @@ Sun-like directional light that can cast one shadow map.
 | `[options.shadowMapSize=1024]` | `number` | Shadow texture resolution. |
 | `[options.shadowDistance=16]` | `number` | Shadow camera coverage. |
 
-### Documented Methods
+### Methods
 
-#### `SetDirection()`
+#### `SetDirection(direction)`
 
 Updates the normalized light direction.
 
@@ -228,6 +249,15 @@ Deprecated compatibility API.
 
 > Deprecated: Use `DirectionalLight` from `Core3D/index.js`.
 
+### Methods
+
+#### `SetDirection(direction)`
+
+JSDoc pending.
+#### `GetUniforms()`
+
+JSDoc pending.
+
 ## GameObject3D
 
 `class` from [`src/Core3D/Objects/GameObject3D.js`](../../src/Core3D/Objects/GameObject3D.js)
@@ -235,6 +265,15 @@ Deprecated compatibility API.
 Deprecated compatibility API.
 
 > Deprecated: Use `Mesh`, `Model3D` or game-owned entities composed with Render3D.
+
+### Methods
+
+#### `OnUpdate(dt)`
+
+JSDoc pending.
+#### `OnDrawn()`
+
+JSDoc pending.
 
 ## Geometry3D
 
@@ -253,9 +292,9 @@ CPU-side indexed vertex buffer data consumed by `WebGL3DRenderer`.
 | `[options.tangents]` | `Array\|Float32Array` | XYZW tangents. |
 | `[options.indices]` | `Array\|Uint16Array\|Uint32Array\|null` | Triangle indices. |
 
-### Documented Methods
+### Methods
 
-#### `EnsureNormals()`
+#### `EnsureNormals(defaultNormal = [0, 1, 0])`
 
 Generates fallback normals when geometry does not contain them.
 
@@ -266,6 +305,12 @@ Generates fallback normals when geometry does not contain them.
 | `[defaultNormal]` | `number[]` | Normal repeated per vertex. |
 
 **Returns:** `Geometry3D` - This geometry.
+#### `EnsureUvs()`
+
+JSDoc pending.
+#### `EnsureTangents(defaultTangent = [1, 0, 0, 1])`
+
+JSDoc pending.
 
 ## HemisphereLight
 
@@ -289,6 +334,21 @@ Two-tone ambient illumination blended between sky and ground colors.
 Deprecated compatibility API.
 
 > Deprecated: Use `Core3D/Level/Level3D.js` through `Core3D/index.js`.
+
+### Methods
+
+#### `OnStart()`
+
+JSDoc pending.
+#### `OnUpdate(dt)`
+
+JSDoc pending.
+#### `OnDrawn()`
+
+JSDoc pending.
+#### `AddEntity(entity)`
+
+JSDoc pending.
 
 ## LegacyTransform3D
 
@@ -327,13 +387,25 @@ this.scene.Add(new DirectionalLight({ castShadow: true }));
 }
 ```
 
-### Documented Methods
+### Methods
 
+#### `OnStart()`
+
+JSDoc pending.
 #### `BuildScene()`
 
 Scene construction hook implemented by a game level.
 
 **Returns:** `void`
+#### `OnUpdate(dt)`
+
+JSDoc pending.
+#### `OnDrawn()`
+
+JSDoc pending.
+#### `OnExit()`
+
+JSDoc pending.
 
 ## Material
 
@@ -373,11 +445,23 @@ Deprecated compatibility API.
 
 > Deprecated: Use `Mesh` with `ModelMeshFactory` from `Core3D/index.js`.
 
-### Documented Methods
+### Methods
 
-#### `Draw()`
+#### `_initShaders()`
 
-Documented method.
+JSDoc pending.
+#### `_compile(type, source)`
+
+JSDoc pending.
+#### `_uploadToGPU()`
+
+JSDoc pending.
+#### `_createBuffer(target, data)`
+
+JSDoc pending.
+#### `Draw(transform, camera, options = {})`
+
+JSDoc pending.
 
 **Parameters**
 
@@ -402,9 +486,9 @@ Group of Render3D meshes sharing a convenient model-level transform.
 | --- | --- | --- |
 | `[meshes=[]` | `Mesh[]` | ] - Mesh parts belonging to the loaded model. |
 
-### Documented Methods
+### Methods
 
-#### `AddTo()`
+#### `AddTo(scene)`
 
 Adds all model parts to a scene and applies its current transform.
 
@@ -415,12 +499,87 @@ Adds all model parts to a scene and applies its current transform.
 | `scene` | `Scene3D` | Target scene. |
 
 **Returns:** `Model3D` - This model.
+#### `SetPosition(x, y, z)`
+
+JSDoc pending.
+#### `SetRotation(x, y, z)`
+
+JSDoc pending.
+#### `SetScale(x, y = x, z = x)`
+
+JSDoc pending.
+#### `ApplyTransform()`
+
+JSDoc pending.
+#### `CaptureBaseTransform(mesh)`
+
+JSDoc pending.
 
 ## ModelLoader
 
 `class` from [`src/Core3D/Assets/ModelLoader.js`](../../src/Core3D/Assets/ModelLoader.js)
 
-Loads GLTF and GLB model parts for Render3D through `AssetManager`. The returned parts can be converted into scene meshes by `ModelMeshFactory`.
+glTF/GLB loader for Render3D model assets. The loader keeps GameForgeJS dependency-free while following the glTF 2.0 object model: mesh primitives reference accessors, materials reference textures/images/samplers, and skins/animations remain available for a future skeletal renderer.
+
+### Methods
+
+#### `static PushMeshParts(models, gltf, buffers, mesh, instance, materials, skins)`
+
+JSDoc pending.
+#### `static BuildPartName(mesh, node, primitiveIndex)`
+
+JSDoc pending.
+#### `static ParseNode(node, index)`
+
+JSDoc pending.
+#### `static CollectMeshInstances(gltf)`
+
+JSDoc pending.
+#### `static ParseMaterial(material, index, textures)`
+
+JSDoc pending.
+#### `static ParseTextureInfo(info, textures)`
+
+JSDoc pending.
+#### `static ParseSkins(gltf, buffers)`
+
+JSDoc pending.
+#### `static ParseAnimations(gltf, buffers)`
+
+JSDoc pending.
+#### `static ReadAccessor(gltf, buffers, accessorIndex)`
+
+JSDoc pending.
+#### `static ReadAccessorBase(gltf, buffers, accessor, componentCount, ArrayType, componentBytes)`
+
+JSDoc pending.
+#### `static ApplySparseAccessor(gltf, buffers, accessor, componentCount, output)`
+
+JSDoc pending.
+#### `static ReadSparseIndices(gltf, buffers, sparse)`
+
+JSDoc pending.
+#### `static ReadSparseValues(gltf, buffers, sparse, accessor, componentCount)`
+
+JSDoc pending.
+#### `static ReadComponent(dataView, byteOffset, componentType)`
+
+JSDoc pending.
+#### `static NormalizeComponent(value, componentType)`
+
+JSDoc pending.
+#### `static LoadHtmlImage(src)`
+
+JSDoc pending.
+#### `static ResolveUri(uri, baseUrl = "")`
+
+JSDoc pending.
+#### `static GetBaseUrl(url)`
+
+JSDoc pending.
+#### `static GuessMimeType(uri)`
+
+JSDoc pending.
 
 ## ModelMeshFactory
 
@@ -428,9 +587,9 @@ Loads GLTF and GLB model parts for Render3D through `AssetManager`. The returned
 
 Converts model asset parts already loaded by `AssetManager` into Render3D meshes.
 
-### Documented Methods
+### Methods
 
-#### `static FromAsset()`
+#### `static FromAsset(modelName, { material = null, materialFactory = null, name = modelName } = {})`
 
 Builds a `Model3D` from a queued model asset.
 
@@ -444,6 +603,18 @@ Builds a `Model3D` from a queued model asset.
 | `[options.materialFactory=null]` | `Function\|null` | Per-part material factory. |
 
 **Returns:** `Model3D` - Renderable model wrapper.
+#### `static CreateMaterial(part, index, modelName)`
+
+JSDoc pending.
+#### `static CreateTexture(textureInfo)`
+
+JSDoc pending.
+#### `static ApplyNodeTransform(mesh, node)`
+
+JSDoc pending.
+#### `static QuaternionToEuler(rotation)`
+
+JSDoc pending.
 
 ## OBJLoader
 
@@ -467,9 +638,9 @@ Perspective camera holding view and projection matrices for Render3D.
 | `[options.position]` | `number[]` | Camera world position. |
 | `[options.target]` | `number[]` | Initial look-at target. |
 
-### Documented Methods
+### Methods
 
-#### `SetPosition()`
+#### `SetPosition(x, y, z)`
 
 Sets world position and rebuilds the view matrix.
 
@@ -482,7 +653,7 @@ Sets world position and rebuilds the view matrix.
 | `z` | `number` | World z coordinate. |
 
 **Returns:** `PerspectiveCamera` - This camera.
-#### `LookAt()`
+#### `LookAt(target)`
 
 Aims the camera at a world-space point.
 
@@ -493,6 +664,12 @@ Aims the camera at a world-space point.
 | `target` | `number[]` | Three-component world position. |
 
 **Returns:** `PerspectiveCamera` - This camera.
+#### `UpdateProjection(aspect = this.aspect)`
+
+JSDoc pending.
+#### `UpdateView()`
+
+JSDoc pending.
 
 ## PhysicsWorld3D
 
@@ -508,9 +685,9 @@ Lightweight 3D physics world for gravity and sphere-versus-platform collision. I
 | `[options.gravity]` | `number[]` | World gravity vector. |
 | `[options.bounds=null]` | `Object\|null` | Optional horizontal movement bounds. |
 
-### Documented Methods
+### Methods
 
-#### `AddBody()`
+#### `AddBody({ object, rigidbody = null, collider = null, tag = "", enabled = true })`
 
 Registers a game object and its optional motion and collision components.
 
@@ -521,7 +698,10 @@ Registers a game object and its optional motion and collision components.
 | `definition` | `Object` | Body definition. |
 
 **Returns:** `Object` - Stored body record.
-#### `Step()`
+#### `RemoveBody(body)`
+
+JSDoc pending.
+#### `Step(dt)`
 
 Advances enabled bodies and resolves supported solid collisions.
 
@@ -553,9 +733,9 @@ Omnidirectional local light attenuated by range.
 
 Factory for educational and manifest-friendly primitive geometries. Methods return `Geometry3D`; wrap the result in `Mesh` to render it.
 
-### Documented Methods
+### Methods
 
-#### `static Cube()`
+#### `static Cube(size = 1)`
 
 Creates a textured cube centered at the origin.
 
@@ -566,7 +746,10 @@ Creates a textured cube centered at the origin.
 | `[size=1]` | `number` | Edge length. |
 
 **Returns:** `Geometry3D` - Cube geometry.
-#### `static Plane()`
+#### `static BeveledCube(bevel = 0.08)`
+
+JSDoc pending.
+#### `static Plane(width = 1, depth = 1, { subdivisions = 1 } = {})`
 
 Creates a subdivided horizontal plane suitable for floors.
 
@@ -579,7 +762,7 @@ Creates a subdivided horizontal plane suitable for floors.
 | `[options]` | `Object` | Segmentation settings. |
 
 **Returns:** `Geometry3D` - Plane geometry.
-#### `static Sphere()`
+#### `static Sphere(radius = 1, { widthSegments = 24, heightSegments = 12 } = {})`
 
 Creates a UV sphere centered at the origin.
 
@@ -591,6 +774,9 @@ Creates a UV sphere centered at the origin.
 | `[options]` | `Object` | Segment settings. |
 
 **Returns:** `Geometry3D` - Sphere geometry.
+#### `static Ring(innerRadius = 1, outerRadius = 1.1, { segments = 96 } = {})`
+
+JSDoc pending.
 
 ## Rigidbody3D
 
@@ -609,9 +795,9 @@ Small dynamic-body state component integrated by `PhysicsWorld3D`.
 | `[options.isKinematic=false]` | `boolean` | Whether game code controls motion. |
 | `[options.damping=0.96]` | `number` | Horizontal velocity retention. |
 
-### Documented Methods
+### Methods
 
-#### `AddForce()`
+#### `AddForce(force)`
 
 Accumulates a force until the next integration step.
 
@@ -622,7 +808,7 @@ Accumulates a force until the next integration step.
 | `force` | `number[]` | XYZ force. |
 
 **Returns:** `void`
-#### `Integrate()`
+#### `Integrate(transform, dt, gravity)`
 
 Advances velocity and position for one simulation step.
 
@@ -649,9 +835,9 @@ Container for renderable meshes, lights, one camera and one skybox. The renderer
 | `[options]` | `Object` | Initial scene properties. |
 | `[options.backgroundColor]` | `number[]` | RGBA fallback clear color. |
 
-### Documented Methods
+### Methods
 
-#### `Add()`
+#### `Add(item)`
 
 Registers a mesh, light, camera or skybox based on its Render3D marker.
 
@@ -662,7 +848,7 @@ Registers a mesh, light, camera or skybox based on its Render3D marker.
 | `item` | `Object` | Runtime scene item. |
 
 **Returns:** `Object` - The supplied item.
-#### `Remove()`
+#### `Remove(item)`
 
 Removes an item from all applicable scene slots.
 
@@ -678,7 +864,7 @@ Removes an item from all applicable scene slots.
 Returns visible objects with drawable geometry.
 
 **Returns:** `Object[]` - Mesh-like renderable objects.
-#### `GetLights()`
+#### `GetLights(type = null)`
 
 Returns enabled lights, optionally filtered by type.
 
@@ -704,9 +890,9 @@ aspect: canvas.width / canvas.height,
 });
 ```
 
-### Documented Methods
+### Methods
 
-#### `static Create()`
+#### `static Create(manifest = {}, { aspect = 1 } = {})`
 
 Builds a scene, camera and manifest-owned content collection.
 
@@ -719,7 +905,7 @@ Builds a scene, camera and manifest-owned content collection.
 | `[options.aspect=1]` | `number` | Camera aspect ratio. |
 
 **Returns:** `Object` - Object containing `scene`, `camera`, `lights` and `objects`.
-#### `static CreateCamera()`
+#### `static CreateCamera(definition = {}, aspect = 1)`
 
 Creates a perspective camera from a manifest definition.
 
@@ -731,7 +917,7 @@ Creates a perspective camera from a manifest definition.
 | `[aspect=1]` | `number` | Current viewport aspect ratio. |
 
 **Returns:** `PerspectiveCamera` - Created camera.
-#### `static Populate()`
+#### `static Populate(scene, manifest = {})`
 
 Adds declared lights and primitive objects to an existing scene.
 
@@ -743,7 +929,7 @@ Adds declared lights and primitive objects to an existing scene.
 | `[manifest={}]` | `Object` | Scene manifest definition. |
 
 **Returns:** `Object` - Added `lights` and `objects`.
-#### `static CreateLight()`
+#### `static CreateLight(definition = {})`
 
 Creates one supported light definition.
 
@@ -754,7 +940,7 @@ Creates one supported light definition.
 | `[definition={}]` | `Object` | Manifest light, selected by `type`. |
 
 **Returns:** `Light` - Render3D light.
-#### `static CreateObject()`
+#### `static CreateObject(definition = {})`
 
 Creates a primitive mesh and applies its declared transform.
 
@@ -765,7 +951,7 @@ Creates a primitive mesh and applies its declared transform.
 | `[definition={}]` | `Object` | Manifest object definition. |
 
 **Returns:** `Mesh` - Scene mesh.
-#### `static CreateGeometry()`
+#### `static CreateGeometry(definition = {})`
 
 Creates cube, beveled cube, plane, sphere or ring geometry.
 
@@ -776,7 +962,7 @@ Creates cube, beveled cube, plane, sphere or ring geometry.
 | `[definition={}]` | `Object` | Primitive definition. |
 
 **Returns:** `Geometry3D` - Generated geometry.
-#### `static CreateMaterial()`
+#### `static CreateMaterial(definition = {})`
 
 Creates a standard or unlit material from JSON-compatible values.
 
@@ -802,9 +988,9 @@ Creates and owns the canvas used by Render3D and legacy WebGL levels.
 | `[width]` | `number` | Logical canvas width. |
 | `[height]` | `number` | Logical canvas height. |
 
-### Documented Methods
+### Methods
 
-#### `Init()`
+#### `Init(screenName)`
 
 Initialize the canvas and WebGL context
 
@@ -826,7 +1012,7 @@ Return the size of the browser window
 #### `Refresh()`
 
 Clear the screen
-#### `Resize()`
+#### `Resize(vector2D)`
 
 Resize the canvas
 
@@ -835,6 +1021,9 @@ Resize the canvas
 | Name | Type | Description |
 | --- | --- | --- |
 | `vector2D` | `Vector2D` |  |
+#### `FullScreen()`
+
+JSDoc pending.
 
 ## Shader
 
@@ -851,14 +1040,14 @@ Compiled WebGL shader program wrapper with cached uniform locations. Games gener
 | `fragmentSource` | `string` | GLSL fragment shader source. |
 | `[label="Shader"]` | `string` | Error-reporting label. |
 
-### Documented Methods
+### Methods
 
 #### `Use()`
 
 Binds this program for subsequent draw calls.
 
 **Returns:** `void`
-#### `GetUniform()`
+#### `GetUniform(name)`
 
 Obtains and caches a named uniform location.
 
@@ -869,6 +1058,9 @@ Obtains and caches a named uniform location.
 | `name` | `string` | GLSL uniform name. |
 
 **Returns:** `WebGLUniformLocation|null` - Located uniform.
+#### `Dispose()`
+
+JSDoc pending.
 
 ## Shapes3D
 
@@ -877,6 +1069,30 @@ Obtains and caches a named uniform location.
 Deprecated compatibility API.
 
 > Deprecated: Use `Mesh`, `PrimitiveMesh` and `StandardMaterial` from `Core3D/index.js`.
+
+### Methods
+
+#### `initShaders()`
+
+JSDoc pending.
+#### `loadShader(type, source)`
+
+JSDoc pending.
+#### `initBuffers()`
+
+JSDoc pending.
+#### `CreateTexture(imageElement)`
+
+JSDoc pending.
+#### `CreateSolidTexture(color)`
+
+JSDoc pending.
+#### `DrawCube(position, rotation, scale, camera, webglTexture, lighting = null)`
+
+JSDoc pending.
+#### `Dispose()`
+
+JSDoc pending.
 
 ## Skybox
 
@@ -892,9 +1108,9 @@ Background environment rendered from a cubemap cross image.
 | `[options.image=null]` | `HTMLImageElement\|null` | Four-by-three cubemap cross image. |
 | `[options.name="Skybox"]` | `string` | Debug/display name. |
 
-### Documented Methods
+### Methods
 
-#### `static FromImage()`
+#### `static FromImage(image, options = {})`
 
 Wraps an already loaded cubemap cross image.
 
@@ -914,6 +1130,18 @@ Wraps an already loaded cubemap cross image.
 Deprecated compatibility API.
 
 > Deprecated: Use `Skybox` from `Core3D/index.js`.
+
+### Methods
+
+#### `initShaders()`
+
+JSDoc pending.
+#### `createCubeMapFromCross(image)`
+
+JSDoc pending.
+#### `OnDrawn(camera)`
+
+JSDoc pending.
 
 ## SphereCollider3D
 
@@ -980,9 +1208,9 @@ Lazy WebGL texture resource created from an image or URL.
 | `[options.generateMipmaps=true]` | `boolean` | Generate mip levels. |
 | `[options.anisotropy=1]` | `number` | Requested anisotropic filtering amount. |
 
-### Documented Methods
+### Methods
 
-#### `static Load()`
+#### `static Load(source, options = {})`
 
 Creates a lazily loaded URL texture.
 
@@ -994,7 +1222,10 @@ Creates a lazily loaded URL texture.
 | `[options={}]` | `Object` | Texture options. |
 
 **Returns:** `Texture` - Texture resource.
-#### `EnsureGPU()`
+#### `static FromImage(image, options = {})`
+
+JSDoc pending.
+#### `EnsureGPU(gl, fallbackTexture = null)`
 
 Uploads or begins loading the source when first required by a renderer.
 
@@ -1006,6 +1237,15 @@ Uploads or begins loading the source when first required by a renderer.
 | `[fallbackTexture=null]` | `WebGLTexture\|null` | Temporary texture while loading. |
 
 **Returns:** `WebGLTexture|null` - Current GPU texture or fallback.
+#### `LoadImage(gl)`
+
+JSDoc pending.
+#### `Upload(gl, image)`
+
+JSDoc pending.
+#### `Dispose(gl)`
+
+JSDoc pending.
 
 ## Transform3D
 
@@ -1022,9 +1262,9 @@ Mutable 3D position, Euler rotation and scale used by Render3D meshes.
 | `[options.rotation]` | `Object\|number[]` | Euler rotation in radians. |
 | `[options.scale]` | `number[]` | Three-component scale. |
 
-### Documented Methods
+### Methods
 
-#### `SetPosition()`
+#### `SetPosition(x, y, z)`
 
 Updates the transform translation.
 
@@ -1037,6 +1277,12 @@ Updates the transform translation.
 | `z` | `number` | World z coordinate. |
 
 **Returns:** `Transform3D` - This transform.
+#### `SetRotation(x, y, z)`
+
+JSDoc pending.
+#### `SetScale(x, y = x, z = x)`
+
+JSDoc pending.
 
 ## UnlitMaterial
 
@@ -1068,9 +1314,9 @@ WebGL2 renderer for `Scene3D`, including lit materials, skyboxes and shadows.
 | `[options.clearColor]` | `number[]` | Default RGBA clear color. |
 | `[options.antialias=true]` | `boolean` | Request browser multisampling. |
 
-### Documented Methods
+### Methods
 
-#### `Render()`
+#### `Render(scene, camera = scene?.camera)`
 
 Draws one scene from a supplied or scene-owned camera.
 

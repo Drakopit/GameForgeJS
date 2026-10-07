@@ -9,6 +9,7 @@ export class Model3D {
     constructor(meshes = []) {
         this.meshes = meshes;
         this.transform = new Transform3D();
+        this.ApplyTransform();
     }
 
     /**
@@ -42,9 +43,7 @@ export class Model3D {
 
     ApplyTransform() {
         this.meshes.forEach(mesh => {
-            mesh.transform.position = [...this.transform.position];
-            mesh.transform.rotation = { ...this.transform.rotation };
-            mesh.transform.scale = [...this.transform.scale];
+            mesh.transform.parent = this.transform;
         });
     }
 }

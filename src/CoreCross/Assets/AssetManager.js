@@ -1,105 +1,148 @@
 import { Logger } from "../Logger.js";
-import { AudioManager } from "../Audio/AudioManager.js"; // <-- IMPORTANTE: Ajuste o caminho se necessário
-
+import { AudioManager } from "../Audio/AudioManager.js";
 
 /**
- * @doc Class AssetManager
- * @namespace Root
- * @class AssetManager
- * @summary Preloader para imagens, áudios e dados JSON. Evita travamentos durante o gameplay.
+ * Dependency-free asset registry, eager preloader and lazy loader.
+ *
+ * Manifests may set `{ "lazy": true }` on any asset entry. Lazy assets are
+ * registered during bootstrap but only fetched after `LoadAsset(name)` or one
+ * of the async getters is called.
  */
 export class AssetManager {
     constructor() {
+        if (AssetManager.instance) {
+            return AssetManager.instance;
+        }
+
         this.images = {};
         this.audioQueue = [];
         this.audios = {};
         this.shaders = {};
         this.models = {};
         this.jsons = {};
-        this.promises = []; // Guarda as promessas de imagens e shaders
+        this.promises = [];
+        this.registry = new Map();
+        this.loading = new Map();
 
-        // Singleton
-        if (!AssetManager.instance) {
-            AssetManager.instance = this;
-        }
+        AssetManager.instance = this;
         return AssetManager.instance;
     }
 
-    // Coloca o áudio na fila
-    QueueAudio(name, path) {
-        this.audioQueue.push({ name, path });
+    RegisterAsset(type, name, path, options = {}) {
+        if (!name || !path) {
+            throw new Error("AssetManager: assets must have a name and path.");
+        }
+
+        this.registry.set(this.AssetKey(type, name), {
+            type,
+            name,
+            path,
+            lazy: Boolean(options.lazy),
+            options,
+        });
     }
 
-    // Pega o áudio decodificado da memória
+    RegisterImage(name, path, options = {}) {
+        this.RegisterAsset("image", name, path, { ...options, lazy: true });
+    }
+
+    RegisterAudio(name, path, options = {}) {
+        this.RegisterAsset("audio", name, path, { ...options, lazy: true });
+    }
+
+    RegisterShader(name, path, options = {}) {
+        this.RegisterAsset("shader", name, path, { ...options, lazy: true });
+    }
+
+    RegisterModel(name, path, options = {}) {
+        this.RegisterAsset("model", name, path, { ...options, lazy: true });
+    }
+
+    RegisterJson(name, path, options = {}) {
+        this.RegisterAsset("json", name, path, { ...options, lazy: true });
+    }
+
+    QueueAudio(name, path, options = {}) {
+        this.RegisterAsset("audio", name, path, options);
+        if (options.lazy) return null;
+        if (this.audios[name] || this.audioQueue.some(item => item.name === name)) return this.audios[name] ?? null;
+        this.audioQueue.push({ name, path });
+        return null;
+    }
+
     GetAudio(name) {
-        if (!this.audios[name]) console.warn(`AssetManager: Áudio '${name}' não encontrado.`);
+        this.TouchLazyAsset(name, "audio");
+        if (!this.audios[name] && !this.IsLazyPending(name, "audio")) {
+            console.warn(`AssetManager: audio '${name}' not found.`);
+        }
         return this.audios[name];
     }
 
-    // Processa a fila de áudios separadamente
     async LoadAudioQueue() {
         if (this.audioQueue.length === 0) return;
 
-        // Precisamos garantir que o AudioManager instanciou o context para decodificar
         AudioManager.instance.Initialize();
-        const context = AudioManager.instance.context;
+        const queued = [...this.audioQueue];
+        this.audioQueue = [];
 
-        // Cria as promessas, mas não joga no this.promises. Vamos resolver elas aqui mesmo.
-        const audioPromises = this.audioQueue.map(async (item) => {
-            try {
-                const response = await fetch(item.path);
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                const arrayBuffer = await response.arrayBuffer();
-                const audioBuffer = await context.decodeAudioData(arrayBuffer);
-                this.audios[item.name] = audioBuffer;
-            } catch (error) {
-                console.error(`GameForgeJS: Erro ao carregar áudio ${item.name} no caminho ${item.path}`, error);
-            }
-        });
-
-        // Aguarda todos os áudios terminarem de baixar e decodificar
-        await Promise.all(audioPromises);
+        await Promise.all(queued.map(item => this.LoadAsset(item.name, "audio")));
     }
 
-    /**
-     * @description Coloca uma imagem na fila de carregamento
-     */
-    QueueImage(name, src) {
-        const promise = new Promise((resolve, reject) => {
+    TrackPromise(promise) {
+        // Queue methods start immediately; LoadAll remains responsible for reporting failures.
+        promise.catch(() => {});
+        this.promises.push(promise);
+        return promise;
+    }
+
+    QueueImage(name, src, options = {}) {
+        this.RegisterAsset("image", name, src, options);
+        if (options.lazy) return null;
+        if (this.images[name]) return this.images[name];
+
+        const promise = this.LoadAsset(name, "image");
+        this.TrackPromise(promise);
+        return promise;
+    }
+
+    LoadImage(name, src) {
+        return new Promise((resolve, reject) => {
             const img = new Image();
             img.onload = () => {
                 this.images[name] = img;
                 resolve(img);
             };
-            img.onerror = () => reject(new Error(`Falha ao carregar imagem: ${src}`));
+            img.onerror = () => reject(new Error(`AssetManager: failed to load image ${src}`));
             img.src = src;
         });
-        this.promises.push(promise);
     }
 
-    /**
-     * @function QueueShader
-     * @description Coloca um shader na fila de carregamento
-     */
-    QueueShader(name, url) {
-        const promise = fetch(url)
-            .then(response => {
-                if (!response.ok) throw new Error(`Erro no shader: ${url}`);
-                return response.text(); // Pega o código fonte do shader como texto
-            })
-            .then(sourceCode => {
-                this.shaders[name] = sourceCode; // Salva na memória
-            });
+    QueueShader(name, url, options = {}) {
+        this.RegisterAsset("shader", name, url, options);
+        if (options.lazy) return null;
+        if (this.shaders[name]) return this.shaders[name];
 
-        this.promises.push(promise);
+        const promise = this.LoadAsset(name, "shader");
+        this.TrackPromise(promise);
+        return promise;
     }
 
-    QueueModel(name, url) {
-        const promise = this.LoadModel(url);
+    async LoadShader(name, url) {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`AssetManager: failed to load shader ${url}`);
+        const sourceCode = await response.text();
+        this.shaders[name] = sourceCode;
+        return sourceCode;
+    }
 
-        this.promises.push(
-            promise.then(meshes => { this.models[name] = meshes; })
-        );
+    QueueModel(name, url, options = {}) {
+        this.RegisterAsset("model", name, url, options);
+        if (options.lazy) return null;
+        if (this.models[name]) return this.models[name];
+
+        const promise = this.LoadAsset(name, "model");
+        this.TrackPromise(promise);
+        return promise;
     }
 
     async LoadModel(url) {
@@ -108,56 +151,148 @@ export class AssetManager {
             import("../../Core3D/Assets/ModelLoader.js"),
         ]);
 
-        return url.endsWith(".obj")
+        return url.split(/[?#]/, 1)[0].toLowerCase().endsWith(".obj")
             ? OBJLoader.Load(url)
             : ModelLoader.Load(url);
     }
 
-    QueueJson(name, url) {
-        const promise = fetch(url)
-            .then(response => {
-                if (!response.ok) throw new Error(`Erro no JSON: ${url}`);
-                return response.json();
-            })
-            .then(json => {
-                this.jsons[name] = json;
-            });
+    QueueJson(name, url, options = {}) {
+        this.RegisterAsset("json", name, url, options);
+        if (options.lazy) return null;
+        if (this.HasLoadedAsset("json", name)) return this.jsons[name];
 
-        this.promises.push(promise);
+        const promise = this.LoadAsset(name, "json");
+        this.TrackPromise(promise);
+        return promise;
     }
 
-    GetModel(name) {
-        if (!this.models?.[name]) console.warn(`AssetManager: Modelo '${name}' não encontrado.`);
-        return this.models?.[name] ?? null;
+    async LoadJson(name, url) {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`AssetManager: failed to load JSON ${url}`);
+        const json = await response.json();
+        this.jsons[name] = json;
+        return json;
     }
 
-    /**
-     * @description Retorna o código fonte do shader solicitado
-     */
-    GetShader(name) {
-        if (!this.shaders[name]) console.warn(`AssetManager: Shader '${name}' não encontrado.`);
-        return this.shaders[name];
+    async LoadAsset(name, type = null) {
+        const entry = this.FindAssetEntry(name, type);
+        if (!entry) {
+            throw new Error(`AssetManager: asset '${type ? `${type}:` : ""}${name}' is not registered.`);
+        }
+
+        const key = this.AssetKey(entry.type, name);
+        const loaded = this.GetLoadedAsset(entry.type, name);
+        if (this.HasLoadedAsset(entry.type, name)) return loaded;
+        if (this.loading.has(key)) return this.loading.get(key);
+
+        const promise = this.LoadRegisteredAsset(entry)
+            .finally(() => this.loading.delete(key));
+
+        this.loading.set(key, promise);
+        return promise;
     }
 
-    /**
-     * @description Aguarda todos os assets serem carregados
-     */
-    async LoadAll() {
-        // 1. Primeiro dispara o carregamento de todos os áudios e espera terminar
-        await this.LoadAudioQueue();
+    async LoadAssets(names, type = null) {
+        return Promise.all(names.map(name => this.LoadAsset(name, type)));
+    }
 
-        // 2. Depois espera todas as imagens e shaders terminarem
-        await Promise.all(this.promises);
+    async LoadType(type, { includeLazy = true } = {}) {
+        const names = [...this.registry.values()]
+            .filter(entry => entry.type === type && (includeLazy || !entry.lazy))
+            .map(entry => entry.name);
 
-        // 3. Limpa as filas para não carregar de novo caso chame LoadAll futuramente
-        this.promises = [];
+        return this.LoadAssets(names, type);
+    }
+
+    async LoadRegisteredAsset(entry) {
+        if (entry.type === "image") {
+            return this.LoadImage(entry.name, entry.path);
+        }
+
+        if (entry.type === "audio") {
+            AudioManager.instance.Initialize();
+            const response = await fetch(entry.path);
+            if (!response.ok) throw new Error(`AssetManager: failed to load audio ${entry.path}`);
+            const arrayBuffer = await response.arrayBuffer();
+            const audioBuffer = await AudioManager.instance.context.decodeAudioData(arrayBuffer);
+            this.audios[entry.name] = audioBuffer;
+            return audioBuffer;
+        }
+
+        if (entry.type === "shader") {
+            return this.LoadShader(entry.name, entry.path);
+        }
+
+        if (entry.type === "model") {
+            const model = await this.LoadModel(entry.path);
+            this.models[entry.name] = model;
+            return model;
+        }
+
+        if (entry.type === "json") {
+            return this.LoadJson(entry.name, entry.path);
+        }
+
+        throw new Error(`AssetManager: unsupported asset type '${entry.type}'.`);
+    }
+
+    GetLoadedAsset(type, name) {
+        if (type === "image") return this.images[name];
+        if (type === "audio") return this.audios[name];
+        if (type === "shader") return this.shaders[name];
+        if (type === "model") return this.models[name];
+        if (type === "json") return this.jsons[name];
+        return null;
+    }
+
+    HasLoadedAsset(type, name) {
+        const stores = { image: this.images, audio: this.audios, shader: this.shaders, model: this.models, json: this.jsons };
+        return stores[type] != null && Object.hasOwn(stores[type], name);
+    }
+
+    TouchLazyAsset(name, type) {
+        const entry = this.FindAssetEntry(name, type);
+        const key = entry ? this.AssetKey(entry.type, name) : null;
+        if (!entry?.lazy || this.HasLoadedAsset(entry.type, name) || this.loading.has(key)) return;
+        this.LoadAsset(name, type).catch(error => console.warn(error.message));
+    }
+
+    IsLazyPending(name, type) {
+        const entry = this.FindAssetEntry(name, type);
+        return Boolean(entry?.lazy && entry.type === type && !this.HasLoadedAsset(type, name));
+    }
+
+    FindAssetEntry(name, type = null) {
+        if (type) return this.registry.get(this.AssetKey(type, name)) ?? null;
+
+        const matches = [...this.registry.values()].filter(entry => entry.name === name);
+        if (matches.length <= 1) return matches[0] ?? null;
+
+        throw new Error(
+            `AssetManager: asset '${name}' exists in multiple types. Use LoadAsset(name, type) or a typed async getter.`
+        );
+    }
+
+    AssetKey(type, name) {
+        return `${type}:${name}`;
+    }
+
+    async LoadAll({ includeLazy = false } = {}) {
+        const pending = this.promises.splice(0);
+        for (const entry of this.registry.values()) {
+            if (!entry.lazy || includeLazy) pending.push(this.LoadAsset(entry.name, entry.type));
+        }
         this.audioQueue = [];
+        await Promise.all(pending);
 
-        Logger.log("info", "AssetManager: Todos os assets (Imagens, Shaders e Áudios) foram carregados com sucesso!");
+        Logger.log("info", "AssetManager: all eager assets loaded.");
     }
 
     GetImage(name) {
-        if (!this.images[name]) console.warn(`AssetManager: Imagem '${name}' não encontrada.`);
+        this.TouchLazyAsset(name, "image");
+        if (!this.images[name] && !this.IsLazyPending(name, "image")) {
+            console.warn(`AssetManager: image '${name}' not found.`);
+        }
         return this.images[name];
     }
 
@@ -165,8 +300,52 @@ export class AssetManager {
         return Boolean(this.images[name]);
     }
 
+    GetModel(name) {
+        this.TouchLazyAsset(name, "model");
+        if (!this.models?.[name] && !this.IsLazyPending(name, "model")) {
+            console.warn(`AssetManager: model '${name}' not found.`);
+        }
+        return this.models?.[name] ?? null;
+    }
+
+    GetShader(name) {
+        this.TouchLazyAsset(name, "shader");
+        if (!this.shaders[name] && !this.IsLazyPending(name, "shader")) {
+            console.warn(`AssetManager: shader '${name}' not found.`);
+        }
+        return this.shaders[name];
+    }
+
     GetJson(name) {
-        if (!this.jsons[name]) console.warn(`AssetManager: JSON '${name}' nao encontrado.`);
+        this.TouchLazyAsset(name, "json");
+        if (!this.jsons[name] && !this.IsLazyPending(name, "json")) {
+            console.warn(`AssetManager: JSON '${name}' not found.`);
+        }
+        return this.jsons[name];
+    }
+
+    async GetImageAsync(name) {
+        await this.LoadAsset(name, "image");
+        return this.images[name];
+    }
+
+    async GetAudioAsync(name) {
+        await this.LoadAsset(name, "audio");
+        return this.audios[name];
+    }
+
+    async GetShaderAsync(name) {
+        await this.LoadAsset(name, "shader");
+        return this.shaders[name];
+    }
+
+    async GetModelAsync(name) {
+        await this.LoadAsset(name, "model");
+        return this.models[name];
+    }
+
+    async GetJsonAsync(name) {
+        await this.LoadAsset(name, "json");
         return this.jsons[name];
     }
 }

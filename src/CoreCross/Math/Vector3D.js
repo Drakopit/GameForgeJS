@@ -11,14 +11,38 @@
  */
 
 export class Vector3D {
-    constructor(x, y, z) {
-        this.x = x || 0;
-        this.y = y || 0;
-        this.z = z || 0;
+    constructor(x = 0, y = 0, z = 0) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
     }
 
-    static FromArray(values = [0, 0, 0]) {
-        return new Vector3D(values[0], values[1], values[2]);
+    static Zero() {
+        return new Vector3D(0, 0, 0);
+    }
+
+    static One() {
+        return new Vector3D(1, 1, 1);
+    }
+
+    static FromArray(values = [0, 0, 0], offset = 0) {
+        return new Vector3D(values[offset] ?? 0, values[offset + 1] ?? 0, values[offset + 2] ?? 0);
+    }
+
+    static FromObject(value = {}) {
+        return new Vector3D(value.x ?? value[0] ?? 0, value.y ?? value[1] ?? 0, value.z ?? value[2] ?? 0);
+    }
+
+    Clone() {
+        return new Vector3D(this.x, this.y, this.z);
+    }
+
+    Copy(vector) {
+        const value = Vector3D.FromObject(vector);
+        this.x = value.x;
+        this.y = value.y;
+        this.z = value.z;
+        return this;
     }
 
     /**
@@ -29,11 +53,14 @@ export class Vector3D {
      * @returns new Vector3D(x, y, z)
      */
     GetValue() {
-        return new Vector3D(this.x, this.y, this.z);
+        return this.Clone();
     }
 
-    ToArray() {
-        return [this.x, this.y, this.z];
+    ToArray(out = [], offset = 0) {
+        out[offset] = this.x;
+        out[offset + 1] = this.y;
+        out[offset + 2] = this.z;
+        return out;
     }
 
     /**
@@ -44,21 +71,111 @@ export class Vector3D {
      * @returns void
      */
     SetValue(x, y, z) {
+        return this.Set(x, y, z);
+    }
+
+    Set(x = 0, y = 0, z = 0) {
         this.x = x;
         this.y = y;
         this.z = z;
+        return this;
+    }
+
+    Equals(vector, epsilon = 0) {
+        const value = Vector3D.FromObject(vector);
+        return Math.abs(this.x - value.x) <= epsilon
+            && Math.abs(this.y - value.y) <= epsilon
+            && Math.abs(this.z - value.z) <= epsilon;
+    }
+
+    Add(vector) {
+        const value = Vector3D.FromObject(vector);
+        return new Vector3D(this.x + value.x, this.y + value.y, this.z + value.z);
     }
 
     AddValue(vector3D) {
-        return new Vector3D(this.x + vector3D.GetValue().x, this.y + vector3D.GetValue().y, this.z + vector3D.GetValue().z);
+        return this.Add(vector3D);
+    }
+
+    AddSelf(vector) {
+        const value = Vector3D.FromObject(vector);
+        this.x += value.x;
+        this.y += value.y;
+        this.z += value.z;
+        return this;
+    }
+
+    Subtract(vector) {
+        const value = Vector3D.FromObject(vector);
+        return new Vector3D(this.x - value.x, this.y - value.y, this.z - value.z);
     }
 
     SubtractValue(vector3D) {
-        return new Vector3D(this.x - vector3D.GetValue().x, this.y - vector3D.GetValue().y, this.z - vector3D.GetValue().z);
+        return this.Subtract(vector3D);
+    }
+
+    SubtractSelf(vector) {
+        const value = Vector3D.FromObject(vector);
+        this.x -= value.x;
+        this.y -= value.y;
+        this.z -= value.z;
+        return this;
+    }
+
+    MultiplyScalar(scalar) {
+        return new Vector3D(this.x * scalar, this.y * scalar, this.z * scalar);
+    }
+
+    MultiplyScalarSelf(scalar) {
+        this.x *= scalar;
+        this.y *= scalar;
+        this.z *= scalar;
+        return this;
+    }
+
+    DivideScalar(scalar) {
+        return scalar === 0 ? new Vector3D() : new Vector3D(this.x / scalar, this.y / scalar, this.z / scalar);
+    }
+
+    DivideScalarSelf(scalar) {
+        if (scalar === 0) return this.Set(0, 0, 0);
+        this.x /= scalar;
+        this.y /= scalar;
+        this.z /= scalar;
+        return this;
+    }
+
+    Dot(vector) {
+        const value = Vector3D.FromObject(vector);
+        return this.x * value.x + this.y * value.y + this.z * value.z;
+    }
+
+    Cross(vector) {
+        const value = Vector3D.FromObject(vector);
+        return new Vector3D(
+            this.y * value.z - this.z * value.y,
+            this.z * value.x - this.x * value.z,
+            this.x * value.y - this.y * value.x
+        );
+    }
+
+    LengthSquared() {
+        return this.Dot(this);
+    }
+
+    Length() {
+        return Math.hypot(this.x, this.y, this.z);
+    }
+
+    Normalize() {
+        return this.DivideScalar(this.Length() || 1);
+    }
+
+    NormalizeSelf() {
+        return this.DivideScalarSelf(this.Length() || 1);
     }
 
     DistanceTo(vector3D) {
-        const difference = this.SubtractValue(vector3D);
-        return Math.hypot(difference.x, difference.y, difference.z);
+        return this.Subtract(vector3D).Length();
     }
 }

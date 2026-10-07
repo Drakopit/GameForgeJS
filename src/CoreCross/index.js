@@ -30,6 +30,7 @@ export { Mat4 } from "./Math/Mat4.js";
 export { MathExt } from "./Math/MathExt.js";
 export { Vector2D } from "./Math/Vector2D.js";
 export { Vector3D } from "./Math/Vector3D.js";
+export { Vector4D } from "./Math/Vector4D.js";
 export { ObjectPool } from "./ObjectPool.js";
 export { aStar } from "./Pathfinding/AStar.js";
 export { bfs } from "./Pathfinding/BFS.js";

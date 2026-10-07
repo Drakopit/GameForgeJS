@@ -13,6 +13,8 @@ export class Transform3D {
         position = [0, 0, 0],
         rotation = { x: 0, y: 0, z: 0 },
         scale = [1, 1, 1],
+        matrix = null,
+        parent = null,
     } = {}) {
         this.position = [...position];
         this.rotation = {
@@ -21,6 +23,8 @@ export class Transform3D {
             z: rotation.z ?? rotation[2] ?? 0,
         };
         this.scale = [...scale];
+        this.matrix = matrix ? Mat4.clone(matrix) : null;
+        this.parent = parent;
     }
 
     /**
@@ -57,12 +61,16 @@ export class Transform3D {
      * @returns {Float32Array} Model matrix.
      */
     GetMatrix(out = Mat4.create()) {
-        Mat4.identity(out);
-        Mat4.translate(out, out, this.position);
-        Mat4.rotateX(out, out, this.rotation.x);
-        Mat4.rotateY(out, out, this.rotation.y);
-        Mat4.rotateZ(out, out, this.rotation.z);
-        Mat4.scale(out, out, this.scale);
+        if (this.matrix) Mat4.copy(out, this.matrix);
+        else {
+            Mat4.identity(out);
+            Mat4.translate(out, out, this.position);
+            Mat4.rotateX(out, out, this.rotation.x);
+            Mat4.rotateY(out, out, this.rotation.y);
+            Mat4.rotateZ(out, out, this.rotation.z);
+            Mat4.scale(out, out, this.scale);
+        }
+        if (this.parent) Mat4.multiply(out, this.parent.GetMatrix(), out);
         return out;
     }
 }

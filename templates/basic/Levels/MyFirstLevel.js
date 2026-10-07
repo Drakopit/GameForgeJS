@@ -1,5 +1,5 @@
-import { Level } from "../../packages/core/index.js";
-import { GameObject } from "../../packages/2d/index.js";
+import { Level } from "../../../packages/core/index.js";
+import { GameObject } from "../../../packages/2d/index.js";
 
 export class MyFirstLevel extends Level {
     constructor() {

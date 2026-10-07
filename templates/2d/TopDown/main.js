@@ -1,4 +1,4 @@
-import { BootstrapGame } from "../../packages/core/index.js";
+import { BootstrapGame } from "../../../packages/core/index.js";
 import { TopDownLevel } from "./Levels/TopDownLevel.js";
 
 BootstrapGame({

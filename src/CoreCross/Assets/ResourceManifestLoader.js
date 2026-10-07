@@ -28,11 +28,11 @@ export class ResourceManifestLoader {
 
         const manifest = await response.json();
 
-        manifest.images?.forEach(asset => assets.QueueImage(asset.name, asset.path));
-        manifest.audios?.forEach(asset => assets.QueueAudio(asset.name, asset.path));
-        manifest.shaders?.forEach(asset => assets.QueueShader(asset.name, asset.path));
-        manifest.models?.forEach(asset => assets.QueueModel(asset.name, asset.path));
-        manifest.jsons?.forEach(asset => assets.QueueJson?.(asset.name, asset.path));
+        manifest.images?.forEach(asset => assets.QueueImage(asset.name, asset.path, asset));
+        manifest.audios?.forEach(asset => assets.QueueAudio(asset.name, asset.path, asset));
+        manifest.shaders?.forEach(asset => assets.QueueShader(asset.name, asset.path, asset));
+        manifest.models?.forEach(asset => assets.QueueModel(asset.name, asset.path, asset));
+        manifest.jsons?.forEach(asset => assets.QueueJson?.(asset.name, asset.path, asset));
 
         return manifest;
     }

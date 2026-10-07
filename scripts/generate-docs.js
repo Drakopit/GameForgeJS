@@ -145,11 +145,12 @@ function findDeclaration(entry) {
         String.raw`(?:\/\*\*((?:(?!\*\/)[\s\S])*)\*\/\s*)?export\s+(class|(?:async\s+)?function|const)\s+${name}\b`,
     );
     const match = source.match(pattern);
+    const kind = match?.[2]?.replace("async ", "") ?? "export";
     return {
         ...entry,
-        kind: match?.[2]?.replace("async ", "") ?? "export",
+        kind,
         doc: parseDoc(match?.[1]),
-        members: findDocumentedMembers(source),
+        members: kind === "class" ? findClassMembers(source, name) : findDocumentedMembers(source),
     };
 }
 
@@ -165,6 +166,98 @@ function findDocumentedMembers(source) {
         }
     }
     return members;
+}
+
+function findClassMembers(source, className) {
+    const classMatch = source.match(new RegExp(String.raw`export\s+class\s+${className}\b`));
+    if (!classMatch) return findDocumentedMembers(source);
+
+    const classStart = classMatch.index;
+    const bodyStart = source.indexOf("{", classStart);
+    const bodyEnd = findMatchingBrace(source, bodyStart);
+    if (bodyStart === -1 || bodyEnd === -1) return findDocumentedMembers(source);
+
+    const body = source.slice(bodyStart + 1, bodyEnd);
+    const pattern = /^\s*(?:\/\*\*((?:(?!\*\/)[\s\S])*)\*\/\s*)?((?:static\s+)?[A-Za-z_$][\w$]*)\s*\(([^)]*)\)\s*\{/gm;
+    const skip = new Set(["constructor", "if", "for", "while", "switch", "catch"]);
+    const members = [];
+    const seen = new Set();
+
+    for (const match of body.matchAll(pattern)) {
+        const name = match[2].trim();
+        if (skip.has(name) || seen.has(name)) continue;
+        seen.add(name);
+
+        const doc = parseDoc(match[1]) ?? { description: "", params: [], returns: "", deprecated: "", example: "" };
+        members.push({
+            name,
+            signature: `${name}(${match[3].replace(/\s+/g, " ").trim()})`,
+            doc,
+        });
+    }
+
+    return members;
+}
+
+function findMatchingBrace(source, openIndex) {
+    if (openIndex < 0) return -1;
+
+    let depth = 0;
+    let quote = null;
+    let lineComment = false;
+    let blockComment = false;
+
+    for (let index = openIndex; index < source.length; index++) {
+        const char = source[index];
+        const next = source[index + 1];
+
+        if (lineComment) {
+            if (char === "\n") lineComment = false;
+            continue;
+        }
+
+        if (blockComment) {
+            if (char === "*" && next === "/") {
+                blockComment = false;
+                index++;
+            }
+            continue;
+        }
+
+        if (quote) {
+            if (char === "\\") {
+                index++;
+                continue;
+            }
+            if (char === quote) quote = null;
+            continue;
+        }
+
+        if (char === "\"" || char === "'" || char === "`") {
+            quote = char;
+            continue;
+        }
+
+        if (char === "/" && next === "/") {
+            lineComment = true;
+            index++;
+            continue;
+        }
+
+        if (char === "/" && next === "*") {
+            blockComment = true;
+            index++;
+            continue;
+        }
+
+        if (char === "{") depth++;
+        if (char === "}") {
+            depth--;
+            if (depth === 0) return index;
+        }
+    }
+
+    return -1;
 }
 
 function escapeCell(value) {
@@ -198,9 +291,9 @@ function renderSymbol(symbol) {
     if (symbol.doc?.example) output.push("", "**Example**", "", "```js", symbol.doc.example, "```");
 
     if (symbol.members.length) {
-        output.push("", "### Documented Methods", "");
+        output.push("", "### Methods", "");
         symbol.members.forEach(member => {
-            output.push(`#### \`${member.name}()\``, "", member.doc.description || "Documented method.");
+            output.push(`#### \`${member.signature ?? `${member.name}()`}\``, "", member.doc.description || "JSDoc pending.");
             if (member.doc.params.length) output.push(renderParams(member.doc.params).trimEnd());
             if (member.doc.returns) output.push("", `**Returns:** ${member.doc.returns}`);
         });

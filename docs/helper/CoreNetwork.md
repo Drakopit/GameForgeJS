@@ -33,9 +33,9 @@ Reusable online text chat service connected to a `GameNetwork` session. It owns 
 | `[options]` | `Object` | Chat constraints. |
 | `[options.maxLength=120]` | `number` | Maximum transmitted text length. |
 
-### Documented Methods
+### Methods
 
-#### `sendMessage()`
+#### `sendMessage(text)`
 
 Emits a local chat message and relays it to connected peers.
 
@@ -46,7 +46,7 @@ Emits a local chat message and relays it to connected peers.
 | `text` | `string` | User-entered message. |
 
 **Returns:** `boolean` - Whether non-empty text was accepted.
-#### `onMessageReceived()`
+#### `onMessageReceived(callback)`
 
 Subscribes to local, remote and system chat messages.
 
@@ -57,7 +57,7 @@ Subscribes to local, remote and system chat messages.
 | `callback` | `Function` | Receives a normalized chat message. |
 
 **Returns:** `Function` - Unsubscribe callback.
-#### `addSystemMessage()`
+#### `addSystemMessage(text)`
 
 Emits an informational message without transmitting it.
 
@@ -68,6 +68,12 @@ Emits an informational message without transmitting it.
 | `text` | `string` | Notice content. |
 
 **Returns:** `void`
+#### `receiveMessage(peerId, payload, peer)`
+
+JSDoc pending.
+#### `normalizeText(text)`
+
+JSDoc pending.
 #### `dispose()`
 
 Releases subscriptions created by this service.
@@ -100,9 +106,9 @@ network.onPlayerStateReceived((peerId, state) => players.updateState(peerId, sta
 network.connect();
 ```
 
-### Documented Methods
+### Methods
 
-#### `useAdapter()`
+#### `useAdapter(adapter)`
 
 Selects the transport used by this session.
 
@@ -123,7 +129,13 @@ Opens the selected adapter and starts peer discovery.
 Closes the adapter and forgets discovered remote peers.
 
 **Returns:** `GameNetwork` - This network instance.
-#### `setPeerProfile()`
+#### `createRoom(roomId)`
+
+JSDoc pending.
+#### `joinRoom(roomId)`
+
+JSDoc pending.
+#### `setPeerProfile(profile = {})`
 
 Updates the local public identity and informs connected peers.
 
@@ -134,7 +146,7 @@ Updates the local public identity and informs connected peers.
 | `profile` | `Object` | Public peer fields such as `name`. |
 
 **Returns:** `GameNetwork` - This network instance.
-#### `send()`
+#### `send(type, payload = {})`
 
 Sends an application message to peers in the current room.
 
@@ -146,7 +158,7 @@ Sends an application message to peers in the current room.
 | `[payload={}]` | `Object` | Game-owned serializable payload. |
 
 **Returns:** `boolean` - Whether an adapter accepted the message.
-#### `sendPlayerState()`
+#### `sendPlayerState(state)`
 
 Sends the local player's small replicated state payload.
 
@@ -157,6 +169,36 @@ Sends the local player's small replicated state payload.
 | `state` | `Object` | Game-selected state such as position and animation. |
 
 **Returns:** `boolean` - Whether the message was submitted.
+#### `onConnected(callback)`
+
+JSDoc pending.
+#### `onPeerJoined(callback)`
+
+JSDoc pending.
+#### `onPeerLeft(callback)`
+
+JSDoc pending.
+#### `onPeerUpdated(callback)`
+
+JSDoc pending.
+#### `onPlayerStateReceived(callback)`
+
+JSDoc pending.
+#### `handleOpen()`
+
+JSDoc pending.
+#### `handleMessage(message)`
+
+JSDoc pending.
+#### `registerPeer(peer)`
+
+JSDoc pending.
+#### `removePeer(peerId)`
+
+JSDoc pending.
+#### `unbindAdapter()`
+
+JSDoc pending.
 
 ## LocalNetworkAdapter
 
@@ -173,14 +215,20 @@ Same-origin multiplayer transport implemented with `BroadcastChannel`. It is use
 | `[options.peer={}]` | `Object` | Local public peer profile. |
 | `[options.channelPrefix="gameforgejs-online"]` | `string` | Browser channel namespace. |
 
-### Documented Methods
+### Methods
 
+#### `setPeer(peer)`
+
+JSDoc pending.
+#### `setRoom(roomId)`
+
+JSDoc pending.
 #### `connect()`
 
 Opens the browser broadcast channel.
 
 **Returns:** `LocalNetworkAdapter` - This adapter.
-#### `send()`
+#### `send(type, payload = {})`
 
 Broadcasts an envelope to the other tabs in this room.
 
@@ -204,7 +252,7 @@ Announces departure and releases the browser channel.
 
 Lifecycle states emitted by `NetworkClient`.
 
-### Documented Methods
+### Methods
 
 #### `static FromConfig()`
 
@@ -299,9 +347,9 @@ Low-level WebSocket client for message envelopes and optional request/reply call
 | `[options.serializer=null]` | `Function\|null` | Envelope-to-wire converter. |
 | `[options.parser=null]` | `Function\|null` | Wire-to-envelope converter. |
 
-### Documented Methods
+### Methods
 
-#### `static FromConfig()`
+#### `static FromConfig(config = Config.data?.network ?? {})`
 
 Constructs a client using `Config.data.network` compatible properties.
 
@@ -312,7 +360,7 @@ Constructs a client using `Config.data.network` compatible properties.
 | `[config]` | `Object` | Network configuration object. |
 
 **Returns:** `NetworkClient` - Configured client.
-#### `Connect()`
+#### `Connect(url = this.url, protocols = this.protocols)`
 
 Opens a WebSocket connection.
 
@@ -324,7 +372,7 @@ Opens a WebSocket connection.
 | `[protocols]` | `string\|string[]` | WebSocket subprotocol override. |
 
 **Returns:** `NetworkClient` - This client.
-#### `Disconnect()`
+#### `Disconnect(code = 1000, reason = "client disconnect")`
 
 Stops reconnection and closes the socket.
 
@@ -336,7 +384,7 @@ Stops reconnection and closes the socket.
 | `[reason="client disconnect"]` | `string` | Close reason. |
 
 **Returns:** `NetworkClient` - This client.
-#### `Send()`
+#### `Send(type, payload = {}, meta = {})`
 
 Sends a message envelope or creates one from a type and payload.
 
@@ -349,7 +397,7 @@ Sends a message envelope or creates one from a type and payload.
 | `[meta={}]` | `Object` | Envelope metadata. |
 
 **Returns:** `Object|boolean` - Sent envelope, or `false` while disconnected.
-#### `Request()`
+#### `Request(type, payload = {}, { timeout = 5000, responseType = null } = {})`
 
 Sends a correlated message and waits for its matching reply.
 
@@ -362,7 +410,7 @@ Sends a correlated message and waits for its matching reply.
 | `[options]` | `Object` | Timeout and expected response type. |
 
 **Returns:** `Promise<Object>` - Reply envelope.
-#### `Reply()`
+#### `Reply(requestMessage, type, payload = {}, meta = {})`
 
 Responds to a previously received request envelope.
 
@@ -376,6 +424,33 @@ Responds to a previously received request envelope.
 | `[meta={}]` | `Object` | Additional response metadata. |
 
 **Returns:** `Object|boolean` - Sent response or `false`.
+#### `HandleOpen(event)`
+
+JSDoc pending.
+#### `HandleMessage(event)`
+
+JSDoc pending.
+#### `HandleError(event)`
+
+JSDoc pending.
+#### `HandleClose(event)`
+
+JSDoc pending.
+#### `ResolvePendingRequest(message)`
+
+JSDoc pending.
+#### `RejectPendingRequests(error)`
+
+JSDoc pending.
+#### `ScheduleReconnect()`
+
+JSDoc pending.
+#### `ClearReconnect()`
+
+JSDoc pending.
+#### `SetState(state)`
+
+JSDoc pending.
 
 ## NetworkMessage
 
@@ -383,9 +458,9 @@ Responds to a previously received request envelope.
 
 Creates and decodes transport-neutral message envelopes. Payload contents belong to the game; this utility only gives messages a stable `type` and metadata shape.
 
-### Documented Methods
+### Methods
 
-#### `static Create()`
+#### `static Create(type, payload = {}, meta = {})`
 
 Creates an envelope with an id and send timestamp.
 
@@ -398,7 +473,7 @@ Creates an envelope with an id and send timestamp.
 | `[meta={}]` | `Object` | Additional metadata. |
 
 **Returns:** `Object` - Message envelope.
-#### `static IsEnvelope()`
+#### `static IsEnvelope(value)`
 
 Tests whether a value has the minimal envelope contract.
 
@@ -409,7 +484,7 @@ Tests whether a value has the minimal envelope contract.
 | `value` | `*` | Candidate value. |
 
 **Returns:** `boolean` - Whether the value is an envelope.
-#### `static Serialize()`
+#### `static Serialize(message)`
 
 Encodes an envelope as JSON.
 
@@ -420,7 +495,7 @@ Encodes an envelope as JSON.
 | `message` | `Object` | Message envelope. |
 
 **Returns:** `string` - JSON representation.
-#### `static Parse()`
+#### `static Parse(data)`
 
 Parses JSON text, an ArrayBuffer or an existing envelope.
 
@@ -431,6 +506,12 @@ Parses JSON text, an ArrayBuffer or an existing envelope.
 | `data` | `string\|ArrayBuffer\|Object` | Wire data. |
 
 **Returns:** `Object` - Message envelope.
+#### `static CreateId(prefix = "msg")`
+
+JSDoc pending.
+#### `static Now()`
+
+JSDoc pending.
 
 ## NetworkStateSync
 
@@ -448,9 +529,9 @@ Periodically broadcasts snapshots of small tracked objects through a network cli
 | `[options.id]` | `string` | Local source identifier. |
 | `[options.tickRate=20]` | `number` | Snapshot broadcasts per second. |
 
-### Documented Methods
+### Methods
 
-#### `Track()`
+#### `Track(id, { read, write = null } = {})`
 
 Tracks state with game-provided reader and optional writer callbacks.
 
@@ -464,7 +545,7 @@ Tracks state with game-provided reader and optional writer callbacks.
 | `[callbacks.write=null]` | `Function\|null` | Applies remote state. |
 
 **Returns:** `NetworkStateSync` - This synchronizer.
-#### `TrackObject()`
+#### `TrackObject(id, target, fields = ["position", "rotation", "scale"])`
 
 Tracks common fields on a plain target object.
 
@@ -477,12 +558,15 @@ Tracks common fields on a plain target object.
 | `[fields]` | `string[]` | Replicated property names. |
 
 **Returns:** `NetworkStateSync` - This synchronizer.
+#### `Untrack(id)`
+
+JSDoc pending.
 #### `Snapshot()`
 
 Produces the current serializable entity snapshot.
 
 **Returns:** `Object` - Snapshot containing source, timestamp and entities.
-#### `Broadcast()`
+#### `Broadcast(meta = {})`
 
 Sends one current snapshot.
 
@@ -493,6 +577,27 @@ Sends one current snapshot.
 | `[meta={}]` | `Object` | Message envelope metadata. |
 
 **Returns:** `Object|boolean` - Sent envelope or `false` without a client.
+#### `Apply(snapshot)`
+
+JSDoc pending.
+#### `Start()`
+
+JSDoc pending.
+#### `Stop()`
+
+JSDoc pending.
+#### `ReadFields(target, fields)`
+
+JSDoc pending.
+#### `WriteFields(target, state)`
+
+JSDoc pending.
+#### `ClonePlainValue(value)`
+
+JSDoc pending.
+#### `IsPlainObject(value)`
+
+JSDoc pending.
 
 ## OnlineEntitySync
 
@@ -509,9 +614,9 @@ Rate-limited sender for one game's local entity state. The game supplies `readSt
 | `options.readState` | `Function` | Returns serializable local state. |
 | `[options.syncRate=12]` | `number` | Maximum sends per second. |
 
-### Documented Methods
+### Methods
 
-#### `update()`
+#### `update(deltaTime = 1 / 60)`
 
 Advances the rate limiter and sends changed state when due.
 
@@ -522,7 +627,7 @@ Advances the rate limiter and sends changed state when due.
 | `[deltaTime=0.0166667]` | `number` | Frame time in seconds. |
 
 **Returns:** `boolean` - Whether state was sent.
-#### `send()`
+#### `send(force = false)`
 
 Immediately evaluates and optionally sends local state.
 
@@ -533,6 +638,9 @@ Immediately evaluates and optionally sends local state.
 | `[force=false]` | `boolean` | Send even when fields did not change. |
 
 **Returns:** `boolean` - Whether the network accepted a state message.
+#### `changed(state)`
+
+JSDoc pending.
 
 ## OnlinePlayerManager
 
@@ -548,9 +656,9 @@ Stores remote peer render state and smooths numeric movement fields. The manager
 | `[options]` | `Object` | Remote state settings. |
 | `[options.smoothing=16]` | `number` | Interpolation response per second. |
 
-### Documented Methods
+### Methods
 
-#### `spawn()`
+#### `spawn(peer)`
 
 Creates or refreshes a remote player profile.
 
@@ -561,7 +669,10 @@ Creates or refreshes a remote player profile.
 | `peer` | `Object` | Peer with a stable `id`. |
 
 **Returns:** `Object|null` - Stored player entry.
-#### `updateState()`
+#### `remove(peerId)`
+
+JSDoc pending.
+#### `updateState(peerId, state = {}, peer = {})`
 
 Stores the newest target state received from a remote player.
 
@@ -574,7 +685,7 @@ Stores the newest target state received from a remote player.
 | `[peer={}]` | `Object` | Updated peer profile. |
 
 **Returns:** `void`
-#### `update()`
+#### `update(deltaTime = 1 / 60)`
 
 Interpolates displayed numeric position and velocity fields.
 
@@ -612,14 +723,20 @@ Adapter that carries `GameNetwork` messages through an external WebSocket relay.
 | `[options.peer={}]` | `Object` | Local peer profile. |
 | `[options.autoReconnect=true]` | `boolean` | Whether the low-level client reconnects. |
 
-### Documented Methods
+### Methods
 
+#### `setPeer(peer)`
+
+JSDoc pending.
+#### `setRoom(roomId)`
+
+JSDoc pending.
 #### `connect()`
 
 Creates and connects the underlying WebSocket client.
 
 **Returns:** `WebSocketClientAdapter` - This adapter.
-#### `send()`
+#### `send(type, payload = {})`
 
 Sends a room-aware message envelope to the relay.
 

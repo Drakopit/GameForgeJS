@@ -4,14 +4,14 @@
 
 Canvas rendering, collisions, gameplay objects and canvas UI APIs.
 
-Documented exports: **72/72**.
+Documented exports: **73/73**.
 
 | Symbol | Kind | Summary |
 | --- | --- | --- |
 | [`ActionInputComponent`](#actioninputcomponent) | `class` | Exposes configured `ActionManager` values to a composed game entity. |
 | [`ActionManager`](#actionmanager) | `class` | Maps game actions to one or more low-level keyboard or gamepad inputs. Use this layer in gameplay so controls can be configured per game while the `Input` class remains responsible for raw per-frame state. |
 | [`Animator`](#animator) | `class` | Controla a transição de diferentes animações para um mesmo Sprite. |
-| [`AssetManager`](#assetmanager) | `class` | Preloader para imagens, áudios e dados JSON. Evita travamentos durante o gameplay. |
+| [`AssetManager`](#assetmanager) | `class` | Dependency-free asset registry, eager preloader and lazy loader. Manifests may set `{ "lazy": true }` on any asset entry. Lazy assets are registered during bootstrap but only fetched after `LoadAsset(name)` or one of the async getters is called. |
 | [`aStar`](#astar) | `function` | Finds a shortest grid path using a Manhattan-distance A-star search. |
 | [`AudioManager`](#audiomanager) | `class` | Singleton Web Audio service for loaded effects, music and master volume control. |
 | [`Base`](#base) | `class` | Standardized Lifecycle Contract for GameForgeJS This is the single source of truth for object/component lifecycles. Both GameObject (via inheritance) and Components should follow this contract. Lifecycle Order (typical): 1. Constructor 2. OnAttach (Components only) 3. OnStart 4. OnUpdate / OnFixedUpdate (loop) 5. OnDrawn / OnGUI 6. OnDestroy / OnDetach |
@@ -79,6 +79,7 @@ Documented exports: **72/72**.
 | [`Util`](#util) | `class` | That class was made, to compose the EngineHtml5 framework. |
 | [`Vector2D`](#vector2d) | `class` | That class was made, to compose the EngineHtml5 framework. |
 | [`Vector3D`](#vector3d) | `class` | That class was made, to compose the EngineHtml5 framework. |
+| [`Vector4D`](#vector4d) | `class` | Four-component vector for colors, quaternions, homogeneous coordinates and generic math data. |
 | [`VelocityComponent`](#velocitycomponent) | `class` | Applies velocity, gravity and friction to an owner's 2D position. |
 
 ## ActionInputComponent
@@ -87,20 +88,17 @@ Documented exports: **72/72**.
 
 Exposes configured `ActionManager` values to a composed game entity.
 
-### Documented Methods
+### Methods
 
-#### `OnAttach()`
+#### `Map(alias, actionName)`
 
-Called when this component is attached to a GameObject. Override this instead of putting attach logic in the constructor.
+JSDoc pending.
+#### `IsDown(aliasOrActionName)`
 
-**Parameters**
+JSDoc pending.
+#### `IsHeld(aliasOrActionName)`
 
-| Name | Type | Description |
-| --- | --- | --- |
-| `owner` | `object` |  |
-#### `OnDetach()`
-
-Called when this component is removed from its owner.
+JSDoc pending.
 
 ## ActionManager
 
@@ -118,9 +116,9 @@ Input.GamepadButton("A"),
 if (ActionManager.IsActionDown("JUMP")) player.Jump();
 ```
 
-### Documented Methods
+### Methods
 
-#### `static LoadMappings()`
+#### `static LoadMappings(configMappings)`
 
 Replaces all mappings using values loaded from a game config.
 
@@ -131,7 +129,7 @@ Replaces all mappings using values loaded from a game config.
 | `configMappings` | `Object` | Map of action names to input rules. |
 
 **Returns:** `void`
-#### `static MapAction()`
+#### `static MapAction(actionName, rules = [])`
 
 Assigns rules for one action.
 
@@ -143,7 +141,7 @@ Assigns rules for one action.
 | `[rules=[]` | `Object[]` | ] - Rules produced by `Input.Keyboard` or gamepad helpers. |
 
 **Returns:** `typeof ActionManager` - This action manager class.
-#### `static IsActionDown()`
+#### `static IsActionDown(actionName)`
 
 Tests whether any mapped input was pressed this frame.
 
@@ -154,7 +152,7 @@ Tests whether any mapped input was pressed this frame.
 | `actionName` | `string` | Game-defined action. |
 
 **Returns:** `boolean` - Whether the action went down.
-#### `static IsActionUp()`
+#### `static IsActionUp(actionName)`
 
 Tests whether any mapped input was released this frame.
 
@@ -165,7 +163,7 @@ Tests whether any mapped input was released this frame.
 | `actionName` | `string` | Game-defined action. |
 
 **Returns:** `boolean` - Whether the action went up.
-#### `static IsAction()`
+#### `static IsAction(actionName)`
 
 Tests whether an action currently exceeds its digital threshold.
 
@@ -176,7 +174,7 @@ Tests whether an action currently exceeds its digital threshold.
 | `actionName` | `string` | Game-defined action. |
 
 **Returns:** `boolean` - Whether the action is held.
-#### `static GetActionValue()`
+#### `static GetActionValue(actionName)`
 
 Reads the greatest mapped input strength, retaining analog axis intensity.
 
@@ -187,6 +185,24 @@ Reads the greatest mapped input strength, retaining analog axis intensity.
 | `actionName` | `string` | Game-defined action. |
 
 **Returns:** `number` - Action value from zero to one.
+#### `static IsGamepadInputDown(input, padIndex = null)`
+
+JSDoc pending.
+#### `static IsGamepadInputUp(input, padIndex = null)`
+
+JSDoc pending.
+#### `static GetGamepadInputValue(input, padIndex = null)`
+
+JSDoc pending.
+#### `static GetRules(actionName)`
+
+JSDoc pending.
+#### `static GetPadIndices(padIndex = null)`
+
+JSDoc pending.
+#### `static ResolveGamepadInput(input)`
+
+JSDoc pending.
 
 ## Animator
 
@@ -194,9 +210,9 @@ Reads the greatest mapped input strength, retaining analog axis intensity.
 
 Controla a transição de diferentes animações para um mesmo Sprite.
 
-### Documented Methods
+### Methods
 
-#### `AddAnimation()`
+#### `AddAnimation(name, image, row, totalFrames, speed, pivotX = 0.5, pivotY = 1, groundOffset = 0, events = null, options = {})`
 
 Registra uma nova animação
 
@@ -208,7 +224,13 @@ Registra uma nova animação
 | `row` | `number` | Linha na spritesheet |
 | `frameCount` | `number` | Quantidade de frames |
 | `speed` | `number` | Velocidade da animação (updatesPerFrame) |
-#### `Play()`
+#### `Transition(name, duration = 0.15)`
+
+JSDoc pending.
+#### `Update(dt)`
+
+JSDoc pending.
+#### `Play(name)`
 
 Toca a animação se ela já não estiver tocando
 
@@ -216,19 +238,79 @@ Toca a animação se ela já não estiver tocando
 
 `class` from [`src/CoreCross/Assets/AssetManager.js`](../../src/CoreCross/Assets/AssetManager.js)
 
-Preloader para imagens, áudios e dados JSON. Evita travamentos durante o gameplay.
+Dependency-free asset registry, eager preloader and lazy loader. Manifests may set `{ "lazy": true }` on any asset entry. Lazy assets are registered during bootstrap but only fetched after `LoadAsset(name)` or one of the async getters is called.
 
-### Documented Methods
+### Methods
 
-#### `QueueImage()`
+#### `RegisterAsset(type, name, path, options = {})`
 
-Coloca uma imagem na fila de carregamento
-#### `QueueShader()`
+JSDoc pending.
+#### `RegisterImage(name, path, options = {})`
 
-Coloca um shader na fila de carregamento
-#### `GetShader()`
+JSDoc pending.
+#### `RegisterAudio(name, path, options = {})`
 
-Retorna o código fonte do shader solicitado
+JSDoc pending.
+#### `RegisterShader(name, path, options = {})`
+
+JSDoc pending.
+#### `RegisterModel(name, path, options = {})`
+
+JSDoc pending.
+#### `RegisterJson(name, path, options = {})`
+
+JSDoc pending.
+#### `QueueAudio(name, path, options = {})`
+
+JSDoc pending.
+#### `GetAudio(name)`
+
+JSDoc pending.
+#### `QueueImage(name, src, options = {})`
+
+JSDoc pending.
+#### `LoadImage(name, src)`
+
+JSDoc pending.
+#### `QueueShader(name, url, options = {})`
+
+JSDoc pending.
+#### `QueueModel(name, url, options = {})`
+
+JSDoc pending.
+#### `QueueJson(name, url, options = {})`
+
+JSDoc pending.
+#### `GetLoadedAsset(type, name)`
+
+JSDoc pending.
+#### `TouchLazyAsset(name, type)`
+
+JSDoc pending.
+#### `IsLazyPending(name, type)`
+
+JSDoc pending.
+#### `FindAssetEntry(name, type = null)`
+
+JSDoc pending.
+#### `AssetKey(type, name)`
+
+JSDoc pending.
+#### `GetImage(name)`
+
+JSDoc pending.
+#### `HasImage(name)`
+
+JSDoc pending.
+#### `GetModel(name)`
+
+JSDoc pending.
+#### `GetShader(name)`
+
+JSDoc pending.
+#### `GetJson(name)`
+
+JSDoc pending.
 
 ## aStar
 
@@ -252,14 +334,23 @@ Finds a shortest grid path using a Manhattan-distance A-star search.
 
 Singleton Web Audio service for loaded effects, music and master volume control.
 
-### Documented Methods
+### Methods
 
-#### `PlaySFX()`
+#### `Initialize()`
+
+JSDoc pending.
+#### `SetGlobalVolume(volume)`
+
+JSDoc pending.
+#### `PlaySFX(audioBuffer, localVolume = 1.0)`
 
 Toca um Efeito Sonoro (SFX). Fire and Forget! Cria uma instância nova, toca e o próprio navegador limpa da memória depois.
-#### `PlayBGM()`
+#### `PlayBGM(audioBuffer, localVolume = 0.5)`
 
 Toca Música de Fundo (BGM). Loop automático e permite pausar.
+#### `StopBGM()`
+
+JSDoc pending.
 
 ## Base
 
@@ -267,12 +358,12 @@ Toca Música de Fundo (BGM). Loop automático e permite pausar.
 
 Standardized Lifecycle Contract for GameForgeJS This is the single source of truth for object/component lifecycles. Both GameObject (via inheritance) and Components should follow this contract. Lifecycle Order (typical): 1. Constructor 2. OnAttach (Components only) 3. OnStart 4. OnUpdate / OnFixedUpdate (loop) 5. OnDrawn / OnGUI 6. OnDestroy / OnDetach
 
-### Documented Methods
+### Methods
 
 #### `OnStart()`
 
 Called when the object is first initialized (Level start or object creation). Use for one-time setup.
-#### `OnUpdate()`
+#### `OnUpdate(deltaTime)`
 
 Called every frame.
 
@@ -281,7 +372,7 @@ Called every frame.
 | Name | Type | Description |
 | --- | --- | --- |
 | `deltaTime` | `number` | Time since last frame in seconds |
-#### `OnFixedUpdate()`
+#### `OnFixedUpdate(fixedDeltaTime)`
 
 Called at a fixed timestep (default 60 times per second). Use for physics, deterministic logic, etc.
 
@@ -299,9 +390,9 @@ Called for UI / HUD drawing (after main scene drawing).
 #### `OnDestroy()`
 
 Called when the object is being destroyed / removed. Use for cleanup (removing listeners, stopping sounds, etc).
-#### `OnCollision()`
+#### `OnCollision(other)`
 
-Documented method.
+JSDoc pending.
 
 ## bfs
 
@@ -341,20 +432,20 @@ Loads a game's configuration and assets, registers its levels and starts the eng
 
 Supplies a reusable AABB for collision tests and pointer selection.
 
-### Documented Methods
+### Methods
 
-#### `OnAttach()`
+#### `OnAttach(owner)`
 
-Called when this component is attached to a GameObject. Override this instead of putting attach logic in the constructor.
+JSDoc pending.
+#### `GetAABB()`
 
-**Parameters**
+JSDoc pending.
+#### `ContainsPoint(x, y)`
 
-| Name | Type | Description |
-| --- | --- | --- |
-| `owner` | `object` |  |
-#### `OnDetach()`
+JSDoc pending.
+#### `Intersects(other)`
 
-Called when this component is removed from its owner.
+JSDoc pending.
 
 ## BoxController2D
 
@@ -369,13 +460,37 @@ Resolves an entity's manifest-defined collision, hurt and attack boxes in world 
 | `owner` | `GameObject` | Animated entity that supplies position and facing. |
 | `[manifestData={}]` | `Object\|BoxManifest2D` | Box definitions. |
 
-### Documented Methods
+### Methods
 
+#### `GetCollisionBoxes()`
+
+JSDoc pending.
+#### `GetHurtBoxes()`
+
+JSDoc pending.
 #### `GetHitBoxes()`
 
 Returns active attack boxes for the current animation frame.
 
 **Returns:** `Object[]` - World-space hitboxes.
+#### `GetAnimationName()`
+
+JSDoc pending.
+#### `GetFrame()`
+
+JSDoc pending.
+#### `HasHit(hitbox, target)`
+
+JSDoc pending.
+#### `MarkHit(hitbox, target)`
+
+JSDoc pending.
+#### `ResetHitMemory()`
+
+JSDoc pending.
+#### `DrawDebug(draw, options = {})`
+
+JSDoc pending.
 
 ## BoxManifest2D
 
@@ -389,9 +504,9 @@ Parses data-driven collision, hurtbox and hitbox definitions for animated entiti
 | --- | --- | --- |
 | `[data={}]` | `Object` | Box manifest loaded from game assets. |
 
-### Documented Methods
+### Methods
 
-#### `GetBoxes()`
+#### `GetBoxes(type, animationName = "*", frame = 0)`
 
 Finds active boxes for a type, animation and current frame.
 
@@ -417,9 +532,12 @@ Canvas-rendered clickable UI button.
 | --- | --- | --- |
 | `screen` | `Screen` | Screen used for drawing and pointer input. |
 
-### Documented Methods
+### Methods
 
-#### `Click()`
+#### `SetButton(rect)`
+
+JSDoc pending.
+#### `Click(callback)`
 
 Executes the provided callback function when the button is clicked.
 
@@ -430,7 +548,13 @@ Executes the provided callback function when the button is clicked.
 | `callback` | `function` |  |
 
 **Returns:** `void`
-#### `DrawCursor()`
+#### `OnClick(callback)`
+
+JSDoc pending.
+#### `Update(callback)`
+
+JSDoc pending.
+#### `DrawCursor(rect)`
 
 Draws the button UI with the specified rectangle.
 
@@ -455,9 +579,9 @@ Viewport camera for translating, zooming and shaking a 2D game world.
 | `position` | `Vector2D` | Initial world position. |
 | `size` | `Vector2D` | Visible viewport size. |
 
-### Documented Methods
+### Methods
 
-#### `Init()`
+#### `Init(screen, GameWorld)`
 
 Initializes the camera with screen and game world.
 
@@ -467,7 +591,7 @@ Initializes the camera with screen and game world.
 | --- | --- | --- |
 | `screen` | `Object` | The screen or canvas where the game is rendered. |
 | `GameWorld` | `Object` | The game world object. |
-#### `LookAt()`
+#### `LookAt(Obj)`
 
 Centers the camera view on the given object.
 
@@ -476,7 +600,7 @@ Centers the camera view on the given object.
 | Name | Type | Description |
 | --- | --- | --- |
 | `Obj` | `Object` | The object to center the camera on. |
-#### `ZoomIn()`
+#### `ZoomIn(value)`
 
 Zooms in by a given factor.
 
@@ -485,7 +609,7 @@ Zooms in by a given factor.
 | Name | Type | Description |
 | --- | --- | --- |
 | `value` | `number` | Zoom factor. |
-#### `ZoomOut()`
+#### `ZoomOut(value)`
 
 Zooms out by a given factor.
 
@@ -503,7 +627,7 @@ Begins camera transformation for rendering.
 #### `End()`
 
 Ends camera transformation after rendering.
-#### `Update()`
+#### `Update(char, deltaTime = 1 / 60)`
 
 Updates the camera position and zoom based on the given object.
 
@@ -512,24 +636,33 @@ Updates the camera position and zoom based on the given object.
 | Name | Type | Description |
 | --- | --- | --- |
 | `char` | `Object` | The character or object to focus the camera on. |
+#### `Shake(duration = 0.1, intensity = 4, frequency = 36)`
+
+JSDoc pending.
+#### `UpdateShake(deltaTime = 1 / 60)`
+
+JSDoc pending.
+#### `ApplyShakeOffset()`
+
+JSDoc pending.
 #### `LeftEdge()`
 
-Documented method.
+JSDoc pending.
 
 **Returns:** `number` - The left edge position of the camera view.
 #### `RightEdge()`
 
-Documented method.
+JSDoc pending.
 
 **Returns:** `number` - The right edge position of the camera view.
 #### `TopEdge()`
 
-Documented method.
+JSDoc pending.
 
 **Returns:** `number` - The top edge position of the camera view.
 #### `BottomEdge()`
 
-Documented method.
+JSDoc pending.
 
 **Returns:** `number` - The bottom edge position of the camera view.
 
@@ -552,9 +685,9 @@ Canvas-rendered chat panel composed from GameForgeJS drawing and text input APIs
 | `screen` | `Screen` | Canvas screen used for drawing and pointer coordinates. |
 | `[options]` | `Object` | Window position, size and message limits. |
 
-### Documented Methods
+### Methods
 
-#### `onMessageSubmitted()`
+#### `onMessageSubmitted(callback)`
 
 Registers a handler for text confirmed by the player.
 
@@ -565,7 +698,7 @@ Registers a handler for text confirmed by the player.
 | `callback` | `Function` | Handler receiving the submitted string. |
 
 **Returns:** `Function` - Unsubscribe callback.
-#### `addMessage()`
+#### `addMessage(message)`
 
 Appends a normalized message for rendering.
 
@@ -576,6 +709,27 @@ Appends a normalized message for rendering.
 | `message` | `Object` | Message containing `text`, name and optional system flag. |
 
 **Returns:** `void`
+#### `OnUpdate()`
+
+JSDoc pending.
+#### `OnDrawn()`
+
+JSDoc pending.
+#### `DrawMessages(ctx)`
+
+JSDoc pending.
+#### `HandleKeyDown(event)`
+
+JSDoc pending.
+#### `ContainsPoint(point, rect = this.rect)`
+
+JSDoc pending.
+#### `IsPointerOver()`
+
+JSDoc pending.
+#### `TrimToWidth(text, width)`
+
+JSDoc pending.
 #### `Dispose()`
 
 Removes input listeners when a scene closes.
@@ -599,9 +753,9 @@ console.log("Collision detected");
 }
 ```
 
-### Documented Methods
+### Methods
 
-#### `static isCollidingAABB()`
+#### `static isCollidingAABB(obj1, obj2)`
 
 Checks for collision between two axis-aligned bounding boxes (AABB).
 
@@ -613,7 +767,7 @@ Checks for collision between two axis-aligned bounding boxes (AABB).
 | `obj2` | `Object` | The second rectangle object with position and size properties. |
 
 **Returns:** `boolean` - True if there is a collision, false otherwise.
-#### `static isCollidingCircle()`
+#### `static isCollidingCircle(circle, obj)`
 
 Checks for collision between a circle and an object.
 
@@ -625,7 +779,7 @@ Checks for collision between a circle and an object.
 | `obj` | `Object` | The object to check collision with, should have x, y properties. |
 
 **Returns:** `boolean` - True if there is a collision, false otherwise.
-#### `static isCollidingPoint()`
+#### `static isCollidingPoint(position, rect)`
 
 Checks if a point is inside a rectangle.
 
@@ -637,7 +791,13 @@ Checks if a point is inside a rectangle.
 | `rect` | `Object` | The rectangle object with x, y, width, and height properties. |
 
 **Returns:** `boolean` - True if the point is inside the rectangle, false otherwise.
-#### `static ResolveCollisionAABB()`
+#### `static IntersectsRect(rectA, rectB)`
+
+JSDoc pending.
+#### `static ContainsPoint(point, rect)`
+
+JSDoc pending.
+#### `static ResolveCollisionAABB(obj1, obj2)`
 
 Resolve a colisão empurrando o obj1 para fora do obj2
 
@@ -654,9 +814,9 @@ Resolve a colisão empurrando o obj1 para fora do obj2
 
 Stateless hitbox-versus-hurtbox resolver for data-driven 2D combat.
 
-### Documented Methods
+### Methods
 
-#### `static Resolve()`
+#### `static Resolve(attackerBoxes, defenderBoxesList, options = {})`
 
 Finds new attack contacts and emits optional game-owned hit handling.
 
@@ -669,6 +829,15 @@ Finds new attack contacts and emits optional game-owned hit handling.
 | `[options={}]` | `Object` | Default hit values and `onHit` callback. |
 
 **Returns:** `Object[]` - Resolved hit records.
+#### `static Intersects(boxA, boxB)`
+
+JSDoc pending.
+#### `static IntersectsAny(boxesA, boxesB)`
+
+JSDoc pending.
+#### `static GetImpactPoint(boxA, boxB)`
+
+JSDoc pending.
 
 ## ComboController
 
@@ -684,15 +853,39 @@ Small attack-chain state machine driven by a game's animation frames.
 | `[attacks=[]` | `Object[]` | ] - Ordered combo attack definitions. |
 | `[options={}]` | `Object` | Input-buffer settings. |
 
+### Methods
+
+#### `Start()`
+
+JSDoc pending.
+#### `Update(dt)`
+
+JSDoc pending.
+#### `QueueNext()`
+
+JSDoc pending.
+#### `ConsumeNextIfReady(frame)`
+
+JSDoc pending.
+#### `Current()`
+
+JSDoc pending.
+#### `CurrentAnimation()`
+
+JSDoc pending.
+#### `Reset()`
+
+JSDoc pending.
+
 ## Component
 
 `class` from [`src/CoreCross/Component.js`](../../src/CoreCross/Component.js)
 
 Base class for all Components in GameForgeJS. Follows the standardized lifecycle defined in Base.js.
 
-### Documented Methods
+### Methods
 
-#### `OnAttach()`
+#### `OnAttach(owner)`
 
 Called when this component is attached to a GameObject. Override this instead of putting attach logic in the constructor.
 
@@ -704,12 +897,42 @@ Called when this component is attached to a GameObject. Override this instead of
 #### `OnDetach()`
 
 Called when this component is removed from its owner.
+#### `OnStart()`
+
+JSDoc pending.
+#### `OnUpdate(deltaTime)`
+
+JSDoc pending.
+#### `OnFixedUpdate(fixedDeltaTime)`
+
+JSDoc pending.
+#### `OnDrawn()`
+
+JSDoc pending.
+#### `OnDestroy()`
+
+JSDoc pending.
+#### `Attach(owner)`
+
+JSDoc pending.
+#### `Detach()`
+
+JSDoc pending.
 
 ## Config
 
 `class` from [`src/CoreCross/Config.js`](../../src/CoreCross/Config.js)
 
 Loads and merges global and per-game JSON configuration files.
+
+### Methods
+
+#### `static DeepMerge(target, source)`
+
+JSDoc pending.
+#### `static IsPlainObject(value)`
+
+JSDoc pending.
 
 ## DEBUG
 
@@ -719,7 +942,7 @@ Reads whether collision and hitbox debugging is enabled in config.
 
 **Returns:** `boolean` - Current hitbox debug flag.
 
-### Documented Methods
+### Methods
 
 #### `addLevel()`
 
@@ -771,15 +994,30 @@ Small debug tile-map level helper rendered on a 2D screen.
 | --- | --- | --- |
 | `screen` | `Screen` | Destination canvas screen. |
 
+### Methods
+
+#### `AddObjectToMap(item, x, y)`
+
+JSDoc pending.
+#### `SetTileSize(vector2D)`
+
+JSDoc pending.
+#### `SetMapSize(vector2D)`
+
+JSDoc pending.
+#### `OnDrawn()`
+
+JSDoc pending.
+
 ## Deprecation
 
 `class` from [`src/CoreCross/Deprecation.js`](../../src/CoreCross/Deprecation.js)
 
 Reports use of compatibility APIs once per deprecated identifier. This keeps legacy projects running while guiding new games toward the maintained GameForgeJS API.
 
-### Documented Methods
+### Methods
 
-#### `static WarnOnce()`
+#### `static WarnOnce(apiName, replacement = "")`
 
 Writes one browser warning for a deprecated API.
 
@@ -836,9 +1074,9 @@ draw.Color = 'red';
 draw.DrawText('Hello World', 50, 50);
 ```
 
-### Documented Methods
+### Methods
 
-#### `SetTextAlign()`
+#### `SetTextAlign(align)`
 
 Sets the text alignment for drawing text.
 
@@ -847,7 +1085,7 @@ Sets the text alignment for drawing text.
 | Name | Type | Description |
 | --- | --- | --- |
 | `align` | `string` | The text alignment (e.g., 'left', 'center', 'right'). |
-#### `DrawText()`
+#### `DrawText(text, x, y, maxWidth)`
 
 Draws text on the canvas.
 
@@ -859,7 +1097,7 @@ Draws text on the canvas.
 | `x` | `number` | The x-coordinate where the text will be drawn. |
 | `y` | `number` | The y-coordinate where the text will be drawn. |
 | `[maxWidth]` | `number` | The maximum width of the text. If not provided, there is no limit. |
-#### `DrawRect()`
+#### `DrawRect(x, y, width, height)`
 
 Draws a rectangle on the canvas.
 
@@ -871,7 +1109,7 @@ Draws a rectangle on the canvas.
 | `y` | `number` | The y-coordinate where the rectangle will be drawn. |
 | `width` | `number` | The width of the rectangle. |
 | `height` | `number` | The height of the rectangle. |
-#### `DrawCircle()`
+#### `DrawCircle(x, y, radius)`
 
 Draws a circle on the canvas.
 
@@ -882,7 +1120,7 @@ Draws a circle on the canvas.
 | `x` | `number` | The x-coordinate of the circle's center. |
 | `y` | `number` | The y-coordinate of the circle's center. |
 | `radius` | `number` | The radius of the circle. |
-#### `DrawSprite()`
+#### `DrawSprite(sprite, x, y)`
 
 Draws an image or sprite on the canvas.
 
@@ -893,6 +1131,12 @@ Draws an image or sprite on the canvas.
 | `sprite` | `HTMLImageElement \| string` | The image element or the URL of the sprite. |
 | `x` | `number` | The x-coordinate where the sprite will be drawn. |
 | `y` | `number` | The y-coordinate where the sprite will be drawn. |
+#### `DrawSpriteStretched(sprite, x, y, width, height)`
+
+JSDoc pending.
+#### `DrawSpritePart(sprite, source, destination)`
+
+JSDoc pending.
 
 ## Engine
 
@@ -900,25 +1144,20 @@ Draws an image or sprite on the canvas.
 
 Main update and render loop orchestrator for the active GameForgeJS level. The engine publishes frame events consumed by systems such as `Input`.
 
-### Documented Methods
+### Methods
 
-#### `addLevel()`
+#### `static HitStop(duration = 0.06)`
 
-Adds a new level to the level handler.
+JSDoc pending.
+#### `static IsHitStopped()`
 
-**Parameters**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| `level` | `Level` | The level to add. |
-
-**Returns:** `void`
+JSDoc pending.
 #### `static OnStart()`
 
 Initializes the engine, loads the first level, and starts the game loop.
 
 **Returns:** `void`
-#### `static GameLoop()`
+#### `static GameLoop(currentTime)`
 
 Main game loop, updates the game state and renders the scene.
 
@@ -928,7 +1167,7 @@ Main game loop, updates the game state and renders the scene.
 Override this method to implement custom drawing logic.
 
 **Returns:** `void`
-#### `static RemoveLevel()`
+#### `static RemoveLevel(levelId)`
 
 Removes the specified level from the DOM.
 
@@ -946,9 +1185,9 @@ Removes the specified level from the DOM.
 
 Minimal synchronous event publisher used across engine services.
 
-### Documented Methods
+### Methods
 
-#### `on()`
+#### `on(event, callback)`
 
 Registers a listener for an event name.
 
@@ -960,6 +1199,15 @@ Registers a listener for an event name.
 | `callback` | `Function` | Listener callback. |
 
 **Returns:** `Function` - Unsubscribe callback.
+#### `once(event, callback)`
+
+JSDoc pending.
+#### `off(event, callback)`
+
+JSDoc pending.
+#### `emit(event, ...args)`
+
+JSDoc pending.
 
 ## FloatingText
 
@@ -973,9 +1221,9 @@ Canvas effect for short-lived labels such as damage or collectible feedback.
 | --- | --- | --- |
 | `screen` | `Screen` | Target 2D canvas screen. |
 
-### Documented Methods
+### Methods
 
-#### `Spawn()`
+#### `Spawn(text, x, y, options = {})`
 
 Activates this effect at a world or HUD position.
 
@@ -989,6 +1237,12 @@ Activates this effect at a world or HUD position.
 | `[options={}]` | `Object` | Velocity, lifetime and font overrides. |
 
 **Returns:** `void`
+#### `OnUpdate(dt)`
+
+JSDoc pending.
+#### `OnDrawn()`
+
+JSDoc pending.
 
 ## GameObject
 
@@ -996,11 +1250,95 @@ Activates this effect at a world or HUD position.
 
 Base movable 2D entity with sprite, collision and component support. Extend it for game-specific players, enemies and interactive objects.
 
+### Methods
+
+#### `AddComponent(component)`
+
+JSDoc pending.
+#### `GetComponent(typeOrName)`
+
+JSDoc pending.
+#### `RemoveComponent(typeOrInstance)`
+
+JSDoc pending.
+#### `OnStart()`
+
+JSDoc pending.
+#### `OnUpdate(deltaTime)`
+
+JSDoc pending.
+#### `OnFixedUpdate(deltaTime)`
+
+JSDoc pending.
+#### `OnDrawn()`
+
+JSDoc pending.
+#### `OnCollision(other, callback)`
+
+JSDoc pending.
+#### `_debugRect(x, y, width, height, color = "#00FF00")`
+
+JSDoc pending.
+
 ## GamePad
 
 `class` from [`src/CoreCross/Input/Gamepad.js`](../../src/CoreCross/Input/Gamepad.js)
 
 Low-level browser gamepad state. Events are useful notifications, but the current state is always reconciled from navigator.getGamepads() each frame.
+
+### Methods
+
+#### `Update()`
+
+JSDoc pending.
+#### `LateUpdate()`
+
+JSDoc pending.
+#### `ReadBrowserGamepads()`
+
+JSDoc pending.
+#### `RegisterGamepad(pad, index = pad?.index)`
+
+JSDoc pending.
+#### `UnregisterGamepad(index)`
+
+JSDoc pending.
+#### `EnsurePreviousState(index, pad)`
+
+JSDoc pending.
+#### `ShowActivationHint()`
+
+JSDoc pending.
+#### `IsConnected(padIndex = 0)`
+
+JSDoc pending.
+#### `GetConnectedIndices()`
+
+JSDoc pending.
+#### `GetButton(buttonIndex, padIndex = 0)`
+
+JSDoc pending.
+#### `GetButtonDown(buttonIndex, padIndex = 0)`
+
+JSDoc pending.
+#### `GetButtonUp(buttonIndex, padIndex = 0)`
+
+JSDoc pending.
+#### `GetAxis(axisIndex, padIndex = 0)`
+
+JSDoc pending.
+#### `GetAxisDown(axisIndex, direction, padIndex = 0, threshold = 0.5)`
+
+JSDoc pending.
+#### `GetAxisUp(axisIndex, direction, padIndex = 0, threshold = 0.5)`
+
+JSDoc pending.
+#### `IsButtonPressed(button)`
+
+JSDoc pending.
+#### `ApplyDeadzone(value)`
+
+JSDoc pending.
 
 ## GamepadAlias
 
@@ -1008,13 +1346,43 @@ Low-level browser gamepad state. Events are useful notifications, but the curren
 
 Resolves readable controller button and axis names into browser Gamepad API indices. Profiles allow the same game's actions to match Xbox, PlayStation or Nintendo labels.
 
+### Methods
+
+#### `static ResolveButtonIndex(input, options = {})`
+
+JSDoc pending.
+#### `static ResolveAxis(input, options = {})`
+
+JSDoc pending.
+#### `static ResolveAxisIndex(input, options = {})`
+
+JSDoc pending.
+#### `static IsNativeToken(input)`
+
+JSDoc pending.
+#### `static NormalizeNativeToken(input)`
+
+JSDoc pending.
+#### `static NormalizeAlias(input)`
+
+JSDoc pending.
+#### `static NormalizeProfile(profile)`
+
+JSDoc pending.
+#### `static NormalizeDirection(direction)`
+
+JSDoc pending.
+#### `static NormalizeAliasMap(aliases = {})`
+
+JSDoc pending.
+
 ## GameViewport
 
 `class` from [`src/CoreCross/Window/GameViewport.js`](../../src/CoreCross/Window/GameViewport.js)
 
 Applies the responsive full-window canvas mode selected by a game config. Logical canvas coordinates remain unchanged; only presentation fills the available browser viewport.
 
-### Documented Methods
+### Methods
 
 #### `static IsFullScreen()`
 
@@ -1043,20 +1411,23 @@ Returns walkable cardinal neighbors for a grid coordinate.
 
 Tracks hit points, invulnerability time and owner damage/death callbacks.
 
-### Documented Methods
+### Methods
 
-#### `OnAttach()`
+#### `OnUpdate(dt)`
 
-Called when this component is attached to a GameObject. Override this instead of putting attach logic in the constructor.
+JSDoc pending.
+#### `Damage(amount, source = null)`
 
-**Parameters**
+JSDoc pending.
+#### `Heal(amount)`
 
-| Name | Type | Description |
-| --- | --- | --- |
-| `owner` | `object` |  |
-#### `OnDetach()`
+JSDoc pending.
+#### `Reset(hp = this.maxHp)`
 
-Called when this component is removed from its owner.
+JSDoc pending.
+#### `IsAlive()`
+
+JSDoc pending.
 
 ## Input
 
@@ -1075,15 +1446,24 @@ if (Input.GetKey("ArrowUp")) {
 }
 ```
 
-### Documented Methods
+### Methods
 
+#### `static Initialize()`
+
+JSDoc pending.
 #### `static Update()`
 
 Chamado pela Engine todo início de frame
 #### `static LateUpdate()`
 
 Chamado pela Engine todo fim de frame
-#### `static GetKey()`
+#### `keyDownHandler(event)`
+
+JSDoc pending.
+#### `keyUpHandler(event)`
+
+JSDoc pending.
+#### `static GetKey(key)`
 
 Check if a key is currently pressed
 
@@ -1094,7 +1474,7 @@ Check if a key is currently pressed
 | `key` | `string` | The key code (e.g., "ArrowUp", "KeyA") |
 
 **Returns:** `boolean` - True if the key is pressed, false otherwise
-#### `static GetKeyDown()`
+#### `static GetKeyDown(key)`
 
 Check if a key was pressed in the current frame
 
@@ -1105,7 +1485,7 @@ Check if a key was pressed in the current frame
 | `key` | `string` | The key code (e.g., "ArrowUp", "KeyA") |
 
 **Returns:** `boolean` - True if the key was pressed in the current frame, false otherwise
-#### `static GetKeyUp()`
+#### `static GetKeyUp(key)`
 
 Check if a key was released in the current frame
 
@@ -1116,7 +1496,7 @@ Check if a key was released in the current frame
 | `key` | `string` | The key code (e.g., "ArrowUp", "KeyA") |
 
 **Returns:** `boolean` - True if the key was released in the current frame, false otherwise
-#### `static IsGamepadConnected()`
+#### `static IsGamepadConnected(padIndex = 0)`
 
 Tests whether a browser gamepad is currently available.
 
@@ -1132,7 +1512,7 @@ Tests whether a browser gamepad is currently available.
 Returns all currently connected browser gamepad slots.
 
 **Returns:** `number[]` - Connected gamepad indices.
-#### `static GetGamepadButton()`
+#### `static GetGamepadButton(padIndex = 0, input)`
 
 Reads a held gamepad button using a configured alias or browser index token.
 
@@ -1144,7 +1524,7 @@ Reads a held gamepad button using a configured alias or browser index token.
 | `input` | `string\|number` | Alias such as `A` or `DPAD_LEFT`. |
 
 **Returns:** `boolean` - Whether the button is held.
-#### `static GetGamepadButtonDown()`
+#### `static GetGamepadButtonDown(padIndex = 0, input)`
 
 Reads a gamepad button press occurring in the current frame.
 
@@ -1156,7 +1536,7 @@ Reads a gamepad button press occurring in the current frame.
 | `input` | `string\|number` | Configured alias or button index. |
 
 **Returns:** `boolean` - Whether the button went down.
-#### `static GetGamepadButtonUp()`
+#### `static GetGamepadButtonUp(padIndex = 0, input)`
 
 Reads a gamepad button release occurring in the current frame.
 
@@ -1168,7 +1548,7 @@ Reads a gamepad button release occurring in the current frame.
 | `input` | `string\|number` | Configured alias or button index. |
 
 **Returns:** `boolean` - Whether the button went up.
-#### `static GetGamepadAxis()`
+#### `static GetGamepadAxis(padIndex = 0, input)`
 
 Reads an analog axis using an alias such as `LeftX`.
 
@@ -1180,7 +1560,13 @@ Reads an analog axis using an alias such as `LeftX`.
 | `input` | `string\|number` | Configured axis alias or index. |
 
 **Returns:** `number` - Axis value from -1 to 1, or zero if unavailable.
-#### `static Keyboard()`
+#### `static GetGamepadAxisDown(padIndex = 0, input, threshold = 0.5)`
+
+JSDoc pending.
+#### `static GetGamepadAxisUp(padIndex = 0, input, threshold = 0.5)`
+
+JSDoc pending.
+#### `static Keyboard(input)`
 
 Builds an action mapping rule for keyboard input.
 
@@ -1191,7 +1577,7 @@ Builds an action mapping rule for keyboard input.
 | `input` | `string` | Keyboard event code. |
 
 **Returns:** `Object` - Action mapping rule.
-#### `static GamepadButton()`
+#### `static GamepadButton(input, padIndex = null)`
 
 Builds an action mapping rule for a gamepad button.
 
@@ -1203,7 +1589,7 @@ Builds an action mapping rule for a gamepad button.
 | `[padIndex=null]` | `number\|null` | Optional fixed gamepad slot. |
 
 **Returns:** `Object` - Action mapping rule.
-#### `static GamepadAxis()`
+#### `static GamepadAxis(input, direction = "positive", padIndex = null)`
 
 Builds an action mapping rule for one direction of an analog axis.
 
@@ -1216,6 +1602,9 @@ Builds an action mapping rule for one direction of an analog axis.
 | `[padIndex=null]` | `number\|null` | Optional fixed gamepad slot. |
 
 **Returns:** `Object` - Action mapping rule.
+#### `static GamepadAliasOptions()`
+
+JSDoc pending.
 
 ## JsonManifestComposer
 
@@ -1223,9 +1612,9 @@ Builds an action mapping rule for one direction of an analog axis.
 
 Combines JSON game manifests referenced through their `compose` entries.
 
-### Documented Methods
+### Methods
 
-#### `static Compose()`
+#### `static Compose(name, assets = AssetManager.instance)`
 
 Recursively merges one loaded JSON asset with its child manifests.
 
@@ -1237,6 +1626,15 @@ Recursively merges one loaded JSON asset with its child manifests.
 | `[assets]` | `AssetManager` | Loaded asset store. |
 
 **Returns:** `Object` - Composed manifest.
+#### `static CloneWithoutCompose(manifest)`
+
+JSDoc pending.
+#### `static DeepMerge(target, source)`
+
+JSDoc pending.
+#### `static IsPlainObject(value)`
+
+JSDoc pending.
 
 ## key
 
@@ -1270,9 +1668,9 @@ Simple canvas text label positioned by a rectangle.
 | --- | --- | --- |
 | `screen` | `Screen` | Screen used for drawing. |
 
-### Documented Methods
+### Methods
 
-#### `SetLabel()`
+#### `SetLabel(rect, text)`
 
 Sets the dimensions, position, and text content of the label.
 
@@ -1296,19 +1694,19 @@ Draws the label on the screen.
 
 Base scene lifecycle container updated and drawn by the engine. Extend this class to own a game's entities and canvas screens.
 
-### Documented Methods
+### Methods
 
 #### `OnStart()`
 
 Called when the level starts.
 
 **Returns:** `void`
-#### `OnUpdate()`
+#### `OnUpdate(deltaTime)`
 
 Called every frame to update the game state.
 
 **Returns:** `void`
-#### `OnFixedUpdate()`
+#### `OnFixedUpdate(deltaTime)`
 
 Called at a fixed rate to update the game state.
 
@@ -1329,7 +1727,7 @@ Called to draw the level.
 Called to draw the GUI.
 
 **Returns:** `void`
-#### `GetEntityByName()`
+#### `GetEntityByName(name)`
 
 Get an entity by its name.
 
@@ -1340,7 +1738,7 @@ Get an entity by its name.
 | `name` | `string` |  |
 
 **Returns:** `Object` - The entity with the specified name.
-#### `AddEntity()`
+#### `AddEntity(entity)`
 
 Adds an entity to the level.
 
@@ -1351,7 +1749,7 @@ Adds an entity to the level.
 | `entity` | `Object` | The entity to add. |
 
 **Returns:** `void`
-#### `RemoveEntity()`
+#### `RemoveEntity(entity)`
 
 Removes an entity from the level.
 
@@ -1362,6 +1760,12 @@ Removes an entity from the level.
 | `entity` | `Object` | The entity to remove. |
 
 **Returns:** `void`
+#### `OnExit()`
+
+JSDoc pending.
+#### `ShowFPS(draw, x, y)`
+
+JSDoc pending.
 
 ## LevelHandler
 
@@ -1369,7 +1773,7 @@ Removes an entity from the level.
 
 Ordered level registry and current-level cursor used by `Engine`.
 
-### Documented Methods
+### Methods
 
 #### `addLevel()`
 
@@ -1415,20 +1819,17 @@ Removes the specified level from the DOM.
 
 Disables or removes short-lived owner objects after an elapsed duration.
 
-### Documented Methods
+### Methods
 
-#### `OnAttach()`
+#### `OnUpdate(dt)`
 
-Called when this component is attached to a GameObject. Override this instead of putting attach logic in the constructor.
+JSDoc pending.
+#### `Reset(duration = this.duration)`
 
-**Parameters**
+JSDoc pending.
+#### `Expire()`
 
-| Name | Type | Description |
-| --- | --- | --- |
-| `owner` | `object` |  |
-#### `OnDetach()`
-
-Called when this component is removed from its owner.
+JSDoc pending.
 
 ## Logger
 
@@ -1436,11 +1837,71 @@ Called when this component is removed from its owner.
 
 Console logging helpers for engine startup, diagnostics and HTTP requests.
 
+### Methods
+
+#### `static logRequest(url, init = {}, response, duration)`
+
+JSDoc pending.
+#### `static log(level, message, data)`
+
+JSDoc pending.
+
 ## Mat4
 
 `class` from [`src/CoreCross/Math/Mat4.js`](../../src/CoreCross/Math/Mat4.js)
 
 Dependency-free four-by-four matrix math utilities for Render3D.
+
+### Methods
+
+#### `static create()`
+
+JSDoc pending.
+#### `static clone(matrix)`
+
+JSDoc pending.
+#### `static copy(out, matrix)`
+
+JSDoc pending.
+#### `static identity(out)`
+
+JSDoc pending.
+#### `static perspective(out, fovy, aspect, near, far)`
+
+JSDoc pending.
+#### `static orthographic(out, left, right, bottom, top, near, far)`
+
+JSDoc pending.
+#### `static multiply(out, a, b)`
+
+JSDoc pending.
+#### `static translate(out, a, v)`
+
+JSDoc pending.
+#### `static scale(out, a, v)`
+
+JSDoc pending.
+#### `static rotate(out, a, radians, axis)`
+
+JSDoc pending.
+#### `static rotateX(out, a, radians)`
+
+JSDoc pending.
+#### `static rotateY(out, a, radians)`
+
+JSDoc pending.
+#### `static rotateZ(out, a, radians)`
+
+JSDoc pending.
+#### `static transpose(out, a)`
+
+JSDoc pending.
+#### `static invert(out, a)`
+
+JSDoc pending.
+#### `static lookAt(out, eye, center, up)`
+
+JSDoc pending.
 
 ## MathExt
 
@@ -1448,9 +1909,18 @@ Dependency-free four-by-four matrix math utilities for Render3D.
 
 General scalar and 2D interpolation helpers shared by demos.
 
-### Documented Methods
+### Methods
 
-#### `static Lerp()`
+#### `static Distance(p1, p2)`
+
+JSDoc pending.
+#### `static DistanceVector(p1, p2)`
+
+JSDoc pending.
+#### `static Module(value)`
+
+JSDoc pending.
+#### `static Lerp(a, b, t)`
 
 Interpolação linear entre dois valores.
 
@@ -1463,7 +1933,7 @@ Interpolação linear entre dois valores.
 | `t` | `number` | Fator de interpolação (0..1). |
 
 **Returns:** `number`
-#### `static LerpSnap()`
+#### `static LerpSnap(a, b, t, threshold = 0.5)`
 
 Lerp com snap: quando a diferença for menor que threshold, retorna b diretamente. Evita oscilação infinita no final da animação.
 
@@ -1484,6 +1954,24 @@ Lerp com snap: quando a diferença for menor que threshold, retorna b diretament
 
 Basic keyboard-controlled menu level supplied as a simple 2D example.
 
+### Methods
+
+#### `OnStart()`
+
+JSDoc pending.
+#### `OnUpdate(dt)`
+
+JSDoc pending.
+#### `OnDrawn()`
+
+JSDoc pending.
+#### `OnFixedUpdate(dt)`
+
+JSDoc pending.
+#### `OnGUI()`
+
+JSDoc pending.
+
 ## Mouse
 
 `class` from [`src/CoreCross/Input/Mouse.js`](../../src/CoreCross/Input/Mouse.js)
@@ -1501,9 +1989,9 @@ if (mouse.isClickDown(rect)) {
 }
 ```
 
-### Documented Methods
+### Methods
 
-#### `mouseMoveHandler()`
+#### `mouseMoveHandler(event)`
 
 Handles the mouse move event and updates the current position.
 
@@ -1512,7 +2000,7 @@ Handles the mouse move event and updates the current position.
 | Name | Type | Description |
 | --- | --- | --- |
 | `event` | `MouseEvent` | The mouse move event |
-#### `mouseDownHandler()`
+#### `mouseDownHandler(event)`
 
 Handles the mouse down event and updates the click position.
 
@@ -1521,7 +2009,7 @@ Handles the mouse down event and updates the click position.
 | Name | Type | Description |
 | --- | --- | --- |
 | `event` | `MouseEvent` | The mouse down event |
-#### `mouseUpHandler()`
+#### `mouseUpHandler(event)`
 
 Handles the mouse up event and updates the release position.
 
@@ -1535,7 +2023,7 @@ Handles the mouse up event and updates the release position.
 Gets the current absolute mouse position.
 
 **Returns:** `Vector2D` - The current mouse position
-#### `getPositionRelative()`
+#### `getPositionRelative(element)`
 
 Gets the relative mouse position within a specified element.
 
@@ -1556,7 +2044,7 @@ Gets the mouse position at the time of the last click down.
 Gets the mouse position at the time of the last click release.
 
 **Returns:** `Vector2D` - The position of the last mouse click release
-#### `isClickDown()`
+#### `isClickDown(rect)`
 
 Checks if the mouse was clicked down within a specified rectangle.
 
@@ -1567,7 +2055,7 @@ Checks if the mouse was clicked down within a specified rectangle.
 | `rect` | `Rectangle` | The rectangle to check against |
 
 **Returns:** `boolean` - True if the mouse click was inside the rectangle, false otherwise
-#### `isClickRelease()`
+#### `isClickRelease(rect)`
 
 Checks if the mouse was released within a specified rectangle.
 
@@ -1578,7 +2066,7 @@ Checks if the mouse was released within a specified rectangle.
 | `rect` | `Rectangle` | The rectangle to check against |
 
 **Returns:** `boolean` - True if the mouse release was inside the rectangle, false otherwise
-#### `isColliding()`
+#### `isColliding(point, rect)`
 
 Checks if a point is colliding with a rectangle.
 
@@ -1590,6 +2078,9 @@ Checks if a point is colliding with a rectangle.
 | `rect` | `Rectangle` | The rectangle to check against |
 
 **Returns:** `boolean` - True if the point is inside the rectangle, false otherwise
+#### `ClearFrameData()`
+
+JSDoc pending.
 
 ## NineSlice
 
@@ -1605,9 +2096,9 @@ Draws resizable UI panels from a nine-slice source image.
 | `image` | `HTMLImageElement` | Panel texture. |
 | `[cornerSize=16]` | `number` | Corner sample size in pixels. |
 
-### Documented Methods
+### Methods
 
-#### `DrawPanel()`
+#### `DrawPanel(x, y, finalWidth, finalHeight)`
 
 Draws the scalable panel on the screen.
 
@@ -1626,12 +2117,12 @@ Draws the scalable panel on the screen.
 
 Recicla GameObjects (como Tiros e Partículas) para evitar vazamento de memória.
 
-### Documented Methods
+### Methods
 
 #### `Get()`
 
 Pega um objeto livre do Pool
-#### `Release()`
+#### `Release(obj)`
 
 Devolve o objeto para o Pool
 
@@ -1648,17 +2139,71 @@ Short-lived moving dot used by the basic canvas particle system.
 | `x` | `number` | Initial horizontal coordinate. |
 | `y` | `number` | Initial vertical coordinate. |
 
+### Methods
+
+#### `OnStart()`
+
+JSDoc pending.
+#### `OnUpdate()`
+
+JSDoc pending.
+#### `OnDrawn()`
+
+JSDoc pending.
+#### `isAlive()`
+
+JSDoc pending.
+
 ## ParticleSystem
 
 `class` from [`src/Core2D/Particle/ParticleSystem.js`](../../src/Core2D/Particle/ParticleSystem.js)
 
 Collection that emits, updates and draws simple `Particle` instances.
 
+### Methods
+
+#### `Emit(x, y)`
+
+JSDoc pending.
+#### `OnUpdate()`
+
+JSDoc pending.
+#### `OnDrawn()`
+
+JSDoc pending.
+
 ## Physic2D
 
 `class` from [`src/Core2D/Collision/Physic2D.js`](../../src/Core2D/Collision/Physic2D.js)
 
 Static helpers and coefficient values for basic 2D motion calculations.
+
+### Methods
+
+#### `static Init()`
+
+JSDoc pending.
+#### `static relativeForce(mass, accelaration)`
+
+JSDoc pending.
+#### `static weightForce(mass, gravity)`
+
+JSDoc pending.
+#### `static normalForce(mass, gravity, angle, coefficientFriction)`
+
+JSDoc pending.
+#### `static frictionForce(accelarationFriction, normalForce)`
+
+JSDoc pending.
+#### `static elasticForce(elasticConstant, deformation)`
+
+JSDoc pending.
+#### `static elasticConstant(newtonPerMetre, mass)`
+
+JSDoc pending.
+#### `static centripetalForce(ray, mass, velocity, angle)`
+
+JSDoc pending.
 
 ## reconstructPath
 
@@ -1711,9 +2256,9 @@ const scene = new Scene("sceneId", screen);
 scene.Load("mapName");
 ```
 
-### Documented Methods
+### Methods
 
-#### `LoadTileset()`
+#### `LoadTileset(json)`
 
 Load tileset and prepare for rendering layers.
 
@@ -1724,7 +2269,7 @@ Load tileset and prepare for rendering layers.
 | `json` | `Object` | The JSON data from the Tiled tool. |
 
 **Returns:** `void`
-#### `RenderLayer()`
+#### `RenderLayer(layer)`
 
 Render a single layer from the tileset.
 
@@ -1755,9 +2300,9 @@ Creates and owns a two-dimensional gameplay canvas and draw context.
 | `[width]` | `number` | Logical canvas width. |
 | `[height]` | `number` | Logical canvas height. |
 
-### Documented Methods
+### Methods
 
-#### `Init()`
+#### `Init(screenName)`
 
 Initialize scene
 
@@ -1773,7 +2318,10 @@ Return size screen
 #### `GetwindowSize()`
 
 Return size window browser
-#### `Resize()`
+#### `Refresh()`
+
+JSDoc pending.
+#### `Resize(vector2D)`
 
 Resize screen
 
@@ -1783,6 +2331,9 @@ Resize screen
 | --- | --- | --- |
 | `width` | `width` |  |
 | `height` | `height` |  |
+#### `FullScreen()`
+
+JSDoc pending.
 
 ## ScreenUI
 
@@ -1799,6 +2350,12 @@ Transparent overlay screen for GameForgeJS canvas-based UI above gameplay.
 | `[height=600]` | `number` | Logical canvas height. |
 | `[zIndex=100]` | `number` | CSS stacking position. |
 
+### Methods
+
+#### `Refresh()`
+
+JSDoc pending.
+
 ## Sprite
 
 `class` from [`src/Core2D/Graphics/Sprite.js`](../../src/Core2D/Graphics/Sprite.js)
@@ -1812,9 +2369,9 @@ Canvas sprite renderer supporting sheet-based animation frames.
 | `screen` | `Screen` | Destination canvas screen. |
 | `spriteSrc` | `string` | Loaded image key or sprite source. |
 
-### Documented Methods
+### Methods
 
-#### `Static()`
+#### `Static(spriteSrc, position)`
 
 Draws a static sprite on the canvas.
 
@@ -1824,7 +2381,7 @@ Draws a static sprite on the canvas.
 | --- | --- | --- |
 | `[spriteSrc]` | `string` | The path to the sprite image. |
 | `position` | `Vector2D` | The position on the canvas to draw the sprite. |
-#### `Cliping()`
+#### `Cliping(spriteSrc, position, size, cutPosition, cutSize)`
 
 Draws a clipped portion of a sprite.
 
@@ -1837,7 +2394,7 @@ Draws a clipped portion of a sprite.
 | `size` | `Vector2D` | The size of the sprite to draw. |
 | `cutPosition` | `Vector2D` | The position to start clipping from. |
 | `cutSize` | `Vector2D` | The size of the clipping area. |
-#### `Stretched()`
+#### `Stretched(spriteSrc, position, size)`
 
 Draws the sprite stretched to the specified size on the canvas.
 
@@ -1848,7 +2405,7 @@ Draws the sprite stretched to the specified size on the canvas.
 | `[spriteSrc]` | `string` | The path to the sprite image. |
 | `position` | `Vector2D` | The position on the canvas to draw the sprite. |
 | `size` | `Vector2D` | The new size to stretch the sprite. |
-#### `Animation()`
+#### `Animation(spriteSrc, position, direction = 'horizontal', row = 0, facingRight = true, scale = 1)`
 
 Draws an animated sprite based on the current index and row.
 
@@ -1860,7 +2417,7 @@ Draws an animated sprite based on the current index and row.
 | `position` | `Vector2D` | The position on the canvas to draw the sprite. |
 | `[direction='horizontal']` | `string` | The animation direction ('horizontal' or 'vertical'). |
 | `[row=0]` | `number` | The row index for vertical animations. |
-#### `Update()`
+#### `Update(deltaTime = 1 / 60)`
 
 Updates the animation frame using the old updates-per-frame value as a 60 FPS timing reference.
 #### `Reset()`
@@ -1883,9 +2440,9 @@ store.SaveState({ level: 1, score: 1000 });
 var state = store.RestoreState();
 ```
 
-### Documented Methods
+### Methods
 
-#### `SaveState()`
+#### `SaveState(state, prefix)`
 
 Saves the current state to local storage.
 
@@ -1896,17 +2453,17 @@ Saves the current state to local storage.
 | `state` | `Object` | The state object to be saved. |
 
 **Returns:** `void`
-#### `RestoreState()`
+#### `RestoreState(prefix)`
 
 Restores the previously saved state from local storage.
 
 **Returns:** `Object|null` - The saved state object or null if no state is found.
-#### `ClearState()`
+#### `ClearState(prefix)`
 
 Clears the saved state from local storage.
 
 **Returns:** `void`
-#### `BackupState()`
+#### `BackupState(backupPrefix, prefix)`
 
 Backs up the saved state to a different key in local storage.
 
@@ -1930,9 +2487,9 @@ Canvas-drawn editable text field for in-game GameForgeJS UI.
 | --- | --- | --- |
 | `screen` | `Screen` | Screen used for drawing and pointer coordinates. |
 
-### Documented Methods
+### Methods
 
-#### `SetBox()`
+#### `SetBox(rect)`
 
 Sets the dimensions and position of the text box.
 
@@ -1943,7 +2500,7 @@ Sets the dimensions and position of the text box.
 | `rect` | `Rectangle` |  |
 
 **Returns:** `void`
-#### `SetText()`
+#### `SetText(text)`
 
 Sets the text content of the text box.
 
@@ -1954,12 +2511,21 @@ Sets the text content of the text box.
 | `text` | `string` |  |
 
 **Returns:** `void`
+#### `SetActive(active = true)`
+
+JSDoc pending.
+#### `SetPlaceholder(text)`
+
+JSDoc pending.
+#### `SetMaxLength(maxLength)`
+
+JSDoc pending.
 #### `GetText()`
 
 Gets the text content of the text box.
 
 **Returns:** `string` - The current text in the text box.
-#### `HandleInput()`
+#### `HandleInput(event)`
 
 Handles keyboard input when the text box is active.
 
@@ -1987,9 +2553,15 @@ Draws the text box on the screen.
 
 Tile-map collision queries and axis-separated movement for rectangular actors.
 
-### Documented Methods
+### Methods
 
-#### `static Move()`
+#### `static RectFromTile(tileX, tileY, tileSize)`
+
+JSDoc pending.
+#### `static IntersectsTile(rect, tileX, tileY, tileSize)`
+
+JSDoc pending.
+#### `static Move(rect, { delta = 1 / 60, tileSize, worldWidth = Infinity, worldHeight = Infinity, getTile, isSolid, } = {})`
 
 Moves a velocity-bearing rectangle and resolves nearby solid tiles.
 
@@ -2001,6 +2573,9 @@ Moves a velocity-bearing rectangle and resolves nearby solid tiles.
 | `[options={}]` | `Object` | Grid query and movement settings. |
 
 **Returns:** `Object` - Collision sides and grounded status.
+#### `static ResolveAxis(rect, axis, options = {})`
+
+JSDoc pending.
 
 ## Touch
 
@@ -2017,9 +2592,9 @@ const touch = new Touch();
 // Touch event listeners are automatically added
 ```
 
-### Documented Methods
+### Methods
 
-#### `touchStartHandler()`
+#### `touchStartHandler(event)`
 
 Handles the touch start event and updates the start position.
 
@@ -2028,7 +2603,7 @@ Handles the touch start event and updates the start position.
 | Name | Type | Description |
 | --- | --- | --- |
 | `event` | `TouchEvent` | The touch start event |
-#### `touchEndHandler()`
+#### `touchEndHandler(event)`
 
 Handles the touch end event and updates the end position.
 
@@ -2037,7 +2612,7 @@ Handles the touch end event and updates the end position.
 | Name | Type | Description |
 | --- | --- | --- |
 | `event` | `TouchEvent` | The touch end event |
-#### `touchMoveHandler()`
+#### `touchMoveHandler(event)`
 
 Handles the touch move event and updates the position.
 
@@ -2063,20 +2638,23 @@ Gets the touch end position.
 
 Stores 2D position, rotation and scale and can mirror them onto its owner.
 
-### Documented Methods
+### Methods
 
-#### `OnAttach()`
+#### `OnAttach(owner)`
 
-Called when this component is attached to a GameObject. Override this instead of putting attach logic in the constructor.
+JSDoc pending.
+#### `SetPosition(x, y)`
 
-**Parameters**
+JSDoc pending.
+#### `Translate(dx, dy)`
 
-| Name | Type | Description |
-| --- | --- | --- |
-| `owner` | `object` |  |
-#### `OnDetach()`
+JSDoc pending.
+#### `CopyFromOwner()`
 
-Called when this component is removed from its owner.
+JSDoc pending.
+#### `ApplyToOwner()`
+
+JSDoc pending.
 
 ## UI
 
@@ -2090,9 +2668,9 @@ Convenience factory for canvas buttons, labels and text boxes on a screen.
 | --- | --- | --- |
 | `screen` | `Screen` | Screen receiving UI elements. |
 
-### Documented Methods
+### Methods
 
-#### `Button()`
+#### `Button(x, y, width, height, callBack)`
 
 Creates a button UI element and handles its click events.
 
@@ -2107,7 +2685,7 @@ Creates a button UI element and handles its click events.
 | `callBack` | `function` | The function to execute when the button is clicked. |
 
 **Returns:** `Button` - The created button instance.
-#### `TextBox()`
+#### `TextBox(x, y, width, height)`
 
 Creates a text box UI element where users can input text.
 
@@ -2121,7 +2699,7 @@ Creates a text box UI element where users can input text.
 | `height` | `number` | The height of the text box. |
 
 **Returns:** `TextBox` - The created text box instance.
-#### `Label()`
+#### `Label(x, y, text)`
 
 Creates a label UI element to display static text.
 
@@ -2141,9 +2719,9 @@ Creates a label UI element to display static text.
 
 Nine-slice canvas window that positions child labels relative to its frame. Subclass or compose this class for in-game panels rendered inside GameForgeJS rather than as external HTML.
 
-### Documented Methods
+### Methods
 
-#### `AddText()`
+#### `AddText(text, offsetX, offsetY, color = "#FFFFFF", fontSize = "20px", fontStyle = "Arial")`
 
 Adds text relative to the window's top-left corner
 
@@ -2159,6 +2737,12 @@ Adds text relative to the window's top-left corner
 | `[fontStyle="Arial"]` | `string` | Canvas font family. |
 
 **Returns:** `void`
+#### `OnUpdate(dt)`
+
+JSDoc pending.
+#### `OnDrawn()`
+
+JSDoc pending.
 
 ## Util
 
@@ -2171,6 +2755,15 @@ That class was made, to compose the EngineHtml5 framework.
 ```js
 This is a static class, you can just use his functions
 ```
+
+### Methods
+
+#### `static OldUUIDv4()`
+
+JSDoc pending.
+#### `static NewUUIDv4()`
+
+JSDoc pending.
 
 ## Vector2D
 
@@ -2186,14 +2779,89 @@ That class was made, to compose the EngineHtml5 framework.
 var vector2D = new Vector2D(0, 0);
 ```
 
-### Documented Methods
+### Methods
 
+#### `static Zero()`
+
+JSDoc pending.
+#### `static One()`
+
+JSDoc pending.
+#### `static FromArray(values = [0, 0], offset = 0)`
+
+JSDoc pending.
+#### `static FromObject(value = {})`
+
+JSDoc pending.
+#### `Clone()`
+
+JSDoc pending.
+#### `Copy(vector)`
+
+JSDoc pending.
 #### `GetValue()`
 
 Get value x and y of Vector
-#### `SetValue()`
+#### `SetValue(x, y)`
 
 Set value in Vector
+#### `Set(x = 0, y = 0)`
+
+JSDoc pending.
+#### `ToArray(out = [], offset = 0)`
+
+JSDoc pending.
+#### `Equals(vector, epsilon = 0)`
+
+JSDoc pending.
+#### `Add(vector)`
+
+JSDoc pending.
+#### `AddValue(vector2D)`
+
+JSDoc pending.
+#### `AddSelf(vector)`
+
+JSDoc pending.
+#### `Subtract(vector)`
+
+JSDoc pending.
+#### `SubtractValue(vector2D)`
+
+JSDoc pending.
+#### `SubtractSelf(vector)`
+
+JSDoc pending.
+#### `MultiplyScalar(scalar)`
+
+JSDoc pending.
+#### `MultiplyScalarSelf(scalar)`
+
+JSDoc pending.
+#### `DivideScalar(scalar)`
+
+JSDoc pending.
+#### `DivideScalarSelf(scalar)`
+
+JSDoc pending.
+#### `Dot(vector)`
+
+JSDoc pending.
+#### `LengthSquared()`
+
+JSDoc pending.
+#### `Length()`
+
+JSDoc pending.
+#### `Normalize()`
+
+JSDoc pending.
+#### `NormalizeSelf()`
+
+JSDoc pending.
+#### `DistanceTo(vector)`
+
+JSDoc pending.
 
 ## Vector3D
 
@@ -2209,14 +2877,182 @@ That class was made, to compose the EngineHtml5 framework.
 var vector3D = new Vector3D(0, 0, 0);
 ```
 
-### Documented Methods
+### Methods
 
+#### `static Zero()`
+
+JSDoc pending.
+#### `static One()`
+
+JSDoc pending.
+#### `static FromArray(values = [0, 0, 0], offset = 0)`
+
+JSDoc pending.
+#### `static FromObject(value = {})`
+
+JSDoc pending.
+#### `Clone()`
+
+JSDoc pending.
+#### `Copy(vector)`
+
+JSDoc pending.
 #### `GetValue()`
 
 Get value x, y and z of Vector
-#### `SetValue()`
+#### `ToArray(out = [], offset = 0)`
+
+JSDoc pending.
+#### `SetValue(x, y, z)`
 
 Set value x, y and z of Vector
+#### `Set(x = 0, y = 0, z = 0)`
+
+JSDoc pending.
+#### `Equals(vector, epsilon = 0)`
+
+JSDoc pending.
+#### `Add(vector)`
+
+JSDoc pending.
+#### `AddValue(vector3D)`
+
+JSDoc pending.
+#### `AddSelf(vector)`
+
+JSDoc pending.
+#### `Subtract(vector)`
+
+JSDoc pending.
+#### `SubtractValue(vector3D)`
+
+JSDoc pending.
+#### `SubtractSelf(vector)`
+
+JSDoc pending.
+#### `MultiplyScalar(scalar)`
+
+JSDoc pending.
+#### `MultiplyScalarSelf(scalar)`
+
+JSDoc pending.
+#### `DivideScalar(scalar)`
+
+JSDoc pending.
+#### `DivideScalarSelf(scalar)`
+
+JSDoc pending.
+#### `Dot(vector)`
+
+JSDoc pending.
+#### `Cross(vector)`
+
+JSDoc pending.
+#### `LengthSquared()`
+
+JSDoc pending.
+#### `Length()`
+
+JSDoc pending.
+#### `Normalize()`
+
+JSDoc pending.
+#### `NormalizeSelf()`
+
+JSDoc pending.
+#### `DistanceTo(vector3D)`
+
+JSDoc pending.
+
+## Vector4D
+
+`class` from [`src/CoreCross/Math/Vector4D.js`](../../src/CoreCross/Math/Vector4D.js)
+
+Four-component vector for colors, quaternions, homogeneous coordinates and generic math data.
+
+### Methods
+
+#### `static Zero()`
+
+JSDoc pending.
+#### `static One()`
+
+JSDoc pending.
+#### `static FromArray(values = [0, 0, 0, 0], offset = 0)`
+
+JSDoc pending.
+#### `static FromObject(value = {})`
+
+JSDoc pending.
+#### `Clone()`
+
+JSDoc pending.
+#### `Copy(vector)`
+
+JSDoc pending.
+#### `GetValue()`
+
+JSDoc pending.
+#### `SetValue(x, y, z, w)`
+
+JSDoc pending.
+#### `Set(x = 0, y = 0, z = 0, w = 0)`
+
+JSDoc pending.
+#### `ToArray(out = [], offset = 0)`
+
+JSDoc pending.
+#### `Equals(vector, epsilon = 0)`
+
+JSDoc pending.
+#### `Add(vector)`
+
+JSDoc pending.
+#### `AddValue(vector4D)`
+
+JSDoc pending.
+#### `AddSelf(vector)`
+
+JSDoc pending.
+#### `Subtract(vector)`
+
+JSDoc pending.
+#### `SubtractValue(vector4D)`
+
+JSDoc pending.
+#### `SubtractSelf(vector)`
+
+JSDoc pending.
+#### `MultiplyScalar(scalar)`
+
+JSDoc pending.
+#### `MultiplyScalarSelf(scalar)`
+
+JSDoc pending.
+#### `DivideScalar(scalar)`
+
+JSDoc pending.
+#### `DivideScalarSelf(scalar)`
+
+JSDoc pending.
+#### `Dot(vector)`
+
+JSDoc pending.
+#### `LengthSquared()`
+
+JSDoc pending.
+#### `Length()`
+
+JSDoc pending.
+#### `Normalize()`
+
+JSDoc pending.
+#### `NormalizeSelf()`
+
+JSDoc pending.
+#### `DistanceTo(vector)`
+
+JSDoc pending.
 
 ## VelocityComponent
 
@@ -2224,17 +3060,20 @@ Set value x, y and z of Vector
 
 Applies velocity, gravity and friction to an owner's 2D position.
 
-### Documented Methods
+### Methods
 
-#### `OnAttach()`
+#### `SetVelocity(vx, vy)`
 
-Called when this component is attached to a GameObject. Override this instead of putting attach logic in the constructor.
+JSDoc pending.
+#### `AddImpulse(ix, iy)`
 
-**Parameters**
+JSDoc pending.
+#### `OnUpdate(dt)`
 
-| Name | Type | Description |
-| --- | --- | --- |
-| `owner` | `object` |  |
-#### `OnDetach()`
+JSDoc pending.
+#### `OnFixedUpdate(dt)`
 
-Called when this component is removed from its owner.
+JSDoc pending.
+#### `_integrate(dt)`
+
+JSDoc pending.

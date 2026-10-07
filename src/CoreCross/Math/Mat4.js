@@ -29,6 +29,21 @@ export class Mat4 {
         return out;
     }
 
+    /** Builds glTF's T * R * S matrix from an XYZW quaternion. */
+    static fromRotationTranslationScale(out, q, translation, scale) {
+        const [x, y, z, w] = q;
+        const xx = x * x, yy = y * y, zz = z * z;
+        const xy = x * y, xz = x * z, yz = y * z;
+        const wx = w * x, wy = w * y, wz = w * z;
+        out.set([
+            (1 - 2 * (yy + zz)) * scale[0], 2 * (xy + wz) * scale[0], 2 * (xz - wy) * scale[0], 0,
+            2 * (xy - wz) * scale[1], (1 - 2 * (xx + zz)) * scale[1], 2 * (yz + wx) * scale[1], 0,
+            2 * (xz + wy) * scale[2], 2 * (yz - wx) * scale[2], (1 - 2 * (xx + yy)) * scale[2], 0,
+            translation[0], translation[1], translation[2], 1,
+        ]);
+        return out;
+    }
+
     static perspective(out, fovy, aspect, near, far) {
         const f = 1.0 / Math.tan(fovy / 2);
         out.fill(0);

@@ -12,8 +12,8 @@ npm run docs
 
 | Module | Purpose | Documented Exports |
 | --- | --- | --- |
-| [CoreCross](./CoreCross.md) | Shared bootstrap, input, assets, math, components and utility APIs. | 44/44 |
-| [Core2D](./Core2D.md) | Canvas rendering, collisions, gameplay objects and canvas UI APIs. | 72/72 |
+| [CoreCross](./CoreCross.md) | Shared bootstrap, input, assets, math, components and utility APIs. | 45/45 |
+| [Core2D](./Core2D.md) | Canvas rendering, collisions, gameplay objects and canvas UI APIs. | 73/73 |
 | [Core3D](./Core3D.md) | Render3D scenes, cameras, materials, physics, models and compatibility APIs. | 40/40 |
 | [CoreNetwork](./CoreNetwork.md) | Transport adapters and lightweight reusable online gameplay helpers. | 10/10 |
 
