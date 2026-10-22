@@ -2,61 +2,62 @@
   "audios": [
     {
       "name": "bgm_fase1",
-      "path": "examples/DemoAdvanced/Assets/BGM/battle_sound.mpeg"
+      "path": "./assets/shared/battle_sound.mpeg"
     },
     {
       "name": "sfx_jump",
-      "path": "examples/DemoAdvanced/Assets/SFX/Jump 1.wav"
+      "path": "./assets/shared/Jump 1.wav"
     },
     {
       "name": "sfx_laser",
-      "path": "examples/DemoAdvanced/Assets/SFX/Blow 1V2.wav"
+      "path": "./assets/shared/Blow 1V2.wav"
     }
   ],
   "images": [
     {
       "name": "textura_chao",
-      "path": "examples/DemoMiniGame3D/Assets/Textures/floor.jpg"
+      "path": "./assets/Textures/floor.jpg"
     },
     {
       "name": "textura_player",
-      "path": "examples/DemoMiniGame3D/Assets/Textures/player.jpg"
+      "path": "./assets/Textures/player.jpg"
     },
     {
       "name": "textura_coin",
-      "path": "examples/DemoMiniGame3D/Assets/Textures/coin.jpg"
+      "path": "./assets/Textures/coin.jpg"
     },
     {
       "name": "sky_cross",
-      "path": "examples/DemoMiniGame3D/Assets/Textures/Daylight Box UV.png"
+      "path": "./assets/Textures/Daylight Box UV.png"
     },
     {
       "name": "rock_albedo",
-      "path": "examples/DemoMiniGame3D/Assets/Materials/RockGround/rock_ground_diff_1k.jpg"
+      "path": "./assets/Materials/RockGround/rock_ground_diff_1k.jpg"
     },
     {
       "name": "rock_normal",
-      "path": "examples/DemoMiniGame3D/Assets/Materials/RockGround/rock_ground_nor_gl_1k.jpg"
+      "path": "./assets/Materials/RockGround/rock_ground_nor_gl_1k.jpg"
     },
     {
       "name": "rock_arm",
-      "path": "examples/DemoMiniGame3D/Assets/Materials/RockGround/rock_ground_arm_1k.jpg"
+      "path": "./assets/Materials/RockGround/rock_ground_arm_1k.jpg"
     },
     {
       "name": "rock_height",
-      "path": "examples/DemoMiniGame3D/Assets/Materials/RockGround/rock_ground_disp_1k.jpg"
+      "path": "./assets/Materials/RockGround/rock_ground_disp_1k.jpg"
     }
   ],
   "jsons": [
     {
       "name": "sky_trail_course",
-      "path": "examples/DemoMiniGame3D/Assets/Manifests/sky-trail/course.json"
+      "path": "./assets/Manifests/sky-trail/course.json"
     }
   ],
   "models": [
     {
       "name": "character",
-      "path": "examples/DemoMiniGame3D/Assets/Models/character.glb"
+      "path": "./assets/Models/character.glb"
     }
-  ]
+  ],
+  "schemaVersion": 1
 }

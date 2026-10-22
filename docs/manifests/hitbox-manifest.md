@@ -1,6 +1,7 @@
-# Hitbox Manifest 2D
+# 2D hitbox manifests
 
-Hitboxes, hurtboxes e collisionboxes podem ser declaradas como JSON e carregadas pelo `resources.json`.
+Declare hitboxes, hurtboxes, and collision boxes in JSON, then register the
+document in `resources.json`.
 
 ```json
 {
@@ -33,33 +34,53 @@ Hitboxes, hurtboxes e collisionboxes podem ser declaradas como JSON e carregadas
 }
 ```
 
-As coordenadas sao locais ao `position` da entidade. Quando `owner.facingRight` for `false`, as caixas sao espelhadas automaticamente usando `owner.size.x`. Use `"mirror": false` em uma caixa especifica para desativar isso.
+Coordinates are local to the entity's `position`. When
+`owner.facingRight` is false, boxes are mirrored using `owner.size.x`.
+Set `"mirror": false` on an individual box to disable that behavior.
 
-Carregamento:
+## Register and use a document
+
+For a game served from its own folder:
 
 ```json
 {
   "jsons": [
-    { "name": "player_boxes", "path": "examples/DemoAdvanced/Assets/Manifests/player.boxes.json" }
+    { "name": "player_boxes", "path": "./assets/Manifests/player.boxes.json" }
   ]
 }
 ```
 
-Uso:
+After loading the registered resources:
 
 ```js
-this.boxes = new BoxController2D(this, AssetManager.instance.GetJson("player_boxes"));
+import { AssetManager } from "gameforgejs/core";
+import { BoxController2D } from "gameforgejs/2d";
+
+// Inside an entity's initialization:
+this.boxes = new BoxController2D(
+    this,
+    AssetManager.instance.GetJson("player_boxes"),
+);
 this.boxes.DrawDebug(this.draw);
 ```
 
-`damage`, `knockback`, `hitStop`, `hitStun` e `stagger` sao copiados para o evento de impacto gerado pelo `CombatResolver2D`. A demo Advanced usa esse evento para aplicar dano, gerar texto flutuante e chamar `Engine.HitStop()`. Use `stagger: false` em golpes iniciais de combo quando o inimigo deve parar por um instante sem ser empurrado, e deixe `stagger: true` no finalizador.
+`CombatResolver2D` copies `damage`, `knockback`, `hitStop`,
+`hitStun`, and `stagger` into its impact event. The Advanced example uses
+that event to apply damage, create floating text, and call `Engine.HitStop()`.
+Use `stagger: false` for early combo hits that should briefly stop an enemy
+without pushing it away; a finisher can use `stagger: true`.
 
-Combos ficam fora do manifest de caixas. Use `ComboController` para definir a sequencia de animacoes e o frame minimo em que cada ataque pode encadear o proximo:
+## Combos
+
+Combo sequencing is separate from the box document. `ComboController`
+defines animation order and the first frame that can chain into the next hit:
 
 ```js
+import { ComboController } from "gameforgejs/2d";
+
 this.combo = new ComboController(this, [
-  { animation: "Attack_1", chainFromFrame: 3 },
-  { animation: "Attack_2", chainFromFrame: 2 },
-  { animation: "Attack_3", chainFromFrame: 3 }
+    { animation: "Attack_1", chainFromFrame: 3 },
+    { animation: "Attack_2", chainFromFrame: 2 },
+    { animation: "Attack_3", chainFromFrame: 3 },
 ]);
 ```

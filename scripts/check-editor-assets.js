@@ -76,13 +76,13 @@ function loadResources(projectDir, workspace) {
     const models = new Map();
     for (const image of resources.images ?? []) {
         if (!image?.name || !image?.path) continue;
-        const file = projectFile(projectDir, image.path);
+        const file = projectFile(path.dirname(resourceFile), image.path);
         requireFile(file, `${relative(resourceFile)} image '${image.name}'`);
         images.set(image.name, file);
     }
     for (const json of resources.jsons ?? []) {
         if (!json?.name || !json?.path) continue;
-        const file = projectFile(projectDir, json.path);
+        const file = projectFile(path.dirname(resourceFile), json.path);
         if (requireFile(file, `${relative(resourceFile)} JSON '${json.name}'`)) {
             const data = readJson(file);
             if (data) jsons.set(json.name, { file, data });
@@ -90,7 +90,7 @@ function loadResources(projectDir, workspace) {
     }
     for (const model of resources.models ?? []) {
         if (!model?.name || !model?.path) continue;
-        const file = projectFile(projectDir, model.path);
+        const file = projectFile(path.dirname(resourceFile), model.path);
         if (requireFile(file, `${relative(resourceFile)} model '${model.name}'`))
             models.set(model.name, file);
     }

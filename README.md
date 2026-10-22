@@ -1,272 +1,157 @@
 <p align="center">
-  <img src="docs/assets/gameforgejs-banner.png" alt="GameForgeJS Banner" width="100%" />
+  <img src="docs/assets/gameforgejs-banner.png" alt="GameForgeJS" width="100%" />
 </p>
 
 # GameForgeJS
 
-GameForgeJS is an experimental engine/framework in pure JavaScript for browser games. The goal is to allow building demos, 2D/3D games, and tools without locking the runtime to external dependencies.
+GameForgeJS is an experimental JavaScript framework for browser games.
+It includes a shared runtime, Canvas 2D and WebGL2 rendering, networking
+helpers, a local project CLI, and playable examples.
 
-Node.js is optional: it only acts as a local development server to avoid CORS when loading JSON, images, audio, shaders, and models.
+The browser runtime uses native JavaScript and browser APIs. Node.js runs the
+development CLI, validation, documentation generation, and static builds.
+
+## Start here
+
+GameForgeJS runs as native browser JavaScript. Node.js and the CLI are optional
+development tools; an ordinary static HTTP server can serve the engine and game.
 
 ## Principles
 
-- Runtime independent, based on native JavaScript and browser APIs.
-- Each game/demo has its own window, screen, and input configuration.
-- Assets and levels should move toward data-driven manifests.
-- The engine should support classical inheritance and gradually evolve toward componentization.
-- Tools like the 3D Scene Editor and WorldEditor should live outside the demos, so they can serve any project.
+- Keep the runtime independent of external dependencies and build tools.
+- Use `BootstrapGame`, `Level` / `Level3D`, and `GameObject` as the main game pattern.
+- Let `Screen` and the framework's rendering classes own canvas creation and drawing.
+- Keep screen, input, and window configuration owned by each game.
+- Describe assets and levels through manifests; evolve inheritance with components.
+- Keep authoring tools separate. Optional extensions must reuse framework services.
 
-## How to Run
+See [Architecture and ownership](docs/architecture.md) for how these pieces fit.
 
-```sh
-npm run start
-```
+## Run the examples
 
-Then open:
-
-```txt
-http://localhost:8080/Main.html
-```
-
-Without a query string, `Main.html` opens Admin Mode — a screen to choose which demo to run.
-
-The 2D and 3D editors live in the external desktop application `../GameForgeJsEditor` and do not depend on the engine's web server.
-
-Direct links still work:
-
-```txt
-http://localhost:8080/Main.html?demo=advanced
-http://localhost:8080/Main.html?demo=tactical
-http://localhost:8080/Main.html?demo=fighting2d
-http://localhost:8080/Main.html?demo=adventure2d
-http://localhost:8080/Main.html?demo=demo3d
-http://localhost:8080/Main.html?demo=solar3d
-http://localhost:8080/Main.html?demo=mini3d
-http://localhost:8080/Main.html?demo=online
-http://localhost:8080/Main.html?demo=immature
-```
-
-To test the Online MMO demo between two computers on the same network, serve the client:
+From a repository checkout:
 
 ```sh
-npm run start
-```
-
-In another terminal, run the optional relay from the external tools project, which has its own dependencies:
-
-```sh
-cd ../GameForgeJsTools/NodeWebSocketRelay
-npm install
+npm ci
 npm start
 ```
 
-Then share an address using the IP of the machine that started the server:
+Open the URL printed by the server and visit
+`/examples/showcase/index.html`. Each example also has its own `index.html`.
+Existing `Main.html?demo=advanced` links redirect to the corresponding game.
 
-```txt
-http://YOUR_IP:8080/Main.html?demo=online&room=terra&name=Colega&server=ws%3A%2F%2FYOUR_IP%3A3000
-```
-
-The relay is for testing only. A real MMO requires an authoritative external backend; GameForgeJS remains pure client-side JavaScript with no `ws` dependency.
-
-## Demos
-
-| Demo | Entry | Config | Description |
-| --- | --- | --- | --- |
-| Advanced | `examples/DemoAdvanced/mainAdvanced.js` | `examples/DemoAdvanced/advanced.config.json` | 2D Platformer/RPG with manifests, levels, inventory, skill tree, hitboxes, and HUD. |
-| Tactical RPG | `examples/DemoTacticalRPG/mainTacticalRPG.js` | `examples/DemoTacticalRPG/tactical.config.json` | Tactical grid with AStar, movement range, action, and battle system. |
-| Fighting 2D | `examples/DemoFightingGame2D/mainFightingGame2D.js` | `examples/DemoFightingGame2D/fighting.config.json` | Menu, arcade, versus, character select, configurable keyboard and gamepad. |
-| Adventure 2D | `examples/DemoAdventure2D/mainAdventure2D.js` | `examples/DemoAdventure2D/adventure.config.json` | Component-based top-down adventure with camera transitions between rooms. |
-| Demo 3D | `examples/Demo3D/mainDemo3D.js` | `examples/Demo3D/demo3d.config.json` | Render3D layer validation with WebGL2, lighting, normal maps, and shadows. |
-| Solar System 3D | `examples/DemoSolarSystem/mainSolarSystem.js` | `examples/DemoSolarSystem/solar.config.json` | Render3D demo with procedural planet shaders, sunlight, and orbits. |
-| MiniGame 3D | `examples/DemoMiniGame3D/mainMiniGame3D.js` | `examples/DemoMiniGame3D/mini3d.config.json` | Sky Trail with moving platforms, PBR/parallax, shadows, skybox, physics, and gamepad. |
-| Online MMO | `examples/DemoOnlineMMO/mainOnlineMMO.js` | `examples/DemoOnlineMMO/online.config.json` | 2D online sandbox with canvas chat, custom map, and local tab sync via swappable adapter. |
-| Immature | `examples/Demo/mainImmature.js` | `examples/Demo/immature.config.json` | Simple movement and collision example. |
-
-## Structure
-
-```txt
-GameForgeJS/
-  src/CoreCross/             Bootstrap, loop, config, assets, audio, input, math, shared components and pathfinding
-  src/Core2D/                Canvas 2D, GameObject, camera, scene, UI, collision, combat, particles and 2D effects
-  src/Core3D/                WebGL/Render3D, Level3D, models, shaders, window, objects and 3D physics
-  src/CoreNetwork/           Reusable networking and online: GameNetwork, adapters, chat and sync
-  tools/                 Optional local static server for development
-  scripts/               Engine documentation verification and generation
-  docs/                  Guides, tutorials and generated JSDoc reference
-  examples/                 All playable and technical demos
-    DemoAdvanced/        Data-driven platformer/RPG demo
-    DemoFightingGame2D/  2D fighting demo
-    DemoAdventure2D/     Component-based top-down adventure demo
-    DemoTacticalRPG/     Tactical demo
-    Demo3D/              WebGL demo
-    DemoSolarSystem/     Render3D solar system demo
-    DemoMiniGame3D/      3D mini game
-    DemoOnlineMMO/       2D online sandbox via CoreNetwork
-```
-
-## Creating a Project
-
-A new project needs its own entry point, its own config, and — when it has assets — a `resources.json`.
-
-```txt
-MyGame/
-  mygame.config.json
-  resources.json
-  mainMyGame.js
-  Levels/
-    FirstLevel.js
-  Entities/
-    Player.js
-  Assets/
-```
-
-Minimal entry point:
-
-```js
-import { BootstrapGame } from "../src/CoreCross/index.js";
-import { FirstLevel } from "./Levels/FirstLevel.js";
-
-BootstrapGame({
-    configPath: ["gameforge.config.json", "MyGame/mygame.config.json"],
-    manifestPath: "MyGame/resources.json",
-    levels: [
-        new FirstLevel(),
-    ],
-});
-```
-
-`gameforge.config.json` holds engine-level defaults. `MyGame/mygame.config.json` overrides game-specific details: title, screen size, audio, input, and any other settings.
-
-To make the game canvas fill the entire window responsively, set `"fullScreen": true` inside `screen`. The logical resolution is still defined by `width` and `height`, preserving game and UI coordinates.
-
-Per-game input config example:
-
-```json
-{
-  "input": {
-    "gamepadProfile": "xbox",
-    "actionMappings": {
-      "ATTACK": [
-        { "device": "keyboard", "input": "KeyZ" },
-        { "device": "gamepad", "input": "X" }
-      ],
-      "RIGHT": [
-        { "device": "keyboard", "input": "ArrowRight" },
-        { "device": "gamepad", "input": "LEFT_STICK_RIGHT" },
-        { "device": "gamepad", "input": "DPAD_RIGHT" }
-      ]
-    }
-  }
-}
-```
-
-## Assets and Manifests
-
-Assets are loaded by `ResourceManifestLoader`:
-
-```json
-{
-  "images": [
-    { "name": "player_idle", "path": "MyGame/Assets/Player/IDLE.png" }
-  ],
-  "audios": [
-    { "name": "jump", "path": "MyGame/Assets/Audio/Jump.wav" }
-  ],
-  "jsons": [
-    { "name": "first_level", "path": "MyGame/Assets/Manifests/first.level.json" }
-  ]
-}
-```
-
-In the AdvancedDemo, levels are composed from smaller manifests. Shared configuration lives in:
-
-```txt
-examples/DemoAdvanced/Assets/Manifests/advanced/stage-default.json
-```
-
-And a level composes defaults with level-specific parts:
-
-```json
-{
-  "id": "advanced_snow_demo",
-  "compose": [
-    "advanced_stage_default",
-    "advanced_core",
-    "advanced_stage",
-    "advanced_player",
-    "advanced_enemies",
-    "advanced_effects",
-    "advanced_ui"
-  ]
-}
-```
-
-## Componentization
-
-`GameObject` still supports the classic flow with `OnStart`, `OnUpdate`, `OnFixedUpdate`, `OnDrawn`, and `OnGUI`, but can now also receive reusable components.
-
-```js
-import { GameObject } from "./src/Core2D/index.js";
-import { BoundsComponent, HealthComponent, TransformComponent } from "./src/CoreCross/index.js";
-
-const entity = new GameObject();
-entity.AddComponent(new TransformComponent({ x: 80, y: 120 }));
-entity.AddComponent(new BoundsComponent({ width: 32, height: 32 }));
-entity.AddComponent(new HealthComponent({ hp: 100 }));
-```
-
-See the full guide at [Componentization](docs/guides/components.md). This is the path toward evolving into an ECS-lite model without breaking existing demos.
-
-## External Tools
-
-The 3D Scene Editor and WorldEditor/WorldMaker now live in the separate desktop application `../GameForgeJsEditor`. The tool uses `game.workspace.json` to declare editable levels/scenes without adding any runtime dependency; `resources.json` remains the manifest loaded by the game. The 3D editor uses `Render3D`, hierarchy, inspector, and visual transform gizmos anchored to the selected object.
-
-It is deliberately a lightweight first tool, not a full Unity reimplementation. The runtime stays pure JavaScript and the demos do not depend on the editor.
-
-To run:
+To create a separate game from this checkout:
 
 ```sh
-cd ../GameForgeJsEditor
-npm run dev
+node cli/index.cjs create ../my-game --template minimal-2d
+node cli/index.cjs serve --root ../my-game
 ```
 
-The desktop editor can migrate old folders on save or create a fresh structure. In 2D, `New Project` generates `game.workspace.json`, `resources.json`, and `Assets/Manifests/editor/level_1/*` manifests. In 3D, `New Project` initializes a folder, while `Open Project` and `+ Scene` declare scenes in `game.workspace.json` and create files inside `Assets/Manifests/scenes/`. `examples/Demo3D` includes an editable scene loaded by the demo. `examples/DemoMiniGame3D` declares its native `course.json` as an editable level: the editor transforms platforms, coins, spawn, and goal, and newly saved courses appear in the game menu.
+Use `minimal-3d` for a WebGL2 starter. These commands use the local engine
+checkout; they do not assume a package has been published to npm.
+See [Create a project](docs/getting-started/new-project.md) for the project
+layout and [CLI reference](docs/reference/cli.md) for all commands.
+
+## Public imports
+
+CLI-generated games follow the established `BootstrapGame`/`Level` pattern:
+
+```js
+import { BootstrapGame, Level } from "gameforgejs/core";
+import { GameObject, Screen, Draw } from "gameforgejs/2d";
+```
+
+The generated project's import map resolves these public names in the browser.
+The separate `createGame` API is also available for projects that need
+independent runtime instances. Package exports provide the same public names
+for package-aware tooling. Internal implementation files live only in `src/`;
+do not import them through deep paths or create a parallel `packages/` facade.
+
+## Repository layout
+
+```text
+src/
+  core/                 Game lifecycle, configuration, assets, input, math
+  2d/                   Canvas rendering and existing 2D game APIs
+  3d/                   WebGL2 rendering, scenes, materials, physics
+  network/              Transports and synchronization helpers
+cli/
+  templates/            Minimal executable game starters
+examples/
+  catalog.json          Metadata consumed by the showcase and this table
+  showcase/             Example browser, independent of the runtime
+  Demo*/
+    index.html          Browser entry
+    main.js             Game bootstrap
+    config/             Game settings, resource manifest and tooling metadata (migrated projects)
+    src/                Levels, screens, entities, and game systems
+    assets/             Game resources
+scripts/                Repository checks and documentation generation
+tests/                  Automated regression and contract checks
+docs/                   Canonical English documentation
+```
+
+Not every example needs every optional file or source subdirectory.
+`resources.json` declares loaded assets; `game.workspace.json`, when
+present, is metadata for an external editor.
+
+## Examples
+
+The showcase is intended for exploration and integration examples. New games
+start from CLI templates, which contain only the minimum runnable behavior.
+
+<!-- examples:start -->
+| Example | Dimension | Purpose |
+| --- | --- | --- |
+| [Movement and collision](examples/Demo/index.html) | 2D | A compact 2D example for movement, collision, and collection. |
+| [Component adventure](examples/DemoAdventure2D/index.html) | 2D | Top-down movement, reusable entity components, and room camera transitions. |
+| [Platform adventure](examples/DemoAdvanced/index.html) | 2D | A platform/RPG showcase with composed manifests, inventory, skills, and campaign progression. |
+| [Tactical RPG](examples/DemoTacticalRPG/index.html) | 2D | A turn-based grid game with pathfinding, movement range, and combat. |
+| [Fighting game](examples/DemoFightingGame2D/index.html) | 2D | Character selection, arcade and versus modes, keyboard controls, and gamepad input. |
+| [Street Fight Puzzle](examples/DemoStreetFightPuzzle/index.html) | 2D | An arcade puzzle game with combos and competitive block exchanges. |
+| [3D renderer](examples/Demo3D/index.html) | 3D | A Render3D scene exploring cameras, models, lighting, materials, and shadows. |
+| [Solar system](examples/DemoSolarSystem/index.html) | 3D | Procedural celestial materials, sunlight, and animated planetary orbits. |
+| [Sky Trail](examples/DemoMiniGame3D/index.html) | 3D | A 3D platform game with moving terrain, physics, collectibles, and textured surfaces. |
+| [Online sandbox](examples/DemoOnlineMMO/index.html) | 2D | Same-origin multiplayer tabs, synchronized players, and canvas chat; optional external relay. |
+| [Addon playground](examples/DemoAddons/index.html) | 2D | Shared parallax layers and a patrol/rest state machine using the standard framework lifecycle. |
+<!-- examples:end -->
 
 ## Documentation
 
-- [Official index](docs/index.md)
-- [Creating a project](docs/getting-started/new-project.md)
-- [Tutorial: creating 2D and 3D demos](docs/getting-started/tutorial-demos-2d-3d.md)
-- [Per-game input configuration](docs/getting-started/input-config.md)
-- [Gamepad cheat sheet](docs/getting-started/gamepad.md)
-- [CoreNetwork](docs/guides/network.md)
-- [Componentization](docs/guides/components.md)
-- [Render3D](docs/guides/render3d.md)
-- [External 3D Scene Editor integration](docs/tools/scene-editor-3d.md)
-- [Advanced Stage Manifest](docs/manifests/advanced-stage-manifest.md)
-- [Hitbox Manifest 2D](docs/manifests/hitbox-manifest.md)
-- [WorldEditor v4](docs/tools/world-editor-v4.md)
-- [API Reference generated by JSDoc](docs/helper/index.md)
+- [Documentation index](docs/index.md)
+- [Create a project](docs/getting-started/new-project.md)
+- [Learn from 2D and 3D examples](docs/getting-started/tutorial-demos-2d-3d.md)
+- [Architecture and ownership](docs/architecture.md)
+- [Migrate existing code](docs/migrations/repository-layout.md)
+- [CLI reference](docs/reference/cli.md)
+- [Input configuration](docs/getting-started/input-config.md)
+- [Components](docs/guides/components.md)
+- [3D rendering](docs/guides/render3d.md)
+- [Networking](docs/guides/network.md)
 
-## Project Direction
+English is the canonical documentation language. API reference pages are
+generated from public source JSDoc; the example list above is generated from
+`examples/catalog.json`. Edit those sources, then run `npm run docs`.
 
-The strongest path forward is:
+## Validate changes
 
-- consolidating `GameObject + Component` with a **standardized lifecycle**
-- creating reusable systems for rendering, physics, input, and animation
-- turning entities into serializable data
-- keeping authoring tools separate from the runtime (**GameForgeJSEditorsV2** in C# + Avalonia)
-- finishing a small game using the engine as real-world validation
-
-### Recommended New Structure
-
-Prefer importing via the new package structure:
-
-```js
-import { Component, TransformComponent } from "../packages/core/index.js";
-import { GameObject } from "../packages/2d/index.js";
+```sh
+npm run check
+npm test
+npm run test:browser
+npm run docs
+npm run docs:check
 ```
 
-See `templates/basic/` for a minimal example.
+Run a changed example in a browser as well. Syntax and resource checks cannot
+prove rendering, game input, or GPU behavior.
 
-For real structure examples organized by game genre (Platformer, Top-Down, Isometric, Tactical, etc.), check the `templates/2d/` folder. Each subfolder shows how to organize `game.workspace.json`, the `levelType`, and the documents for that game style.
+## Current boundaries
+
+The game-instance API introduces explicit module setup and disposal.
+Existing static engine, input, screen, and asset APIs remain available for
+older examples; they must not be assumed to support several simultaneous
+games in one page. See the architecture guide for the compatibility boundary.
+
+External authoring applications and multiplayer servers are separate
+projects. The local development server does not provide a game backend.

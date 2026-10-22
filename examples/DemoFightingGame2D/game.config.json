@@ -1,0 +1,242 @@
+{
+  "schemaVersion": 1,
+  "project": {
+    "name": "GameForgeJS Fighting 2D Demo",
+    "version": "1.0.0",
+    "author": "Camello"
+  },
+  "window": {
+    "title": "GameForgeJS - Fighting 2D",
+    "backgroundColor": "#000000",
+    "cursor": "default"
+  },
+  "screen": {
+    "width": 960,
+    "height": 540,
+    "pixelArt": true,
+    "antialiasing": false,
+    "orientation": "landscape"
+  },
+  "input": {
+    "gamepadProfile": "xbox",
+    "gamepadAliases": {
+      "LIGHT_ATTACK": "X",
+      "HEAVY_ATTACK": "Y",
+      "SPECIAL": "RB"
+    }
+  },
+  "fighting": {
+    "controls": {
+      "menu": {
+        "left": [
+          "ArrowLeft",
+          "KeyA"
+        ],
+        "right": [
+          "ArrowRight",
+          "KeyD"
+        ],
+        "up": [
+          "ArrowUp",
+          "KeyW"
+        ],
+        "down": [
+          "ArrowDown",
+          "KeyS"
+        ],
+        "confirm": [
+          "Enter",
+          "Space",
+          "KeyJ",
+          "KeyZ"
+        ],
+        "cancel": [
+          "Escape",
+          "Backspace"
+        ],
+        "gamepad": {
+          "up": {
+            "buttons": [
+              "DPAD_UP"
+            ],
+            "axes": [
+              "LEFT_STICK_UP"
+            ]
+          },
+          "down": {
+            "buttons": [
+              "DPAD_DOWN"
+            ],
+            "axes": [
+              "LEFT_STICK_DOWN"
+            ]
+          },
+          "left": {
+            "buttons": [
+              "DPAD_LEFT"
+            ],
+            "axes": [
+              "LEFT_STICK_LEFT"
+            ]
+          },
+          "right": {
+            "buttons": [
+              "DPAD_RIGHT"
+            ],
+            "axes": [
+              "LEFT_STICK_RIGHT"
+            ]
+          },
+          "confirm": [
+            "A",
+            "START"
+          ],
+          "cancel": [
+            "B",
+            "BACK"
+          ]
+        }
+      },
+      "playerOne": {
+        "left": [
+          "KeyA"
+        ],
+        "right": [
+          "KeyD"
+        ],
+        "up": [
+          "KeyW"
+        ],
+        "down": [
+          "KeyS"
+        ],
+        "light": [
+          "KeyJ",
+          "KeyZ"
+        ],
+        "heavy": [
+          "KeyK",
+          "KeyX"
+        ],
+        "special": [
+          "KeyL",
+          "KeyC"
+        ],
+        "gamepad": {
+          "index": 0,
+          "left": {
+            "buttons": [
+              "DPAD_LEFT"
+            ],
+            "axes": [
+              "LEFT_STICK_LEFT"
+            ]
+          },
+          "right": {
+            "buttons": [
+              "DPAD_RIGHT"
+            ],
+            "axes": [
+              "LEFT_STICK_RIGHT"
+            ]
+          },
+          "up": {
+            "buttons": [
+              "DPAD_UP"
+            ],
+            "axes": [
+              "LEFT_STICK_UP"
+            ]
+          },
+          "down": {
+            "buttons": [
+              "DPAD_DOWN"
+            ],
+            "axes": [
+              "LEFT_STICK_DOWN"
+            ]
+          },
+          "light": [
+            "LIGHT_ATTACK"
+          ],
+          "heavy": [
+            "HEAVY_ATTACK"
+          ],
+          "special": [
+            "SPECIAL"
+          ]
+        }
+      },
+      "playerTwo": {
+        "left": [
+          "ArrowLeft"
+        ],
+        "right": [
+          "ArrowRight"
+        ],
+        "up": [
+          "ArrowUp"
+        ],
+        "down": [
+          "ArrowDown"
+        ],
+        "light": [
+          "Digit1",
+          "Numpad1"
+        ],
+        "heavy": [
+          "Digit2",
+          "Numpad2"
+        ],
+        "special": [
+          "Digit3",
+          "Numpad3"
+        ],
+        "gamepad": {
+          "index": 1,
+          "left": {
+            "buttons": [
+              "DPAD_LEFT"
+            ],
+            "axes": [
+              "LEFT_STICK_LEFT"
+            ]
+          },
+          "right": {
+            "buttons": [
+              "DPAD_RIGHT"
+            ],
+            "axes": [
+              "LEFT_STICK_RIGHT"
+            ]
+          },
+          "up": {
+            "buttons": [
+              "DPAD_UP"
+            ],
+            "axes": [
+              "LEFT_STICK_UP"
+            ]
+          },
+          "down": {
+            "buttons": [
+              "DPAD_DOWN"
+            ],
+            "axes": [
+              "LEFT_STICK_DOWN"
+            ]
+          },
+          "light": [
+            "LIGHT_ATTACK"
+          ],
+          "heavy": [
+            "HEAVY_ATTACK"
+          ],
+          "special": [
+            "SPECIAL"
+          ]
+        }
+      }
+    }
+  }
+}

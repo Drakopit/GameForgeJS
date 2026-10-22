@@ -1,0 +1,79 @@
+[
+  {
+    "id": "immature",
+    "name": "Movement and collision",
+    "description": "A compact 2D example for movement, collision, and collection.",
+    "path": "Demo/index.html",
+    "dimension": "2D"
+  },
+  {
+    "id": "adventure2d",
+    "name": "Component adventure",
+    "description": "Top-down movement, reusable entity components, and room camera transitions.",
+    "path": "DemoAdventure2D/index.html",
+    "dimension": "2D"
+  },
+  {
+    "id": "advanced",
+    "name": "Platform adventure",
+    "description": "A platform/RPG showcase with composed manifests, inventory, skills, and campaign progression.",
+    "path": "DemoAdvanced/index.html",
+    "dimension": "2D"
+  },
+  {
+    "id": "tactical",
+    "name": "Tactical RPG",
+    "description": "A turn-based grid game with pathfinding, movement range, and combat.",
+    "path": "DemoTacticalRPG/index.html",
+    "dimension": "2D"
+  },
+  {
+    "id": "fighting2d",
+    "name": "Fighting game",
+    "description": "Character selection, arcade and versus modes, keyboard controls, and gamepad input.",
+    "path": "DemoFightingGame2D/index.html",
+    "dimension": "2D"
+  },
+  {
+    "id": "streetfightpuzzle",
+    "name": "Street Fight Puzzle",
+    "description": "An arcade puzzle game with combos and competitive block exchanges.",
+    "path": "DemoStreetFightPuzzle/index.html",
+    "dimension": "2D"
+  },
+  {
+    "id": "demo3d",
+    "name": "3D renderer",
+    "description": "A Render3D scene exploring cameras, models, lighting, materials, and shadows.",
+    "path": "Demo3D/index.html",
+    "dimension": "3D"
+  },
+  {
+    "id": "solar3d",
+    "name": "Solar system",
+    "description": "Procedural celestial materials, sunlight, and animated planetary orbits.",
+    "path": "DemoSolarSystem/index.html",
+    "dimension": "3D"
+  },
+  {
+    "id": "mini3d",
+    "name": "Sky Trail",
+    "description": "A 3D platform game with moving terrain, physics, collectibles, and textured surfaces.",
+    "path": "DemoMiniGame3D/index.html",
+    "dimension": "3D"
+  },
+  {
+    "id": "online",
+    "name": "Online sandbox",
+    "description": "Same-origin multiplayer tabs, synchronized players, and canvas chat; optional external relay.",
+    "path": "DemoOnlineMMO/index.html",
+    "dimension": "2D"
+  },
+  {
+    "id": "addons",
+    "name": "Addon playground",
+    "description": "Shared parallax layers and a patrol/rest state machine using the standard framework lifecycle.",
+    "path": "DemoAddons/index.html",
+    "dimension": "2D"
+  }
+]

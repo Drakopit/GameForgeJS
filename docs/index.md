@@ -1,46 +1,53 @@
-# GameForgeJS Documentation
+# GameForgeJS documentation
 
-This directory contains the official GameForgeJS guides and generated API
-reference. Start with a small demo tutorial, then follow the module guide that
-matches the game you are building.
+Start with an executable project, then read the guide for the feature you
+want to change. English is the canonical language for this documentation.
 
-## Getting Started
+## Getting started
 
-- [New project format](./getting-started/new-project.md)
-- [Creating 2D and 3D demos](./getting-started/tutorial-demos-2d-3d.md)
-- [Input configuration per game](./getting-started/input-config.md)
-- [Gamepad aliases and polling reference](./getting-started/gamepad.md)
+- [Zero to Hero: first lesson and complete-game goals](./getting-started/zero-to-hero.md)
+
+- [Create a project](./getting-started/new-project.md)
+- [Learn from 2D and 3D examples](./getting-started/tutorial-demos-2d-3d.md)
+- [Configure input per game](./getting-started/input-config.md)
+- [Gamepad aliases](./getting-started/gamepad.md)
 
 ## Guides
 
-- [Component-based entities](./guides/components.md)
-- [CoreNetwork and online games](./guides/network.md)
-- [Render3D](./guides/render3d.md)
+- [Configuration layout and ownership](./guides/configuration-layout.md)
 
-## Data And Tools
+- [Architecture and ownership](./architecture.md)
+- [Components and entity behavior](./guides/components.md)
+- [3D rendering](./guides/render3d.md)
+- [Networking](./guides/network.md)
 
-- [Advanced stage manifest](./manifests/advanced-stage-manifest.md)
-- [2D hitbox manifest](./manifests/hitbox-manifest.md)
-- [Scene Editor 3D](./tools/scene-editor-3d.md)
-- [WorldEditor / WorldMaker](./tools/world-editor-v4.md)
+## Reference
 
-## API Reference
+- [CLI commands](./reference/cli.md)
+- [Generated public API](./reference/api/index.md)
+- [Advanced stage manifests](./manifests/advanced-stage-manifest.md)
+- [2D hitbox manifests](./manifests/hitbox-manifest.md)
 
-The API pages are generated from JSDoc on the public exports of `CoreCross`,
-`Core2D`, `Core3D` and `CoreNetwork`:
+## Integration and migration
 
-- [Generated API home](./helper/index.md)
-- [CoreCross API](./helper/CoreCross.md)
-- [Core2D API](./helper/Core2D.md)
-- [Core3D API](./helper/Core3D.md)
-- [CoreNetwork API](./helper/CoreNetwork.md)
+- [Repository and project migration](./migrations/repository-layout.md)
+- [External 2D editor contract](./tools/world-editor-v4.md)
+- [External 3D editor contract](./tools/scene-editor-3d.md)
 
-After documenting or changing a public API, regenerate the reference:
+## Maintaining the documentation
+
+The README is an overview, tutorials teach a task, guides explain a concept,
+and reference pages describe a contract. Link to the owning page instead of
+copying its full instructions into several documents.
+
+Public JSDoc is the source for generated API reference pages. Keep it next to
+the exported class, function, or constant and document parameters, return
+values, disposal requirements, and deprecation replacements. Regenerate with:
 
 ```sh
 npm run docs
 ```
 
-Keep public JSDoc immediately above its exported class, function or constant.
-Use a short purpose statement, document public parameters and return values,
-and add `@deprecated` with the supported replacement for compatibility APIs.
+The showcase and generated README table use `examples/catalog.json`.
+Document commands only after they are implemented, and validate starter
+instructions against a generated project.

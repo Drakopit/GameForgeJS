@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Addon playground</title>
+  <style>body{margin:0;background:#142636;color:#fff;font:16px system-ui}main{max-width:800px;margin:24px auto}canvas{display:block;margin:auto}h1,p{margin:12px 24px}</style>
+  <script type="importmap">
+  {"imports":{
+    "gameforgejs/core":"../../src/core/index.js",
+    "gameforgejs/2d":"../../src/2d/index.js",
+    "gameforgejs/addons/parallax":"../../src/addons/parallax/index.js",
+    "gameforgejs/addons/state-machine":"../../src/addons/state-machine/index.js"
+  }}
+  </script>
+</head>
+<body>
+  <main><h1>Addon playground</h1><p>Two scrolling layers and an actor alternating between patrol and rest.</p><p>No input needed. Watch the state label and the different layer speeds.</p></main>
+  <script type="module" src="./main.js"></script>
+</body>
+</html>

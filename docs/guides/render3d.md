@@ -1,45 +1,28 @@
-# Render3D
+# Rendering in 3D
 
-`Core3D` concentra a camada 3D da GameForgeJS. Ela fica separada do core 2D atual e usa WebGL2 puro, sem `three.js`, `gl-matrix` ou CDN externa.
+The 3D module uses native WebGL2. It provides scenes, cameras, meshes,
+materials, lights, asset loaders, and basic rigidbody physics without a
+third-party rendering dependency.
 
-## Estrutura
+## Current APIs
 
-```txt
-src/Core3D/Render3D/
-  Camera/      PerspectiveCamera
-  Core/        Color, Transform3D
-  Light/       Ambient, Hemisphere, Directional, Point, Spot
-  Material/    StandardMaterial, UnlitMaterial
-  Mesh/        Mesh, Geometry3D, PrimitiveMesh
-  Renderer/    WebGL3DRenderer
-  Scene/       Scene3D e SceneManifest3D
-  Skybox/      Skybox para imagens cross convertidas em cubemap
-  Shader/      Shader e shaders internos
-  Texture/     Texture
+| Area | APIs and behavior |
+| --- | --- |
+| Rendering | `WebGL3DRenderer`, `Scene3D`, `PerspectiveCamera`. |
+| Geometry | `Mesh`, `Geometry3D`, `PrimitiveMesh`; cubes, beveled cubes, planes, spheres, and rings. |
+| Materials | `StandardMaterial`, `UnlitMaterial`, and `CelestialBodyMaterial`. |
+| Textures | Albedo, normal, ARM/ORM, height/parallax, UV tiling, and cross-image skyboxes. |
+| Lighting | Ambient, hemisphere, directional, point, and spot lights. |
+| Shadows | Directional shadow mapping with PCF filtering. |
+| Physics | Rigidbody gravity, sphere and AABB colliders, floor contact, and moving platforms. |
+| Scene data | `SceneManifest3D` instantiates registered scene JSON. |
+| Models | `ModelLoader`, `Model3D`, and `ModelMeshFactory`. |
 
-src/Core3D/
-  Level/       Level3D oficial
-  Model/       Model3D e ModelMeshFactory
-  Physics/     Rigidbody3D, SphereCollider3D, BoxCollider3D, PhysicsWorld3D
-  Legacy/      Compatibilidade obsoleta para projetos antigos
-```
+The [minimal 3D starter](../getting-started/new-project.md) is the runnable
+starting point. The examples below focus on rendering concepts and assume the
+game's import map or bundler already resolves `gameforgejs/3d`.
 
-## Recursos Atuais
-
-- WebGL2 renderer com `Scene3D`.
-- `PerspectiveCamera`.
-- `Mesh` com transform, material, shadow flags e visibilidade.
-- Primitivas: cubo, cubo chanfrado, plano, esfera e anel.
-- `StandardMaterial` com albedo, normal map, ARM/ORM, height/parallax, tiling UV, roughness, metallic, AO e emissive.
-- Luz ambiente, hemisferica, direcional, ponto e spot.
-- Shadow map direcional simples com PCF 3x3.
-- `Skybox` com cubemap criado a partir de uma imagem em formato cross.
-- Shader procedural `CelestialBodyMaterial` para planetas/estrelas.
-- Fisica 3D basica com gravidade, rigidbody, esfera, caixa AABB e contato de piso para plataformas moveis.
-- Overlay 2D/UI continua funcionando por cima do canvas 3D.
-- `SceneManifest3D` para instanciar cenas JSON exportadas pelo Scene Editor 3D.
-
-## Exemplo
+## Build a scene
 
 ```js
 import {
@@ -49,16 +32,12 @@ import {
     PerspectiveCamera,
     PrimitiveMesh,
     Scene3D,
-    Skybox,
     StandardMaterial,
-    Texture,
     WebGL3DRenderer,
-} from "../src/Core3D/index.js";
-import { AssetManager } from "../src/CoreCross/index.js";
+} from "gameforgejs/3d";
 
 const renderer = new WebGL3DRenderer(canvas);
 const scene = new Scene3D();
-
 const camera = new PerspectiveCamera({
     fov: 60,
     aspect: canvas.width / canvas.height,
@@ -81,73 +60,88 @@ scene.Add(new DirectionalLight({
     shadowMapSize: 1024,
 }));
 
+const cube = Mesh.FromGeometry(
+    PrimitiveMesh.BeveledCube(0.075),
+    new StandardMaterial({ roughness: 0.9, metallic: 0 }),
+);
+scene.Add(cube);
+
+// Call from the game's render callback:
+renderer.Render(scene, camera);
+```
+
+Here `canvas` is an existing canvas element. A new game should use the
+render callback of its game instance instead of starting another independent
+animation loop.
+
+## Textures and skyboxes
+
+```js
+import { Skybox, StandardMaterial, Texture } from "gameforgejs/3d";
+
 const material = new StandardMaterial({
-    albedoMap: Texture.Load("Assets/rock_albedo.png"),
-    normalMap: Texture.Load("Assets/rock_normal.png"),
-    ormMap: Texture.Load("Assets/rock_arm.png"),
-    heightMap: Texture.Load("Assets/rock_height.png"),
+    albedoMap: Texture.Load("./assets/rock_albedo.png"),
+    normalMap: Texture.Load("./assets/rock_normal.png"),
+    ormMap: Texture.Load("./assets/rock_arm.png"),
+    heightMap: Texture.Load("./assets/rock_height.png"),
     uvScale: [2, 2],
     normalScale: 1.05,
     heightScale: 0.035,
     roughness: 0.9,
-    metallic: 0.0,
+    metallic: 0,
 });
 
-const cube = Mesh.FromGeometry(PrimitiveMesh.BeveledCube(0.075), material);
-scene.Add(cube);
-
-// A imagem deve estar carregada; por exemplo, por um resources.json da demo.
-scene.Add(Skybox.FromImage(AssetManager.instance.GetImage("sky_cross")));
-
-function loop() {
-    cube.transform.rotation.y += 0.01;
-    renderer.Render(scene, camera);
-    requestAnimationFrame(loop);
-}
-
-loop();
+// skyImage must be a loaded cross-layout image:
+scene.Add(Skybox.FromImage(skyImage));
 ```
 
-## Cenas Por Manifest
+Those filenames are illustrative. Register and provide the actual textures
+used by your game. Sky Trail contains a complete example with material files.
 
-O Scene Editor 3D do aplicativo desktop externo `../GameForgeJsEditor` abre e salva documentos com camera, luzes e objetos primitivos. Em um `Level3D`, ele pode ser usado assim:
+## Scene manifests
+
+A `Level3D` subclass can instantiate a loaded scene document:
 
 ```js
-import { AssetManager } from "../src/CoreCross/index.js";
-import { Level3D, SceneManifest3D } from "../src/Core3D/index.js";
+import { AssetManager } from "gameforgejs/core";
+import { Level3D, SceneManifest3D } from "gameforgejs/3d";
 
 export class MyLevel3D extends Level3D {
     BuildScene() {
         const document = AssetManager.instance.GetJson("my_scene");
         this.scene.backgroundColor = [...document.backgroundColor];
-        this.camera = SceneManifest3D.CreateCamera(document.camera, this.width / this.height);
+        this.camera = SceneManifest3D.CreateCamera(
+            document.camera,
+            this.width / this.height,
+        );
         this.scene.Add(this.camera);
         SceneManifest3D.Populate(this.scene, document);
     }
 }
 ```
 
-## API Legada
+This uses the existing `Level3D` and static asset-manager integration. See
+the [architecture guide](../architecture.md) for the boundary between existing
+static APIs and the game-instance lifecycle.
 
-`LegacyLevel3D`, `LegacyTransform3D`, `GameObject3D`, `Camera3D`, `DirectionalLight3D`, `Shapes3D`, `Mesh3D` e `Skybox3D` permanecem exportados apenas para nao quebrar projetos antigos. Eles possuem JSDoc `@deprecated` e exibem um aviso unico no console quando instanciados. A engine nao usa a sintaxe experimental `@Deprecated`: JSDoc e aviso em runtime funcionam no JavaScript nativo do navegador sem bundler ou transpiler.
+An external authoring tool can produce compatible JSON; it does not need to
+be embedded in the runtime. See [3D editor integration](../tools/scene-editor-3d.md).
 
-Nao use essa API em demos novas:
+## Legacy APIs
 
-| Legado | Render3D atual |
+Deprecated 3D exports remain for source compatibility with existing game
+code. New code should use the current rendering types:
+
+| Deprecated type | Current alternative |
 | --- | --- |
 | `LegacyLevel3D` | `Level3D` |
 | `LegacyTransform3D` | `Transform3D` |
-| `GameObject3D` | `Mesh`, `Model3D` ou entidade propria sobre Render3D |
+| `GameObject3D` | `Mesh`, `Model3D`, or a game-specific entity |
 | `Camera3D` | `PerspectiveCamera` |
 | `DirectionalLight3D` | `DirectionalLight` |
-| `Shapes3D` | `Mesh` + `PrimitiveMesh` + materiais |
-| `Mesh3D` | `Mesh` + `ModelMeshFactory` |
+| `Shapes3D` | `Mesh` with `PrimitiveMesh` and a material |
+| `Mesh3D` | `Mesh` with `ModelMeshFactory` |
 | `Skybox3D` | `Skybox` |
 
-## Proximas Camadas
-
-- `ModelLoader` integrado ao novo `Mesh`.
-- `RenderPass`, `ShadowPass` e `ForwardRenderPass` como classes separadas.
-- Materiais de ambiente adicionais e cubemaps de reflexao.
-- Post-processing: tone mapping, bloom e FXAA.
-- PBR mais completo com environment map.
+These types are marked through JSDoc and runtime warnings. The project does
+not require experimental JavaScript decorators.

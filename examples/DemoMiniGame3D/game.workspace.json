@@ -4,16 +4,16 @@
   "kind": "GameForgeJS.Workspace",
   "levels2D": [],
   "name": "Sky Trail 3D",
-  "resourcePrefix": "examples/DemoMiniGame3D/",
+  "resourcePrefix": "./",
   "resources": "resources.json",
   "scenes3D": [
     {
       "format": "SkyTrailCourse",
       "id": "sky-trail",
       "label": "Sky Trail",
-      "path": "Assets/Manifests/sky-trail/course.json",
+      "path": "assets/Manifests/sky-trail/course.json",
       "resourceName": "sky_trail_course",
-      "resourcePrefix": "examples/DemoMiniGame3D/",
+      "resourcePrefix": "",
       "resources": "resources.json"
     }
   ],

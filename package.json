@@ -2,12 +2,46 @@
   "name": "gameforgejs",
   "version": "1.0.0",
   "private": true,
+  "description": "Modular JavaScript game runtime and project tooling for the browser",
+  "engines": {
+    "node": ">=22"
+  },
+  "bin": {
+    "gameforge": "./cli/index.cjs"
+  },
+  "exports": {
+    ".": "./src/core/index.js",
+    "./core": "./src/core/index.js",
+    "./2d": "./src/2d/index.js",
+    "./3d": "./src/3d/index.js",
+    "./network": "./src/network/index.js",
+    "./compat": "./src/compat/index.js",
+    "./addons/parallax": "./src/addons/parallax/index.js",
+    "./addons/state-machine": "./src/addons/state-machine/index.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src",
+    "cli",
+    "README.md"
+  ],
   "scripts": {
-    "start": "node tools/server.js",
-    "dev": "node tools/server.js",
-    "check": "node scripts/check-js.js && node scripts/check-imports.js && node scripts/check-editor-assets.js && node scripts/check-runtime.js",
+    "start": "node cli/index.cjs serve",
+    "dev": "node cli/index.cjs serve",
+    "check": "node scripts/check-js.js && node scripts/check-imports.js && node scripts/check-editor-assets.js && node scripts/check-projects.cjs && node scripts/check-runtime.js",
     "check:editor-assets": "node scripts/check-editor-assets.js",
     "docs": "node scripts/generate-docs.js",
-    "publish": "node tools/Publisher/publisher.js"
+    "docs:check": "node scripts/generate-docs.js --check",
+    "docs:serve": "node cli/index.cjs serve --root docs",
+    "test": "node --test tests/*.test.cjs",
+    "test:browser": "node tests/browser-smoke.cjs",
+    "build": "node cli/index.cjs build --root examples/DemoAdvanced --out ../../dist/DemoAdvanced",
+    "publish": "node cli/index.cjs build --root examples/DemoAdvanced --out ../../dist/DemoAdvanced"
+  },
+  "dependencies": {
+    "acorn": "^8.19.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.1"
   }
 }

@@ -1,6 +1,6 @@
 # Per-Game Input Configuration
 
-Input bindings should not live in `gameforge.config.json`. That file is global to the engine. Each demo/game must declare its own bindings in its local config.
+Each game owns its bindings in `game.config.json`. Runtime defaults do not define a particular game's actions. The static `ActionManager` examples below describe the existing game APIs; new instance-based input code should use the context supplied by its starter and modules.
 
 ## ActionManager
 
@@ -29,11 +29,11 @@ Demos that use `ActionManager` declare `input.actionMappings`. The gamepad accep
 }
 ```
 
-`BootstrapGame` can load a list of configs. Later files override or extend the earlier ones:
+Existing games using `BootstrapGame` can load a game-local configuration:
 
 ```js
 BootstrapGame({
-    configPath: ["gameforge.config.json", "MyGame/mygame.config.json"],
+    configPath: "./game.config.json",
     levels: [
         new FirstLevel(),
     ],

@@ -1,0 +1,31 @@
+- Getting started
+  - [Zero to Hero learning paths](getting-started/zero-to-hero.md)
+  - [Create a project](getting-started/new-project.md)
+  - [Learn from 2D and 3D examples](getting-started/tutorial-demos-2d-3d.md)
+  - [Configure input per game](getting-started/input-config.md)
+  - [Gamepad aliases](getting-started/gamepad.md)
+
+- Guides
+  - [Configuration layout](guides/configuration-layout.md)
+  - [Developer experience roadmap](development-roadmap.md)
+  - [Architecture and ownership](architecture.md)
+  - [Components and entity behavior](guides/components.md)
+  - [3D rendering](guides/render3d.md)
+  - [Networking](guides/network.md)
+
+- Reference
+  - [Distribution packages](reference/distribution-packages.md)
+  - [CLI commands](reference/cli.md)
+  - [Generated public API](reference/api/index.md)
+    - [Core API](reference/api/core.md)
+    - [2D API](reference/api/2d.md)
+    - [3D API](reference/api/3d.md)
+    - [Network API](reference/api/network.md)
+    - [Compatibility API](reference/api/compat.md)
+  - [Advanced stage manifests](manifests/advanced-stage-manifest.md)
+  - [2D hitbox manifests](manifests/hitbox-manifest.md)
+
+- Integration and migration
+  - [Repository and project migration](migrations/repository-layout.md)
+  - [External 2D editor contract](tools/world-editor-v4.md)
+  - [External 3D editor contract](tools/scene-editor-3d.md)

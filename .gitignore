@@ -10,8 +10,6 @@
 
 # --- JavaScript / Node.js (GameForgeJS) ---
 node_modules/
-package-lock.json
-yarn.lock
 npm-debug.log*
 dist/
 build/
@@ -23,7 +21,6 @@ build/
 *.out
 *.app
 *.o
-*.obj
 *.dll
 *.so
 *.dylib
@@ -45,3 +42,7 @@ Thumbs.db
 
 # --- Documentação Gerada ---
 docs/site/
+test-results/
+playwright-report/
+publish/
+*.tgz

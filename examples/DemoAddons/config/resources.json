@@ -1,0 +1,6 @@
+{
+  "images": [
+    { "name": "hills", "path": "../assets/hills.svg" },
+    { "name": "trees", "path": "../assets/trees.svg" }
+  ]
+}

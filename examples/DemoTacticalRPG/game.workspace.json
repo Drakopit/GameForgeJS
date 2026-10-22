@@ -4,17 +4,17 @@
   "id": "demo_tactical_rpg",
   "name": "Demo Tactical RPG",
   "resources": "resources.json",
-  "resourcePrefix": "examples/DemoTacticalRPG/",
+  "resourcePrefix": "./",
   "levels2D": [
     {
       "id": "tactical_map",
       "label": "Tactical Map",
       "resources": "resources.json",
-      "resourcePrefix": "examples/DemoTacticalRPG/",
+      "resourcePrefix": "",
       "documents": {
-        "stage": "Assets/Manifests/tactical/stage.json",
-        "player": "Assets/Manifests/tactical/player.json",
-        "enemies": "Assets/Manifests/tactical/enemies.json"
+        "stage": "assets/Manifests/tactical/stage.json",
+        "player": "assets/Manifests/tactical/player.json",
+        "enemies": "assets/Manifests/tactical/enemies.json"
       }
     }
   ],

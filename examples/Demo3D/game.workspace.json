@@ -4,15 +4,15 @@
   "id": "demo_3d",
   "name": "Demo 3D",
   "resources": "resources.json",
-  "resourcePrefix": "examples/Demo3D/",
+  "resourcePrefix": "./",
   "levels2D": [],
   "scenes3D": [
     {
       "id": "render3d_showcase",
       "label": "Render3D Showcase",
-      "path": "Assets/Manifests/scenes/render3d-showcase.scene.json",
+      "path": "assets/Manifests/scenes/render3d-showcase.scene.json",
       "resources": "resources.json",
-      "resourcePrefix": "examples/Demo3D/"
+      "resourcePrefix": ""
     }
   ]
 }

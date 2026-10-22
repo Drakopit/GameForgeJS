@@ -1,27 +1,25 @@
-# Advanced Stage Manifest
+# Advanced stage manifests
 
-`examples/DemoAdvanced/Assets/Manifests/advanced.level.json` e um indice de composicao. Ele junta manifests menores sem acoplar layout ao codigo do level.
+The Advanced example composes each level from small JSON documents. Its
+`assets/Manifests/advanced.level.json` file is an index; it references resource
+names registered in the game's `resources.json`.
 
-## Organizacao
+## Document ownership
 
-O manifest da fase fica dividido por dominio:
+| Document | Owns |
+| --- | --- |
+| `advanced/stage-default.json` | Shared screen, collision, background, and audio defaults. |
+| `advanced/core.json` | World settings and win conditions for the first level. |
+| `advanced/stage.json` | Parallax, materials, platforms, and objects. |
+| `advanced/player.json` | Spawn, movement, stats, combat, and combos. |
+| `advanced/enemies.json` | Enemy defaults and spawn definitions. |
+| `advanced/effects.json` | Floating text and visual effects. |
+| `advanced/ui.json` | HUD and status window. |
 
-- `advanced/stage-default.json`: tela, colisao, background, audio base e defaults comuns.
-- `advanced/core.json`: mundo, vitoria e overrides especificos da fase.
-- `advanced/stage.json`: parallax, materiais, plataformas e objetos.
-- `advanced/player.json`: spawn, movimento, stats, combate e combo.
-- `advanced/enemies.json`: defaults e spawns dos inimigos.
-- `advanced/effects.json`: textos flutuantes e efeitos visuais.
-- `advanced/ui.json`: HUD e janela de status.
+The second and boss levels use `advanced.second.level.json` and
+`advanced.boss.level.json`, with their own `second-*` and `boss-*` documents.
 
-As fases novas seguem o mesmo padrao:
-
-- `advanced.second.level.json`: indice da segunda fase.
-- `advanced.boss.level.json`: indice da fase de boss.
-- `advanced/second-*.json`: mundo, cenario e inimigos da segunda fase.
-- `advanced/boss-*.json`: arena, condicao de vitoria e inimigos do boss.
-
-O indice usa `compose`:
+An index composes registered resource names in order:
 
 ```json
 {
@@ -38,40 +36,41 @@ O indice usa `compose`:
 }
 ```
 
-O fluxo da campanha e `AdvancedDemoMenu -> AdvancedDemoPhaseSelector -> fase escolhida`. A progressao fica em `localStorage`; apenas `first` nasce liberada, `first` libera `second`, e `second` libera `boss`.
+This convention is implemented by the Advanced game. A JSON document does not
+automatically become an engine feature: a game's loader must interpret it.
 
-As telas finais tambem sao levels:
+## Campaign and progression
 
-- `AdvancedDemoGameOver`: destino de derrota ou queda fora da fase; volta ao menu ao confirmar.
-- `AdvancedDemoCongratulations`: destino ao concluir o boss; mostra creditos e volta ao menu ao confirmar.
+The campaign runs from `AdvancedDemoMenu` to `AdvancedDemoPhaseSelector`
+and then the selected level. Progress is stored in `localStorage`; completing
+the first level unlocks the second, and completing the second unlocks the boss.
 
-## Progressao do Player
+`AdvancedDemoGameOver` handles defeat and falling outside the level.
+`AdvancedDemoCongratulations` handles completing the boss. Both return to
+the menu on confirmation.
 
-O player tambem carrega sistemas opcionais pelo manifest:
+Optional player systems are configured through:
 
-- `player.inventory`: slots iniciais, itens, efeitos e recompensas por inimigo derrotado.
-- `player.skillTree`: pontos iniciais, nos, custo, requisitos e efeitos aplicados ao player.
-- `ui.progressHud`: posicao do resumo e do painel de inventario/skills.
+- `player.inventory`: starting slots, items, effects, and enemy rewards.
+- `player.skillTree`: starting points, nodes, costs, requirements, and effects.
+- `ui.progressHud`: inventory/skill panels and summary placement.
 
-Os inputs ficam no `examples/DemoAdvanced/advanced.config.json`: `INVENTORY` abre a bag e `SKILL_TREE` abre a arvore. Enquanto um painel esta aberto, a fase pausa as entidades de gameplay.
+Bindings belong to the game's config: `INVENTORY` opens the inventory and
+`SKILL_TREE` opens the skill tree. Gameplay entities pause while a panel is open.
 
-## Camera Shake
+## Camera shake
 
-`advanced/effects.json` define `cameraShake.light`, `cameraShake.strong` e `cameraShake.playerDamage`. A implementacao fica em `src/Core2D/Camera/Camera.js`, entao outros levels 2D podem usar `camera.Shake(duration, intensity, frequency)`.
+`advanced/effects.json` declares `cameraShake.light`,
+`cameraShake.strong`, and `cameraShake.playerDamage`.
+The reusable 2D camera exposes `camera.Shake(duration, intensity, frequency)`.
 
-## Snow Pack
+## Asset catalogs
 
-Os assets do Snow Pack sao registrados em `examples/DemoAdvanced/resources.json` com nomes como:
+The Snow Pack image resources include `snow_sky`, `snow_mountain_01`,
+`snow_mountain_02`, `snow_tileset`, `snow_vegetation`, `snow_objects`,
+and `snow_standards`.
 
-- `snow_sky`
-- `snow_mountain_01`
-- `snow_mountain_02`
-- `snow_tileset`
-- `snow_vegetation`
-- `snow_objects`
-- `snow_standards`
-
-O catalogo `examples/DemoAdvanced/Assets/Manifests/snow.pack.json` tambem e um indice. Ele compoe:
+The `assets/Manifests/snow.pack.json` catalog composes the following files:
 
 - `snow/backgrounds.json`
 - `snow/terrain.json`
@@ -79,15 +78,13 @@ O catalogo `examples/DemoAdvanced/Assets/Manifests/snow.pack.json` tambem e um i
 - `snow/objects.json`
 - `snow/standards.json`
 
-Esses arquivos dao nomes para recortes de atlas. Exemplos:
-
-- `terrain: "snow_ground"` em plataformas com bordas e preenchimento.
-- `spriteRef: "pine_large"` em objetos estaticos.
-- `animationRef: "blue_flag"` em objetos animados.
+These catalogs name atlas regions. A platform can use
+`terrain: "snow_ground"`; a static object can use `spriteRef: "pine_large"`;
+an animated object can use `animationRef: "blue_flag"`.
 
 ## Parallax
 
-Camadas de parallax ficam em `parallax.layers`.
+Declare background layers in `parallax.layers`:
 
 ```json
 {
@@ -103,11 +100,11 @@ Camadas de parallax ficam em `parallax.layers`.
 }
 ```
 
-Quanto menor o `scrollRatioX`, mais distante a camada parece estar.
+A smaller `scrollRatioX` makes a layer appear farther away.
 
-## Plataformas
+## Platforms
 
-Plataformas podem usar terrain sets nomeados do catalogo:
+Platforms can refer to a named terrain set:
 
 ```json
 {
@@ -123,13 +120,14 @@ Plataformas podem usar terrain sets nomeados do catalogo:
 }
 ```
 
-Um `terrain` escolhe automaticamente topo esquerdo, topo meio, topo direito, preenchimento e laterais. Para casos simples, ainda e possivel usar `tile: "nome_do_tile"` com `renderMode: "tile"`.
+The terrain set selects corners, top edges, side edges, and fill regions.
+For a single repeated tile, use `tile` with `renderMode: "tile"`.
+Direct `sprite`, `pos_x`, `pos_y`, `tileWidth`, and `tileHeight`
+values are available when a region has not been entered in the catalog.
 
-Tambem e possivel usar `sprite`, `pos_x`, `pos_y`, `tileWidth` e `tileHeight` diretamente quando o recorte ainda nao estiver no catalogo.
+## Objects
 
-## Objetos
-
-Objetos decorativos ou interativos ficam em `objects`.
+Decorative and interactive instances belong to `objects`:
 
 ```json
 {
@@ -145,4 +143,4 @@ Objetos decorativos ou interativos ficam em `objects`.
 }
 ```
 
-Se `solid` for `true`, o objeto tambem entra na lista de colisao da fase.
+A solid object also joins the level's collision list.

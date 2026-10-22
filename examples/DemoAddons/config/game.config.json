@@ -1,0 +1,5 @@
+{
+  "schemaVersion": 1,
+  "window": { "title": "Addon playground" },
+  "screen": { "width": 800, "height": 420, "pixelArt": false, "antialiasing": true }
+}

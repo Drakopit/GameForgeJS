@@ -1,10 +1,23 @@
 {
-    "images": [
-        { "name": "textura_player", "path": "examples/Demo3D/Assets/TemplateGrid_albedo.png" },
-        { "name": "grid_albedo", "path": "examples/Demo3D/Assets/TemplateGrid_albedo.png" },
-        { "name": "grid_normal", "path": "examples/DemoMiniGame3D/Assets/TemplateGrid/TemplateGrid_normal.png" }
-    ],
-    "jsons": [
-        { "name": "render3d_showcase_scene", "path": "examples/Demo3D/Assets/Manifests/scenes/render3d-showcase.scene.json" }
-    ]
+  "images": [
+    {
+      "name": "textura_player",
+      "path": "./assets/TemplateGrid_albedo.png"
+    },
+    {
+      "name": "grid_albedo",
+      "path": "./assets/TemplateGrid_albedo.png"
+    },
+    {
+      "name": "grid_normal",
+      "path": "./assets/shared/TemplateGrid_normal.png"
+    }
+  ],
+  "jsons": [
+    {
+      "name": "render3d_showcase_scene",
+      "path": "./assets/Manifests/scenes/render3d-showcase.scene.json"
+    }
+  ],
+  "schemaVersion": 1
 }

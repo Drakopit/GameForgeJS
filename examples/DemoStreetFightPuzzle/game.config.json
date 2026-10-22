@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "window": {
+    "title": "Street Fight Puzzle Demo",
+    "backgroundColor": "#1a1a1a"
+  },
+  "screen": {
+    "width": 800,
+    "height": 600,
+    "fullScreen": false,
+    "pixelArt": true
+  },
+  "physics": {
+    "enabled": false
+  }
+}

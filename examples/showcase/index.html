@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Explore playable GameForgeJS examples for 2D, 3D, input, physics, and networking.">
+  <title>GameForgeJS examples</title>
+  <link rel="icon" href="../../assets/branding/engrenagem.png">
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./main.js"></script>
+</head>
+<body>
+  <header class="site-header"><a class="brand" href="./index.html">GameForgeJS <span>Examples</span></a><a href="../../README.md">Project guide ↗</a></header>
+  <main>
+    <section class="intro">
+      <p class="eyebrow">BUILD · PLAY · LEARN</p>
+      <h1>Explore the engine<br>through working games.</h1>
+      <p class="intro-copy">Start with movement and collision, then explore complete 2D and 3D showcases. Each example owns its entry point, code, and game data.</p>
+    </section>
+    <section aria-label="Browse examples">
+      <div class="toolbar">
+        <div class="filters" role="group" aria-label="Filter by dimension">
+          <button type="button" data-filter="all" aria-pressed="true">All examples</button>
+          <button type="button" data-filter="2D" aria-pressed="false">2D</button>
+          <button type="button" data-filter="3D" aria-pressed="false">3D</button>
+        </div>
+        <span id="count" aria-live="polite"></span>
+      </div>
+      <p id="status" class="status" role="status">Loading examples…</p>
+      <div id="examples" class="cards"></div>
+    </section>
+    <footer>Examples demonstrate engine behavior. For a new project, use the CLI starter described in the <a href="../../docs/getting-started/new-project.md">project guide</a>.</footer>
+  </main>
+</body>
+</html>

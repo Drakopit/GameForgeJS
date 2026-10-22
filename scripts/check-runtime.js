@@ -12,15 +12,15 @@ const arrayCloseTo = (actual, expected, epsilon = 0.00001) => {
 };
 
 async function main() {
-    const { JsonManifestComposer } = await import("../src/CoreCross/Assets/JsonManifestComposer.js");
-    const { Mat4 } = await import("../src/CoreCross/Math/Mat4.js");
-    const { ModelLoader } = await import("../src/Core3D/Assets/ModelLoader.js");
-    const { OBJLoader } = await import("../src/Core3D/Assets/OBJLoader.js");
-    const { Geometry3D } = await import("../src/Core3D/Render3D/Mesh/Geometry3D.js");
-    const { Transform3D } = await import("../src/Core3D/Render3D/Core/Transform3D.js");
-    const { Vector2D } = await import("../src/CoreCross/Math/Vector2D.js");
-    const { Vector3D } = await import("../src/CoreCross/Math/Vector3D.js");
-    const { Vector4D } = await import("../src/CoreCross/Math/Vector4D.js");
+    const { JsonManifestComposer } = await import("../src/core/Assets/JsonManifestComposer.js");
+    const { Mat4 } = await import("../src/core/Math/Mat4.js");
+    const { ModelLoader } = await import("../src/3d/Assets/ModelLoader.js");
+    const { OBJLoader } = await import("../src/3d/Assets/OBJLoader.js");
+    const { Geometry3D } = await import("../src/3d/Render3D/Mesh/Geometry3D.js");
+    const { Transform3D } = await import("../src/3d/Render3D/Core/Transform3D.js");
+    const { Vector2D } = await import("../src/core/Math/Vector2D.js");
+    const { Vector3D } = await import("../src/core/Math/Vector3D.js");
+    const { Vector4D } = await import("../src/core/Math/Vector4D.js");
 
     const vector2 = Vector2D.FromArray([3, 4]);
     assert.equal(vector2.Length(), 5);

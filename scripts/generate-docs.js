@@ -2,29 +2,24 @@ const fs = require("fs");
 const path = require("path");
 
 const ROOT = path.resolve(__dirname, "..");
-const OUTPUT_DIRECTORY = path.join(ROOT, "docs", "helper");
-const MODULES = [
-    {
-        name: "CoreCross",
-        sourceDir: "src/CoreCross",
-        summary: "Shared bootstrap, input, assets, math, components and utility APIs.",
-    },
-    {
-        name: "Core2D",
-        sourceDir: "src/Core2D",
-        summary: "Canvas rendering, collisions, gameplay objects and canvas UI APIs.",
-    },
-    {
-        name: "Core3D",
-        sourceDir: "src/Core3D",
-        summary: "Render3D scenes, cameras, materials, physics, models and compatibility APIs.",
-    },
-    {
-        name: "CoreNetwork",
-        sourceDir: "src/CoreNetwork",
-        summary: "Transport adapters and lightweight reusable online gameplay helpers.",
-    },
-];
+const acorn = require("acorn");
+const OUTPUT_DIRECTORY = path.join(ROOT, "docs", "reference", "api");
+const CHECK = process.argv.includes("--check");
+let stale = 0;
+const MODULES = Object.entries(require("../package.json").exports)
+    .filter(([name, target]) => name !== "." && name !== "./package.json" && typeof target === "string")
+    .map(([name, target]) => ({ name: name.slice(2), sourceDir: path.dirname(target), summary: `Public ${name.slice(2)} entry point: gameforgejs/${name.slice(2)}.` }));
+function emit(file, content) {
+    if (CHECK) {
+        if (!fs.existsSync(file) || fs.readFileSync(file, "utf8") !== content) {
+            stale++;
+            console.error(`Outdated generated documentation: ${path.relative(ROOT, file)}`);
+        }
+    } else {
+        fs.mkdirSync(path.dirname(file), { recursive: true });
+        fs.writeFileSync(file, content);
+    }
+}
 
 function read(file) {
     return fs.readFileSync(file, "utf8");
@@ -35,46 +30,35 @@ function normalizeFile(file) {
 }
 
 function sourceLink(file) {
-    return `../../${path.relative(ROOT, file).replaceAll(path.sep, "/")}`;
+    return path.relative(OUTPUT_DIRECTORY, file).replaceAll(path.sep, "/");
 }
 
 function parseBarrel(file, visited = new Set()) {
     const normalized = normalizeFile(file);
     if (visited.has(normalized)) return [];
     visited.add(normalized);
-
-    const source = read(normalized);
+    const tree = acorn.parse(read(normalized), { ecmaVersion: "latest", sourceType: "module" });
     const entries = [];
-    const exportPattern = /export\s*\{([\s\S]*?)\}\s*from\s*["']([^"']+)["'];?/g;
-    const allPattern = /export\s+\*\s+from\s+["']([^"']+)["'];?/g;
-
-    for (const match of source.matchAll(exportPattern)) {
-        const target = path.resolve(path.dirname(normalized), match[2]);
-        const items = match[1]
-            .split(",")
-            .map(item => item.replace(/\/\/.*$/gm, "").trim())
-            .filter(Boolean);
-
-        for (const item of items) {
-            const [sourceName, publicName = sourceName] = item.split(/\s+as\s+/).map(name => name.trim());
-            if (path.basename(target) === "index.js") {
+    for (const node of tree.body) {
+        if (node.type === "ExportAllDeclaration") {
+            entries.push(...parseBarrel(path.resolve(path.dirname(normalized), node.source.value), new Set(visited)));
+        } else if (node.type === "ExportNamedDeclaration") {
+            if (node.source) {
+                const target = path.resolve(path.dirname(normalized), node.source.value);
                 const nested = parseBarrel(target, new Set(visited));
-                const resolved = nested.find(entry => entry.name === sourceName);
-                if (resolved) entries.push({ ...resolved, name: publicName });
-                continue;
+                for (const item of node.specifiers) {
+                    const original = item.local.name;
+                    const resolved = nested.find(entry => entry.name === original);
+                    entries.push({ ...(resolved ?? { declarationName: original, file: target }), name: item.exported.name });
+                }
+            } else if (node.declaration) {
+                const declaration = node.declaration;
+                const names = declaration.id ? [declaration.id.name] : (declaration.declarations ?? []).map(d => d.id.name).filter(Boolean);
+                for (const name of names) entries.push({ name, declarationName: name, file: normalized });
             }
-            entries.push({ name: publicName, declarationName: sourceName, file: target });
         }
     }
-
-    for (const match of source.matchAll(allPattern)) {
-        const target = path.resolve(path.dirname(normalized), match[1]);
-        entries.push(...parseBarrel(target, new Set(visited)));
-    }
-
-    const byName = new Map();
-    entries.forEach(entry => byName.set(entry.name, entry));
-    return [...byName.values()].sort((a, b) => a.name.localeCompare(b.name));
+    return [...new Map(entries.map(entry => [entry.name, entry])).values()].sort((a, b) => a.name.localeCompare(b.name));
 }
 
 function cleanDoc(raw) {
@@ -324,13 +308,13 @@ function generateModule(module) {
         "",
     ].join("\n");
 
-    fs.writeFileSync(path.join(OUTPUT_DIRECTORY, `${module.name}.md`), content);
+    emit(path.join(OUTPUT_DIRECTORY, `${module.name.replaceAll('/', '-')}.md`), content);
     return { module, symbols, documented };
 }
 
 function generateIndex(results) {
     const rows = results
-        .map(result => `| [${result.module.name}](./${result.module.name}.md) | ${result.module.summary} | ${result.documented}/${result.symbols.length} |`)
+        .map(result => `| [${result.module.name}](./${result.module.name.replaceAll('/', '-')}.md) | ${result.module.summary} | ${result.documented}/${result.symbols.length} |`)
         .join("\n");
     const content = `# GameForgeJS API Reference
 
@@ -350,15 +334,28 @@ ${rows}
 
 ## Guides
 
-Human-written tutorials and architecture explanations start at [Docs Home](../index.md).
+Human-written tutorials and architecture explanations start at [Docs Home](../../index.md).
 `;
-    fs.writeFileSync(path.join(OUTPUT_DIRECTORY, "index.md"), content);
+    emit(path.join(OUTPUT_DIRECTORY, "index.md"), content);
 }
 
-fs.mkdirSync(OUTPUT_DIRECTORY, { recursive: true });
+if (!CHECK) fs.mkdirSync(OUTPUT_DIRECTORY, { recursive: true });
 const results = MODULES.map(generateModule);
 generateIndex(results);
 
 const documented = results.reduce((total, result) => total + result.documented, 0);
 const exportsCount = results.reduce((total, result) => total + result.symbols.length, 0);
-console.log(`Generated docs/helper reference: ${documented}/${exportsCount} public exports documented.`);
+console.log(`Generated docs/reference/api reference: ${documented}/${exportsCount} public exports documented.`);
+
+const catalogPath = path.join(ROOT, "examples/catalog.json");
+const readmePath = path.join(ROOT, "README.md");
+if (fs.existsSync(catalogPath)) {
+    const catalog = JSON.parse(read(catalogPath));
+    const table = ["| Example | Dimension | Purpose |", "| --- | --- | --- |", ...catalog.map(entry => `| [${entry.name}](examples/${entry.path}) | ${entry.dimension} | ${entry.description} |`)].join("\n");
+    const readme = read(readmePath);
+    if (!readme.includes("<!-- examples:start -->") || !readme.includes("<!-- examples:end -->")) {
+        throw new Error("README is missing generated example-catalog markers.");
+    }
+    emit(readmePath, readme.replace(/<!-- examples:start -->[\s\S]*?<!-- examples:end -->/, `<!-- examples:start -->\n${table}\n<!-- examples:end -->`));
+}
+if (CHECK && stale) process.exitCode = 1;

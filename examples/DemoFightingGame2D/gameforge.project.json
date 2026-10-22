@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "name": "DemoFightingGame2D",
+  "entry": "index.html",
+  "runtimeConfig": "game.config.json",
+  "resources": "resources.json",
+  "modules": [
+    "2d"
+  ],
+  "enginePath": "../..",
+  "toolingVersion": "1.0.0"
+}

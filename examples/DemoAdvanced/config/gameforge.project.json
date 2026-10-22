@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "name": "DemoAdvanced",
+  "entry": "index.html",
+  "runtimeConfig": "config/game.config.json",
+  "resources": "config/resources.json",
+  "modules": [
+    "2d"
+  ],
+  "enginePath": "../..",
+  "toolingVersion": "1.0.0"
+}

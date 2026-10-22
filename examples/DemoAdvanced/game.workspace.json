@@ -3,52 +3,46 @@
   "kind": "GameForgeJS.Workspace",
   "id": "demo_advanced",
   "name": "Demo Advanced",
-  "resources": "resources.json",
-  "resourcePrefix": "examples/DemoAdvanced/",
+  "resources": "config/resources.json",
+  "resourcePrefix": "config/",
   "levels2D": [
     {
       "id": "advanced_first",
       "label": "Advanced - First",
-      "resources": "resources.json",
-      "resourcePrefix": "examples/DemoAdvanced/",
       "documents": {
-        "stageDefault": "Assets/Manifests/advanced/stage-default.json",
-        "core": "Assets/Manifests/advanced/core.json",
-        "stage": "Assets/Manifests/advanced/stage.json",
-        "player": "Assets/Manifests/advanced/player.json",
-        "enemies": "Assets/Manifests/advanced/enemies.json",
-        "effects": "Assets/Manifests/advanced/effects.json",
-        "ui": "Assets/Manifests/advanced/ui.json"
+        "stageDefault": "assets/Manifests/advanced/stage-default.json",
+        "core": "assets/Manifests/advanced/core.json",
+        "stage": "assets/Manifests/advanced/stage.json",
+        "player": "assets/Manifests/advanced/player.json",
+        "enemies": "assets/Manifests/advanced/enemies.json",
+        "effects": "assets/Manifests/advanced/effects.json",
+        "ui": "assets/Manifests/advanced/ui.json"
       }
     },
     {
       "id": "advanced_second",
       "label": "Advanced - Second",
-      "resources": "resources.json",
-      "resourcePrefix": "examples/DemoAdvanced/",
       "documents": {
-        "stageDefault": "Assets/Manifests/advanced/stage-default.json",
-        "core": "Assets/Manifests/advanced/second-core.json",
-        "stage": "Assets/Manifests/advanced/second-stage.json",
-        "player": "Assets/Manifests/advanced/player.json",
-        "enemies": "Assets/Manifests/advanced/second-enemies.json",
-        "effects": "Assets/Manifests/advanced/effects.json",
-        "ui": "Assets/Manifests/advanced/ui.json"
+        "stageDefault": "assets/Manifests/advanced/stage-default.json",
+        "core": "assets/Manifests/advanced/second-core.json",
+        "stage": "assets/Manifests/advanced/second-stage.json",
+        "player": "assets/Manifests/advanced/player.json",
+        "enemies": "assets/Manifests/advanced/second-enemies.json",
+        "effects": "assets/Manifests/advanced/effects.json",
+        "ui": "assets/Manifests/advanced/ui.json"
       }
     },
     {
       "id": "advanced_boss",
       "label": "Advanced - Boss",
-      "resources": "resources.json",
-      "resourcePrefix": "examples/DemoAdvanced/",
       "documents": {
-        "stageDefault": "Assets/Manifests/advanced/stage-default.json",
-        "core": "Assets/Manifests/advanced/boss-core.json",
-        "stage": "Assets/Manifests/advanced/boss-stage.json",
-        "player": "Assets/Manifests/advanced/player.json",
-        "enemies": "Assets/Manifests/advanced/boss-enemies.json",
-        "effects": "Assets/Manifests/advanced/effects.json",
-        "ui": "Assets/Manifests/advanced/ui.json"
+        "stageDefault": "assets/Manifests/advanced/stage-default.json",
+        "core": "assets/Manifests/advanced/boss-core.json",
+        "stage": "assets/Manifests/advanced/boss-stage.json",
+        "player": "assets/Manifests/advanced/player.json",
+        "enemies": "assets/Manifests/advanced/boss-enemies.json",
+        "effects": "assets/Manifests/advanced/effects.json",
+        "ui": "assets/Manifests/advanced/ui.json"
       }
     }
   ],
