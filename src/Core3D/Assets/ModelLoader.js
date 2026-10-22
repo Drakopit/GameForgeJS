@@ -399,7 +399,9 @@ export class ModelLoader {
 
         const bufferView = gltf.bufferViews?.[accessor.bufferView];
         const buffer = buffers[bufferView?.buffer];
-        if (!bufferView || !buffer) throw new Error("ModelLoader: accessor buffer is missing.");
+        if (!bufferView || !buffer || !Number.isInteger(bufferView.byteLength) || bufferView.byteLength < 0) {
+            throw new Error("ModelLoader: accessor buffer is missing or has an invalid byteLength.");
+        }
         const byteOffset = (bufferView.byteOffset ?? 0) + (accessor.byteOffset ?? 0);
         const rows = accessor.type.startsWith("MAT") ? Number(accessor.type.slice(3)) : componentCount;
         const columns = accessor.type.startsWith("MAT") ? rows : 1;
@@ -439,11 +441,12 @@ export class ModelLoader {
         const values = this.ReadSparseValues(gltf, buffers, sparse, accessor, componentCount);
 
         for (let item = 0; item < sparse.count; item++) {
+            if (indices[item] >= accessor.count || (item > 0 && indices[item] <= indices[item - 1])) {
+                throw new Error("ModelLoader: sparse accessor indices must be ordered and in range.");
+            }
             const targetIndex = indices[item] * componentCount;
             const sourceIndex = item * componentCount;
             for (let component = 0; component < componentCount; component++) {
-                if (indices[item] >= accessor.count || (item > 0 && indices[item] <= indices[item - 1]))
-                    throw new Error("ModelLoader: sparse accessor indices must be ordered and in range.");
                 const value = values[sourceIndex + component];
                 output[targetIndex + component] = accessor.normalized ? this.NormalizeComponent(value, accessor.componentType) : value;
             }
@@ -453,11 +456,19 @@ export class ModelLoader {
     static ReadSparseIndices(gltf, buffers, sparse) {
         if (![5121, 5123, 5125].includes(sparse.indices.componentType))
             throw new Error("ModelLoader: invalid sparse index component type.");
-        const bufferView = gltf.bufferViews[sparse.indices.bufferView];
-        const buffer = buffers[bufferView.buffer];
+        const bufferView = gltf.bufferViews?.[sparse.indices.bufferView];
+        const buffer = buffers[bufferView?.buffer];
+        if (!bufferView || !buffer || !Number.isInteger(bufferView.byteLength) || bufferView.byteLength < 0)
+            throw new Error("ModelLoader: sparse index buffer is missing or invalid.");
+        if (!Number.isInteger(sparse.count) || sparse.count < 0)
+            throw new Error("ModelLoader: invalid sparse accessor count.");
         const ArrayType = COMPONENT_ARRAY[sparse.indices.componentType];
         const componentBytes = COMPONENT_BYTES[sparse.indices.componentType];
-        const byteOffset = (bufferView.byteOffset ?? 0) + (sparse.indices.byteOffset ?? 0);
+        const localOffset = sparse.indices.byteOffset ?? 0;
+        const byteOffset = (bufferView.byteOffset ?? 0) + localOffset;
+        const endOffset = localOffset + sparse.count * componentBytes;
+        if (!Number.isInteger(localOffset) || localOffset < 0 || endOffset > bufferView.byteLength || byteOffset + sparse.count * componentBytes > buffer.byteLength)
+            throw new Error("ModelLoader: sparse index data exceeds its buffer view.");
 
         if (byteOffset % componentBytes === 0) {
             return new ArrayType(buffer, byteOffset, sparse.count);

@@ -14,6 +14,17 @@ export class JsonManifestComposer {
         return this.ComposeDependency(name, assets, [], new Map());
     }
 
+    /**
+     * Resolves composed manifests that may still be registered as lazy JSON assets.
+     * Existing synchronous callers should continue to use Compose after eager loading.
+     * @param {string} name - AssetManager JSON key.
+     * @param {AssetManager} [assets] - Loaded asset store.
+     * @returns {Promise<Object>} Composed manifest.
+     */
+    static async ComposeAsync(name, assets = AssetManager.instance) {
+        return this.ComposeDependencyAsync(name, assets, [], new Map());
+    }
+
     static ComposeDependency(name, assets, ancestors, resolved) {
         if (ancestors.includes(name)) {
             throw new Error(`JsonManifestComposer: dependency cycle ${[...ancestors, name].join(" -> ")}.`);
@@ -36,6 +47,41 @@ export class JsonManifestComposer {
             const childManifest = this.ComposeDependency(childName, assets, [...ancestors, name], resolved);
             this.DeepMerge(result, childManifest);
         });
+
+        resolved.set(name, this.Clone(result));
+        return result;
+    }
+
+    static async ComposeDependencyAsync(name, assets, ancestors, resolved) {
+        if (ancestors.includes(name)) {
+            throw new Error(`JsonManifestComposer: dependency cycle ${[...ancestors, name].join(" -> ")}.`);
+        }
+        if (resolved.has(name)) return this.Clone(resolved.get(name));
+
+        let manifest = assets.GetJson?.(name);
+        if (manifest == null && typeof assets.GetJsonAsync === "function") {
+            try {
+                manifest = await assets.GetJsonAsync(name);
+            } catch (error) {
+                throw new Error(
+                    `JsonManifestComposer: JSON '${name}' could not be loaded (dependency path: ${[...ancestors, name].join(" -> ")}).`,
+                    { cause: error }
+                );
+            }
+        }
+
+        if (manifest == null) {
+            throw new Error(`JsonManifestComposer: JSON '${name}' is not loaded (dependency path: ${[...ancestors, name].join(" -> ")}).`);
+        }
+        if (!manifest?.compose) return this.Clone(manifest);
+        if (!Array.isArray(manifest.compose)) throw new Error(`JsonManifestComposer: '${name}.compose' must be an array.`);
+
+        const result = this.CloneWithoutCompose(manifest);
+        for (const entry of manifest.compose) {
+            const childName = typeof entry === "string" ? entry : entry.name;
+            const childManifest = await this.ComposeDependencyAsync(childName, assets, [...ancestors, name], resolved);
+            this.DeepMerge(result, childManifest);
+        }
 
         resolved.set(name, this.Clone(result));
         return result;

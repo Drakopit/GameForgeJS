@@ -364,6 +364,7 @@
       ],
       "radius": 0.38
     },
+    "model": "character",
     "movement": {
       "boostSpeed": 7,
       "jumpSpeed": 6.15,

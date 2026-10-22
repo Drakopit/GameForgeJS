@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node tools/server.js",
     "dev": "node tools/server.js",
-    "check": "node scripts/check-js.js && node scripts/check-imports.js && node scripts/check-editor-assets.js",
+    "check": "node scripts/check-js.js && node scripts/check-imports.js && node scripts/check-editor-assets.js && node scripts/check-runtime.js",
     "check:editor-assets": "node scripts/check-editor-assets.js",
     "docs": "node scripts/generate-docs.js",
     "publish": "node tools/Publisher/publisher.js"

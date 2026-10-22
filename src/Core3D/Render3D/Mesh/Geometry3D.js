@@ -67,6 +67,16 @@ function normalizeIndices(indices) {
     if (!indices) return null;
     if (indices instanceof Uint16Array || indices instanceof Uint32Array) return indices;
 
-    const max = Math.max(...indices);
+    // Avoid spreading large index buffers into Math.max; complex models can
+    // contain hundreds of thousands of indices.
+    let max = 0;
+    for (let index = 0; index < indices.length; index++) {
+        const value = Number(indices[index]);
+        if (!Number.isInteger(value) || value < 0) {
+            throw new Error("Geometry3D indices must contain non-negative integers.");
+        }
+        max = Math.max(max, value);
+    }
+
     return max > 65535 ? new Uint32Array(indices) : new Uint16Array(indices);
 }

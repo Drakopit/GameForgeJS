@@ -73,6 +73,7 @@ function loadResources(projectDir, workspace) {
     if (!resources) return null;
     const images = new Map();
     const jsons = new Map();
+    const models = new Map();
     for (const image of resources.images ?? []) {
         if (!image?.name || !image?.path) continue;
         const file = projectFile(projectDir, image.path);
@@ -87,7 +88,32 @@ function loadResources(projectDir, workspace) {
             if (data) jsons.set(json.name, { file, data });
         }
     }
-    return { file: resourceFile, data: resources, images, jsons };
+    for (const model of resources.models ?? []) {
+        if (!model?.name || !model?.path) continue;
+        const file = projectFile(projectDir, model.path);
+        if (requireFile(file, `${relative(resourceFile)} model '${model.name}'`))
+            models.set(model.name, file);
+    }
+    return { file: resourceFile, data: resources, images, jsons, models };
+}
+
+function validateModel(file, label) {
+    if (!requireFile(file, label)) return;
+    const extension = path.extname(file).toLowerCase();
+    if (extension === ".glb") {
+        const bytes = fs.readFileSync(file);
+        if (bytes.length < 20 || bytes.toString("ascii", 0, 4) !== "glTF")
+            errors.push(`${label}: invalid GLB header`);
+        return;
+    }
+    if (extension === ".gltf") {
+        const data = readJson(file);
+        if (!data || (!Array.isArray(data.meshes) && !Array.isArray(data.nodes)))
+            errors.push(`${label}: glTF has no meshes or nodes`);
+        return;
+    }
+    if (extension === ".obj") return;
+    errors.push(`${label}: unsupported model extension '${extension || "(none)"}'`);
 }
 
 function collectCatalog(resources) {
@@ -195,6 +221,26 @@ function validateEditableActor(label, actor, resources) {
     validateAnimatedActor(label, actor, resources);
 }
 
+function collectWorkspaceProjects(rootDir) {
+    const projects = [];
+    if (!fs.existsSync(rootDir)) return projects;
+
+    function visit(directory) {
+        const workspaceFile = path.join(directory, "game.workspace.json");
+        if (fs.existsSync(workspaceFile)) {
+            projects.push(directory);
+            return;
+        }
+
+        for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+            if (entry.isDirectory()) visit(path.join(directory, entry.name));
+        }
+    }
+
+    visit(rootDir);
+    return projects;
+}
+
 function auditProject(projectDir, workspace) {
     const resources = loadResources(projectDir, workspace);
     if (!resources) return;
@@ -223,15 +269,28 @@ function auditProject(projectDir, workspace) {
             }
         }
     }
+
+    for (const scene of workspace.scenes3D ?? []) {
+        const declaredPath = scene?.path ?? scene?.manifestPath;
+        if (!declaredPath) continue;
+        const sceneFile = projectFile(projectDir, declaredPath);
+        if (requireFile(sceneFile, `${relative(projectDir)} 3D scene`)) {
+            const sceneData = readJson(sceneFile);
+            if (sceneData && typeof sceneData !== "object")
+                errors.push(`${relative(sceneFile)}: 3D scene must be a JSON object`);
+        }
+    }
+
+    for (const [name, file] of resources.models)
+        validateModel(file, `${relative(resources.file)} model '${name}'`);
 }
 
-for (const entry of fs.readdirSync(EXAMPLES_DIR, { withFileTypes: true })) {
-    if (!entry.isDirectory()) continue;
-    const projectDir = path.join(EXAMPLES_DIR, entry.name);
-    const workspaceFile = path.join(projectDir, "game.workspace.json");
-    if (!fs.existsSync(workspaceFile)) continue;
-    const workspace = readJson(workspaceFile);
-    if ((workspace?.levels2D ?? []).length) auditProject(projectDir, workspace);
+// Templates intentionally omit user-authored assets and documents. Examples are
+// complete projects, so only they are a blocking asset-integrity gate.
+for (const projectDir of collectWorkspaceProjects(EXAMPLES_DIR)) {
+    const workspace = readJson(path.join(projectDir, "game.workspace.json"));
+    if ((workspace?.levels2D ?? []).length || (workspace?.scenes3D ?? []).length)
+        auditProject(projectDir, workspace);
 }
 
 if (errors.length) {
@@ -240,4 +299,4 @@ if (errors.length) {
     process.exit(1);
 }
 
-console.log("Editor asset audit passed for declared 2D workspaces.");
+console.log("Editor asset audit passed for declared 2D/3D workspaces.");
