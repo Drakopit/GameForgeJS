@@ -1,7 +1,8 @@
 # Configuration layout and ownership
 
 New projects keep framework configuration in `config/`. DemoAdvanced is the
-first migrated example. Other examples remain supported with their existing
+first migrated example; Demo3D and DemoMiniGame3D now follow the same layout.
+Their editor resource prefixes also point to `config/`. Other examples remain supported with their existing
 layout while migration proceeds incrementally.
 
 ```text

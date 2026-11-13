@@ -55,7 +55,7 @@ framework class does not require registering a runtime extension.
   this validation contract. Prefer official public runtime imports.
 - The parser runs in the Node CLI only. Browser runtime dependencies are unchanged.
 
-## Proposed addon model — next stage
+## Addon pilot
 
 An addon exports ordinary native JavaScript classes, components and data. It
 uses public framework APIs and receives dependencies such as `Screen`, camera,
@@ -66,10 +66,29 @@ Use `Component` for behavior attached to an entity with lifecycle hooks. Use
 ordinary classes for controllers, state machines and algorithms. Neither form
 requires a global registry or a `setup(context)` function.
 
-The pilot will establish an entry point, declared framework groups, optional
-assets and cleanup ownership. Addon discovery and version resolution are not
-implemented by schema version 1. Unknown fields are rejected: do not add an
-`addons` field yet.
+The optional `addons` list selects bundled addons independently of runtime groups:
+
+```json
+{
+  "schemaVersion": 1,
+  "modules": ["core", "2d"],
+  "addons": ["parallax", "state-machine"]
+}
+```
+
+Public imports are `gameforgejs/addons/parallax` and
+`gameforgejs/addons/state-machine`. Add matching entries to the game's import map;
+the publisher relocates them under `@engine/addons/`. The manifest selects code
+for distribution and does not instantiate an addon. Cross-group dependencies
+are still followed automatically. Unselected addons are omitted in selective builds.
+
+For platformer movement, select `"addons": ["platformer"]` and import
+`gameforgejs/addons/platformer`. See the [movement lab](../guides/platformer.md).
+
+These are bundled addons, not an npm installer or general third-party package
+resolver. Project-local addons can remain ordinary files imported relatively.
+Version resolution and remote discovery are not implemented. See the
+[addon guide](../guides/addons.md) for lifecycle and ownership.
 
 An extraction is accepted when the original demo and an independent sample use
 the same addon without importing source from each other.

@@ -22,6 +22,7 @@ export {
     Material,
     Shader,
     StandardMaterial,
+    ToonMaterial,
     Texture,
     Transform3D,
     UnlitMaterial,
@@ -36,3 +37,4 @@ export { PhysicsWorld3D } from "./Physics/PhysicsWorld3D.js";
 
 export { Model3D } from "./Model/Model3D.js";
 export { ModelMeshFactory } from "./Model/ModelMeshFactory.js";
+export { SkeletalAnimator } from "./Animation/SkeletalAnimator.js";

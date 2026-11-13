@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>GameForgeJS — Platformer movement lab</title>
+  <style>body{margin:0;background:#132b3b;color:#edf5ec;font:16px system-ui}main{max-width:960px;margin:20px auto;padding:0 16px}canvas{display:block;margin:auto;max-width:100%;height:auto}p{line-height:1.5}</style>
+  <script type="importmap">{"imports":{
+    "gameforgejs/core":"../../src/core/index.js",
+    "gameforgejs/2d":"../../src/2d/index.js",
+    "gameforgejs/addons/platformer":"../../src/addons/platformer/index.js"
+  }}</script>
+</head>
+<body>
+  <main>
+    <h1>Platformer movement lab</h1>
+    <p>A/D or arrows: move · Space: jump · R: restart this stage.</p>
+    <p>Collect all four coins, then reach the gold flag. Press Enter to advance. Complete both stages to play again. Falling keeps your coins; R restores them.</p>
+    <p>Hold Space for a higher jump. Try jumping just after leaving an edge, or pressing jump just before landing.</p>
+  </main>
+  <script type="module" src="./main.js"></script>
+</body>
+</html>

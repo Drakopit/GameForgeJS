@@ -8,6 +8,12 @@ const { chromium } = require('@playwright/test');
 const { startServer } = require('../cli/server.cjs');
 const { createProject } = require('../cli/lib/project.cjs');
 const { build } = require('../cli/lib/build.cjs');
+const { inspectPlatformer } = require('./browser/platformer.cjs');
+const { inspectPlatformerProgression } = require('./browser/platformer-progression.cjs');
+const { inspectToonRoom } = require('./browser/toon-room.cjs');
+const { inspectToonCombat } = require('./browser/toon-combat.cjs');
+const { inspectToonExploration } = require('./browser/toon-exploration.cjs');
+const { inspectToonAnimation } = require('./browser/toon-animation.cjs');
 
 const ROOT = path.resolve(__dirname, '..');
 const screenshots = path.join(ROOT, 'test-results/browser');
@@ -40,6 +46,16 @@ async function inspect(browser, url, name, { starter = false, play = false } = {
             }
             const current = await page.evaluate(async () => (await import('gameforgejs/core')).LevelHandler.current.constructor.name);
             assert.ok(!/Menu|Selector/.test(current), `Input did not enter gameplay: ${current}`);
+        }
+        if (name.endsWith('-platformer')) {
+            await inspectPlatformer(page, path.join(screenshots, `${name}.png`));
+            await inspectPlatformerProgression(page);
+        }
+        if (name.endsWith('-toonabs')) {
+            await inspectToonRoom(page, path.join(screenshots, `${name}.png`));
+            await inspectToonCombat(page);
+            await inspectToonAnimation(page, path.join(screenshots, `${name}-animation.png`));
+            await inspectToonExploration(page, path.join(screenshots, `${name}-forest.png`));
         }
         if (starter && name.includes('2d')) {
             const before = await page.locator('canvas').evaluate(canvas => canvas.toDataURL());

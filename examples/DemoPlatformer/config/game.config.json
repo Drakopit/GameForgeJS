@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "window": { "title": "Platformer movement lab" },
+  "screen": { "width": 960, "height": 544, "pixelArt": true },
+  "input": {
+    "actionMappings": {
+      "LEFT": [{ "device": "keyboard", "input": "KeyA" }, { "device": "keyboard", "input": "ArrowLeft" }],
+      "RIGHT": [{ "device": "keyboard", "input": "KeyD" }, { "device": "keyboard", "input": "ArrowRight" }],
+      "JUMP": [{ "device": "keyboard", "input": "Space" }],
+      "RESET": [{ "device": "keyboard", "input": "KeyR" }],
+      "CONTINUE": [{ "device": "keyboard", "input": "Enter" }]
+    }
+  }
+}

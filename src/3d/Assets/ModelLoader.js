@@ -38,8 +38,7 @@ const ACCESSOR_COMPONENTS = {
  *
  * The loader keeps GameForgeJS dependency-free while following the glTF 2.0
  * object model: mesh primitives reference accessors, materials reference
- * textures/images/samplers, and skins/animations remain available for a future
- * skeletal renderer.
+ * textures/images/samplers, and skins/animations feed SkeletalAnimator playback.
  */
 export class ModelLoader {
     static async Load(url) {

@@ -17,6 +17,28 @@ function fixture(t) {
     return root;
 }
 
+test('advanced 3D demos publish only declared groups and retain their editor manifest paths', () => {
+    for (const name of ['Demo3D', 'DemoMiniGame3D']) {
+        const root = path.resolve(__dirname, '../examples', name);
+        const plan = planBuild(root);
+        assert.deepEqual(plan.runtimeModules, ['2d', '3d', 'core']);
+        const names = plan.files.map(file => file.relative);
+        assert.ok(names.includes('@engine/3d/Level/Level3D.js'));
+        assert.ok(names.includes('@engine/2d/Window/Screen.js'));
+        assert.equal(names.some(name => /^@engine\/(network|compat|addons)\//.test(name)), false);
+        assert.ok(names.includes('config/game.config.json'));
+        assert.ok(names.includes('config/resources.json'));
+        assert.equal(names.includes('resources.json'), false);
+        const workspace = JSON.parse(fs.readFileSync(path.join(root, 'game.workspace.json')));
+        assert.equal(workspace.resources, 'config/resources.json');
+        assert.equal(workspace.resourcePrefix, 'config/');
+        for (const scene of workspace.scenes3D) {
+            assert.equal(scene.resources, workspace.resources);
+            assert.equal(scene.resourcePrefix, workspace.resourcePrefix);
+        }
+    }
+});
+
 test('selective publication keeps framework classes and omits unselected groups', t => {
     const root = fixture(t);
     createProject(root);
@@ -34,6 +56,20 @@ test('selective publication keeps framework classes and omits unselected groups'
     assert.ok(planBuild(root).runtimeModules.includes('network'));
     fs.unlinkSync(path.join(root, "config", PACKAGE_FILE));
     assert.ok(planBuild(root).files.some(file => file.relative === '@engine/3d/index.js'));
+});
+
+test('addon publication includes selected addon only and rejects undeclared imports', t => {
+    const root = fixture(t);
+    createProject(root);
+    const file = path.join(root, 'config', PACKAGE_FILE);
+    fs.appendFileSync(path.join(root, 'main.js'), "\nimport { StateMachine } from 'gameforgejs/addons/state-machine';\n");
+    assert.throws(() => planBuild(root), /requires 'addons\/state-machine'/);
+    fs.writeFileSync(file, JSON.stringify({ schemaVersion: 1, modules: ['2d'], addons: ['state-machine'] }));
+    const names = planBuild(root).files.map(file => file.relative);
+    assert.ok(names.includes('@engine/addons/state-machine/index.js'));
+    assert.equal(names.some(name => name.startsWith('@engine/addons/parallax/')), false);
+    fs.writeFileSync(file, JSON.stringify({ schemaVersion: 1, modules: ['2d'], addons: ['../escape'] }));
+    assert.throws(() => planBuild(root), /supported names/);
 });
 
 test('missing declarations and unsupported schemas fail before replacing a build', t => {

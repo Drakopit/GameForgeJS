@@ -18,6 +18,7 @@
     "./compat": "./src/compat/index.js",
     "./addons/parallax": "./src/addons/parallax/index.js",
     "./addons/state-machine": "./src/addons/state-machine/index.js",
+    "./addons/platformer": "./src/addons/platformer/index.js",
     "./package.json": "./package.json"
   },
   "files": [
@@ -35,6 +36,7 @@
     "docs:serve": "node cli/index.cjs serve --root docs",
     "test": "node --test tests/*.test.cjs",
     "test:browser": "node tests/browser-smoke.cjs",
+    "test:site": "node tests/site-browser.cjs",
     "build": "node cli/index.cjs build --root examples/DemoAdvanced --out ../../dist/DemoAdvanced",
     "publish": "node cli/index.cjs build --root examples/DemoAdvanced --out ../../dist/DemoAdvanced"
   },

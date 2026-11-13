@@ -55,6 +55,7 @@ uniform float uNormalScale;
 uniform float uHeightScale;
 uniform float uRoughness;
 uniform float uMetallic;
+uniform float uToonBands;
 
 uniform sampler2D uAlbedoMap;
 uniform sampler2D uNormalMap;
@@ -132,6 +133,11 @@ float readShadow() {
 
 vec3 applyLight(vec3 lightDirection, vec3 lightColor, float intensity, vec3 normal, vec3 viewDirection, vec3 albedo, float roughness, float metallic) {
     float diffuseAmount = max(dot(normal, lightDirection), 0.0);
+    if (uToonBands >= 2.0) {
+        diffuseAmount = min(floor(diffuseAmount * uToonBands), uToonBands - 1.0)
+            / (uToonBands - 1.0);
+        return albedo * lightColor * diffuseAmount * intensity;
+    }
     vec3 diffuse = albedo * lightColor * diffuseAmount * intensity;
 
     vec3 halfVector = normalize(lightDirection + viewDirection);

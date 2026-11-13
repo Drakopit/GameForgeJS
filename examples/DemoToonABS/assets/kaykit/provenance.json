@@ -1,0 +1,86 @@
+{
+  "author": "Kay Lousberg",
+  "license": "CC0 (see copied licenses)",
+  "files": [
+    {
+      "file": "knight.glb",
+      "source": "KayKit_Adventurers_2.0_FREE/Characters/gltf/Knight.glb",
+      "sha256": "e484370733824a0740683e7f6040aae0d20e5efd4107dde1175d6a2ad7e2f199"
+    },
+    {
+      "file": "skeleton.glb",
+      "source": "KayKit_Skeletons_1.1_FREE/characters/gltf/Skeleton_Warrior.glb",
+      "sha256": "992d5cfd6beb5565c50f742587d492f2a2cfcdfb3ffe4435aa16461c6d0e54be"
+    },
+    {
+      "file": "general.glb",
+      "source": "KayKit_Adventurers_2.0_FREE/Animations/gltf/Rig_Medium/Rig_Medium_General.glb",
+      "sha256": "5f725c0f745f36078c7238968cd5c04843cbc6260689eb6e7f5e2bbd7ffdd7ad"
+    },
+    {
+      "file": "movement.glb",
+      "source": "KayKit_Adventurers_2.0_FREE/Animations/gltf/Rig_Medium/Rig_Medium_MovementBasic.glb",
+      "sha256": "11422afd50abf7e8c92ea107e2e0bc94abd38023d6d15f55ad580347efbfa29e"
+    },
+    {
+      "file": "melee.glb",
+      "source": "KayKit_Character_Animations_1.1/Animations/gltf/Rig_Medium/Rig_Medium_CombatMelee.glb",
+      "sha256": "c55e6ec1c79e83ae21d46fe1cd921c1b64be8b9a524a24517e51c6ba99231459"
+    },
+    {
+      "file": "LICENSE-adventurers.txt",
+      "source": "KayKit_Adventurers_2.0_FREE/License.txt",
+      "sha256": "d4adc31660d1db22eb60eba648e01db41577548f6fa1a3576cb4a6283dae0a58"
+    },
+    {
+      "file": "LICENSE-skeletons.txt",
+      "source": "KayKit_Skeletons_1.1_FREE/License.txt",
+      "sha256": "327a1aac6e6ff1259d82d0024cdaf088bcef302f8d7a116b5142538ac2b5cf8d"
+    },
+    {
+      "file": "LICENSE-animations.txt",
+      "source": "KayKit_Character_Animations_1.1/License.txt",
+      "sha256": "373b159044d1a886ed15f57ca5a7673ba14e2623c460283452705f2056912ed9"
+    },
+    {
+      "file": "forest/Tree_1_A_Color1.gltf",
+      "source": "KayKit_Forest_Nature_Pack_1.0_FREE/Assets/gltf/Tree_1_A_Color1.gltf",
+      "sha256": "9d972eba9d61fc563cb7c3248f1be057190859ce2554ad2032df27c3d09e06c6"
+    },
+    {
+      "file": "forest/Tree_1_A_Color1.bin",
+      "source": "KayKit_Forest_Nature_Pack_1.0_FREE/Assets/gltf/Tree_1_A_Color1.bin",
+      "sha256": "76a10ffa74960d730f0895a2599e5d56cc50a553d6624a14422420eb9b083979"
+    },
+    {
+      "file": "forest/Rock_1_A_Color1.gltf",
+      "source": "KayKit_Forest_Nature_Pack_1.0_FREE/Assets/gltf/Rock_1_A_Color1.gltf",
+      "sha256": "ca24326b9c24556227c68df64933122f34a972cd38b6e95c53353fefa97dbc80"
+    },
+    {
+      "file": "forest/Rock_1_A_Color1.bin",
+      "source": "KayKit_Forest_Nature_Pack_1.0_FREE/Assets/gltf/Rock_1_A_Color1.bin",
+      "sha256": "1c94027b4b01e479f14c6a0288445f2ec74c4971bd5154095c4ea261ddea5b95"
+    },
+    {
+      "file": "forest/Bush_1_A_Color1.gltf",
+      "source": "KayKit_Forest_Nature_Pack_1.0_FREE/Assets/gltf/Bush_1_A_Color1.gltf",
+      "sha256": "bc6cf33dbed296a181d8afbd82ffe1c44ee5e57cb095f9efdf4b63e93c165b70"
+    },
+    {
+      "file": "forest/Bush_1_A_Color1.bin",
+      "source": "KayKit_Forest_Nature_Pack_1.0_FREE/Assets/gltf/Bush_1_A_Color1.bin",
+      "sha256": "66ba041776959c19849954c9d2393528783461ca6dd11ebe1c1f6b9026b63c0c"
+    },
+    {
+      "file": "forest/forest_texture.png",
+      "source": "KayKit_Forest_Nature_Pack_1.0_FREE/Assets/gltf/forest_texture.png",
+      "sha256": "406c01e0ac1d3368fc7b26ff5fb0d3335ba5e48bd19a703540ed92ee3971ea39"
+    },
+    {
+      "file": "forest/License.txt",
+      "source": "KayKit_Forest_Nature_Pack_1.0_FREE/License.txt",
+      "sha256": "987811fa42c7548ad487324531813b0210ee6d1ebd410089e881820630e3be54"
+    }
+  ]
+}

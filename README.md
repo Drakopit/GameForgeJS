@@ -103,6 +103,8 @@ start from CLI templates, which contain only the minimum runnable behavior.
 <!-- examples:start -->
 | Example | Dimension | Purpose |
 | --- | --- | --- |
+| [Toon adventure — room checkpoint](examples/DemoToonABS/index.html) | 3D | Toon ABS checkpoint with banded lighting, telegraphed melee, one sentry, health and encounter restart. |
+| [Platformer movement lab](examples/DemoPlatformer/index.html) | 2D | Reusable movement component with tile collisions, coyote time, buffered jumps, and variable jump height. |
 | [Movement and collision](examples/Demo/index.html) | 2D | A compact 2D example for movement, collision, and collection. |
 | [Component adventure](examples/DemoAdventure2D/index.html) | 2D | Top-down movement, reusable entity components, and room camera transitions. |
 | [Platform adventure](examples/DemoAdvanced/index.html) | 2D | A platform/RPG showcase with composed manifests, inventory, skills, and campaign progression. |

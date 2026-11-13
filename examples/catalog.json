@@ -1,5 +1,19 @@
 [
   {
+    "id": "toonabs",
+    "name": "Toon adventure — room checkpoint",
+    "description": "Toon ABS checkpoint with banded lighting, telegraphed melee, one sentry, health and encounter restart.",
+    "path": "DemoToonABS/index.html",
+    "dimension": "3D"
+  },
+  {
+    "id": "platformer",
+    "name": "Platformer movement lab",
+    "description": "Reusable movement component with tile collisions, coyote time, buffered jumps, and variable jump height.",
+    "path": "DemoPlatformer/index.html",
+    "dimension": "2D"
+  },
+  {
     "id": "immature",
     "name": "Movement and collision",
     "description": "A compact 2D example for movement, collision, and collection.",

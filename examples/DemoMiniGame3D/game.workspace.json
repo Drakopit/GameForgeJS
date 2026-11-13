@@ -4,8 +4,8 @@
   "kind": "GameForgeJS.Workspace",
   "levels2D": [],
   "name": "Sky Trail 3D",
-  "resourcePrefix": "./",
-  "resources": "resources.json",
+  "resourcePrefix": "config/",
+  "resources": "config/resources.json",
   "scenes3D": [
     {
       "format": "SkyTrailCourse",
@@ -13,8 +13,8 @@
       "label": "Sky Trail",
       "path": "assets/Manifests/sky-trail/course.json",
       "resourceName": "sky_trail_course",
-      "resourcePrefix": "",
-      "resources": "resources.json"
+      "resourcePrefix": "config/",
+      "resources": "config/resources.json"
     }
   ],
   "schemaVersion": 1

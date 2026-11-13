@@ -45,8 +45,6 @@ export class AddonLevel extends Level {
     OnDestroy() {
         this.layers.forEach(layer => layer.Dispose());
         this.layers = [];
-        const screen = this.screen;
-        try { super.OnDestroy(); }
-        finally { screen?.Dispose(); }
+        super.OnDestroy();
     }
 }

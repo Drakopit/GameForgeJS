@@ -13,6 +13,7 @@ export { PrimitiveMesh } from "./Mesh/PrimitiveMesh.js";
 export { Material } from "./Material/Material.js";
 export { CelestialBodyMaterial } from "./Material/CelestialBodyMaterial.js";
 export { StandardMaterial } from "./Material/StandardMaterial.js";
+export { ToonMaterial } from "./Material/ToonMaterial.js";
 export { UnlitMaterial } from "./Material/UnlitMaterial.js";
 
 export { AmbientLight } from "./Light/AmbientLight.js";

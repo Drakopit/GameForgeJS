@@ -3,6 +3,25 @@
 This page defines the final learning deliverables and provides the first runnable
 lesson. The remaining chapters and full games are planned work, not completed
 features. Each chapter will be written against a working, tested checkpoint.
+The complete material is only finished after all planned modifications: final
+framework/addon APIs, full game source, assets, lessons and published builds must
+be validated together. Intermediate examples are checkpoints, not the final course.
+
+See the [implementation audit](../migrations/advanced-demo-audit.md) for current
+evidence and the active Toon room → ABS encounter → model animation → water and
+progression sequence. The 2D lab is a supporting checkpoint, not the final campaign.
+
+The [first Toon room checkpoint](toon-room-checkpoint.md) is now executable:
+banded lighting, overhead movement, solid obstacles and selective publication.
+Its primitive art remains temporary; the initial room lesson covers navigation and rendering.
+
+[Checkpoint 2](toon-abs-checkpoint.md) extends that room with one sentry, melee
+windows, damage, invulnerability, knockback and restart. The complete adventure,
+animated characters, progression and water remain outstanding.
+
+[Checkpoint 3](toon-character-checkpoint.md) now replaces the character placeholders
+with copied KayKit models, embedded textures and verified CPU skeletal playback.
+Clip blending, full environment art, progression and water are still pending.
 
 ## Format for every chapter
 
@@ -53,7 +72,14 @@ checkpoint; it is not yet an action game.
 For the 2D path, repeat with a different new folder and `--template minimal-2d`.
 The expected result is a square that moves with WASD or arrow keys.
 
-## Path A: original 3D action adventure with ABS combat
+## Path A: original Toon 3D action adventure with ABS combat
+
+The visual direction is Toon: readable silhouettes, controlled palettes,
+stylized lighting/shadow bands and water consistent with the art direction.
+Outline rendering is an optional technique to evaluate, not a mandatory effect.
+Keep this style configurable so the framework still supports other art styles.
+Before declaring this chapter ready, test imported character materials, animation,
+lighting, water and visual combat cues together in the real game.
 
 Use the room exploration and real-time combat structure of a classic top-down
 adventure as a design reference, implemented in 3D with original content.
@@ -74,9 +100,10 @@ and ending, not just a combat arena.
 | World structure | Connected rooms, outdoor area and dungeon | Transitions release owned resources and preserve intended state |
 | Complete game | Boss, ending, menus, audio and published build | Playable from new game to ending, including save/reload and restart |
 
-Before writing model-animation or water lessons, implement and verify the required
-renderer/controller support. The current loader exposing skins and animation
-data is not a promise of complete animated-character rendering.
+Model-animation lessons must state the supported renderer subset. Checkpoint 3
+verifies CPU skinning and compatible-rig LINEAR/STEP playback; it does not provide
+general retargeting or clip blending. Water lessons still require implementation
+and visual verification before they can be presented as working instructions.
 
 ## Path B: original 2D platformer with at least 20 levels
 
@@ -120,3 +147,7 @@ Both paths provide small sequential lessons, checkpoint source, expected results
 troubleshooting and complete playable builds. A reader starting from an empty
 game folder must be able to reproduce the result without copying hidden systems
 from a large demo. Development follows the [roadmap](../development-roadmap.md).
+
+[Checkpoint 4](toon-forest-checkpoint.md) adds a continuous route through three areas,
+five sentries, imported forest props and a following camera. Defeating enemies no
+longer stops exploration. This is another incremental slice; the full course remains pending.

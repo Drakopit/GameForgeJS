@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" shape-rendering="crispEdges">
+  <title>Original GameForgeJS movement lab explorer: jump</title>
+  <!-- Frame 0 -->
+  <g transform="translate(0 0)">
+    <path fill="#163b4b" d="M6 25h7v7h-9v-4h2z M14 25h6v7h-8v-4h2z"/>
+    <rect x="8" y="14" width="16" height="13" fill="#ecb85a"/>
+    <rect x="6" y="18" width="4" height="7" fill="#c67b45"/>
+    <rect x="22" y="18" width="4" height="7" fill="#f7d5a0"/>
+    <rect x="10" y="4" width="14" height="11" fill="#f7d5a0"/>
+    <path fill="#55b8ac" d="M8 3h16v5H8z M6 7h22v3H6z"/>
+    <rect x="21" y="10" width="2" height="3" fill="#163b4b"/>
+    <path fill="#d4594e" d="M9 14h15v4H9z M8 16h5v8H8z"/>
+  </g>
+</svg>

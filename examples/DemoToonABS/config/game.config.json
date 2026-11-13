@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "window": { "title": "Toon adventure — room checkpoint" },
+  "screen": { "width": 960, "height": 540, "pixelArt": false },
+  "input": {
+    "actionMappings": {
+      "LEFT": [{ "device": "keyboard", "input": "KeyA" }, { "device": "keyboard", "input": "ArrowLeft" }],
+      "RIGHT": [{ "device": "keyboard", "input": "KeyD" }, { "device": "keyboard", "input": "ArrowRight" }],
+      "UP": [{ "device": "keyboard", "input": "KeyW" }, { "device": "keyboard", "input": "ArrowUp" }],
+      "DOWN": [{ "device": "keyboard", "input": "KeyS" }, { "device": "keyboard", "input": "ArrowDown" }],
+      "BANDS": [{ "device": "keyboard", "input": "KeyB" }],
+      "HELP": [{ "device": "keyboard", "input": "KeyH" }],
+      "ATTACK": [{ "device": "keyboard", "input": "Space" }],
+      "RESET": [{ "device": "keyboard", "input": "KeyR" }]
+    }
+  }
+}

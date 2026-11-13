@@ -6,7 +6,7 @@ const { configFile } = require('./config-paths.cjs');
 
 const PACKAGE_FILE = 'gameforgejs.package.json';
 const GROUPS = ['core', '2d', '3d', 'network', 'compat'];
-const ADDONS = ['parallax', 'state-machine'];
+const ADDONS = ['parallax', 'state-machine', 'platformer'];
 const PUBLIC_GROUPS = [...GROUPS, ...ADDONS.map(name => `addons/${name}`)];
 
 function loadPackage(root) {

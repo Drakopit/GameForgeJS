@@ -322,6 +322,8 @@ export class WebGL3DRenderer {
     }
 
     #bindStandardMaterial(shader, material, mesh, shadowState) {
+        // Set for every draw: Standard surfaces must not inherit Toon uniforms.
+        this.#set1f(shader, "uToonBands", material.type === "toon" ? material.bands : 0);
         this.#setVec4(shader, "uAlbedoColor", material.albedoColor ?? [1, 1, 1, 1]);
         this.#setVec3(shader, "uEmissiveColor", material.emissiveColor ?? [0, 0, 0]);
         this.#setVec2(shader, "uUvScale", material.uvScale ?? [1, 1]);
@@ -505,7 +507,20 @@ export class WebGL3DRenderer {
     #getGeometryState(geometry) {
         if (!geometry) throw new Error("Render3D mesh requires geometry.");
         const cached = this.geometryCache.get(geometry);
-        if (cached) return cached;
+        if (cached) {
+            if (cached.version !== geometry.version) {
+                const arrays = [geometry.positions, geometry.normals, geometry.uvs, geometry.tangents];
+                arrays.forEach((data, index) => {
+                    if (data.byteLength !== cached.byteLengths[index]) {
+                        throw new Error('Geometry updates must preserve vertex buffer sizes.');
+                    }
+                    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, cached.buffers[index]);
+                    this.gl.bufferSubData(this.gl.ARRAY_BUFFER, 0, data);
+                });
+                cached.version = geometry.version;
+            }
+            return cached;
+        }
 
         const gl = this.gl;
         geometry.EnsureNormals();
@@ -516,10 +531,12 @@ export class WebGL3DRenderer {
         this.ownedVertexArrays.add(vao);
         gl.bindVertexArray(vao);
 
-        this.#uploadAttribute(ATTRIBUTE.position, 3, geometry.positions);
-        this.#uploadAttribute(ATTRIBUTE.normal, 3, geometry.normals);
-        this.#uploadAttribute(ATTRIBUTE.uv, 2, geometry.uvs);
-        this.#uploadAttribute(ATTRIBUTE.tangent, 4, geometry.tangents);
+        const buffers = [
+            this.#uploadAttribute(ATTRIBUTE.position, 3, geometry.positions),
+            this.#uploadAttribute(ATTRIBUTE.normal, 3, geometry.normals),
+            this.#uploadAttribute(ATTRIBUTE.uv, 2, geometry.uvs),
+            this.#uploadAttribute(ATTRIBUTE.tangent, 4, geometry.tangents),
+        ];
 
         let indexed = false;
         let indexType = gl.UNSIGNED_SHORT;
@@ -537,7 +554,8 @@ export class WebGL3DRenderer {
 
         gl.bindVertexArray(null);
 
-        const state = { vao, indexed, indexType, count };
+        const byteLengths = [geometry.positions, geometry.normals, geometry.uvs, geometry.tangents].map(data => data.byteLength);
+        const state = { vao, indexed, indexType, count, buffers, byteLengths, version: geometry.version };
         this.geometryCache.set(geometry, state);
         return state;
     }
@@ -550,6 +568,7 @@ export class WebGL3DRenderer {
         gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
         gl.enableVertexAttribArray(location);
         gl.vertexAttribPointer(location, size, gl.FLOAT, false, 0, 0);
+        return buffer;
     }
 
     #bindTexture(shader, unit, samplerName, hasName, textureLike, fallbackTexture) {

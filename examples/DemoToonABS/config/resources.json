@@ -1,0 +1,36 @@
+{
+  "models": [
+    {
+      "name": "knight",
+      "path": "../assets/kaykit/knight.glb"
+    },
+    {
+      "name": "skeleton",
+      "path": "../assets/kaykit/skeleton.glb"
+    },
+    {
+      "name": "rig-general",
+      "path": "../assets/kaykit/general.glb"
+    },
+    {
+      "name": "rig-movement",
+      "path": "../assets/kaykit/movement.glb"
+    },
+    {
+      "name": "rig-melee",
+      "path": "../assets/kaykit/melee.glb"
+    },
+    {
+      "name": "forest-tree",
+      "path": "../assets/kaykit/forest/Tree_1_A_Color1.gltf"
+    },
+    {
+      "name": "forest-rock",
+      "path": "../assets/kaykit/forest/Rock_1_A_Color1.gltf"
+    },
+    {
+      "name": "forest-bush",
+      "path": "../assets/kaykit/forest/Bush_1_A_Color1.gltf"
+    }
+  ]
+}

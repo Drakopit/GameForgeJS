@@ -14,11 +14,12 @@ npm run docs
 | --- | --- | --- |
 | [core](./core.md) | Public core entry point: gameforgejs/core. | 49/50 |
 | [2d](./2d.md) | Public 2d entry point: gameforgejs/2d. | 78/79 |
-| [3d](./3d.md) | Public 3d entry point: gameforgejs/3d. | 33/33 |
+| [3d](./3d.md) | Public 3d entry point: gameforgejs/3d. | 35/35 |
 | [network](./network.md) | Public network entry point: gameforgejs/network. | 11/11 |
 | [compat](./compat.md) | Public compat entry point: gameforgejs/compat. | 11/11 |
 | [addons/parallax](./addons-parallax.md) | Public addons/parallax entry point: gameforgejs/addons/parallax. | 1/1 |
 | [addons/state-machine](./addons-state-machine.md) | Public addons/state-machine entry point: gameforgejs/addons/state-machine. | 2/2 |
+| [addons/platformer](./addons-platformer.md) | Public addons/platformer entry point: gameforgejs/addons/platformer. | 2/2 |
 
 ## Guides
 

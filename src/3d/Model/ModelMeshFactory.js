@@ -39,7 +39,9 @@ export class ModelMeshFactory {
             return mesh;
         });
 
-        return new Model3D(meshes);
+        const model = new Model3D(meshes);
+        model.sourceAsset = parts;
+        return model;
     }
 
     static CreateMaterial(part, index, modelName) {

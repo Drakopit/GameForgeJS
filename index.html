@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="pt-BR">
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="description"
+			content="GameForgeJS: framework experimental em JavaScript nativo para jogos 2D e 3D no navegador. Explore demos, conheça a arquitetura e acompanhe a evolução.">
+		<meta name="theme-color" content="#151916">
+		<title>GameForgeJS — Seu jogo. Seu código. JavaScript.</title>
+		<link rel="stylesheet" href="site/style.css">
+	</head>
+
+	<body>
+		<a class="skip" href="#conteudo">Pular para o conteúdo</a>
+		<header class="header wrap">
+			<a class="brand" href="./" aria-label="GameForgeJS, início"><span class="brand-icon"
+					aria-hidden="true">G<span>F</span></span>GameForge<span class="accent">JS</span></a>
+			<nav aria-label="Navegação principal"><a href="#jogos">Demos</a><a href="#framework">Framework</a><a
+					href="#evolucao">Evolução</a><a class="repo" href="https://github.com/Drakopit/GameForgeJS">GitHub ↗</a>
+			</nav>
+		</header>
+		<main id="conteudo">
+			<section class="hero wrap">
+				<div class="hero-copy">
+					<p class="eyebrow"><span class="dot"></span> Framework experimental · 2D + 3D</p>
+					<h1>Seu jogo.<br>Seu código.<br><span class="accent">JavaScript.</span></h1>
+					<p class="lead">Do primeiro personagem a mundos próprios. Uma framework para criar jogos no navegador,
+						com classes, componentes e controle sobre o que você constrói.</p>
+					<div class="actions"><a class="button primary" href="#jogos">Explorar demos <span>↗</span></a><a
+							class="button secondary" href="#comecar">Começar um projeto</a></div>
+					<p class="fine">JavaScript nativo. Canvas 2D. WebGL2.<br>Node.js é uma ferramenta opcional de
+						desenvolvimento.</p>
+				</div>
+				<figure class="hero-scene">
+					<div class="window-bar"><span><i></i><i></i><i></i></span><small>SKY TRAIL / DEMO 3D</small><span
+							class="live">NO NAVEGADOR</span></div>
+					<a href="Main.html?demo=mini3d" aria-label="Abrir a demo Sky Trail"><img src="site/sky-trail.jpg"
+							alt="Sky Trail: personagem em plataformas suspensas com moedas, renderizado pela GameForgeJS"
+							width="1100" height="800" fetchpriority="high"></a>
+					<figcaption><span>Uma captura real da framework.</span><a href="Main.html?demo=mini3d">Jogar Sky Trail
+							↗</a></figcaption>
+				</figure>
+			</section>
+			<div class="principles">
+				<div class="wrap"><span>Runtime independente</span><span>Herança + componentes</span><span>Configuração por
+						jogo</span><span>Ferramentas opcionais</span></div>
+			</div>
+
+			<section id="jogos" class="wrap section">
+				<div class="section-heading">
+					<div>
+						<p class="eyebrow">01 / Experimente</p>
+						<h2>O código ganha vida.</h2>
+					</div>
+					<p>Exemplos jogáveis para explorar movimento, combate, câmera, renderização e regras de jogo. As demos
+						são experimentais.</p>
+				</div>
+				<div class="demo-grid">
+					<a class="demo-card" href="Main.html?demo=advanced"><img src="site/platform-adventure.jpg"
+							alt="Demo de plataforma 2D em uma paisagem de neve" width="1100" height="800" loading="lazy">
+						<div class="card-copy"><span class="tag">2D · PLATAFORMA / RPG</span>
+							<h3>Platform Adventure <span>↗</span></h3>
+							<p>Combos, hitboxes, inventário, habilidades e fases descritas por manifests.</p>
+						</div>
+					</a>
+					<a class="demo-card" href="Main.html?demo=mini3d"><img src="site/sky-trail.jpg"
+							alt="Plataformas, moedas e personagem da demo Sky Trail" width="1100" height="800"
+							loading="lazy">
+						<div class="card-copy"><span class="tag">3D · PLATAFORMA</span>
+							<h3>Sky Trail <span>↗</span></h3>
+							<p>Física, plataformas móveis, coleta e uma câmera acompanhando a aventura.</p>
+						</div>
+					</a>
+				</div>
+				<div class="demo-links"><a href="Main.html?demo=tactical"><span>Estratégia por turnos</span>Tactical RPG
+						↗</a><a href="Main.html?demo=fighting2d"><span>Combate local</span>Fighting 2D ↗</a><a
+						href="Main.html?demo=solar3d"><span>Materiais e iluminação</span>Sistema solar ↗</a><a
+						href="Main.html"><span>Mais experimentos</span>Todas as demos ↗</a></div>
+				<p class="fine">As demos públicas acompanham a versão publicada. Os avanços da branch de desenvolvimento
+					estão descritos abaixo.</p>
+			</section>
+
+			<section id="framework" class="framework section">
+				<div class="wrap framework-grid">
+					<div>
+						<p class="eyebrow">02 / Uma base, não uma caixa-preta</p>
+						<h2>A framework cuida<br>da estrutura.<br><span class="muted">Você cria as regras.</span></h2>
+						<p class="lead">Níveis organizam a cena. Entidades recebem comportamentos. Telas e renderizadores
+							cuidam da apresentação. Evolua o jogo sem abandonar as classes que já funcionam.</p><a
+							class="text-link"
+							href="https://github.com/Drakopit/GameForgeJS/blob/feature/modularize-framework/docs/architecture.md">Entender
+							a arquitetura em desenvolvimento ↗</a>
+					</div>
+					<div class="code-panel">
+						<div class="window-bar"><small>PADRÃO DA FRAMEWORK / MAIN.JS</small></div>
+						<pre><code><span class="syntax">import</span> { BootstrapGame }
+	<span class="syntax">from</span> <span class="string">"gameforgejs/core"</span>;
+	<span class="syntax">import</span> { FirstLevel }
+	<span class="syntax">from</span> <span class="string">"./src/levels/FirstLevel.js"</span>;
+
+	<span class="function">BootstrapGame</span>({
+	configPath: <span class="string">"./config/game.config.json"</span>,
+	manifestPath: <span class="string">"./config/resources.json"</span>,
+	levels: [<span class="syntax">new</span> FirstLevel()],
+	});</code></pre>
+						<p>Exemplo da branch modular. O template configura o import map e fornece o nível inicial.</p>
+					</div>
+				</div>
+			</section>
+
+			<section id="evolucao" class="wrap section">
+				<div class="section-heading">
+					<div>
+						<p class="eyebrow">03 / Evolução com propósito</p>
+						<h2>Mais reutilização.<br>A mesma essência.</h2>
+					</div>
+					<p>A modularização organiza a distribuição e as extensões. O caminho principal continua sendo
+						<code>BootstrapGame</code>, níveis, entidades e componentes.</p>
+				</div>
+				<div class="feature-grid">
+					<article><span class="status">NA BRANCH MODULAR</span>
+						<h3>Publique o necessário.</h3>
+						<p>Selecione grupos de runtime e addons em <code>gameforgejs.package.json</code>. O build inclui as
+							dependências entre grupos, sem reescrever seu jogo.</p>
+					</article>
+					<article><span class="status">PILOTO EM DESENVOLVIMENTO</span>
+						<h3>Reutilize comportamentos.</h3>
+						<p>Parallax e máquina de estados extraídos das demos. Classes que usam os serviços da framework, sem
+							inicializar uma segunda engine.</p>
+					</article>
+					<article><span class="status planned">META FINAL</span>
+						<h3>Do zero ao jogo completo.</h3>
+						<p>Zero to Hero: aventura 3D Toon com combate ABS, modelos e água; plataforma 2D com pelo menos 20
+							fases e inimigos com comportamentos variados.</p>
+					</article>
+				</div>
+				<p class="roadmap-note">O Zero to Hero ainda não está concluído. Jogos, códigos, assets, lições e validação
+					serão finalizados em conjunto ao término das modificações.</p>
+				<a class="text-link"
+					href="https://github.com/Drakopit/GameForgeJS/blob/feature/modularize-framework/docs/development-roadmap.md">Acompanhar
+					o roteiro de desenvolvimento ↗</a>
+			</section>
+
+			<section id="comecar" class="start section">
+				<div class="wrap start-grid">
+					<div>
+						<p class="eyebrow">04 / Seu próximo projeto</p>
+						<h2>Comece pequeno.<br>Construa algo seu.</h2>
+						<p>O fluxo abaixo usa a branch de desenvolvimento. Para experimentar a versão pública, abra uma das
+							demos acima.</p>
+						<div class="actions"><a class="button primary"
+								href="https://github.com/Drakopit/GameForgeJS/tree/feature/modularize-framework/docs">Documentação
+								da branch ↗</a><a class="text-link"
+								href="https://github.com/Drakopit/GameForgeJS/tree/feature/modularize-framework">Explorar o
+								código ↗</a></div>
+					</div>
+					<div class="terminal"><span class="terminal-label">NO SEU TERMINAL</span>
+						<pre>
+							<code>
+								git clone --branch feature/modularize-framework \
+								https://github.com/Drakopit/GameForgeJS.git
+								cd GameForgeJS
+								npm ci
+								npm start
+							</code>
+						</pre>
+						<p>Depois, visite <code>/examples/showcase/index.html</code><br>no endereço informado pelo servidor.
+						</p>
+					</div>
+				</div>
+			</section>
+		</main>
+		<footer class="wrap footer"><a class="brand" href="./">GameForge<span class="accent">JS</span></a>
+			<p>Uma framework em evolução. Feita para aprender, experimentar e criar.</p><a
+				href="https://github.com/Drakopit/GameForgeJS">Código no GitHub ↗</a>
+		</footer>
+	</body>
+
+</html>

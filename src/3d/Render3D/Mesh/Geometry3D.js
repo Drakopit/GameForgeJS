@@ -22,6 +22,12 @@ export class Geometry3D {
         this.tangents = tangents instanceof Float32Array ? tangents : new Float32Array(tangents);
         this.indices = normalizeIndices(indices);
         this.vertexCount = this.positions.length / 3;
+        this.version = 0;
+    }
+
+    /** Notify the renderer after modifying vertex values without changing topology. */
+    MarkUpdated() {
+        this.version++;
     }
 
     /**

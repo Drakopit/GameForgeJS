@@ -6,6 +6,8 @@
   - [Gamepad aliases](getting-started/gamepad.md)
 
 - Guides
+  - [Addon pilot](guides/addons.md)
+  - [Platformer movement](guides/platformer.md)
   - [Configuration layout](guides/configuration-layout.md)
   - [Developer experience roadmap](development-roadmap.md)
   - [Architecture and ownership](architecture.md)
@@ -26,6 +28,12 @@
   - [2D hitbox manifests](manifests/hitbox-manifest.md)
 
 - Integration and migration
+  - [Version comparison](migrations/version-comparison.md)
+  - [Advanced demos: status and next checkpoints](migrations/advanced-demo-audit.md)
+  - [Toon room checkpoint](getting-started/toon-room-checkpoint.md)
+  - [First Toon ABS encounter](getting-started/toon-abs-checkpoint.md)
+  - [Imported animated characters](getting-started/toon-character-checkpoint.md)
+  - [Continuous forest encounters](getting-started/toon-forest-checkpoint.md)
   - [Repository and project migration](migrations/repository-layout.md)
   - [External 2D editor contract](tools/world-editor-v4.md)
   - [External 3D editor contract](tools/scene-editor-3d.md)

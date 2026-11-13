@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "name": "Demo3D",
+  "name": "DemoMiniGame3D",
   "entry": "index.html",
-  "runtimeConfig": "game.config.json",
-  "resources": "resources.json",
+  "runtimeConfig": "config/game.config.json",
+  "resources": "config/resources.json",
   "modules": [
     "2d",
     "3d"
