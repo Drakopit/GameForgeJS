@@ -70,12 +70,44 @@ Repeat the route, check the forest textures, clear enemies and restart. The brow
 suite runs these checks against source and a build hosted under a URL prefix,
 including multi-target strikes, camera following, all-clear movement and cleanup.
 
-Nearby rigs animate each update; rigs farther than 12 world units from the player
-sample at 5 Hz. Finished death poses skip further skinning. Combat still uses the
-normal fixed step. This reduces CPU deformation work, but is not crowd rendering
-or world streaming. Test on target devices before increasing enemy counts.
+CharacterVisual passes the engine-provided OnUpdate(dt) directly to the animator.
+It has no distance scheduler or accumulated replacement delta. Finished death poses
+still skip further skinning. Six CPU-skinned characters cost more than the previous
+throttle; this is not crowd rendering. Measure on target devices before adding rigs.
 
-Remaining work includes patrol/pursuit, attack occlusion around obstacles, water,
+## 5. HUD, controls and sky
+
+HealthBar reads HealthComponent directly. AreaAnnouncement shows each area's name
+on entry, including re-entry: hold for 2.5 seconds, then a smooth 1.5-second fade.
+Its transition age advances through the existing level update, without wall-clock
+reads or a second loop. Both widgets use ScreenUI and separate files under src/ui/.
+
+Skybox.FromImage uses sky_cross from config/resources.json. The cubemap cross was
+copied unchanged from DemoMiniGame3D; assets/sky/README.md records its repository
+origin. It is separate from the KayKit assets and their license.
+
+| Action | Keyboard | Standard-layout gamepad |
+| --- | --- | --- |
+| Move | WASD / arrows | Left stick (analog speed) / D-pad |
+| Attack | Space | Left face: Xbox X / PS Square / Nintendo Y |
+| Restart | R | Top face: Xbox Y / PS Triangle / Nintendo X |
+| Help | H | Start / Options / + |
+| Toon bands | B | Select / View / Share / Minus |
+
+Mappings remain in game.config.json. Movement uses ActionManager.GetActionValue,
+clamps diagonal speed and normalizes facing independently of stick strength.
+Button actions use IsActionDown, so holding help does not repeatedly toggle it.
+Keyboard and gamepad are supported gameplay paths here. Mouse/touch gameplay is
+not implemented: raw framework devices exist, but ActionManager currently maps
+keyboard/gamepad only.
+
+Browser regressions simulate navigator.getGamepads through real Input polling,
+including partial stick values, D-pad, buttons and disconnect. Physical-controller
+compatibility testing remains distinct from simulation. Source and prefixed builds
+also check fading, area re-entry, health-bar damage and skybox GPU upload.
+
+[Checkpoint 5](toon-water-checkpoint.md) adds the first decorative animated pond.
+Remaining work includes patrol/pursuit, attack occlusion around obstacles, swimming,
 progression, equipment, saving and a complete adventure. The earlier animation
 limitations still apply. This checkpoint extends the Zero to Hero material without
 presenting the full course as complete.

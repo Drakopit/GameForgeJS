@@ -151,3 +151,11 @@ from a large demo. Development follows the [roadmap](../development-roadmap.md).
 [Checkpoint 4](toon-forest-checkpoint.md) adds a continuous route through three areas,
 five sentries, imported forest props and a following camera. Defeating enemies no
 longer stops exploration. This is another incremental slice; the full course remains pending.
+
+[Checkpoint 5](toon-water-checkpoint.md) adds an opaque animated pond using the
+existing mesh, material and update lifecycle. Swimming, reflections and underwater
+mechanics remain future work; this is not the finished water system or course.
+
+The water checkpoint now includes shallow-water contact through a Component,
+analog-compatible movement slowdown and reusable footstep rings. It still does
+not implement swimming, buoyancy or reflected/refracted scenery.

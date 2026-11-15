@@ -1,3 +1,7 @@
+const { inspectSkyTrailMenu } = require('./browser/sky-trail-menu.cjs');
+const { inspectSkyTrail } = require('./browser/sky-trail.cjs');
+const { inspectToonWater } = require('./browser/toon-water.cjs');
+const { inspectToonPolish } = require('./browser/toon-polish.cjs');
 // Optional integration suite. Install Playwright Chromium, or set GAMEFORGE_BROWSER
 // to a Chromium/Edge executable. Edge is discovered automatically on Windows.
 const fs = require('node:fs');
@@ -38,6 +42,10 @@ async function inspect(browser, url, name, { starter = false, play = false } = {
         await page.waitForTimeout(500);
         const dimensions = await page.locator('canvas').evaluateAll(canvases => canvases.map(canvas => [canvas.width, canvas.height]));
         assert.ok(dimensions.some(([width, height]) => width > 0 && height > 0), 'No canvas with a nonzero size');
+        if (name.endsWith('-mini3d')) {
+            await inspectSkyTrailMenu(page, path.join(screenshots, `${name}-menu.png`));
+            play = false;
+        }
         if (play) {
             // Exercise actual input, level transition, asset composition and gameplay.
             for (let i = 0; i < (name.includes('advanced') ? 2 : 1); i++) {
@@ -47,6 +55,7 @@ async function inspect(browser, url, name, { starter = false, play = false } = {
             const current = await page.evaluate(async () => (await import('gameforgejs/core')).LevelHandler.current.constructor.name);
             assert.ok(!/Menu|Selector/.test(current), `Input did not enter gameplay: ${current}`);
         }
+        if (name.endsWith('-mini3d')) await inspectSkyTrail(page, path.join(screenshots, `${name}-sky-trail.png`));
         if (name.endsWith('-platformer')) {
             await inspectPlatformer(page, path.join(screenshots, `${name}.png`));
             await inspectPlatformerProgression(page);
@@ -56,6 +65,8 @@ async function inspect(browser, url, name, { starter = false, play = false } = {
             await inspectToonCombat(page);
             await inspectToonAnimation(page, path.join(screenshots, `${name}-animation.png`));
             await inspectToonExploration(page, path.join(screenshots, `${name}-forest.png`));
+            await inspectToonPolish(page, path.join(screenshots, `${name}-polish.png`));
+            await inspectToonWater(page, path.join(screenshots, `${name}-water.png`));
         }
         if (starter && name.includes('2d')) {
             const before = await page.locator('canvas').evaluate(canvas => canvas.toDataURL());

@@ -1,5 +1,8 @@
+import { FootstepRipples } from '../rendering/FootstepRipples.js';
+import { ToonPond } from '../entities/ToonPond.js';
+import { Pond } from '../data/Pond.js';
 import { ActionManager, AssetManager } from 'gameforgejs/core';
-import { Level3D, PerspectiveCamera, AmbientLight, DirectionalLight } from 'gameforgejs/3d';
+import { Level3D, PerspectiveCamera, AmbientLight, DirectionalLight, Skybox } from 'gameforgejs/3d';
 import { Courtyard } from '../data/Courtyard.js';
 import { CourtyardRoom } from '../entities/CourtyardRoom.js';
 import { Explorer } from '../entities/Explorer.js';
@@ -27,7 +30,9 @@ export class ToonRoomLevel extends Level3D {
         this.scene.Add(new AmbientLight({ intensity: 0.3 }));
         this.scene.Add(new DirectionalLight({ ...Courtyard.sunlight, castShadow: true }));
         this.room = this.AddEntity(new CourtyardRoom(this.scene, this.physics, Courtyard));
-        this.player = this.AddEntity(new Explorer(this.physics, Courtyard.spawn));
+        this.pond = this.AddEntity(new ToonPond(this.scene, this.physics, Pond));
+        this.player = this.AddEntity(new Explorer(this.physics, Courtyard.spawn, [this.pond]));
+        this.footstepRipples = this.AddEntity(new FootstepRipples(this.scene, this.player, this.pond));
         this.enemies = Courtyard.areas.flatMap(area => area.enemies.map(spawn =>
             this.AddEntity(new Sentry(this.physics, spawn))));
         this.actors = [this.player, ...this.enemies];
@@ -35,9 +40,10 @@ export class ToonRoomLevel extends Level3D {
             this.AddEntity(new SceneryProp(this.scene, this.physics, definition)));
         this.explorationCamera = new ExplorationCamera(this.camera, this.player, Courtyard.bounds);
         const assets = this.context.assets ?? AssetManager.instance;
+        this.scene.Add(Skybox.FromImage(assets.GetImage('sky_cross'), { name: 'Daylight' }));
         this.visuals = this.actors.map(actor => this.AddEntity(new CharacterVisual(
             actor, actor === this.player ? CharacterAssets.player : CharacterAssets.enemy,
-            this.scene, assets, this.player)));
+            this.scene, assets)));
         this.player.targets = this.enemies;
         for (const enemy of this.enemies) {
             enemy.target = this.player;
@@ -46,6 +52,7 @@ export class ToonRoomLevel extends Level3D {
         this.indicators = this.actors.map(actor => new AttackIndicator(actor));
         for (const indicator of this.indicators) this.scene.Add(indicator);
         this.result = null;
+        this.hud.ShowArea(this.areaName);
     }
 
     OnUpdate(dt) {
@@ -53,7 +60,7 @@ export class ToonRoomLevel extends Level3D {
         if (ActionManager.IsActionDown('HELP')) this.hud.ToggleHelp();
         if (ActionManager.IsActionDown('BANDS')) {
             this.bands = this.bands === 4 ? 2 : this.bands + 1;
-            for (const material of [...this.room.materials, ...this.scenery.flatMap(prop => prop.materials)]) {
+            for (const material of [...this.room.materials, ...this.pond.materials, ...this.scenery.flatMap(prop => prop.materials)]) {
                 material.bands = this.bands;
             }
             for (const visual of this.visuals) {
@@ -61,6 +68,7 @@ export class ToonRoomLevel extends Level3D {
             }
         }
         super.OnUpdate(dt);
+        this.hud.OnUpdate(dt, this.areaName);
     }
 
     OnFixedUpdate(dt) {
@@ -80,7 +88,9 @@ export class ToonRoomLevel extends Level3D {
     RestartEncounter() {
         for (const actor of this.actors) actor.Reset();
         this.result = null;
+        this.hud.ShowArea(this.areaName);
         for (const visual of this.visuals) visual.Reset();
+        this.footstepRipples.OnUpdate();
     }
 
     get defeatedCount() {

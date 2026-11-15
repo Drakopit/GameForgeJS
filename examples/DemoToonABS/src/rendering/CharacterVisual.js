@@ -2,9 +2,8 @@ import { ModelMeshFactory, SkeletalAnimator, ToonMaterial } from 'gameforgejs/3d
 import { CharacterAssets } from '../data/CharacterAssets.js';
 
 export class CharacterVisual {
-    constructor(actor, modelName, scene, assets, focus = actor) {
+    constructor(actor, modelName, scene, assets) {
         this.actor = actor;
-        this.focus = focus;
         this.scene = scene;
         this.model = ModelMeshFactory.FromAsset(modelName, {
             materialFactory: (part, index) => new ToonMaterial(ModelMeshFactory.CreateMaterial(part, index, modelName)),
@@ -19,21 +18,12 @@ export class CharacterVisual {
     }
 
     Reset() {
-        this.elapsed = 0;
         this.animator.Play('idle', { restart: true });
         this.SyncTransform();
     }
 
     OnUpdate(dt) {
         const actor = this.actor;
-        this.elapsed += dt;
-        const distance = Math.hypot(
-            actor.transform.position[0] - this.focus.transform.position[0],
-            actor.transform.position[2] - this.focus.transform.position[2]);
-        // Distant rigs sample at 5 Hz; combat still runs at the normal fixed step.
-        if (distance > 12 && this.elapsed < 0.2) return;
-        dt = this.elapsed;
-        this.elapsed = 0;
         if (!actor.health.IsAlive() && this.animator.current?.name === 'death' && this.animator.finished) return;
         let clip = 'idle';
         if (!actor.health.IsAlive()) clip = 'death';

@@ -1,0 +1,15 @@
+export const Pond = {
+    position: [4.5, 0.18, 2.5],
+    movementMultiplier: 0.55,
+    floorY: 0,
+    width: 3,
+    depth: 3,
+    segments: 20,
+    amplitude: 0.035,
+    speed: 1.1,
+    color: '#35b9cf',
+    foamColor: '#c4f5ed',
+    bankColor: '#92a69a',
+    bankWidth: 0.25,
+    bankHeight: 0.24,
+};

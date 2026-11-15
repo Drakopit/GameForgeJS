@@ -1,20 +1,23 @@
+import { ShallowWaterContact } from '../components/ShallowWaterContact.js';
 import { ActionManager } from 'gameforgejs/core';
 import { Combatant } from '../combat/Combatant.js';
 import { Encounter } from '../data/Encounter.js';
 
 export class Explorer extends Combatant {
-    constructor(physics, spawn) {
+    constructor(physics, spawn, waterZones = []) {
         super(physics, spawn, '#e5b85c', Encounter.player, Encounter.playerAttack);
         this.name = 'Explorer';
+        this.waterContact = new ShallowWaterContact(waterZones).Attach(this);
     }
 
     OnUpdate() {
-        this.moveX = Number(ActionManager.IsAction('RIGHT')) - Number(ActionManager.IsAction('LEFT'));
-        this.moveZ = Number(ActionManager.IsAction('DOWN')) - Number(ActionManager.IsAction('UP'));
+        this.moveX = ActionManager.GetActionValue('RIGHT') - ActionManager.GetActionValue('LEFT');
+        this.moveZ = ActionManager.GetActionValue('DOWN') - ActionManager.GetActionValue('UP');
         this.attackRequested ||= ActionManager.IsActionDown('ATTACK');
     }
 
     OnFixedUpdate(dt) {
+        this.waterContact.OnFixedUpdate(dt);
         this.TickCombat(dt);
         const requested = this.attackRequested;
         this.attackRequested = false;
@@ -22,17 +25,24 @@ export class Explorer extends Combatant {
 
         const length = Math.max(1, Math.hypot(this.moveX, this.moveZ));
         if (this.CanAct() && (this.moveX !== 0 || this.moveZ !== 0)) {
-            this.facing = [this.moveX / length, this.moveZ / length];
+            const directionLength = Math.hypot(this.moveX, this.moveZ);
+            this.facing = [this.moveX / directionLength, this.moveZ / directionLength];
         }
         if (requested && this.CanAct()) this.attack.Start();
 
-        const speed = this.CanAct() ? Encounter.player.speed : 0;
+        const speed = this.CanAct() ? Encounter.player.speed * this.waterContact.speedMultiplier : 0;
         this.rigidbody.velocity[0] = this.moveX / length * speed;
         this.rigidbody.velocity[2] = this.moveZ / length * speed;
     }
 
+    OnDestroy() {
+        this.waterContact.Detach();
+        super.OnDestroy();
+    }
+
     Reset() {
         super.Reset();
+        this.waterContact?.Reset();
         this.moveX = 0;
         this.moveZ = 0;
         this.attackRequested = false;

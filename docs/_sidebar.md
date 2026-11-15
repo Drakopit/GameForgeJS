@@ -34,6 +34,8 @@
   - [First Toon ABS encounter](getting-started/toon-abs-checkpoint.md)
   - [Imported animated characters](getting-started/toon-character-checkpoint.md)
   - [Continuous forest encounters](getting-started/toon-forest-checkpoint.md)
+  - [Sky Trail platforming demo](getting-started/sky-trail.md)
+  - [First animated Toon pond](getting-started/toon-water-checkpoint.md)
   - [Repository and project migration](migrations/repository-layout.md)
   - [External 2D editor contract](tools/world-editor-v4.md)
   - [External 3D editor contract](tools/scene-editor-3d.md)

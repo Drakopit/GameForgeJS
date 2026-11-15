@@ -1,6 +1,12 @@
+import { SkyTrailHelp } from './SkyTrailHelp.js';
 import { Input } from "gameforgejs/core";
 
 export class SkyTrailHUD {
+    constructor() {
+        this.helpVisible = false;
+        this.help = new SkyTrailHelp();
+    }
+
     Draw(level) {
         if (!level.ui || !level.playerModel) return;
 
@@ -14,9 +20,28 @@ export class SkyTrailHUD {
         this._drawStats(draw, level, controllerConnected);
         this._drawBottomBar(draw, ctx, level, altitude, remainingCoins);
 
+        this.DrawProgress(draw, level);
+        if (this.helpVisible) this.help.Draw(draw);
         if (level.gameState === "WON") {
             this._drawWinOverlay(draw, ctx, level);
         }
+    }
+
+    DrawProgress(draw, level) {
+        draw.SetTextAlign('right');
+        draw.FontSize = '17px';
+        draw.Color = '#FFFFFF';
+        draw.DrawText(level.course.name, 698, 34, 350);
+        draw.FontSize = '13px';
+        draw.DrawText('H / botao superior: ajuda', 698, 56);
+        draw.Color = '#102239';
+        draw.DrawRect(370, 68, 328, 10);
+        draw.Color = '#FFD76A';
+        draw.DrawRect(370, 68, 328 * level.collectedCoins / level.goalCoins, 10);
+        draw.Color = level.checkpoint ? '#8DFFB7' : '#FFE0A3';
+        draw.DrawText(level.checkpoint ? 'Checkpoint ativado' : 'Checkpoint: plataforma central', 698, 102);
+        if (level.bestTime !== undefined) draw.DrawText(`Melhor nesta sessao: ${level.bestTime.toFixed(1)} s`, 698, 124);
+        draw.SetTextAlign('left');
     }
 
     _drawPanelBackground(draw, ctx, x, y, width, height, alpha, color) {
@@ -73,7 +98,7 @@ export class SkyTrailHUD {
         draw.DrawText(`Score final: ${level.score}`, 365, 246);
 
         draw.FontSize = "14px";
-        draw.DrawText("Uma nova trilha esta pronta.", 365, 274);
+        draw.DrawText("Enter / A: tentar novamente | Esc / B: menu", 365, 274);
         draw.SetTextAlign("left");
     }
 }

@@ -51,6 +51,18 @@
     {
       "name": "sky_trail_course",
       "path": "../assets/Manifests/sky-trail/course.json"
+    },
+    {
+      "name": "sky_trail_course_high_winds",
+      "path": "../assets/Manifests/sky-trail/high-winds.json"
+    },
+    {
+      "name": "sky_trail_course_archipelago",
+      "path": "../assets/Manifests/sky-trail/archipelago.json"
+    },
+    {
+      "name": "sky_trail_course_aurora",
+      "path": "../assets/Manifests/sky-trail/aurora.json"
     }
   ],
   "models": [

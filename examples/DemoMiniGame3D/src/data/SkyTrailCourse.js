@@ -9,12 +9,17 @@ export function ListSkyTrailCourses() {
         .filter(([name, document]) => isCourseAsset(name, document))
         .map(([name, document]) => ({
             name,
+            order: document.order ?? 99,
+            description: document.description ?? 'Colete as moedas e alcance a bandeira.',
+            difficulty: document.difficulty ?? 'Intermediário',
+            platforms: document.platforms.length,
+            coins: document.coins.items.length,
             label: document.name ?? (name === COURSE_ASSET_NAME ? "Sky Trail" : name.replace(`${COURSE_ASSET_NAME}_`, "")),
         }))
         .sort((left, right) => {
             if (left.name === COURSE_ASSET_NAME) return -1;
             if (right.name === COURSE_ASSET_NAME) return 1;
-            return left.label.localeCompare(right.label);
+            return left.order - right.order || left.label.localeCompare(right.label);
         });
 }
 
@@ -29,6 +34,9 @@ export function LoadSkyTrailCourse(assetName = selectedCourseAssetName) {
     }
 
     return {
+        assetName,
+        name: document.name ?? "Sky Trail",
+        theme: document.theme ?? { accent: "#59dec7", stone: "#526a82" },
         world: {
             ...document.world,
             gravity: vector(document.world.gravity, "world.gravity"),

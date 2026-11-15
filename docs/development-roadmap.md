@@ -67,4 +67,11 @@ attack states, one stationary sentry, HealthComponent, knockback and encounter
 reset. Copied KayKit characters now exercise CPU skeletal playback with embedded
 textures and separate clip libraries. The forest checkpoint adds three connected
 areas, five sentries, imported scenery, camera following and continued exploration
-after kills. Crossfades, patrol/pursuit, water and complete-game progression remain pending.
+after kills. An initial opaque Toon pond now animates through the existing mesh
+lifecycle, with an open shallow entrance, reduced walking speed and footstep rings. Crossfades, patrol/pursuit, swimming, water
+reflection/refraction and complete-game progression remain pending.
+
+Sky Trail now separates platform, player, coin, goal, checkpoint and camera ownership.
+It includes a timing variant, checkpoint recovery, jump buffering/grace and ScreenUI
+help. See [the demo guide](getting-started/sky-trail.md). Vector Swizzling is the next
+separate framework task; it is not implemented by this refactor.

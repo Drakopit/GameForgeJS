@@ -60,7 +60,13 @@ export class PrimitiveMesh {
                 uvs.push(...faceUvs[index]);
                 tangents.push(...tangent);
             });
-            indices.push(offset, offset + 1, offset + 2, offset, offset + 2, offset + 3);
+            const first = corners[1].map((value, axis) => value - corners[0][axis]);
+            const second = corners[2].map((value, axis) => value - corners[0][axis]);
+            const alignment = (first[1] * second[2] - first[2] * second[1]) * normal[0]
+                + (first[2] * second[0] - first[0] * second[2]) * normal[1]
+                + (first[0] * second[1] - first[1] * second[0]) * normal[2];
+            if (alignment < 0) indices.push(offset, offset + 2, offset + 1, offset, offset + 3, offset + 2);
+            else indices.push(offset, offset + 1, offset + 2, offset, offset + 2, offset + 3);
         };
         const slope = Math.SQRT1_2;
 
@@ -203,7 +209,7 @@ export class PrimitiveMesh {
             const b = a + 1;
             const c = a + 3;
             const d = a + 2;
-            indices.push(a, b, c, a, c, d);
+            indices.push(a, c, b, a, d, c);
         }
 
         return new Geometry3D({ positions, normals, uvs, tangents, indices });

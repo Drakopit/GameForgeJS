@@ -101,7 +101,7 @@ export class Screen {
         this.canvas.setAttribute("width", this.width);
         this.canvas.setAttribute("height", this.height);
         this.context = this.canvas.getContext("2d");
-        if (PIXELATED_RENDERING) {
+        if (this.config?.screen?.pixelArt ?? PIXELATED_RENDERING) {
             // Desliga a suavização no contexto 2D
             this.context.imageSmoothingEnabled = false;
             // Garante que o CSS não vai embaçar a imagem se o canvas for redimensionado

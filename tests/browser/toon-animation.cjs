@@ -57,7 +57,7 @@ async function inspectToonAnimation(page, screenshotPath) {
     assert.equal(result.attackClip, 'attack');
     assert.ok(result.attackTime > 0);
     assert.equal(result.glError, 0);
-    console.log(`Exploration CPU animation (nearby + throttled distant rigs): ${result.animationMsPerFrame.toFixed(2)} ms/frame (headless local measurement)`);
+    console.log(`Exploration CPU animation (all six rigs): ${result.animationMsPerFrame.toFixed(2)} ms/frame (headless local measurement)`);
     await page.screenshot({ path: screenshotPath });
 }
 

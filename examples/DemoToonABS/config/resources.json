@@ -32,5 +32,11 @@
       "name": "forest-bush",
       "path": "../assets/kaykit/forest/Bush_1_A_Color1.gltf"
     }
+  ],
+  "images": [
+    {
+      "name": "sky_cross",
+      "path": "../assets/sky/daylight-cross.png"
+    }
   ]
 }

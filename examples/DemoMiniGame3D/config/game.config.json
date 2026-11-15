@@ -11,11 +11,11 @@
     "cursor": "default"
   },
   "screen": {
-    "width": 640,
+    "width": 720,
     "height": 480,
     "fullScreen": true,
-    "pixelArt": true,
-    "antialiasing": false,
+    "pixelArt": false,
+    "antialiasing": true,
     "orientation": "landscape"
   },
   "input": {
@@ -211,6 +211,26 @@
         {
           "device": "gamepad",
           "input": "RT"
+        }
+      ],
+      "HELP": [
+        {
+          "device": "keyboard",
+          "input": "KeyH"
+        },
+        {
+          "device": "gamepad",
+          "input": "button_3"
+        }
+      ],
+      "RESET": [
+        {
+          "device": "keyboard",
+          "input": "KeyR"
+        },
+        {
+          "device": "gamepad",
+          "input": "button_10"
         }
       ]
     }

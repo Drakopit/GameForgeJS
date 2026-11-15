@@ -72,3 +72,15 @@ array of paths, with later values overriding earlier values.
 
 Migration checks include effective configuration equality, asset paths, editor
 workspace references and browser execution of both source and published games.
+
+## Input convention for new demos
+
+Keep actions in game.config.json and consume them through ActionManager. Provide
+keyboard and gamepad mappings for every exposed action, including help, restart
+and debug controls. Preserve analog magnitude with GetActionValue for movement;
+use IsActionDown for one-shot actions. Show bindings in the framework HUD, including
+controller-label equivalents. Test polling, edges, deadzones and disconnect.
+
+Document supported device paths explicitly. Raw mouse/touch support in Input does
+not itself provide complete pointer/mobile gameplay: implement and test that
+interaction model before advertising those devices.
