@@ -1,3 +1,4 @@
+import { Vector2D, Vector3D } from 'gameforgejs/core';
 import { Mesh, PrimitiveMesh, ToonMaterial, BoxCollider3D } from 'gameforgejs/3d';
 import { WaterSurface } from '../rendering/WaterSurface.js';
 import { WaterRipples } from '../rendering/WaterRipples.js';
@@ -12,7 +13,8 @@ export class ToonPond {
         this.surface = new WaterSurface(definition);
         this.ripples = new WaterRipples(this.surface, definition);
         this.meshes = [this.surface, this.ripples];
-        const { width, depth, bankWidth, bankHeight, position } = definition;
+        const { width, depth, bankWidth, bankHeight } = definition;
+        const position = Vector3D.FromArray(definition.position);
         const bankMaterial = new ToonMaterial({ albedoColor: definition.bankColor });
         const edges = [
             { offset: [width / 2 + bankWidth / 2, 0], size: [bankWidth, bankHeight, depth + bankWidth * 2] },
@@ -21,7 +23,8 @@ export class ToonPond {
         ];
         for (const edge of edges) {
             const bank = new Mesh({ geometry: PrimitiveMesh.Cube(1), material: bankMaterial });
-            bank.transform.SetPosition(position[0] + edge.offset[0], bankHeight / 2, position[2] + edge.offset[1]);
+            const offset = Vector2D.FromArray(edge.offset);
+            bank.transform.SetPosition(position.x + offset.x, bankHeight / 2, position.z + offset.y);
             bank.transform.SetScale(...edge.size);
             this.meshes.push(bank);
             this.bodies.push(physics.AddBody({ object: bank, collider: new BoxCollider3D({ size: edge.size }) }));
@@ -31,12 +34,13 @@ export class ToonPond {
     }
 
     ContainsFeet(actor) {
-        const [x, y, z] = actor.transform.position;
-        const { position, width, depth, floorY } = this.definition;
-        const feetY = y - actor.body.collider.radius;
-        return Math.abs(x - position[0]) < width / 2
-            && Math.abs(z - position[2]) < depth / 2
-            && feetY >= floorY - 0.08 && feetY < position[1];
+        const feet = Vector3D.FromArray(actor.transform.position);
+        const { width, depth, floorY, contactTolerance } = this.definition;
+        const position = Vector3D.FromArray(this.definition.position);
+        const feetY = feet.y - actor.body.collider.radius;
+        return Math.abs(feet.x - position.x) < width / 2
+            && Math.abs(feet.z - position.z) < depth / 2
+            && feetY >= floorY - contactTolerance && feetY < position.y;
     }
 
     OnUpdate(dt) {

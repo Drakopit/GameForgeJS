@@ -1,5 +1,5 @@
 import { SkyTrailHelp } from './SkyTrailHelp.js';
-import { Input } from "gameforgejs/core";
+import { Input, Vector3D } from "gameforgejs/core";
 
 export class SkyTrailHUD {
     constructor() {
@@ -14,7 +14,7 @@ export class SkyTrailHUD {
         const ctx = draw.screen.Context;
         const controllerConnected = Input.GetConnectedGamepadIndices().length > 0;
         const remainingCoins = level.goalCoins - level.collectedCoins;
-        const altitude = Math.max(0, level.playerModel.transform.position[1]).toFixed(1);
+        const altitude = Math.max(0, Vector3D.FromArray(level.playerModel.transform.position).y).toFixed(1);
 
         this._drawPanelBackground(draw, ctx, 12, 12, 316, 118, 0.54, "#07172A");
         this._drawStats(draw, level, controllerConnected);

@@ -44,7 +44,7 @@ Documented exports: **49/50**.
 | [`LifetimeComponent`](#lifetimecomponent) | `class` | Disables or removes short-lived owner objects after an elapsed duration. |
 | [`Logger`](#logger) | `class` | Console logging helpers for engine startup, diagnostics and HTTP requests. |
 | [`Mat4`](#mat4) | `class` | Dependency-free four-by-four matrix math utilities for Render3D. |
-| [`MathExt`](#mathext) | `class` | General scalar and 2D interpolation helpers shared by demos. |
+| [`MathExt`](#mathext) | `class` | General scalar and angle interpolation helpers. |
 | [`Mouse`](#mouse) | `class` | Manages mouse input for the game framework. |
 | [`ObjectPool`](#objectpool) | `class` | Reuses inactive objects, such as projectiles and particles, to reduce allocations. |
 | [`reconstructPath`](#reconstructpath) | `function` | Reconstructs a discovered route from predecessor entries. |
@@ -1325,7 +1325,7 @@ JSDoc pending.
 
 `class` from [`src/core/Math/MathExt.js`](../../../src/core/Math/MathExt.js)
 
-General scalar and 2D interpolation helpers shared by demos.
+General scalar and angle interpolation helpers.
 
 ### Methods
 
@@ -1351,6 +1351,19 @@ Linearly interpolates between two values.
 | `t` | `number` | Interpolation factor, clamped to the 0..1 range. |
 
 **Returns:** `number`
+#### `static LerpAngle(a, b, t)`
+
+Interpolates radians along the shortest arc, clamping t to 0..1. The result stays continuous around a and may lie outside -PI..PI.
+
+**Parameters**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `a` | `number` | Starting angle in radians. |
+| `b` | `number` | Target angle in radians. |
+| `t` | `number` | Interpolation factor. |
+
+**Returns:** `number` - Interpolated angle in radians.
 #### `static LerpSnap(a, b, t, threshold = 0.5)`
 
 Interpolates and snaps to b when the remaining difference is below threshold. Avoids an indefinitely small remaining difference at the end of an animation.
@@ -1810,6 +1823,19 @@ JSDoc pending.
 #### `static FromObject(value = {})`
 
 JSDoc pending.
+#### `static Lerp(a, b, t)`
+
+Returns a new interpolated vector without changing either endpoint.
+
+**Parameters**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `a` | `Vector3D` | Starting vector. |
+| `b` | `Vector3D` | Target vector. |
+| `t` | `number` | Interpolation factor, clamped to 0..1. |
+
+**Returns:** `Vector3D` - Interpolated vector.
 #### `Clone()`
 
 JSDoc pending.

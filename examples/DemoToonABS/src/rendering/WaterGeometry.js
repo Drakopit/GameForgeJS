@@ -1,3 +1,4 @@
+import { WaterVisualSettings as Settings } from '../data/PresentationSettings.js';
 import { Geometry3D } from 'gameforgejs/3d';
 
 // A small fixed-topology grid. Only heights and normals change during playback.
@@ -29,12 +30,12 @@ export class WaterGeometry extends Geometry3D {
     HeightAt(x, z, phase) {
         // Damp waves at the bank so the shoreline stays joined to the ground.
         const edge = Math.cos(Math.PI * x / this.width) * Math.cos(Math.PI * z / this.depth);
-        const waves = Math.sin(x * 4 + phase) + 0.5 * Math.sin(z * 5 - phase * 2);
+        const waves = Math.sin(x * Settings.waveFrequencyX + phase) + Settings.secondaryAmplitude * Math.sin(z * Settings.waveFrequencyZ - phase * Settings.secondarySpeed);
         return this.amplitude * edge * waves;
     }
 
     Update(phase) {
-        const epsilon = 0.01;
+        const epsilon = Settings.normalSampleDistance;
         for (let index = 0; index < this.positions.length; index += 3) {
             const x = this.positions[index];
             const z = this.positions[index + 2];

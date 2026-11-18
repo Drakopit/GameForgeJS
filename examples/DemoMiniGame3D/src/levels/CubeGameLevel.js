@@ -1,3 +1,4 @@
+import { RunRules } from '../data/TrailSettings.js';
 import { TrailScenery } from '../rendering/TrailScenery.js';
 import { ActionManager, AssetManager, Vector3D } from 'gameforgejs/core';
 import { AmbientLight, DirectionalLight, HemisphereLight, Level3D, PerspectiveCamera, PointLight, Skybox } from 'gameforgejs/3d';
@@ -80,17 +81,17 @@ export class CubeGameLevel extends Level3D {
         this.goal.Update(this.time);
         if (this.goalUnlocked && Vector3D.FromArray(this.player.model.transform.position).DistanceTo(this.course.goal.trigger) <= this.course.goal.radius) {
             this.gameState = 'WON';
-            this.score += 100;
+            this.score += RunRules.finishBonus;
             this.player.body.velocity.fill(0);
             this.bestTimes.set(this.course.assetName, Math.min(this.time, this.bestTime ?? Infinity));
         }
     }
 
     RecoverPlayerIfNeeded() {
-        const position = this.player.model.transform.position;
-        if (position.every(Number.isFinite) && position[1] >= this.course.world.fallLimit) return;
+        const position = Vector3D.FromArray(this.player.model.transform.position);
+        if (position.ToArray().every(Number.isFinite) && position.y >= this.course.world.fallLimit) return;
         this.falls++;
-        this.score = Math.max(0, this.score - 5);
+        this.score = Math.max(0, this.score - RunRules.fallPenalty);
         this.player.Reset(this.checkpoint?.respawn ?? this.course.player.spawn);
         this.followCamera.cameraReady = false;
     }

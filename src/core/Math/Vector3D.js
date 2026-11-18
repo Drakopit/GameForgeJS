@@ -33,6 +33,22 @@ export class Vector3D {
         return new Vector3D(value.x ?? value[0] ?? 0, value.y ?? value[1] ?? 0, value.z ?? value[2] ?? 0);
     }
 
+    /**
+     * Returns a new interpolated vector without changing either endpoint.
+     * @param {Vector3D} a - Starting vector.
+     * @param {Vector3D} b - Target vector.
+     * @param {number} t - Interpolation factor, clamped to 0..1.
+     * @returns {Vector3D} Interpolated vector.
+     */
+    static Lerp(a, b, t) {
+        const amount = Math.min(Math.max(t, 0), 1);
+        return new Vector3D(
+            a.x + (b.x - a.x) * amount,
+            a.y + (b.y - a.y) * amount,
+            a.z + (b.z - a.z) * amount,
+        );
+    }
+
     Clone() {
         return new Vector3D(this.x, this.y, this.z);
     }

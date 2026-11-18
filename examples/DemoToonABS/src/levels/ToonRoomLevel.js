@@ -1,7 +1,7 @@
 import { FootstepRipples } from '../rendering/FootstepRipples.js';
 import { ToonPond } from '../entities/ToonPond.js';
 import { Pond } from '../data/Pond.js';
-import { ActionManager, AssetManager } from 'gameforgejs/core';
+import { ActionManager, AssetManager, Vector3D } from 'gameforgejs/core';
 import { Level3D, PerspectiveCamera, AmbientLight, DirectionalLight, Skybox } from 'gameforgejs/3d';
 import { Courtyard } from '../data/Courtyard.js';
 import { CourtyardRoom } from '../entities/CourtyardRoom.js';
@@ -98,7 +98,7 @@ export class ToonRoomLevel extends Level3D {
     }
 
     get areaName() {
-        const z = this.player.transform.position[2];
+        const z = Vector3D.FromArray(this.player.transform.position).z;
         return Courtyard.areas.find(area => z >= area.minZ)?.name ?? 'Old grove';
     }
 

@@ -1,4 +1,5 @@
-import { ActionManager, AssetManager } from 'gameforgejs/core';
+import { MenuSettings } from '../data/TrailSettings.js';
+import { ActionManager, AssetManager, Vector3D } from 'gameforgejs/core';
 import { Level3D, AmbientLight, DirectionalLight, Skybox } from 'gameforgejs/3d';
 import { ListSkyTrailCourses, SelectSkyTrailCourse, LoadSkyTrailCourse } from '../data/SkyTrailCourse.js';
 import { TrailPlatforms } from '../entities/TrailPlatforms.js';
@@ -10,7 +11,7 @@ import { TrailMenuHUD } from '../ui/TrailMenuHUD.js';
 
 export class MiniGame3DMenu extends Level3D {
     constructor() {
-        super({ width: 960, height: 540, useUI: true });
+        super({ width: MenuSettings.width, height: MenuSettings.height, useUI: true });
         this.caption = 'Sky Trail — Expedições';
         this.currentSelected = 0;
     }
@@ -52,7 +53,7 @@ export class MiniGame3DMenu extends Level3D {
         for (const mesh of preview.meshes) mesh.visible = true;
         const positions = course.platforms.map(platform => platform.position);
         const centerZ = positions.reduce((sum, position) => sum + position.z, 0) / positions.length;
-        this.previewTarget = [-5, 0, centerZ];
+        this.previewTarget = new Vector3D(MenuSettings.targetX, 0, centerZ);
         this.time = 0;
         this.UpdatePreview(0);
     }
@@ -63,9 +64,11 @@ export class MiniGame3DMenu extends Level3D {
         this.coins.Update(dt, this.time);
         this.goal.Update(this.time);
         this.scenery.Update();
-        const [x, y, z] = this.previewTarget;
-        this.camera.SetPosition(x + 8 + Math.sin(this.time * 0.12) * 1.5, 14, z + 22);
-        this.camera.LookAt([x, y, z]);
+        const target = this.previewTarget;
+        const orbit = Math.sin(this.time * MenuSettings.orbitSpeed) * MenuSettings.orbitAmplitude;
+        this.camera.SetPosition(target.x + MenuSettings.orbitX + orbit,
+            MenuSettings.orbitHeight, target.z + MenuSettings.orbitDistance);
+        this.camera.LookAt(target.ToArray());
     }
 
     OnUpdate(dt) {

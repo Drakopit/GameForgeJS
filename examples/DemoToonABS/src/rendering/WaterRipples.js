@@ -1,11 +1,12 @@
+import { WaterVisualSettings as Settings } from '../data/PresentationSettings.js';
 import { Geometry3D, Mesh, ToonMaterial } from 'gameforgejs/3d';
 
 export class WaterRipples extends Mesh {
     constructor(surface, definition) {
-        const segments = 20;
-        const positions = new Float32Array(3 * (segments + 1) * 2 * 3);
+        const segments = Settings.highlightSegments;
+        const positions = new Float32Array(Settings.highlightCount * (segments + 1) * 2 * 3);
         const indices = [];
-        for (let strip = 0; strip < 3; strip++) {
+        for (let strip = 0; strip < Settings.highlightCount; strip++) {
             for (let segment = 0; segment < segments; segment++) {
                 const start = strip * (segments + 1) * 2 + segment * 2;
                 indices.push(start, start + 1, start + 2, start + 2, start + 1, start + 3);
@@ -29,16 +30,16 @@ export class WaterRipples extends Mesh {
         const phase = this.surface.phase;
         const positions = this.geometry.positions;
         let index = 0;
-        for (let strip = 0; strip < 3; strip++) {
+        for (let strip = 0; strip < Settings.highlightCount; strip++) {
             for (let segment = 0; segment <= this.segments; segment++) {
                 const along = segment / this.segments;
-                const x = (along - 0.5) * this.width * 0.65;
-                const centerZ = (strip - 1) * this.depth * 0.25 + Math.sin(x * 3 + phase + strip) * 0.1;
-                const thickness = Math.sin(along * Math.PI) * 0.035;
+                const x = (along - 0.5) * this.width * Settings.highlightWidthRatio;
+                const centerZ = (strip - (Settings.highlightCount - 1) / 2) * this.depth * Settings.highlightSpacingRatio + Math.sin(x * Settings.highlightFrequency + phase + strip) * Settings.highlightSway;
+                const thickness = Math.sin(along * Math.PI) * Settings.highlightThickness;
                 for (const side of [-1, 1]) {
                     const z = centerZ + side * thickness;
                     positions[index++] = x;
-                    positions[index++] = this.surface.geometry.HeightAt(x, z, phase) + 0.012;
+                    positions[index++] = this.surface.geometry.HeightAt(x, z, phase) + Settings.highlightLift;
                     positions[index++] = z;
                 }
             }

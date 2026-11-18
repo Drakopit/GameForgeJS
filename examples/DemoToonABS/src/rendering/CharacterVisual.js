@@ -1,3 +1,5 @@
+import { CombatVisualSettings } from '../data/PresentationSettings.js';
+import { Vector2D, Vector3D } from 'gameforgejs/core';
 import { ModelMeshFactory, SkeletalAnimator, ToonMaterial } from 'gameforgejs/3d';
 import { CharacterAssets } from '../data/CharacterAssets.js';
 
@@ -25,11 +27,12 @@ export class CharacterVisual {
     OnUpdate(dt) {
         const actor = this.actor;
         if (!actor.health.IsAlive() && this.animator.current?.name === 'death' && this.animator.finished) return;
+        const velocity = Vector3D.FromArray(actor.rigidbody.velocity);
         let clip = 'idle';
         if (!actor.health.IsAlive()) clip = 'death';
         else if (actor.hurtRemaining > 0) clip = 'hit';
         else if (actor.attack.phase !== 'ready') clip = 'attack';
-        else if (Math.hypot(actor.rigidbody.velocity[0], actor.rigidbody.velocity[2]) > 0.1) clip = 'run';
+        else if (Math.hypot(velocity.x, velocity.z) > CombatVisualSettings.movementThreshold) clip = 'run';
         this.animator.Play(clip, { loop: clip === 'idle' || clip === 'run' });
         if (clip === 'attack') this.SampleAttack();
         else this.animator.Update(dt);
@@ -46,10 +49,10 @@ export class CharacterVisual {
     }
 
     SyncTransform() {
-        const position = this.actor.transform.position;
-        this.model.SetPosition(position[0], position[1] - 0.55, position[2]);
-        const facing = this.actor.facing;
-        this.model.SetRotation(0, Math.atan2(facing[0], facing[1]), 0);
+        const position = Vector3D.FromArray(this.actor.transform.position);
+        this.model.SetPosition(position.x, position.y - this.actor.body.collider.radius, position.z);
+        const facing = Vector2D.FromArray(this.actor.facing);
+        this.model.SetRotation(0, Math.atan2(facing.x, facing.y), 0);
     }
 
     OnDestroy() {

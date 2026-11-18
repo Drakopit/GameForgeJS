@@ -1,4 +1,4 @@
-import { HealthComponent } from 'gameforgejs/core';
+import { HealthComponent, Vector3D } from 'gameforgejs/core';
 import { Mesh, PrimitiveMesh, ToonMaterial, Rigidbody3D, SphereCollider3D } from 'gameforgejs/3d';
 import { MeleeAttack } from './MeleeAttack.js';
 import { Encounter } from '../data/Encounter.js';
@@ -6,7 +6,7 @@ import { Encounter } from '../data/Encounter.js';
 export class Combatant extends Mesh {
     constructor(physics, spawn, color, stats, attackSettings) {
         super({
-            geometry: PrimitiveMesh.Sphere(0.55),
+            geometry: PrimitiveMesh.Sphere(Encounter.colliderRadius),
             material: new ToonMaterial({ albedoColor: color }),
         });
         this.physics = physics;
@@ -19,7 +19,7 @@ export class Combatant extends Mesh {
         this.body = physics.AddBody({
             object: this,
             rigidbody: this.rigidbody,
-            collider: new SphereCollider3D({ radius: 0.55 }),
+            collider: new SphereCollider3D({ radius: Encounter.colliderRadius }),
         });
         this.attack = new MeleeAttack(this, attackSettings);
         this.Reset();
@@ -38,11 +38,15 @@ export class Combatant extends Mesh {
     OnDamage(amount, source) {
         this.attack.Reset();
         this.hurtRemaining = Encounter.knockback.duration;
-        const x = this.transform.position[0] - source.transform.position[0];
-        const z = this.transform.position[2] - source.transform.position[2];
+        const position = Vector3D.FromArray(this.transform.position);
+        const sourcePosition = Vector3D.FromArray(source.transform.position);
+        const x = position.x - sourcePosition.x;
+        const z = position.z - sourcePosition.z;
+        const velocity = Vector3D.FromArray(this.rigidbody.velocity);
         const length = Math.hypot(x, z);
-        this.rigidbody.velocity[0] = length > 0 ? x / length * Encounter.knockback.speed : 0;
-        this.rigidbody.velocity[2] = length > 0 ? z / length * Encounter.knockback.speed : Encounter.knockback.speed;
+        velocity.x = length > 0 ? x / length * Encounter.knockback.speed : 0;
+        velocity.z = length > 0 ? z / length * Encounter.knockback.speed : Encounter.knockback.speed;
+        velocity.ToArray(this.rigidbody.velocity);
     }
 
     OnDeath() {

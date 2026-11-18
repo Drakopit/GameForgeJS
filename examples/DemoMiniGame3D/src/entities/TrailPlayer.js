@@ -1,4 +1,4 @@
-import { ActionManager, AssetManager } from 'gameforgejs/core';
+import { ActionManager, AssetManager, MathExt, Vector3D } from 'gameforgejs/core';
 import { ModelMeshFactory, Rigidbody3D, SphereCollider3D, StandardMaterial, Texture } from 'gameforgejs/3d';
 
 export class TrailPlayer {
@@ -48,7 +48,7 @@ export class TrailPlayer {
         this.input.horizontal = ActionManager.GetActionValue('RIGHT') - ActionManager.GetActionValue('LEFT');
         this.input.forward = ActionManager.GetActionValue('FORWARD') - ActionManager.GetActionValue('BACK');
         this.input.boost = ActionManager.IsAction('BOOST');
-        if (ActionManager.IsActionDown('JUMP')) this.jumpBuffer = 0.12;
+        if (ActionManager.IsActionDown('JUMP')) this.jumpBuffer = this.definition.movement.jumpBufferSeconds;
     }
 
     Move(dt, cameraYaw) {
@@ -63,26 +63,28 @@ export class TrailPlayer {
         const directionX = normalizedX * cos - normalizedForward * sin;
         const directionZ = -normalizedX * sin - normalizedForward * cos;
         const speed = this.input.boost ? movement.boostSpeed : movement.speed;
-        const response = length < 0.01 ? 28 : movement.smoothing;
+        const response = length < movement.stopThreshold ? movement.braking : movement.smoothing;
         const smoothing = 1 - Math.exp(-response * dt);
 
-        this.body.velocity[0] += (directionX * speed - this.body.velocity[0]) * smoothing;
-        this.body.velocity[2] += (directionZ * speed - this.body.velocity[2]) * smoothing;
+        const velocity = Vector3D.FromArray(this.body.velocity);
+        velocity.x = MathExt.Lerp(velocity.x, directionX * speed, smoothing);
+        velocity.z = MathExt.Lerp(velocity.z, directionZ * speed, smoothing);
 
-        if (length > 0.06) {
+        if (length > movement.facingThreshold) {
             const targetFacing = Math.atan2(directionX, directionZ);
-            this.facing = lerpAngle(this.facing, targetFacing, 1 - Math.exp(-movement.turnSmoothing * dt));
+            this.facing = MathExt.LerpAngle(this.facing, targetFacing, 1 - Math.exp(-movement.turnSmoothing * dt));
             this.model.transform.rotation.y = this.facing;
         }
 
-        this.coyote = this.body.grounded ? 0.1 : Math.max(0, this.coyote - dt);
+        this.coyote = this.body.grounded ? movement.coyoteSeconds : Math.max(0, this.coyote - dt);
         if (this.jumpBuffer > 0 && this.coyote > 0) {
             this.jumpBuffer = 0;
             this.coyote = 0;
             this.body.grounded = false;
             this.body.groundBody = null;
-            this.body.velocity[1] = movement.jumpSpeed;
+            velocity.y = movement.jumpSpeed;
         }
+        velocity.ToArray(this.body.velocity);
         this.jumpBuffer = Math.max(0, this.jumpBuffer - dt);
     }
 
@@ -102,8 +104,3 @@ export class TrailPlayer {
         for (const mesh of this.model.meshes) this.scene.Remove(mesh);
     }
 }
-
-function lerpAngle(current, target, amount) {
-    return current + Math.atan2(Math.sin(target - current), Math.cos(target - current)) * amount;
-}
-

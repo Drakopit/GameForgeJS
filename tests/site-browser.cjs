@@ -15,9 +15,10 @@ async function main() {
     try {
         if (process.argv.includes('--capture-demos')) {
             const page = await browser.newPage({ viewport: { width: 1100, height: 800 } });
-            for (const [name, demo, presses] of [['sky-trail', 'DemoMiniGame3D', 1], ['platform-adventure', 'DemoAdvanced', 2]]) {
+            for (const [name, demo, presses] of [['sky-trail', 'DemoMiniGame3D', 1], ['platform-adventure', 'DemoAdvanced', 2], ['toon-adventure', 'DemoToonABS', 0]]) {
                 await page.goto(`${url}examples/${demo}/index.html`, { waitUntil: 'networkidle' });
-                await page.waitForFunction(async () => (await import('gameforgejs/core')).Engine.running);
+                await page.evaluate(async () => { window.captureCore = await import('gameforgejs/core'); });
+                await page.waitForFunction(() => window.captureCore.Engine.running);
                 await page.waitForTimeout(500);
                 for (let i = 0; i < presses; i++) {
                     await page.keyboard.down('Enter'); await page.waitForTimeout(100); await page.keyboard.up('Enter');

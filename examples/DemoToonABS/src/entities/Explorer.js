@@ -1,5 +1,5 @@
 import { ShallowWaterContact } from '../components/ShallowWaterContact.js';
-import { ActionManager } from 'gameforgejs/core';
+import { ActionManager, Vector3D } from 'gameforgejs/core';
 import { Combatant } from '../combat/Combatant.js';
 import { Encounter } from '../data/Encounter.js';
 
@@ -31,8 +31,10 @@ export class Explorer extends Combatant {
         if (requested && this.CanAct()) this.attack.Start();
 
         const speed = this.CanAct() ? Encounter.player.speed * this.waterContact.speedMultiplier : 0;
-        this.rigidbody.velocity[0] = this.moveX / length * speed;
-        this.rigidbody.velocity[2] = this.moveZ / length * speed;
+        const velocity = Vector3D.FromArray(this.rigidbody.velocity);
+        velocity.x = this.moveX / length * speed;
+        velocity.z = this.moveZ / length * speed;
+        velocity.ToArray(this.rigidbody.velocity);
     }
 
     OnDestroy() {

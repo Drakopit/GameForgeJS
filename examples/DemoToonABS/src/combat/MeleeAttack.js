@@ -1,3 +1,5 @@
+import { Vector2D, Vector3D } from 'gameforgejs/core';
+import { Encounter } from '../data/Encounter.js';
 import { StateMachine } from 'gameforgejs/addons/state-machine';
 import { ReadyState } from './states/ReadyState.js';
 import { WindupState } from './states/WindupState.js';
@@ -29,15 +31,16 @@ export class MeleeAttack {
     }
 
     Contains(target) {
-        const origin = this.actor.transform.position;
-        const point = target.transform.position;
-        const x = point[0] - origin[0];
-        const z = point[2] - origin[2];
-        const forward = x * this.direction[0] + z * this.direction[1];
-        const sideways = x * this.direction[1] - z * this.direction[0];
-        return forward >= 0 && forward <= this.settings.reach + 0.55
-            && Math.abs(sideways) <= this.settings.halfWidth + 0.55
-            && Math.abs(point[1] - origin[1]) < 1;
+        const origin = Vector3D.FromArray(this.actor.transform.position);
+        const point = Vector3D.FromArray(target.transform.position);
+        const direction = Vector2D.FromArray(this.direction);
+        const x = point.x - origin.x;
+        const z = point.z - origin.z;
+        const forward = x * direction.x + z * direction.y;
+        const sideways = x * direction.y - z * direction.x;
+        return forward >= 0 && forward <= this.settings.reach + target.body.collider.radius
+            && Math.abs(sideways) <= this.settings.halfWidth + target.body.collider.radius
+            && Math.abs(point.y - origin.y) < Encounter.verticalHitTolerance;
     }
 
     TryHit() {

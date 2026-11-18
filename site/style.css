@@ -4,3 +4,6 @@
 @media(max-width:700px){.wrap{width:calc(100% - 36px)}.header{flex-wrap:wrap;padding-block:20px;gap:16px}nav{width:100%;gap:0;justify-content:space-between;font-size:12px}.hero{grid-template-columns:1fr;padding-block:38px 55px;gap:35px}h1{font-size:58px}.hero-copy .lead{font-size:16px}.hero-scene{max-width:560px}.hero-scene figcaption{flex-direction:row}.principles .wrap{display:grid;grid-template-columns:1fr 1fr;font-size:11px;gap:14px}.section-heading{display:block;margin-bottom:25px}.section-heading>p{max-width:none}.demo-grid,.framework-grid,.start-grid,.feature-grid{grid-template-columns:1fr}.demo-links{grid-template-columns:1fr 1fr}.feature-grid article{border-right:0;border-bottom:1px solid var(--line)}.footer{flex-wrap:wrap;gap:10px}.footer p{flex-basis:100%;order:3}.section{padding-block:55px}.terminal{padding:22px}.hero .actions{gap:10px}.button{padding:12px 15px}h2{font-size:35px}.hero-scene img{aspect-ratio:1.4}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
 
+
+/* Three playable showcases share the gallery on wide screens. */
+@media(min-width:1100px){.demo-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}

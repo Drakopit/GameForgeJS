@@ -21,7 +21,7 @@ export class TrailCamera {
         const desiredTarget = Vector3D.FromArray(this.player.model.transform.position)
             .AddValue(followConfig.targetOffset);
         const follow = this.cameraReady ? 1 - Math.exp(-followConfig.smoothness * dt) : 1;
-        this.cameraTarget = lerpVector(this.cameraTarget, desiredTarget, follow);
+        this.cameraTarget = Vector3D.Lerp(this.cameraTarget, desiredTarget, follow);
         const orbitOffset = new Vector3D(
             Math.sin(this.cameraYaw) * followConfig.distance,
             followConfig.height,
@@ -35,11 +35,3 @@ export class TrailCamera {
         this.cameraReady = true;
     }
 }
-function lerpVector(current, target, amount) {
-    return new Vector3D(
-        current.x + (target.x - current.x) * amount,
-        current.y + (target.y - current.y) * amount,
-        current.z + (target.z - current.z) * amount,
-    );
-}
-

@@ -1,3 +1,4 @@
+import { MovementDefaults } from './TrailSettings.js';
 import { AssetManager } from "gameforgejs/core";
 import { Vector3D } from "gameforgejs/core";
 
@@ -65,6 +66,7 @@ export function LoadSkyTrailCourse(assetName = selectedCourseAssetName) {
         player: {
             ...document.player,
             spawn: vector(document.player.spawn, "player.spawn"),
+            movement: { ...MovementDefaults, ...document.player.movement },
             collider: {
                 ...document.player.collider,
                 offset: vector(document.player.collider.offset, "player.collider.offset"),

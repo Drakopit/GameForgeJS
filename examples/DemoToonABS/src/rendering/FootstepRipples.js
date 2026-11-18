@@ -1,12 +1,15 @@
+import { WaterVisualSettings as Settings } from '../data/PresentationSettings.js';
+import { CombatVisualSettings } from '../data/PresentationSettings.js';
+import { Vector3D } from 'gameforgejs/core';
 import { Geometry3D, Mesh } from 'gameforgejs/3d';
 
 // Two reusable rings follow the feet; no particle allocation or separate clock.
 export class FootstepRipples extends Mesh {
     constructor(scene, actor, pond) {
-        const segments = 32;
-        const positions = new Float32Array(2 * (segments + 1) * 2 * 3);
+        const segments = Settings.footstepSegments;
+        const positions = new Float32Array(Settings.footstepRings * (segments + 1) * 2 * 3);
         const indices = [];
-        for (let ring = 0; ring < 2; ring++) {
+        for (let ring = 0; ring < Settings.footstepRings; ring++) {
             for (let step = 0; step < segments; step++) {
                 const start = ring * (segments + 1) * 2 + step * 2;
                 indices.push(start, start + 2, start + 1, start + 1, start + 2, start + 3);
@@ -24,25 +27,25 @@ export class FootstepRipples extends Mesh {
 
     OnUpdate() {
         const actor = this.actor;
+        const velocity = Vector3D.FromArray(actor.rigidbody.velocity);
         this.visible = actor.health.IsAlive() && this.pond.ContainsFeet(actor)
-            && Math.hypot(actor.rigidbody.velocity[0], actor.rigidbody.velocity[2]) > 0.1;
+            && Math.hypot(velocity.x, velocity.z) > CombatVisualSettings.movementThreshold;
         if (!this.visible) return;
         const { position, width, depth } = this.pond.definition;
-        const centerX = actor.transform.position[0] - position[0];
-        const centerZ = actor.transform.position[2] - position[2];
+        const center = Vector3D.FromArray(actor.transform.position).Subtract(Vector3D.FromArray(position));
         const phase = this.pond.surface.phase;
         let index = 0;
-        for (let ring = 0; ring < 2; ring++) {
-            const progress = (phase / (Math.PI * 2) * 4 + ring * 0.5) % 1;
-            const radius = 0.16 + progress * 0.4;
-            const thickness = (1 - progress) * 0.035;
+        for (let ring = 0; ring < Settings.footstepRings; ring++) {
+            const progress = (phase / (Math.PI * 2) * Settings.footstepCycles + ring * Settings.footstepPhaseOffset) % 1;
+            const radius = Settings.footstepStartRadius + progress * Settings.footstepExpansion;
+            const thickness = (1 - progress) * Settings.footstepThickness;
             for (let step = 0; step <= this.segments; step++) {
                 const angle = step / this.segments * Math.PI * 2;
                 for (const offset of [0, thickness]) {
-                    const x = Math.max(-width / 2, Math.min(width / 2, centerX + Math.cos(angle) * (radius + offset)));
-                    const z = Math.max(-depth / 2, Math.min(depth / 2, centerZ + Math.sin(angle) * (radius + offset)));
+                    const x = Math.max(-width / 2, Math.min(width / 2, center.x + Math.cos(angle) * (radius + offset)));
+                    const z = Math.max(-depth / 2, Math.min(depth / 2, center.z + Math.sin(angle) * (radius + offset)));
                     this.geometry.positions[index++] = x;
-                    this.geometry.positions[index++] = this.pond.surface.geometry.HeightAt(x, z, phase) + 0.02;
+                    this.geometry.positions[index++] = this.pond.surface.geometry.HeightAt(x, z, phase) + Settings.footstepLift;
                     this.geometry.positions[index++] = z;
                 }
             }

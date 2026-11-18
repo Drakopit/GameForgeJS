@@ -1,4 +1,7 @@
+import { Vector3D } from 'gameforgejs/core';
 import { Mesh, PrimitiveMesh, StandardMaterial, UnlitMaterial } from 'gameforgejs/3d';
+
+const BeaconPulse = Object.freeze({ speed: 4, amplitude: 0.09 });
 
 export class TrailGoal {
     constructor(scene, definition) {
@@ -67,10 +70,12 @@ export class TrailGoal {
 
     Update(time) {
         const goal = this.definition;
-        const pulse = 1 + Math.sin(time * 4) * 0.09;
+        const pulse = 1 + Math.sin(time * BeaconPulse.speed) * BeaconPulse.amplitude;
         this.goalRing.transform.SetScale(pulse, 1, pulse);
-        this.goalBeacon.transform.position[1] = goal.trigger.y + goal.beacon.offset.y
+        const position = Vector3D.FromArray(this.goalBeacon.transform.position);
+        position.y = goal.trigger.y + goal.beacon.offset.y
             + Math.sin(time * goal.beacon.bobSpeed) * goal.beacon.bobDistance;
+        this.goalBeacon.transform.SetPosition(position.x, position.y, position.z);
     }
 
     OnDestroy() {

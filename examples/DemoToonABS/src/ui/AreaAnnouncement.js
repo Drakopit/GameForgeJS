@@ -1,3 +1,4 @@
+import { AreaTitleSettings } from '../data/PresentationSettings.js';
 export class AreaAnnouncement {
     constructor(draw) {
         this.draw = draw;
@@ -16,7 +17,7 @@ export class AreaAnnouncement {
     }
 
     get opacity() {
-        const progress = Math.max(0, Math.min(1, (this.age - 2.5) / 1.5));
+        const progress = Math.max(0, Math.min(1, (this.age - AreaTitleSettings.holdSeconds) / AreaTitleSettings.fadeSeconds));
         return 1 - progress * progress * (3 - 2 * progress);
     }
 

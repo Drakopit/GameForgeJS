@@ -38,7 +38,8 @@
     "test:browser": "node tests/browser-smoke.cjs",
     "test:site": "node tests/site-browser.cjs",
     "build": "node cli/index.cjs build --root examples/DemoAdvanced --out ../../dist/DemoAdvanced",
-    "publish": "node cli/index.cjs build --root examples/DemoAdvanced --out ../../dist/DemoAdvanced"
+    "publish": "node cli/index.cjs build --root examples/DemoAdvanced --out ../../dist/DemoAdvanced",
+    "test:sky-trail": "node tests/sky-trail-browser.cjs"
   },
   "dependencies": {
     "acorn": "^8.19.0"

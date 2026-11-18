@@ -48,9 +48,8 @@ export class TrailCoins {
             const platform = this.platforms.platformById.get(coin.definition.platformId);
             const position = this.platforms.GetAttachmentPosition(coin.definition);
             coin.mesh.visible = platform?.active !== false;
-            coin.mesh.transform.position[0] = position.x;
-            coin.mesh.transform.position[1] = position.y + Math.sin(time * config.bobSpeed + index) * config.bobDistance;
-            coin.mesh.transform.position[2] = position.z;
+            position.y += Math.sin(time * config.bobSpeed + index) * config.bobDistance;
+            coin.mesh.transform.SetPosition(position.x, position.y, position.z);
             coin.mesh.transform.rotation.y += dt * config.spinSpeed;
         });
     }

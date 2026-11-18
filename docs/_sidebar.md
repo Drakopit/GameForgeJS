@@ -39,3 +39,6 @@
   - [Repository and project migration](migrations/repository-layout.md)
   - [External 2D editor contract](tools/world-editor-v4.md)
   - [External 3D editor contract](tools/scene-editor-3d.md)
+
+- [Code conventions](guides/code-conventions.md)
+- [Repository management](guides/repository-management.md)

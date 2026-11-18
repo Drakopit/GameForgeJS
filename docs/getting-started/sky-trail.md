@@ -96,3 +96,15 @@ Visual QA also caught reversed triangle winding on BeveledCube bevel faces and
 Ring surfaces; both now face their declared normals. Screen honors pixelArt:false
 so the 3D demo's HUD does not use pixelated CSS scaling. These fixes have dedicated
 geometry and browser coverage. Vector Swizzling remains the next separate task.
+
+
+## Shared math and tuning
+
+Facing uses MathExt.LerpAngle and camera following uses Vector3D.Lerp. Spatial
+updates use semantic vector components, converting at physics/render boundaries.
+Movement defaults, menu repeat/orbit, score rules and scenery proportions are named
+in data/TrailSettings.js. Existing course movement settings override the defaults.
+See [code conventions](../guides/code-conventions.md).
+
+Run `npm run test:sky-trail` for the four-course source/build regression, including
+menu gamepad navigation, preview resource reuse and platform-to-platform jumps.

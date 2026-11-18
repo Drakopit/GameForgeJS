@@ -2,6 +2,7 @@ export const Pond = {
     position: [4.5, 0.18, 2.5],
     movementMultiplier: 0.55,
     floorY: 0,
+    contactTolerance: 0.08,
     width: 3,
     depth: 3,
     segments: 20,

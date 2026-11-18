@@ -13,7 +13,7 @@
 import { Vector2D } from "./Vector2D.js";
 
 /**
- * General scalar and 2D interpolation helpers shared by demos.
+ * General scalar and angle interpolation helpers.
  */
 export class MathExt {
     constructor() {}
@@ -44,6 +44,19 @@ export class MathExt {
      */
     static Lerp(a, b, t) {
         return a + (b - a) * Math.min(Math.max(t, 0), 1);
+    }
+
+    /**
+     * Interpolates radians along the shortest arc, clamping t to 0..1.
+     * The result stays continuous around a and may lie outside -PI..PI.
+     * @param {number} a - Starting angle in radians.
+     * @param {number} b - Target angle in radians.
+     * @param {number} t - Interpolation factor.
+     * @returns {number} Interpolated angle in radians.
+     */
+    static LerpAngle(a, b, t) {
+        const difference = Math.atan2(Math.sin(b - a), Math.cos(b - a));
+        return a + difference * Math.min(Math.max(t, 0), 1);
     }
 
     /**
