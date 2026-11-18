@@ -132,3 +132,7 @@ application code. Check the migration output and run `doctor` afterward.
 See [Project creation](../getting-started/new-project.md) for file ownership
 and [Repository migration](../migrations/repository-layout.md) for moved
 runtime paths and the existing examples.
+
+Generated modules now extend Module and declare imports/declarations/exports. Add
+the class to the authored AppModule imports. Official service registration remains
+in the generated src/modules.js registry. See [game modules](../guides/game-modules.md).

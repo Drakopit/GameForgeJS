@@ -168,3 +168,10 @@ over one another to simulate template generation.
 Generated artifacts must be reproducible from these sources. When two files
 represent the same contract, define which is generated and check for drift
 instead of expecting both to be edited manually.
+
+## Game feature composition
+
+Class-based Module declarations group imports, owned classes and public exports.
+They preserve the Level/Screen/GameObject/Component workflow and are separate from
+selective distribution. See [game modules](guides/game-modules.md) for the lifecycle
+contract, generated AppModule and incremental factory migration.

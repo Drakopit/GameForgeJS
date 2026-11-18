@@ -4,7 +4,7 @@
 
 Public core entry point: gameforgejs/core.
 
-Documented exports: **49/50**.
+Documented exports: **50/51**.
 
 | Symbol | Kind | Summary |
 | --- | --- | --- |
@@ -45,10 +45,11 @@ Documented exports: **49/50**.
 | [`Logger`](#logger) | `class` | Console logging helpers for engine startup, diagnostics and HTTP requests. |
 | [`Mat4`](#mat4) | `class` | Dependency-free four-by-four matrix math utilities for Render3D. |
 | [`MathExt`](#mathext) | `class` | General scalar and angle interpolation helpers. |
+| [`Module`](#module) | `class` | Class-based feature composition with imports, declarations, exports and lifecycle. Levels, entities and components remain the owners of scene/gameplay behavior; the package manifest separately selects which framework source groups are distributed. |
 | [`Mouse`](#mouse) | `class` | Manages mouse input for the game framework. |
 | [`ObjectPool`](#objectpool) | `class` | Reuses inactive objects, such as projectiles and particles, to reduce allocations. |
 | [`reconstructPath`](#reconstructpath) | `function` | Reconstructs a discovered route from predecessor entries. |
-| [`resolveModules`](#resolvemodules) | `function` | Validate the complete module graph before running any setup code. |
+| [`resolveModules`](#resolvemodules) | `function` | Resolve module imports/dependencies and validate declarations before setup. |
 | [`ResourceManifestLoader`](#resourcemanifestloader) | `class` | Queues images, audio, shaders, models and JSON declared by game resource manifests. |
 | [`Store`](#store) | `class` | This class is part of the GameForgeJS framework and provides functionality to save and restore game state in the browser's local storage. |
 | [`Touch`](#touch) | `class` | Manages touch input for the game framework. |
@@ -1379,6 +1380,30 @@ Interpolates and snaps to b when the remaining difference is below threshold. Av
 
 **Returns:** `number`
 
+## Module
+
+`class` from [`src/core/Module.js`](../../../src/core/Module.js)
+
+Class-based feature composition with imports, declarations, exports and lifecycle. Levels, entities and components remain the owners of scene/gameplay behavior; the package manifest separately selects which framework source groups are distributed.
+
+**Parameters**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Unique module identifier. |
+| `[options]` | `Object` | Dependency and enablement settings. |
+| `[options.imports=[]` | `Array` | ] - Imported module classes or instances. |
+| `[options.declarations=[]` | `Function[]` | ] - Classes owned by this module. |
+| `[options.exports=[]` | `Function[]` | ] - Public classes, declared here or exported by imports. |
+| `[options.requires=[]` | `string[]` | ] - Required module identifiers. |
+| `[options.enabled=true]` | `boolean` | Whether frame hooks run. |
+
+### Methods
+
+#### `OnSetup()`
+
+Register services/loaders before the resource manifest is loaded.
+
 ## Mouse
 
 `class` from [`src/core/Input/Mouse.js`](../../../src/core/Input/Mouse.js)
@@ -1524,9 +1549,9 @@ Reconstructs a discovered route from predecessor entries.
 
 ## resolveModules
 
-`function` from [`src/core/Game.js`](../../../src/core/Game.js)
+`function` from [`src/core/ModuleGraph.js`](../../../src/core/ModuleGraph.js)
 
-Validate the complete module graph before running any setup code.
+Resolve module imports/dependencies and validate declarations before setup.
 
 ## ResourceManifestLoader
 

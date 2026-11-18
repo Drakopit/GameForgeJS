@@ -1,60 +1,67 @@
+import { HUDFrame } from 'gameforgejs/2d';
 import { AreaAnnouncement } from './AreaAnnouncement.js';
 import { HealthBar } from './HealthBar.js';
+
+const Layout = Object.freeze({
+    player: { x: 16, y: 16, width: 300, height: 96 },
+    health: { x: 92, y: 59, width: 204, height: 15 },
+    objective: { width: 230, height: 83, margin: 16 },
+    help: { x: 165, y: 175, width: 630, height: 290 },
+});
 
 export class ToonRoomHUD {
     constructor(ui) {
         this.draw = ui.Draw;
+        this.frame = new HUDFrame(this.draw);
         this.helpVisible = false;
-        this.healthBar = new HealthBar(this.draw);
+        this.healthBar = new HealthBar(this.frame, Layout.health);
         this.announcement = new AreaAnnouncement(this.draw);
     }
 
-    ShowArea(name) {
-        this.announcement.Show(name);
-    }
-
-    OnUpdate(dt, areaName) {
-        this.announcement.OnUpdate(dt, areaName);
-    }
-
-    ToggleHelp() {
-        this.helpVisible = !this.helpVisible;
-    }
+    ShowArea(name) { this.announcement.Show(name); }
+    OnUpdate(dt, areaName) { this.announcement.OnUpdate(dt, areaName); }
+    ToggleHelp() { this.helpVisible = !this.helpVisible; }
 
     Draw(level) {
-        this.draw.Color = '#173239';
-        this.draw.DrawRect(16, 16, 600, 112);
-        this.draw.Color = '#fff0ca';
-        this.draw.FontSize = '20px';
-        this.draw.DrawText(`Toon adventure — ${level.areaName}`, 30, 42);
-        this.draw.FontSize = '14px';
-        this.healthBar.Draw(level.player.health, 30, 76);
-        this.draw.Color = '#fff0ca';
-        this.draw.DrawText(`Life: ${level.player.health.hp}/${level.player.health.maxHp} | Defeated: ${level.defeatedCount}/${level.enemies.length} | H / Start: help`, 30, 66);
-        let status = `Follow the trail north | Space / X: strike (${level.player.attack.phase})`;
-        if (level.defeatedCount === level.enemies.length) status = 'Trail cleared — keep exploring! R / Y: restart';
-        if (level.player.waterContact.zone) status = 'Shallow water — slower movement | Space / X: strike';
-        if (level.result) status = `${level.result.toUpperCase()} — R / Y to restart`;
-        this.draw.DrawText(status, 30, 114);
+        const frame = this.frame;
+        frame.Panel(Layout.player);
+        frame.Badge('EX', 29, 31, 48);
+        frame.Text('EXPLORER', 92, 40, { size: 15, weight: 700, color: frame.theme.gold });
+        frame.Text('Guardião da trilha', 92, 53, { size: 10, color: frame.theme.muted });
+        this.healthBar.Draw(level.player.health);
+        frame.Text(`HP   ${level.player.attack.phase.toUpperCase()}`, 92, 94, { size: 11, color: frame.theme.muted });
+        const right = level.width - Layout.objective.width - Layout.objective.margin;
+        frame.Panel({ x: right, y: 16, width: Layout.objective.width, height: Layout.objective.height });
+        frame.Text('EXPEDIÇÃO  /  FLORESTA', right + 14, 36, { size: 10, color: frame.theme.gold, weight: 700 });
+        frame.Text(`${level.defeatedCount} / ${level.enemies.length} sentinelas`, right + 14, 57, { size: 17, weight: 700 });
+        frame.Meter(level.defeatedCount / level.enemies.length, { x: right + 14, y: 70, width: 202, height: 5 }, frame.theme.gold);
+        frame.Text(level.areaName, right + 14, 89, { size: 10, color: frame.theme.muted });
 
+        let status = 'Siga a trilha ao norte';
+        if (level.defeatedCount === level.enemies.length) status = 'Trilha concluída — explore livremente';
+        if (level.player.waterContact.zone) status = 'Água rasa — movimento reduzido';
+        if (level.result) status = 'Você caiu. R / Y para recomeçar';
+        frame.Panel({ x: 16, y: level.height - 56, width: 480, height: 40 });
+        frame.Text(status, 30, level.height - 31, { size: 13, weight: 700 });
+        frame.Text('Space / X  ATACAR     H / Start  AJUDA', level.width - 18, level.height - 24,
+            { size: 11, color: frame.theme.text, align: 'right' });
         this.announcement.Draw(level.width);
         if (this.helpVisible) this.DrawHelp();
     }
 
     DrawHelp() {
-        this.draw.Color = '#173239';
-        this.draw.DrawRect(180, 160, 600, 290);
-        this.draw.Color = '#fff0ca';
-        this.draw.FontSize = '24px';
-        this.draw.DrawText('Explore the forest trail', 208, 200);
-        this.draw.FontSize = '16px';
-        this.draw.DrawText('Move: WASD / arrows or left stick / D-pad', 208, 238);
-        this.draw.DrawText('Strike: Space / X (Xbox), Square (PS), Y (Nintendo)', 208, 268);
-        this.draw.DrawText('Help: H / Start / Options / + (game keeps running)', 208, 298);
-        this.draw.FontSize = '14px';
-        this.draw.DrawText('Restart: R / top face button | Bands: B / Select / Share / −', 208, 326);
-        this.draw.DrawText('Yellow: windup. Red: impact. Dodge, then strike during recovery.', 208, 362);
-        this.draw.DrawText('Enter the pond through its open left bank; shallow water slows you.', 208, 422);
-        this.draw.DrawText('Characters and forest: KayKit / Kay Lousberg (CC0).', 208, 396);
+        const frame = this.frame;
+        frame.Panel(Layout.help);
+        frame.Text('EXPEDIÇÃO NA FLORESTA', 189, 207, { size: 21, color: frame.theme.gold, weight: 700 });
+        const lines = [
+            'Mover: WASD / setas ou analógico esquerdo / D-pad',
+            'Atacar: Space / X (Xbox), Square (PS), Y (Nintendo)',
+            'Ajuda: H / Start / Options / + — o mundo continua ativo',
+            'Recomeçar: R / botão superior    Luz: B / Select / Share / Minus',
+            'Amarelo: preparação. Vermelho: impacto. Esquive e contra-ataque.',
+            'Entre no lago pela margem esquerda. A água rasa reduz a velocidade.',
+        ];
+        lines.forEach((text, index) => frame.Text(text, 189, 240 + index * 28, { size: 14, maxWidth: 580 }));
+        frame.Text('Personagens e floresta: KayKit / Kay Lousberg (CC0)', 189, 443, { size: 11, color: frame.theme.muted });
     }
 }

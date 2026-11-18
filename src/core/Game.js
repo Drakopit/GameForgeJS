@@ -1,38 +1,11 @@
+import { startModules } from './Module.js';
 import { EventEmitter } from "./EventEmitter.js";
 import { AssetManager } from "./Assets/AssetManager.js";
 import { ResourceManifestLoader } from "./Assets/ResourceManifestLoader.js";
 import { Config } from "./Config.js";
 
-/** Validate the complete module graph before running any setup code. */
-export function resolveModules(modules = []) {
-    const byId = new Map();
-    for (const module of modules) {
-        if (!module || typeof module.id !== "string" || !module.id || typeof module.setup !== "function") {
-            throw new TypeError("A game module needs a non-empty id and setup(context) function.");
-        }
-        if (byId.has(module.id)) throw new Error(`Duplicate game module: ${module.id}.`);
-        if (module.requires !== undefined && !Array.isArray(module.requires)) {
-            throw new TypeError(`Module '${module.id}' requires must be an array.`);
-        }
-        byId.set(module.id, module);
-    }
-    const ordered = [];
-    const visiting = new Set();
-    const visited = new Set();
-    function visit(id, path = []) {
-        if (visiting.has(id)) throw new Error(`Game module dependency cycle: ${[...path, id].join(" -> ")}.`);
-        if (visited.has(id)) return;
-        const module = byId.get(id);
-        if (!module) throw new Error(`Missing game module '${id}' required by '${path.at(-1)}'.`);
-        visiting.add(id);
-        for (const dependency of module.requires ?? []) visit(dependency, [...path, id]);
-        visiting.delete(id);
-        visited.add(id);
-        ordered.push(module);
-    }
-    for (const id of byId.keys()) visit(id);
-    return ordered;
-}
+import { resolveModules } from './ModuleGraph.js';
+export { resolveModules } from './ModuleGraph.js';
 
 /**
  * An independent game session. Browser services are created by optional modules.
@@ -115,6 +88,7 @@ export class Game {
                     this.context.manifest = await ResourceManifestLoader.Load(this.manifestPath, this.context.assets);
                 }
                 await this.beforeStart?.(this.context);
+                await startModules(ordered);
                 this.enterLevel();
                 this.initialized = true;
             }
@@ -174,7 +148,9 @@ export class Game {
                 this.currentLevel?.OnFixedUpdate?.(this.fixedStep);
                 this.accumulator -= this.fixedStep;
             }
+            this.events.emit("draw", gameDt);
             this.currentLevel?.OnDrawn?.();
+            this.events.emit("gui", gameDt);
             this.currentLevel?.OnGUI?.();
             this.events.emit("render", this.accumulator / this.fixedStep);
             this.events.emit("PostUpdate", timestamp);

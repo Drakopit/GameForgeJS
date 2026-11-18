@@ -75,3 +75,9 @@ Sky Trail now separates platform, player, coin, goal, checkpoint and camera owne
 It includes a timing variant, checkpoint recovery, jump buffering/grace and ScreenUI
 help. See [the demo guide](getting-started/sky-trail.md). Vector Swizzling is the next
 separate framework task; it is not implemented by this refactor.
+
+Game feature composition now uses class-based modules with imports, declarations
+and exports, independently of distribution manifests. Both engines share lifecycle
+phases for modules. Sky Trail and Toon ABS use the shared Canvas HUD primitives;
+the presentation page supports Portuguese and English with persisted selection.
+Vector Swizzling and the remaining full-game milestones stay on the roadmap.

@@ -1,7 +1,8 @@
+import { HUDFrame } from 'gameforgejs/2d';
 export class SkyTrailHelp {
     Draw(draw) {
-        draw.Color = '#102239';
-        draw.DrawRect(70, 140, 580, 260);
+        const frame = new HUDFrame(draw);
+        frame.Panel({ x: 70, y: 140, width: 580, height: 260 });
         draw.SetTextAlign('left');
         draw.FontSize = '22px';
         draw.Color = '#FFD76A';

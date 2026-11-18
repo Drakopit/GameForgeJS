@@ -1,3 +1,4 @@
+import { startModules } from './Module.js';
 import { Engine, LevelHandler } from "./Engine.js";
 import { Config } from "./Config.js";
 import { Input } from "./Input/Input.js";
@@ -77,6 +78,7 @@ export async function BootstrapGame({
             await beforeStart({ ...context, manifest, LevelHandler });
         }
 
+        await startModules(orderedModules);
         levels.forEach(level => LevelHandler.addLevel(level));
         Engine.OnStart();
 

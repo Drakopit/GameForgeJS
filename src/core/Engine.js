@@ -237,20 +237,25 @@ export class Engine extends Base {
             LevelHandler.current.FPS = fps.toFixed(2);
 
             // Chama os métodos da fase com checagem de segurança (Duck Typing seguro)
-            if (gameDeltaTime > 0 && typeof LevelHandler.current.OnUpdate === "function")
-                LevelHandler.current.OnUpdate(gameDeltaTime);
+            if (gameDeltaTime > 0) {
+                this.events.emit("update", gameDeltaTime);
+                if (typeof LevelHandler.current.OnUpdate === "function") LevelHandler.current.OnUpdate(gameDeltaTime);
+            }
 
             if (gameDeltaTime > 0) {
                 while (accumulator >= TIME_STEP) {
+                    this.events.emit("fixedUpdate", TIME_STEP);
                     if (typeof LevelHandler.current.OnFixedUpdate === "function")
                         LevelHandler.current.OnFixedUpdate(TIME_STEP);
                     accumulator -= TIME_STEP;
                 }
             }
 
+            this.events.emit("draw", gameDeltaTime);
             if (typeof LevelHandler.current.OnDrawn === "function")
                 LevelHandler.current.OnDrawn();
 
+            this.events.emit("gui", gameDeltaTime);
             if (typeof LevelHandler.current.OnGUI === "function")
                 LevelHandler.current.OnGUI();
         }

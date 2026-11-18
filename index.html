@@ -12,108 +12,111 @@
 	</head>
 
 	<body>
-		<a class="skip" href="#conteudo">Pular para o conteúdo</a>
+		<a class="skip" href="#conteudo"><span data-i18n="navigation.skip">Pular para o conteúdo</span></a>
 		<header class="header wrap">
-			<a class="brand" href="./" aria-label="GameForgeJS, início"><span class="brand-icon"
+			<a class="brand" href="./" aria-label="GameForgeJS, início" data-i18n-aria-label="a11y.home"><span class="brand-icon"
 					aria-hidden="true">G<span>F</span></span>GameForge<span class="accent">JS</span></a>
-			<nav aria-label="Navegação principal"><a href="#jogos">Demos</a><a href="docs/">Docs</a><a href="#framework">Framework</a><a
-					href="#evolucao">Evolução</a><a class="repo" href="https://github.com/Drakopit/GameForgeJS">GitHub ↗</a>
+			<nav aria-label="Navegação principal" data-i18n-aria-label="a11y.nav"><a href="#jogos">Demos</a><a href="docs/">Docs</a><a href="#framework">Framework</a><a
+					href="#evolucao"><span data-i18n="navigation.evolution">Evolução</span></a><a class="repo" href="https://github.com/Drakopit/GameForgeJS">GitHub ↗</a>
 			</nav>
+            <label class="language"><span data-i18n="language.label">Idioma</span>
+                <select id="site-language"><option value="pt-BR">Português</option><option value="en">English</option></select>
+            </label>
 		</header>
 		<main id="conteudo">
 			<section class="hero wrap">
 				<div class="hero-copy">
-					<p class="eyebrow"><span class="dot"></span> Framework experimental · 2D + 3D</p>
-					<h1>Seu jogo.<br>Seu código.<br><span class="accent">JavaScript.</span></h1>
-					<p class="lead">Do primeiro personagem a mundos próprios. Uma framework para criar jogos no navegador,
-						com classes, componentes e controle sobre o que você constrói.</p>
-					<div class="actions"><a class="button primary" href="#jogos">Explorar demos <span>↗</span></a><a
-							class="button secondary" href="#comecar">Começar um projeto</a></div>
-					<p class="fine">JavaScript nativo. Canvas 2D. WebGL2.<br>Node.js é uma ferramenta opcional de
-						desenvolvimento.</p>
+					<p class="eyebrow"><span class="dot"></span> <span data-i18n="hero.experimental">Framework experimental · 2D + 3D</span></p>
+					<h1><span data-i18n="hero.game">Seu jogo.</span><br><span data-i18n="hero.code">Seu código.</span><br><span class="accent">JavaScript.</span></h1>
+					<p class="lead"><span data-i18n="hero.intro">Do primeiro personagem a mundos próprios. Uma framework para criar jogos no navegador,
+						com classes, componentes e controle sobre o que você constrói.</span></p>
+					<div class="actions"><a class="button primary" href="#jogos"><span data-i18n="hero.explore">Explorar demos</span> <span>↗</span></a><a
+							class="button secondary" href="#comecar"><span data-i18n="hero.start">Começar um projeto</span></a></div>
+					<p class="fine"><span data-i18n="hero.native">JavaScript nativo. Canvas 2D. WebGL2.</span><br><span data-i18n="hero.node">Node.js é uma ferramenta opcional de
+						desenvolvimento.</span></p>
 				</div>
 				<figure class="hero-scene">
 					<div class="window-bar"><span><i></i><i></i><i></i></span><small>SKY TRAIL / DEMO 3D</small><span
-							class="live">NO NAVEGADOR</span></div>
-					<a href="Main.html?demo=mini3d" aria-label="Abrir a demo Sky Trail"><img src="site/sky-trail.jpg"
+							class="live"><span data-i18n="hero.browser">NO NAVEGADOR</span></span></div>
+					<a href="Main.html?demo=mini3d" aria-label="Abrir a demo Sky Trail" data-i18n-aria-label="a11y.sky"><img src="site/sky-trail.jpg"
 							alt="Sky Trail: personagem em plataformas suspensas com moedas, renderizado pela GameForgeJS"
-							width="1100" height="800" fetchpriority="high"></a>
-					<figcaption><span>Uma captura real da framework.</span><a href="Main.html?demo=mini3d">Jogar Sky Trail
-							↗</a></figcaption>
+							width="1100" height="800" fetchpriority="high" data-i18n-alt="image.sky"></a>
+					<figcaption><span><span data-i18n="hero.capture">Uma captura real da framework.</span></span><a href="Main.html?demo=mini3d"><span data-i18n="hero.play">Jogar Sky Trail
+							↗</span></a></figcaption>
 				</figure>
 			</section>
 			<div class="principles">
-				<div class="wrap"><span>Runtime independente</span><span>Herança + componentes</span><span>Configuração por
-						jogo</span><span>Ferramentas opcionais</span></div>
+				<div class="wrap"><span><span data-i18n="principles.runtime">Runtime independente</span></span><span><span data-i18n="principles.components">Herança + componentes</span></span><span><span data-i18n="principles.config">Configuração por
+						jogo</span></span><span><span data-i18n="principles.tooling">Ferramentas opcionais</span></span></div>
 			</div>
 
 			<section id="jogos" class="wrap section">
 				<div class="section-heading">
 					<div>
-						<p class="eyebrow">01 / Experimente</p>
-						<h2>O código ganha vida.</h2>
+						<p class="eyebrow"><span data-i18n="demos.eyebrow">01 / Experimente</span></p>
+						<h2><span data-i18n="demos.title">O código ganha vida.</span></h2>
 					</div>
-					<p>Exemplos jogáveis para explorar movimento, combate, câmera, renderização e regras de jogo. As demos
-						são experimentais.</p>
+					<p><span data-i18n="demos.description">Exemplos jogáveis para explorar movimento, combate, câmera, renderização e regras de jogo. As demos
+						são experimentais.</span></p>
 				</div>
 				<div class="demo-grid">
 					<a class="demo-card" href="Main.html?demo=advanced"><img src="site/platform-adventure.jpg"
-							alt="Demo de plataforma 2D em uma paisagem de neve" width="1100" height="800" loading="lazy">
-						<div class="card-copy"><span class="tag">2D · PLATAFORMA / RPG</span>
+							alt="Demo de plataforma 2D em uma paisagem de neve" width="1100" height="800" loading="lazy" data-i18n-alt="image.platformer">
+						<div class="card-copy"><span class="tag"><span data-i18n="demos.platformerTag">2D · PLATAFORMA / RPG</span></span>
 							<h3>Platform Adventure <span>↗</span></h3>
-							<p>Combos, hitboxes, inventário, habilidades e fases descritas por manifests.</p>
+							<p><span data-i18n="demos.platformer">Combos, hitboxes, inventário, habilidades e fases descritas por manifests.</span></p>
 						</div>
 					</a>
 					<a class="demo-card" href="Main.html?demo=mini3d"><img src="site/sky-trail.jpg"
 							alt="Plataformas, moedas e personagem da demo Sky Trail" width="1100" height="800"
-							loading="lazy">
-						<div class="card-copy"><span class="tag">3D · PLATAFORMA</span>
+							loading="lazy" data-i18n-alt="image.skyCard">
+						<div class="card-copy"><span class="tag"><span data-i18n="demos.skyTag">3D · PLATAFORMA</span></span>
 							<h3>Sky Trail <span>↗</span></h3>
-							<p>Quatro expedições, menu 3D com gamepad, checkpoints e plataformas móveis.</p>
+							<p><span data-i18n="demos.sky">Quatro expedições, menu 3D com gamepad, checkpoints e plataformas móveis.</span></p>
 						</div>
 					</a>
                     <a class="demo-card" href="Main.html?demo=toonabs"><img src="site/toon-adventure.jpg"
-                            alt="Cavaleiro Toon junto à água rasa em uma floresta com sentinelas" width="1100" height="800" loading="lazy">
-                        <div class="card-copy"><span class="tag">3D · TOON / COMBATE ABS</span>
+                            alt="Cavaleiro Toon junto à água rasa em uma floresta com sentinelas" width="1100" height="800" loading="lazy" data-i18n-alt="image.toon">
+                        <div class="card-copy"><span class="tag"><span data-i18n="demos.toonTag">3D · TOON / COMBATE ABS</span></span>
                             <h3>Toon Adventure <span>↗</span></h3>
-                            <p>Personagens animados, cinco sentinelas, três áreas e água rasa com ondulações.</p>
+                            <p><span data-i18n="demos.toon">Personagens animados, cinco sentinelas, três áreas e água rasa com ondulações.</span></p>
                         </div>
                     </a>
                 </div>
-                <div class="demo-links"><a href="Main.html?demo=tactical"><span>Estratégia por turnos</span>Tactical RPG
-						↗</a><a href="Main.html?demo=fighting2d"><span>Combate local</span>Fighting 2D ↗</a><a
-						href="Main.html?demo=solar3d"><span>Materiais e iluminação</span>Sistema solar ↗</a><a
-						href="Main.html"><span>Mais experimentos</span>Todas as demos ↗</a></div>
-				<p class="fine">As demos são pequenos jogos experimentais. Os cursos completos e as próximas metas estão descritos abaixo.</p>
+                <div class="demo-links"><a href="Main.html?demo=tactical"><span><span data-i18n="demos.strategy">Estratégia por turnos</span></span>Tactical RPG
+						↗</a><a href="Main.html?demo=fighting2d"><span><span data-i18n="demos.combat">Combate local</span></span>Fighting 2D ↗</a><a
+						href="Main.html?demo=solar3d"><span><span data-i18n="demos.materials">Materiais e iluminação</span></span><span data-i18n="demos.solar">Sistema solar ↗</span></a><a
+						href="Main.html"><span><span data-i18n="demos.more">Mais experimentos</span></span><span data-i18n="demos.all">Todas as demos ↗</span></a></div>
+				<p class="fine"><span data-i18n="demos.note">As demos são pequenos jogos experimentais. Os cursos completos e as próximas metas estão descritos abaixo.</span></p>
 			</section>
 
 			<section id="framework" class="framework section">
 				<div class="wrap framework-grid">
 					<div>
-						<p class="eyebrow">02 / Uma base, não uma caixa-preta</p>
-						<h2>A framework cuida<br>da estrutura.<br><span class="muted">Você cria as regras.</span></h2>
-						<p class="lead">Níveis organizam a cena. Entidades recebem comportamentos. Telas e renderizadores
-							cuidam da apresentação. Evolua o jogo sem abandonar as classes que já funcionam.</p><a
+						<p class="eyebrow"><span data-i18n="architecture.eyebrow">02 / Uma base, não uma caixa-preta</span></p>
+						<h2><span data-i18n="architecture.title">A framework cuida</span><br><span data-i18n="architecture.structure">da estrutura.</span><br><span class="muted"><span data-i18n="architecture.rules">Você cria as regras.</span></span></h2>
+						<p class="lead"><span data-i18n="architecture.description">Níveis organizam a cena. Entidades recebem comportamentos. Telas e renderizadores
+							cuidam da apresentação. Evolua o jogo sem abandonar as classes que já funcionam.</span></p><a
 							class="text-link"
-							href="https://github.com/Drakopit/GameForgeJS/blob/master/docs/architecture.md">Entender
-							a arquitetura da framework ↗</a>
+							href="https://github.com/Drakopit/GameForgeJS/blob/master/docs/architecture.md"><span data-i18n="architecture.link">Entender
+							a arquitetura da framework ↗</span></a>
 					</div>
 					<div class="code-panel">
-						<div class="window-bar"><small>PADRÃO DA FRAMEWORK / MAIN.JS</small></div>
+						<div class="window-bar"><small><span data-i18n="architecture.pattern">PADRÃO DA FRAMEWORK / MAIN.JS</span></small></div>
 						<pre><code><span class="syntax">import</span> { BootstrapGame }
 	<span class="syntax">from</span> <span class="string">"gameforgejs/core"</span>;
-	<span class="syntax">import</span> { module2D }
-	<span class="syntax">from</span> <span class="string">"gameforgejs/2d"</span>;
+	<span class="syntax">import</span> { AppModule }
+	<span class="syntax">from</span> <span class="string">"./src/modules/AppModule.js"</span>;
 	<span class="syntax">import</span> { FirstLevel }
 	<span class="syntax">from</span> <span class="string">"./src/levels/FirstLevel.js"</span>;
 
 	<span class="function">BootstrapGame</span>({
-	modules: [module2D()],
+	modules: [AppModule],
 	configPath: <span class="string">"./config/game.config.json"</span>,
 	manifestPath: <span class="string">"./config/resources.json"</span>,
 	levels: [<span class="syntax">new</span> FirstLevel()],
 	});</code></pre>
-						<p>Exemplo do runtime modular. O template configura o import map e fornece o nível inicial.</p>
+						<p><span data-i18n="architecture.example">Exemplo do runtime modular. O template configura o import map e fornece o nível inicial.</span></p>
 					</div>
 				</div>
 			</section>
@@ -121,63 +124,64 @@
 			<section id="evolucao" class="wrap section">
 				<div class="section-heading">
 					<div>
-						<p class="eyebrow">03 / Evolução com propósito</p>
-						<h2>Mais reutilização.<br>A mesma essência.</h2>
+						<p class="eyebrow"><span data-i18n="progress.eyebrow">03 / Evolução com propósito</span></p>
+						<h2><span data-i18n="progress.reuse">Mais reutilização.</span><br><span data-i18n="progress.essence">A mesma essência.</span></h2>
 					</div>
-					<p>A modularização organiza a distribuição e as extensões. O caminho principal continua sendo
-						<code>BootstrapGame</code>, níveis, entidades e componentes.</p>
+					<p><span data-i18n="progress.intro">A modularização organiza a distribuição e as extensões. O caminho principal continua sendo</span>
+						<code>BootstrapGame</code><span data-i18n="progress.classes">, níveis, entidades e componentes.</span></p>
 				</div>
 				<div class="feature-grid">
-					<article><span class="status">DISPONÍVEL NO REPOSITÓRIO</span>
-						<h3>Publique o necessário.</h3>
-						<p>Selecione grupos de runtime e addons em <code>gameforgejs.package.json</code>. O build inclui as
-							dependências entre grupos, sem reescrever seu jogo.</p>
+					<article><span class="status"><span data-i18n="progress.available">DISPONÍVEL NO REPOSITÓRIO</span></span>
+						<h3><span data-i18n="progress.publish">Publique o necessário.</span></h3>
+						<p><span data-i18n="progress.select">Selecione grupos de runtime e addons em</span> <code>gameforgejs.package.json</code><span data-i18n="progress.dependencies">. O build inclui as
+							dependências entre grupos, sem reescrever seu jogo.</span></p>
 					</article>
-					<article><span class="status">ADDONS EM USO NAS DEMOS</span>
-						<h3>Reutilize comportamentos.</h3>
-						<p>Parallax, máquina de estados e movimento de plataforma extraídos das demos. Classes que usam os serviços da framework, sem
-							inicializar uma segunda engine.</p>
+					<article><span class="status"><span data-i18n="progress.addonStatus">ADDONS EM USO NAS DEMOS</span></span>
+						<h3><span data-i18n="progress.behaviors">Reutilize comportamentos.</span></h3>
+						<p><span data-i18n="progress.addons">Parallax, máquina de estados e movimento de plataforma extraídos das demos. Classes que usam os serviços da framework, sem
+							inicializar uma segunda engine.</span></p>
 					</article>
-					<article><span class="status planned">META FINAL</span>
-						<h3>Do zero ao jogo completo.</h3>
-						<p>Checkpoints já disponíveis para combate ABS, modelos animados e água rasa. A meta continua: aventura Toon completa e plataforma 2D com pelo menos 20
-							fases e inimigos com comportamentos variados.</p>
+					<article><span class="status planned"><span data-i18n="progress.final">META FINAL</span></span>
+						<h3><span data-i18n="progress.complete">Do zero ao jogo completo.</span></h3>
+						<p><span data-i18n="progress.goal">Checkpoints já disponíveis para combate ABS, modelos animados e água rasa. A meta continua: aventura Toon completa e plataforma 2D com pelo menos 20
+							fases e inimigos com comportamentos variados.</span></p>
 					</article>
 				</div>
-				<p class="roadmap-note">O Zero to Hero ainda não está concluído. Jogos, códigos, assets, lições e validação
-					serão finalizados em conjunto ao término das modificações.</p>
+				<p class="roadmap-note"><span data-i18n="progress.course">O Zero to Hero ainda não está concluído. Jogos, códigos, assets, lições e validação
+					serão finalizados em conjunto ao término das modificações.</span></p>
 				<a class="text-link"
-					href="https://github.com/Drakopit/GameForgeJS/blob/master/docs/development-roadmap.md">Acompanhar
-					o roteiro de desenvolvimento ↗</a>
+					href="https://github.com/Drakopit/GameForgeJS/blob/master/docs/development-roadmap.md"><span data-i18n="progress.roadmap">Acompanhar
+					o roteiro de desenvolvimento ↗</span></a>
 			</section>
 
 			<section id="comecar" class="start section">
 				<div class="wrap start-grid">
 					<div>
-						<p class="eyebrow">04 / Seu próximo projeto</p>
-						<h2>Comece pequeno.<br>Construa algo seu.</h2>
-						<p>Comece pelo template, escolha os módulos necessários e evolua seu jogo em passos pequenos. As demos acima usam esse mesmo runtime.</p>
+						<p class="eyebrow"><span data-i18n="start.eyebrow">04 / Seu próximo projeto</span></p>
+						<h2><span data-i18n="start.small">Comece pequeno.</span><br><span data-i18n="start.own">Construa algo seu.</span></h2>
+						<p><span data-i18n="start.intro">Comece pelo template, escolha os módulos necessários e evolua seu jogo em passos pequenos. As demos acima usam esse mesmo runtime.</span></p>
 						<div class="actions"><a class="button primary"
-								href="https://github.com/Drakopit/GameForgeJS/tree/master/docs">Documentação ↗</a><a class="text-link"
-								href="https://github.com/Drakopit/GameForgeJS/tree/master">Explorar o
-								código ↗</a></div>
+								href="https://github.com/Drakopit/GameForgeJS/tree/master/docs"><span data-i18n="start.docs">Documentação ↗</span></a><a class="text-link"
+								href="https://github.com/Drakopit/GameForgeJS/tree/master"><span data-i18n="start.source">Explorar o
+								código ↗</span></a></div>
 					</div>
-					<div class="terminal"><span class="terminal-label">NO SEU TERMINAL</span>
+					<div class="terminal"><span class="terminal-label"><span data-i18n="start.terminal">NO SEU TERMINAL</span></span>
 						<pre><code>git clone --branch master \
   https://github.com/Drakopit/GameForgeJS.git
 cd GameForgeJS
 npm ci
 npm start</code></pre>
-						<p>Depois, visite <code>/examples/showcase/index.html</code><br>no endereço informado pelo servidor.
+						<p><span data-i18n="start.visit">Depois, visite</span> <code>/examples/showcase/index.html</code><br><span data-i18n="start.server">no endereço informado pelo servidor.</span>
 						</p>
 					</div>
 				</div>
 			</section>
 		</main>
 		<footer class="wrap footer"><a class="brand" href="./">GameForge<span class="accent">JS</span></a>
-			<p>Uma framework em evolução. Feita para aprender, experimentar e criar.</p><a
-				href="https://github.com/Drakopit/GameForgeJS">Código no GitHub ↗</a>
+			<p><span data-i18n="footer.description">Uma framework em evolução. Feita para aprender, experimentar e criar.</span><br><span data-i18n="footer.author">Criada por Patrick Faustino Camello.</span></p><a
+				href="https://github.com/Drakopit/GameForgeJS"><span data-i18n="footer.source">Código no GitHub ↗</span></a>
 		</footer>
+	<script type="module" src="site/main.js"></script>
 	</body>
 
 </html>

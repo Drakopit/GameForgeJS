@@ -1,15 +1,14 @@
 export class HealthBar {
-    constructor(draw) {
-        this.draw = draw;
+    constructor(frame, bounds) {
+        this.frame = frame;
+        this.bounds = bounds;
     }
 
-    Draw(health, x, y, width = 180) {
-        const fraction = Math.max(0, Math.min(1, health.hp / health.maxHp));
-        this.draw.Color = '#fff0ca';
-        this.draw.DrawRect(x, y, width, 18);
-        this.draw.Color = '#342f3d';
-        this.draw.DrawRect(x + 2, y + 2, width - 4, 14);
-        this.draw.Color = fraction <= 0.4 ? '#f07868' : '#64d99b';
-        this.draw.DrawRect(x + 2, y + 2, (width - 4) * fraction, 14);
+    Draw(health) {
+        const fraction = health.hp / health.maxHp;
+        this.frame.Meter(fraction, this.bounds, fraction <= 0.4 ? this.frame.theme.red : this.frame.theme.green);
+        const { x, y, width, height } = this.bounds;
+        this.frame.Text(`${health.hp} / ${health.maxHp}`, x + width / 2, y + height - 2,
+            { size: 10, weight: 700, align: 'center' });
     }
 }

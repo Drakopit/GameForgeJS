@@ -91,7 +91,7 @@ function generate(root, kind, name, options = {}) {
     const is3d = project.template === 'minimal-3d';
     let content;
     if (kind === 'module') {
-        content = `export function ${name}() {\n    return {\n        id: '${name}',\n        setup(context) {\n            const update = dt => { /* Update this module using dt in seconds. */ };\n            context.events.on('update', update);\n            return () => context.events.off('update', update);\n        },\n    };\n}\n`;
+        content = `import { Module } from 'gameforgejs/core';\n\nexport class ${name} extends Module {\n    constructor() {\n        super('${name}', {\n            imports: [],\n            declarations: [],\n            exports: [],\n        });\n    }\n\n    OnSetup(context) {\n        // Register game-wide services/loaders here, before assets load.\n    }\n\n    OnStart(context) {\n        // Assets are ready. Levels still own scenes and screens.\n    }\n\n    OnUpdate(dt) {}\n\n    OnFixedUpdate(dt) {}\n\n    OnDestroy() {\n        // Release resources owned by this module.\n    }\n}\n`;
     } else if (kind === 'entity' && is3d) {
         content = `import { Base } from 'gameforgejs/core';\nimport { Mesh, PrimitiveMesh, UnlitMaterial } from 'gameforgejs/3d';\n\nexport class ${name} extends Base {\n    constructor() {\n        super();\n        this.mesh = new Mesh({\n            geometry: PrimitiveMesh.Cube(1),\n            material: new UnlitMaterial({ color: '#70baff' }),\n        });\n    }\n\n    OnUpdate(dt) {\n        this.mesh.transform.rotation.y += dt;\n    }\n}\n`;
     } else if (kind === 'entity') {

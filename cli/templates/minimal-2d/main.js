@@ -1,5 +1,5 @@
 import { BootstrapGame } from 'gameforgejs/core';
-import { createModules } from './src/modules.js';
+import { AppModule } from './src/modules/AppModule.js';
 import { FirstLevel } from './src/levels/FirstLevel.js';
 
 const status = document.querySelector('#status');
@@ -8,7 +8,7 @@ try {
     const game = await BootstrapGame({
         configPath: new URL('./config/game.config.json', import.meta.url).href,
         manifestPath: new URL('./config/resources.json', import.meta.url).href,
-        modules: createModules(),
+        modules: [AppModule],
         levels: [new FirstLevel()],
     });
     status.textContent = 'Ready — move with WASD or the arrow keys.';

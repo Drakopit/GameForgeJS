@@ -71,10 +71,10 @@ async function inspectToonPolish(page, screenshotPath) {
             level.hud.helpVisible = false;
             level.OnDrawn(); level.OnGUI();
             const context = level.ui.Draw.screen.Context;
-            const fullPixel = Array.from(context.getImageData(175, 83, 1, 1).data);
+            const fullPixel = Array.from(context.getImageData(level.hud.healthBar.bounds.x + level.hud.healthBar.bounds.width * 0.8, level.hud.healthBar.bounds.y + 5, 1, 1).data);
             level.player.health.Damage(3, level.enemies[0]);
             level.OnDrawn(); level.OnGUI();
-            const hurtPixel = Array.from(context.getImageData(175, 83, 1, 1).data);
+            const hurtPixel = Array.from(context.getImageData(level.hud.healthBar.bounds.x + level.hud.healthBar.bounds.width * 0.8, level.hud.healthBar.bounds.y + 5, 1, 1).data);
             return { partialSpeed, fullSpeed, normalizedFacing, dpadSpeed, attack, helpToggled, heldHelpStable,
                 bandsChanged, reset, disconnectedStops, holdOpacity, fadeOpacity, endOpacity, nextArea, nextOpacity,
                 reentry, fullPixel, hurtPixel, skyLoaded: level.scene.skybox.image.width > 0,

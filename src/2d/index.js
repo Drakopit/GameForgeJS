@@ -1,3 +1,4 @@
+export { HUDFrame } from './UI/HUDFrame.js';
 export * from "../core/index.js";
 export { module2D } from "./Module2D.js";
 

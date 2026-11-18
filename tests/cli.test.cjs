@@ -86,6 +86,10 @@ test('generated scaffolds follow the selected project inheritance pattern', t =>
     generate(root2d, 'level', 'ForestLevel');
     generate(root2d, 'screen', 'ForestScreen');
     generate(root2d, 'entity', 'ForestPlayer');
+    generate(root2d, 'module', 'ForestModule');
+    const moduleSource = read(path.join(root2d, 'src/modules/ForestModule.js'));
+    assert.match(moduleSource, /extends Module/);
+    for (const field of ['imports', 'declarations', 'exports', 'OnStart', 'OnFixedUpdate', 'OnDestroy']) assert.ok(moduleSource.includes(field));
     assert.match(read(path.join(root2d, 'src/levels/ForestLevel.js')), /extends Level/);
     assert.match(read(path.join(root2d, 'src/screens/ForestScreen.js')), /extends Level/);
     assert.match(read(path.join(root2d, 'src/entities/ForestPlayer.js')), /extends GameObject/);

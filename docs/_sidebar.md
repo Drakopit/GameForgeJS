@@ -42,3 +42,6 @@
 
 - [Code conventions](guides/code-conventions.md)
 - [Repository management](guides/repository-management.md)
+
+- [Game module classes](guides/game-modules.md)
+- [Site localization](guides/site-localization.md)
