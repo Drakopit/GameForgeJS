@@ -26,7 +26,9 @@ async function main() {
                 }
                 const level = await page.evaluate(async () => (await import('gameforgejs/core')).LevelHandler.current.constructor.name);
                 assert.ok(!/Menu|Selector/.test(level), `Capture did not reach gameplay: ${level}`);
-                await page.screenshot({ path: path.join(root, `site/${name}.jpg`), type: 'jpeg', quality: 82 });
+                const canvas = await page.locator('canvas').first().boundingBox();
+                assert.ok(canvas, 'Demo canvas is missing');
+                await page.screenshot({ path: path.join(root, `site/${name}.jpg`), type: 'jpeg', quality: 82, clip: canvas });
             }
             await page.close();
         }
