@@ -2,12 +2,13 @@
   {
     "id": "toon-adventure-3d",
     "name": "Toon Adventure 3D",
-    "description": "Three connected areas, five sentries, animated characters and interactive shallow water.",
+    "description": "A Toon ABS sandbox with two large lakes, linked warp gates, five sentries and shallow-water interaction.",
     "path": "toon-adventure-3d/index.html",
     "dimension": "3D",
     "aliases": [
       "toonabs"
-    ]
+    ],
+    "screenshot": "site/examples/toon-adventure-3d.jpg"
   },
   {
     "id": "platformer-2d",
@@ -17,7 +18,8 @@
     "dimension": "2D",
     "aliases": [
       "platformer"
-    ]
+    ],
+    "screenshot": "site/examples/platformer-2d.jpg"
   },
   {
     "id": "movement-collision-2d",
@@ -27,7 +29,8 @@
     "dimension": "2D",
     "aliases": [
       "immature"
-    ]
+    ],
+    "screenshot": "site/examples/movement-collision-2d.jpg"
   },
   {
     "id": "component-adventure-2d",
@@ -39,17 +42,19 @@
       "adventure2d",
       "adventure",
       "zelda"
-    ]
+    ],
+    "screenshot": "site/examples/component-adventure-2d.jpg"
   },
   {
     "id": "platform-adventure-2d",
     "name": "Platform Adventure 2D",
-    "description": "A platform/RPG showcase with composed manifests, inventory, skills, and campaign progression.",
+    "description": "Platform combat, patrol and pursuit AI, line of sight, inventory, skills and manifest-authored stages.",
     "path": "platform-adventure-2d/index.html",
     "dimension": "2D",
     "aliases": [
       "advanced"
-    ]
+    ],
+    "screenshot": "site/examples/platform-adventure-2d.jpg"
   },
   {
     "id": "tactical-rpg-2d",
@@ -59,7 +64,8 @@
     "dimension": "2D",
     "aliases": [
       "tactical"
-    ]
+    ],
+    "screenshot": "site/examples/tactical-rpg-2d.jpg"
   },
   {
     "id": "fighting-2d",
@@ -70,7 +76,8 @@
     "aliases": [
       "fighting2d",
       "fighting"
-    ]
+    ],
+    "screenshot": "site/examples/fighting-2d.jpg"
   },
   {
     "id": "puzzle-battle-2d",
@@ -80,7 +87,8 @@
     "dimension": "2D",
     "aliases": [
       "streetfightpuzzle"
-    ]
+    ],
+    "screenshot": "site/examples/puzzle-battle-2d.jpg"
   },
   {
     "id": "renderer-3d",
@@ -90,7 +98,8 @@
     "dimension": "3D",
     "aliases": [
       "demo3d"
-    ]
+    ],
+    "screenshot": "site/examples/renderer-3d.jpg"
   },
   {
     "id": "solar-system-3d",
@@ -101,7 +110,8 @@
     "aliases": [
       "solar3d",
       "solar"
-    ]
+    ],
+    "screenshot": "site/examples/solar-system-3d.jpg"
   },
   {
     "id": "sky-trail-3d",
@@ -111,7 +121,8 @@
     "dimension": "3D",
     "aliases": [
       "mini3d"
-    ]
+    ],
+    "screenshot": "site/examples/sky-trail-3d.jpg"
   },
   {
     "id": "online-sandbox-2d",
@@ -123,7 +134,8 @@
       "online",
       "mmo",
       "terraria"
-    ]
+    ],
+    "screenshot": "site/examples/online-sandbox-2d.jpg"
   },
   {
     "id": "addons-2d",
@@ -133,7 +145,8 @@
     "dimension": "2D",
     "aliases": [
       "addons"
-    ]
+    ],
+    "screenshot": "site/examples/addons-2d.jpg"
   },
   {
     "id": "touch-garden-2d",
@@ -144,6 +157,7 @@
     "aliases": [
       "touch",
       "mobile"
-    ]
+    ],
+    "screenshot": "site/examples/touch-garden-2d.jpg"
   }
 ]

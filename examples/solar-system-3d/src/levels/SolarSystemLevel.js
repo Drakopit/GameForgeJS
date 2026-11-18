@@ -1,3 +1,5 @@
+import { InfoPanel } from 'gameforgejs/2d';
+import { Vector3D } from 'gameforgejs/core';
 import { ActionManager } from "gameforgejs/core";
 import { AssetManager } from "gameforgejs/core";
 import {
@@ -38,6 +40,12 @@ export class SolarSystemLevel extends Level3D {
     }
 
     BuildScene() {
+        this.help = new InfoPanel(this.ui.Draw, { title: 'SOLAR SYSTEM / CONTROLS', lines: [
+            'WASD / arrows or left stick / D-pad: orbit and zoom.',
+            'H / Start: toggle this guide. Escape / B: back.',
+            'Orbit distances and planet sizes are illustrative.',
+            'Procedural materials, point lighting, rings and a moon.',
+        ] });
         this.camera = new PerspectiveCamera({
             fov: 58,
             aspect: this.width / this.height,
@@ -166,6 +174,7 @@ export class SolarSystemLevel extends Level3D {
 
     OnUpdate(dt) {
         super.OnUpdate(dt);
+        if (ActionManager.IsActionDown('HELP')) this.help.Toggle();
         const delta = dt || 0.016;
         this.time += delta;
 
@@ -199,11 +208,11 @@ export class SolarSystemLevel extends Level3D {
 
         if (this.moon) {
             this.moon.angle += delta * 1.8;
-            const parent = this.moon.parent.transform.position;
+            const parent = Vector3D.FromArray(this.moon.parent.transform.position);
             this.moon.mesh.transform.SetPosition(
-                parent[0] + Math.cos(this.moon.angle) * 0.96,
+                parent.x + Math.cos(this.moon.angle) * 0.96,
                 0.08,
-                parent[2] + Math.sin(this.moon.angle) * 0.96,
+                parent.z + Math.sin(this.moon.angle) * 0.96,
             );
         }
 
@@ -236,6 +245,7 @@ export class SolarSystemLevel extends Level3D {
         draw.DrawText("Sistema Solar - Render3D", 28, 46);
         draw.Color = "#DDE7FF";
         draw.FontSize = "14px";
-        draw.DrawText("Setas/WASD: orbitar e zoom | Esc/B: voltar", 28, 74);
+        draw.DrawText("WASD / stick: orbit + zoom | H / Start: help", 28, 74);
+        this.help.OnDrawn();
     }
 }

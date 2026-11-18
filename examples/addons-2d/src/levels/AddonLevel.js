@@ -1,5 +1,5 @@
 import { Level, AssetManager } from 'gameforgejs/core';
-import { Screen, Draw } from 'gameforgejs/2d';
+import { Screen, Draw, HUDFrame } from 'gameforgejs/2d';
 import { ParallaxLayer2D } from 'gameforgejs/addons/parallax';
 import { PatrolActor } from '../entities/PatrolActor.js';
 
@@ -14,6 +14,7 @@ export class AddonLevel extends Level {
         const { width, height } = context.config.screen;
         this.screen = new Screen(this.TelaId, width, height, { config: context.config });
         this.draw = new Draw(this.screen);
+        this.hud = new HUDFrame(this.draw);
         const assets = context.assets ?? AssetManager.instance;
         this.layers = [
             new ParallaxLayer2D(this.screen, { sprite: 'hills', speedX: -12 }, { assets }),
@@ -36,12 +37,13 @@ export class AddonLevel extends Level {
     }
     OnGUI() {
         super.OnGUI();
-        this.draw.Color = '#183d42';
-        this.draw.FontSize = '20px';
-        this.draw.DrawText(`State: ${this.actor.label}`, 24, 36);
-        this.draw.FontSize = '14px';
-        this.draw.DrawText('Hills: 12 px/s  |  Trees: 40 px/s', 24, 60);
+        this.hud.Panel({ x: 12, y: 12, width: 600, height: 108 });
+        this.hud.Text('ADDON BUILDING BLOCKS', 28, 40, { size: 20, color: this.hud.theme.gold, weight: 700 });
+        this.hud.Text(`State: ${this.actor.label} / parallax + state machine`, 28, 66, { size: 14 });
+        this.hud.Text('No input needed. Watch patrol/rest and the different layer speeds.', 28, 88, { size: 13 });
+        this.hud.Text('Hills: 12 px/s / Trees: 40 px/s', 28, 108, { size: 11, color: this.hud.theme.muted });
     }
+
     OnDestroy() {
         this.layers.forEach(layer => layer.Dispose());
         this.layers = [];

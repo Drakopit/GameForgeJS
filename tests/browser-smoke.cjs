@@ -1,3 +1,6 @@
+const { inspectEngineInfo } = require('./browser/engine-info.cjs');
+const { inspectToonSandbox } = require('./browser/toon-sandbox.cjs');
+const { inspectPlatformAdventureAI } = require('./browser/platform-adventure-ai.cjs');
 const { inspectPuzzleInput } = require('./browser/puzzle-input.cjs');
 const { inspectCatalogAliases } = require('./browser/catalog-aliases.cjs');
 const { inspectTouchGarden } = require('./browser/touch-garden.cjs');
@@ -37,14 +40,15 @@ async function inspect(browser, url, name, { starter = false, play = false } = {
     page.on('response', response => { if (response.status() >= 400 && !response.url().endsWith('/favicon.ico')) errors.add(`HTTP ${response.status()}: ${response.url()}`); });
     try {
         await page.goto(url, { waitUntil: 'networkidle', timeout: 30000 });
-        if (starter) {
-            await page.locator('#status').filter({ hasText: 'Ready' }).waitFor({ timeout: 10000 });
-        } else {
-            await page.waitForFunction(async () => (await import('gameforgejs/core')).Engine.running, null, { timeout: 15000 });
-        }
+        await page.waitForFunction(async () => (await import('gameforgejs/core')).Engine.running, null, { timeout: 15000 });
+        assert.equal(await page.locator('body').evaluate(body => [...body.children].some(element => !['SCRIPT', 'CANVAS'].includes(element.tagName))), false,
+            'Game UI escaped the engine canvas');
         await page.waitForTimeout(500);
         const dimensions = await page.locator('canvas').evaluateAll(canvases => canvases.map(canvas => [canvas.width, canvas.height]));
         assert.ok(dimensions.some(([width, height]) => width > 0 && height > 0), 'No canvas with a nonzero size');
+        if (['-renderer-3d', '-solar-system-3d', '-platformer-2d'].some(id => name.endsWith(id))) {
+            await inspectEngineInfo(page, { select: name.endsWith('-platformer-2d') });
+        }
         if (name.endsWith('-sky-trail-3d')) {
             await inspectSkyTrailMenu(page, path.join(screenshots, `${name}-menu.png`));
             play = false;
@@ -60,6 +64,7 @@ async function inspect(browser, url, name, { starter = false, play = false } = {
         }
         if (name.endsWith('-sky-trail-3d')) await inspectSkyTrail(page, path.join(screenshots, `${name}-sky-trail.png`));
         if (name.endsWith('-touch-garden-2d')) await inspectTouchGarden(page, path.join(screenshots, `${name}.png`));
+        if (name.endsWith('-platform-adventure-2d')) await inspectPlatformAdventureAI(page);
         if (name.endsWith('-puzzle-battle-2d')) await inspectPuzzleInput(page);
         if (name.endsWith('-platformer-2d')) {
             await inspectPlatformer(page, path.join(screenshots, `${name}.png`));
@@ -72,6 +77,7 @@ async function inspect(browser, url, name, { starter = false, play = false } = {
             await inspectToonExploration(page, path.join(screenshots, `${name}-forest.png`));
             await inspectToonPolish(page, path.join(screenshots, `${name}-polish.png`));
             await inspectToonWater(page, path.join(screenshots, `${name}-water.png`));
+            await inspectToonSandbox(page, path.join(screenshots, `${name}-sandbox.png`));
         }
         if (starter && name.includes('2d')) {
             const before = await page.locator('canvas').evaluate(canvas => canvas.toDataURL());
@@ -81,9 +87,9 @@ async function inspect(browser, url, name, { starter = false, play = false } = {
             assert.notEqual(after, before, 'Starter does not react to movement input');
         }
         if (starter && name.includes('3d')) {
-            const before = await page.locator('canvas').screenshot();
+            const before = await page.locator('#gameCanvas3D').screenshot();
             await page.waitForTimeout(250);
-            const after = await page.locator('canvas').screenshot();
+            const after = await page.locator('#gameCanvas3D').screenshot();
             assert.ok(!after.equals(before), '3D starter scene does not animate');
         }
         if (starter || play || name === 'source-renderer-3d') await page.screenshot({ path: path.join(screenshots, `${name}.png`) });

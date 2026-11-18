@@ -100,6 +100,9 @@ test('generated scaffolds follow the selected project inheritance pattern', t =>
     generate(root3d, 'screen', 'ForestScreen');
     generate(root3d, 'entity', 'ForestObject');
     assert.match(read(path.join(root3d, 'main.js')), /BootstrapGame/);
+    assert.deepEqual(doctor(root3d).modules, ['2d', '3d']);
+    assert.match(read(path.join(root3d, 'src/levels/FirstLevel.js')), /useUI: true/);
+    assert.doesNotMatch(read(path.join(root3d, 'index.html')), /id="status"|<main>/);
     assert.match(read(path.join(root3d, 'src/levels/ForestLevel.js')), /extends Level3D/);
     assert.match(read(path.join(root3d, 'src/levels/ForestLevel.js')), /BuildScene\(\)/);
     assert.match(read(path.join(root3d, 'src/screens/ForestScreen.js')), /extends Level3D/);

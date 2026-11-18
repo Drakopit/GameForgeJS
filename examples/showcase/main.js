@@ -29,7 +29,13 @@ function render(catalog, dimension = "all") {
         link.href = exampleUrl(entry).href;
         link.textContent = "Run example →";
         link.setAttribute("aria-label", "Run " + entry.name);
-        card.append(meta, heading, description, link);
+        const image = document.createElement('img');
+        image.src = new URL('../../' + entry.screenshot, import.meta.url).href;
+        image.alt = entry.name;
+        image.loading = 'lazy';
+        image.width = 960;
+        image.height = 600;
+        card.append(image, meta, heading, description, link);
         grid.append(card);
     }
     count.textContent = visible.length + " examples";

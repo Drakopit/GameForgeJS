@@ -16,11 +16,11 @@ are not designed for opening index.html through a file URL.
 
 | Example | Canonical folder / launcher ID | Purpose |
 | --- | --- | --- |
-| [Toon Adventure 3D](toon-adventure-3d/README.md) | `toon-adventure-3d` | An incremental Toon ABS adventure: animated imported characters, five sentries, three connected areas and shallow-water interaction. |
+| [Toon Adventure 3D](toon-adventure-3d/README.md) | `toon-adventure-3d` | A Toon ABS sandbox: animated characters, five sentries, two large lakes, paired warp pads, minimap and shallow-water interaction. |
 | [Platformer Building Blocks 2D](platformer-2d/README.md) | `platformer-2d` | Reusable addon mechanics: solid tiles, coyote time, buffered/variable jumps, animation and two collection stages. |
 | [Movement & Collision 2D](movement-collision-2d/README.md) | `movement-collision-2d` | Start here: Level, Screen, GameObject, Draw and AABB collection. |
 | [Component Adventure 2D](component-adventure-2d/README.md) | `component-adventure-2d` | GameObject composition: bounds, health, walls, enemies and room camera behavior. |
-| [Platform Adventure 2D](platform-adventure-2d/README.md) | `platform-adventure-2d` | Advanced platform/RPG feature integration: combat states, inventory, skills, manifests and progression. |
+| [Platform Adventure 2D](platform-adventure-2d/README.md) | `platform-adventure-2d` | Advanced platform/RPG integration: perception/patrol/pursuit AI, combat states, inventory, skills, manifests and progression. |
 | [Tactical RPG 2D](tactical-rpg-2d/README.md) | `tactical-rpg-2d` | Turn-based domain models coordinated by framework levels: grid movement, pathfinding, ranges and battle flow. |
 | [Fighting Arena 2D](fighting-2d/README.md) | `fighting-2d` | A complete input/menu loop for local fighting, character selection, combat animation and CPU/versus flow. |
 | [Puzzle Battle 2D](puzzle-battle-2d/README.md) | `puzzle-battle-2d` | Grid-based puzzle domain models: falling pairs, rotation, combos, garbage exchanges and a CPU opponent. |
@@ -105,3 +105,16 @@ is emulation, not a physical-device compatibility certification.
 
 See the [architecture audit](../docs/migrations/demos-audit.md) and
 [touch walkthrough](../docs/getting-started/touch-garden.md).
+
+## Captures and engine UI
+
+Every entry declares a real gameplay screenshot, shared by the landing page and
+launcher. Regenerate them with `npm run capture:examples`, or pass canonical IDs
+(e.g. `npm run capture:examples -- toon-adventure-3d`). Capture requires Playwright
+and a Chromium/Edge executable. Generated pictures belong under site/examples/.
+
+Game information belongs in Screen/ScreenUI. Platformer, renderer and solar system
+have H + gamepad help; addon instructions are always visible in its HUD. See
+[the UI guide](../docs/guides/in-engine-info.md),
+[enemy AI](../docs/guides/enemy-ai.md) and
+[Toon lakes/warps](../docs/getting-started/toon-sandbox-checkpoint.md).

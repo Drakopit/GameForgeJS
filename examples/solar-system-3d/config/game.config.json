@@ -112,6 +112,16 @@
           "device": "gamepad",
           "input": "B"
         }
+      ],
+      "HELP": [
+        {
+          "device": "keyboard",
+          "input": "KeyH"
+        },
+        {
+          "device": "gamepad",
+          "input": "START"
+        }
       ]
     }
   }

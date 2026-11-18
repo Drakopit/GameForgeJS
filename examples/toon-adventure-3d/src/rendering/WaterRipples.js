@@ -17,6 +17,7 @@ export class WaterRipples extends Mesh {
             geometry: new Geometry3D({ positions, indices }).EnsureNormals(),
             material: new ToonMaterial({ albedoColor: definition.foamColor }),
             castShadow: false,
+            receiveShadow: false,
         });
         this.surface = surface;
         this.segments = segments;

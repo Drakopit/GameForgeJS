@@ -3,6 +3,7 @@ const path = require('node:path');
 const assert = require('node:assert/strict');
 const { chromium } = require('@playwright/test');
 const { startServer } = require('../cli/server.cjs');
+const catalog = require('../examples/catalog.json');
 
 async function main() {
     const root = path.resolve(__dirname, '..');
@@ -13,25 +14,6 @@ async function main() {
     const output = path.join(root, 'test-results/site');
     fs.mkdirSync(output, { recursive: true });
     try {
-        if (process.argv.includes('--capture-demos')) {
-            const page = await browser.newPage({ viewport: { width: 1100, height: 800 } });
-            for (const [name, demo, presses] of [['sky-trail', 'sky-trail-3d', 1], ['platform-adventure', 'platform-adventure-2d', 2], ['toon-adventure', 'toon-adventure-3d', 0]]) {
-                await page.goto(`${url}examples/${demo}/index.html`, { waitUntil: 'networkidle' });
-                await page.evaluate(async () => { window.captureCore = await import('gameforgejs/core'); });
-                await page.waitForFunction(() => window.captureCore.Engine.running);
-                await page.waitForTimeout(500);
-                for (let i = 0; i < presses; i++) {
-                    await page.keyboard.down('Enter'); await page.waitForTimeout(100); await page.keyboard.up('Enter');
-                    await page.waitForTimeout(500);
-                }
-                const level = await page.evaluate(async () => (await import('gameforgejs/core')).LevelHandler.current.constructor.name);
-                assert.ok(!/Menu|Selector/.test(level), `Capture did not reach gameplay: ${level}`);
-                const canvas = await page.locator('canvas').first().boundingBox();
-                assert.ok(canvas, 'movement-collision-2d canvas is missing');
-                await page.screenshot({ path: path.join(root, `site/${name}.jpg`), type: 'jpeg', quality: 82, clip: canvas });
-            }
-            await page.close();
-        }
         for (const width of [1440, 390]) {
             const page = await browser.newPage({ viewport: { width, height: 950 } });
             const errors = [];
@@ -39,6 +21,14 @@ async function main() {
             page.on('response', response => { if (response.status() >= 400) errors.push(`${response.status()}: ${response.url()}`); });
             await page.goto(url, { waitUntil: 'networkidle' });
             assert.match(await page.title(), /GameForgeJS.*Seu jogo/);
+            assert.equal(await page.locator('.demo-card').count(), catalog.length);
+            assert.equal(await page.locator('.demo-card img').count(), catalog.length);
+            for (const entry of catalog) {
+                assert.equal(await page.locator(`.demo-card[href="Main.html?demo=${entry.id}"] img`).getAttribute('src'), entry.screenshot);
+            }
+            for (const href of ['https://github.com/Drakopit', 'https://www.linkedin.com/in/patrickcamello/', 'mailto:patrickcamelo@yahoo.com.br']) {
+                assert.equal(await page.locator(`footer a[href="${href}"]`).count(), 1);
+            }
             // Below-the-fold lazy images are fetched only when scrolled into view.
             for (const image of await page.locator('img').all()) {
                 await image.scrollIntoViewIfNeeded();
@@ -54,6 +44,8 @@ async function main() {
             // Exercise actual navigation, including keyboard focus and small screens.
             await page.getByRole('link', { name: 'Demos', exact: true }).click();
             assert.ok(page.url().endsWith('#jogos'));
+            await page.locator('#jogos').evaluate(element => element.scrollIntoView({ behavior: 'instant', block: 'start' }));
+            await page.screenshot({ path: path.join(output, `gallery-${width}.png`) });
             await page.goto(url, { waitUntil: 'networkidle' });
             await page.keyboard.press('Tab');
             assert.equal(await page.locator(':focus').textContent(), 'Pular para o conteúdo');
@@ -74,6 +66,8 @@ async function main() {
             await page.waitForFunction(() => document.documentElement.lang === 'pt-BR' && document.documentElement.dataset.localeReady === 'true');
             assert.match(await page.title(), /Seu jogo/);
             assert.ok((await page.locator('footer').textContent()).includes('Criada por Patrick Faustino Camello.'));
+            await page.locator('footer').scrollIntoViewIfNeeded();
+            await page.screenshot({ path: path.join(output, `footer-${width}.png`) });
             assert.deepEqual(errors, []);
             await page.close();
             console.log(`PASS presentation page at ${width}px under /GameForgeJS/`);

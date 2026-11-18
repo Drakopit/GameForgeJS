@@ -8,6 +8,7 @@ export class WaterSurface extends Mesh {
             geometry: new WaterGeometry(definition),
             material: new ToonMaterial({ albedoColor: definition.color }),
             castShadow: false,
+            receiveShadow: false,
         });
         this.speed = definition.speed;
         this.phase = 0;

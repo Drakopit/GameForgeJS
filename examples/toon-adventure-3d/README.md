@@ -38,3 +38,5 @@ or assets from another demo. Build output stays in ignored dist/.
 See the [examples catalog](../README.md) for learning order, scope and architecture
 conventions. The integration suite loads both source and portable builds; complete
 human gameplay testing and device-specific performance checks remain separate.
+
+See [lakes and warp gates](../../docs/getting-started/toon-sandbox-checkpoint.md) for the expanded sandbox, travel behavior and current water limitations.

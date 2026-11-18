@@ -47,6 +47,8 @@ test("example catalog declares unique runnable game entries", () => {
         assert.match(entry.id, /^[a-z]+(?:-[a-z0-9]+)*-(?:2d|3d)$/);
         assert.equal(path.dirname(entry.path), entry.id);
         for (const file of ['README.md', 'config/gameforge.project.json', 'config/gameforgejs.package.json']) assert.ok(fs.existsSync(path.join(examples, entry.id, file)));
+        assert.match(entry.screenshot, /^site\/examples\/[a-z0-9-]+\.jpg$/);
+        assert.ok(fs.existsSync(path.join(root, entry.screenshot)), 'Missing screenshot: ' + entry.id);
         assert.ok(entry.name && entry.description, "Each example needs display metadata");
         assert.ok(["2D", "3D"].includes(entry.dimension));
         assert.match(entry.path, /^[A-Za-z0-9_-]+\/index\.html$/);

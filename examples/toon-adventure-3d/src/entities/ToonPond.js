@@ -16,12 +16,18 @@ export class ToonPond {
         const { width, depth, bankWidth, bankHeight } = definition;
         const position = Vector3D.FromArray(definition.position);
         const bankMaterial = new ToonMaterial({ albedoColor: definition.bankColor });
+        if (definition.openBanks) {
+            const shore = new Mesh({ geometry: PrimitiveMesh.Cube(1), material: bankMaterial, castShadow: false });
+            shore.transform.SetPosition(position.x, bankHeight / 8, position.z);
+            shore.transform.SetScale(width + bankWidth * 4, bankHeight / 4, depth + bankWidth * 4);
+            this.meshes.push(shore);
+        }
         const edges = [
             { offset: [width / 2 + bankWidth / 2, 0], size: [bankWidth, bankHeight, depth + bankWidth * 2] },
             { offset: [0, -depth / 2 - bankWidth / 2], size: [width, bankHeight, bankWidth] },
             { offset: [0, depth / 2 + bankWidth / 2], size: [width, bankHeight, bankWidth] },
         ];
-        for (const edge of edges) {
+        for (const edge of definition.openBanks ? [] : edges) {
             const bank = new Mesh({ geometry: PrimitiveMesh.Cube(1), material: bankMaterial });
             const offset = Vector2D.FromArray(edge.offset);
             bank.transform.SetPosition(position.x + offset.x, bankHeight / 2, position.z + offset.y);

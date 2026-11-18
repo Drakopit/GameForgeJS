@@ -17,5 +17,19 @@
     "pixelArt": true,
     "antialiasing": false,
     "orientation": "landscape"
+  },
+  "input": {
+    "actionMappings": {
+      "HELP": [
+        {
+          "device": "keyboard",
+          "input": "KeyH"
+        },
+        {
+          "device": "gamepad",
+          "input": "START"
+        }
+      ]
+    }
   }
 }

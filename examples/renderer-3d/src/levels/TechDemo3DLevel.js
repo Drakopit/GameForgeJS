@@ -1,4 +1,5 @@
-import { AssetManager, Vector3D } from "gameforgejs/core";
+import { RendererHUD } from '../ui/RendererHUD.js';
+import { ActionManager, AssetManager, Vector3D } from "gameforgejs/core";
 import {
     Level3D,
     SceneManifest3D,
@@ -22,6 +23,7 @@ export class TechDemo3DLevel extends Level3D {
     }
 
     BuildScene() {
+        this.hud = new RendererHUD(this.ui);
         this.time = 0;
         const assets = AssetManager.instance;
         const sceneManifest = assets.GetJson("render3d_showcase_scene");
@@ -48,6 +50,7 @@ export class TechDemo3DLevel extends Level3D {
 
     OnUpdate(dt) {
         super.OnUpdate(dt);
+        if (ActionManager.IsActionDown('HELP')) this.hud.help.Toggle();
         this.time += dt;
 
         if (this.cube) {
@@ -73,16 +76,6 @@ export class TechDemo3DLevel extends Level3D {
 
     OnGUI() {
         super.OnGUI();
-        if (!this.ui) return;
-
-        const draw = this.ui.Draw;
-
-        draw.Color = "#9FE7FF";
-        draw.FontSize = "22px";
-        draw.DrawText("Render3D: WebGL2 + luz + normal map + sombra", 20, 38);
-        draw.Color = "#FFFFFF";
-        draw.FontSize = "15px";
-        draw.DrawText(`FPS: ${this.FPS}`, 20, 64);
-        draw.DrawText("Camada 2D/UI continua por cima do canvas 3D.", 20, 88);
+        this.hud.Draw(this);
     }
 }

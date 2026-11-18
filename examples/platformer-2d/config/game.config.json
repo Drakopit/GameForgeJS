@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "window": {
-    "title": "GameForgeJS \u00e2\u20ac\u201d Platformer Building Blocks 2D"
+    "title": "GameForgeJS â€” Platformer Building Blocks 2D"
   },
   "screen": {
     "width": 960,
@@ -74,6 +74,16 @@
         {
           "device": "gamepad",
           "input": "START"
+        }
+      ],
+      "HELP": [
+        {
+          "device": "keyboard",
+          "input": "KeyH"
+        },
+        {
+          "device": "gamepad",
+          "input": "SELECT"
         }
       ]
     }

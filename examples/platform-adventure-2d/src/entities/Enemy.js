@@ -1,3 +1,4 @@
+import { EnemyBrain } from '../ai/EnemyBrain.js';
 import { GameObject } from "gameforgejs/2d";
 import { Vector2D } from "gameforgejs/core";
 import { Animator } from "gameforgejs/2d";
@@ -25,6 +26,15 @@ const DEFAULT_ENEMY_CONFIG = {
         attackRange: 82,
         attackVerticalRange: 46,
         attackCooldown: 1.15,
+        patrolRadius: 85,
+        patrolSpeed: 0.4,
+        leashRange: 340,
+        memorySeconds: 1.8,
+        sightHeight: 120,
+        homeTolerance: 8,
+        edgeLookahead: 12,
+        maxDrop: 26,
+        floorTolerance: 4,
     },
     stats: {
         hp: 30,
@@ -137,6 +147,7 @@ export class Enemy extends GameObject {
         this.boxes = new BoxController2D(this, AssetManager.instance.GetJson("enemy_boxes"));
 
         this.facingRight = false;
+        this.brain = new EnemyBrain(this);
 
         this.stateMachine = new StateMachine(this);
         this.stateMachine.ChangeState(new EnemyIdleState(this));
@@ -206,6 +217,7 @@ export class Enemy extends GameObject {
         this.knockbackSpeed = 0;
         this.hitStunRemaining = 0;
         this.isGrounded = false;
+        this.brain.Reset();
         this.stateMachine.currentState = null;
         this.stateMachine.ChangeState(new EnemyIdleState(this));
     }
@@ -223,7 +235,7 @@ export class Enemy extends GameObject {
     }
 
     CanAttackPlayer() {
-        if (!this.UsesAttackHitbox()) return false;
+        if (!this.UsesAttackHitbox() || !this.brain.seesPlayer || this.brain.mode !== 'chase') return false;
         if (this.isTakingDamage || this.isAttacking || this.attackCooldownRemaining > 0) return false;
         if (!this.player || this.player.hp <= 0) return false;
 
@@ -342,6 +354,7 @@ export class Enemy extends GameObject {
             return;
         }
 
+        this.brain.Update(delta);
         this.stateMachine.Update(delta);
 
         this.sprite.Update(delta);

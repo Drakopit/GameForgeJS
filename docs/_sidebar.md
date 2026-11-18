@@ -48,3 +48,7 @@
 
 - [Examples audit](migrations/demos-audit.md)
 - [Touch Garden walkthrough](getting-started/touch-garden.md)
+
+- [Toon lakes and warp gates](getting-started/toon-sandbox-checkpoint.md)
+- [Enemy perception and patrol](guides/enemy-ai.md)
+- [In-engine information panels](guides/in-engine-info.md)

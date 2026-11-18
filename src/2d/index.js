@@ -30,3 +30,5 @@ export { UI } from "./UI/UI.js";
 export { UIWindow } from "./UI/UIWindow.js";
 export { Screen } from "./Window/Screen.js";
 export { ScreenUI } from "./Window/ScreenUI.js";
+
+export { InfoPanel } from './UI/InfoPanel.js';

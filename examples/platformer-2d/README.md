@@ -19,6 +19,8 @@ The launcher also accepts `Main.html?demo=platformer-2d`.
 
 A/D/arrows or left stick/D-pad: move; Space/A: jump; R/Y: reset; Enter/Start: next stage after collecting all coins.
 
+H / gamepad Select opens the in-engine field guide.
+
 ## Structure and ownership
 
 - main.js uses BootstrapGame and declares the level order.

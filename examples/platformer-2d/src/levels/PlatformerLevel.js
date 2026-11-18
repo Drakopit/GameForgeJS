@@ -53,6 +53,7 @@ export class PlatformerLevel extends Level {
     }
 
     OnUpdate(dt) {
+        if (ActionManager.IsActionDown('HELP')) this.hud.help.Toggle();
         if (ActionManager.IsActionDown('RESET')) {
             this.RestartStage();
         }

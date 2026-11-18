@@ -19,6 +19,8 @@ The launcher also accepts `Main.html?demo=renderer-3d`.
 
 Automatic camera/material animation; this is an observation example rather than a controllable game.
 
+H / gamepad Start opens the in-engine renderer field guide.
+
 ## Structure and ownership
 
 - main.js uses BootstrapGame and declares the level order.

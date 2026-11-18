@@ -12,3 +12,13 @@
 .language select:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 @media(min-width:1000px){.header nav{margin-left:auto;gap:20px}.header{gap:25px}}
 @media(max-width:700px){.language{margin-left:auto}.header nav{order:3}}
+
+/* Example captures use the same catalog identities as the playable projects. */
+.demo-card { display: flex; flex-direction: column; }
+.demo-card img { width: 100%; aspect-ratio: 16 / 10; object-fit: contain; background: #080d12; }
+.demo-card .card-copy { flex: 1; }
+.demo-card h3 { overflow-wrap: anywhere; }
+.footer { flex-wrap: wrap; }
+.contact-links { display: flex; gap: 14px; flex-wrap: wrap; width: 100%; font-style: normal; font-size: 12px; }
+.contact-links span { color: var(--muted); }
+.contact-links a { overflow-wrap: anywhere; }

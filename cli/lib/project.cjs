@@ -18,7 +18,7 @@ function validateProject(project) {
     if (project.schemaVersion !== 1) throw new Error(`Unsupported project schemaVersion ${project.schemaVersion}; use gameforge update.`);
     if (!Array.isArray(project.modules) || project.modules.some(name => typeof name !== 'string' || !Object.hasOwn(MODULES, name))) throw new Error('Project modules must contain only official modules: 2d, 3d, network, audio.');
     if (new Set(project.modules).size !== project.modules.length) throw new Error('Project contains duplicate modules.');
-    if (project.template?.startsWith('minimal-') && project.modules.includes('2d') && project.modules.includes('3d')) throw new Error('These minimal templates use one canvas: choose either 2d or 3d. Custom projects can use a separate 2D overlay.');
+    if (project.template === 'minimal-2d' && project.modules.includes('3d')) throw new Error('The minimal-2d template uses a 2D level. Choose minimal-3d for 3D rendering with ScreenUI.');
     for (const key of ['entry', 'runtimeConfig', 'resources']) if (typeof project[key] !== 'string' || !project[key]) throw new Error(`Project requires ${key}.`);
     return project;
 }
@@ -54,7 +54,7 @@ function createProject(target, options = {}) {
     if (!/^[a-zA-Z0-9][a-zA-Z0-9._-]*$/.test(name)) throw new Error('Project name may contain letters, numbers, dots, underscores and hyphens.');
     const engine = engineRootFor(process.cwd(), {}, options.engine);
     const relativeEngine = slash(path.relative(root, engine)) || '.';
-    const modules = [template === 'minimal-3d' ? '3d' : '2d'];
+    const modules = template === 'minimal-3d' ? ['2d', '3d'] : ['2d'];
     const project = { schemaVersion: 1, name, template, entry: 'index.html', runtimeConfig: 'config/game.config.json', resources: 'config/resources.json', modules, enginePath: relativeEngine, toolingVersion: version() };
     const templateRoot = path.join(ENGINE_ROOT, 'cli', 'templates', template);
     const writes = walk(templateRoot).filter(file => file.relative !== 'src/modules.js').map(file => ({ path: file.relative, content: fs.readFileSync(file.source, 'utf8').replaceAll('__PROJECT_NAME__', name) }));

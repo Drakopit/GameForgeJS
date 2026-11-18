@@ -36,6 +36,10 @@ async function main() {
         for (const essential of configFiles) reference(root, root, `config/${essential}`);
         try { loadPackage(root); } catch (error) { fail(root, error.message); }
         const mainSource = fs.readFileSync(path.join(root, 'main.js'), 'utf8');
+        const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+        const body = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i)?.[1] ?? '';
+        const content = body.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '').replace(/<!--[\s\S]*?-->/g, '').trim();
+        if (content) fail(root, 'Render game information/UI with Screen or ScreenUI, not HTML body overlays.');
         if (!mainSource.includes('BootstrapGame') || !/modules:\s*\[/.test(mainSource)) fail(root, 'Entry must use BootstrapGame with a declared root module.');
         for (const entry of fs.readdirSync(root, { withFileTypes: true })) {
             if (!entry.isDirectory() && !allowedRoots.has(entry.name)) fail(root, `Non-essential file at project root: ${entry.name}`);

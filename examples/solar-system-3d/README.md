@@ -19,6 +19,8 @@ The launcher also accepts `Main.html?demo=solar-system-3d`.
 
 Keyboard/gamepad camera actions are configured in config/game.config.json; orbit animation runs automatically.
 
+H / gamepad Start opens the in-engine controls and scene guide.
+
 ## Structure and ownership
 
 - main.js uses BootstrapGame and declares the level order.

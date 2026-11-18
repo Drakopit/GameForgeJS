@@ -86,3 +86,10 @@ The examples audit now standardizes every runnable project under purpose-based
 2d/3d names, config folders, root modules and selective packages. Touch Garden adds
 identified multi-touch, virtual actions and screen-coordinate conversion before
 returning to Vector Swizzling and the complete-game roadmap.
+
+The presentation now shows real captures of every example and contact links. Gameplay
+information in examples and starter templates is rendered by engine UI; InfoPanel
+shares HUDFrame and the owning level's Screen. Platform Adventure enemies now patrol,
+use sight/memory, return to a leash and check ledges. The Toon sandbox adds two large
+shallow lakes, four linked warp pads and an engine minimap. These remain incremental
+steps: deep water/swimming, full navigation and complete Zero to Hero games are pending.

@@ -1,6 +1,9 @@
 import { FootstepRipples } from '../rendering/FootstepRipples.js';
 import { ToonPond } from '../entities/ToonPond.js';
-import { Pond } from '../data/Pond.js';
+import { Lakes } from '../data/Lakes.js';
+import { WarpPoints } from '../data/WarpSettings.js';
+import { WarpPoint } from '../entities/WarpPoint.js';
+import { WarpTravel } from '../components/WarpTravel.js';
 import { ActionManager, AssetManager, Vector3D } from 'gameforgejs/core';
 import { Level3D, PerspectiveCamera, AmbientLight, DirectionalLight, Skybox } from 'gameforgejs/3d';
 import { Courtyard } from '../data/Courtyard.js';
@@ -30,9 +33,13 @@ export class ToonRoomLevel extends Level3D {
         this.scene.Add(new AmbientLight({ intensity: 0.3 }));
         this.scene.Add(new DirectionalLight({ ...Courtyard.sunlight, castShadow: true }));
         this.room = this.AddEntity(new CourtyardRoom(this.scene, this.physics, Courtyard));
-        this.pond = this.AddEntity(new ToonPond(this.scene, this.physics, Pond));
-        this.player = this.AddEntity(new Explorer(this.physics, Courtyard.spawn, [this.pond]));
-        this.footstepRipples = this.AddEntity(new FootstepRipples(this.scene, this.player, this.pond));
+        this.lakes = Lakes.map(definition => this.AddEntity(new ToonPond(this.scene, this.physics, definition)));
+        this.pond = this.lakes[0];
+        this.player = this.AddEntity(new Explorer(this.physics, Courtyard.spawn, this.lakes));
+        this.waterRipples = this.lakes.map(lake => this.AddEntity(new FootstepRipples(this.scene, this.player, lake)));
+        this.footstepRipples = this.waterRipples[0];
+        this.warpPoints = WarpPoints.map(definition => this.AddEntity(new WarpPoint(this.scene, definition)));
+        this.warpTravel = new WarpTravel(this.warpPoints, name => this.hud.ShowTravel(name)).Attach(this.player);
         this.enemies = Courtyard.areas.flatMap(area => area.enemies.map(spawn =>
             this.AddEntity(new Sentry(this.physics, spawn))));
         this.actors = [this.player, ...this.enemies];
@@ -60,7 +67,7 @@ export class ToonRoomLevel extends Level3D {
         if (ActionManager.IsActionDown('HELP')) this.hud.ToggleHelp();
         if (ActionManager.IsActionDown('BANDS')) {
             this.bands = this.bands === 4 ? 2 : this.bands + 1;
-            for (const material of [...this.room.materials, ...this.pond.materials, ...this.scenery.flatMap(prop => prop.materials)]) {
+            for (const material of [...this.room.materials, ...this.lakes.flatMap(lake => lake.materials), ...this.scenery.flatMap(prop => prop.materials)]) {
                 material.bands = this.bands;
             }
             for (const visual of this.visuals) {
@@ -74,6 +81,7 @@ export class ToonRoomLevel extends Level3D {
     OnFixedUpdate(dt) {
         if (this.result) return;
         super.OnFixedUpdate(dt);
+        this.warpTravel.OnFixedUpdate(dt);
         if (!this.player.health.IsAlive()) this.FinishEncounter('defeat');
     }
 
@@ -90,7 +98,9 @@ export class ToonRoomLevel extends Level3D {
         this.result = null;
         this.hud.ShowArea(this.areaName);
         for (const visual of this.visuals) visual.Reset();
-        this.footstepRipples.OnUpdate();
+        this.warpTravel.Reset();
+        this.hud.ClearTravel();
+        for (const ripple of this.waterRipples) ripple.OnUpdate();
     }
 
     get defeatedCount() {
@@ -98,7 +108,16 @@ export class ToonRoomLevel extends Level3D {
     }
 
     get areaName() {
-        const z = Vector3D.FromArray(this.player.transform.position).z;
+        const position = Vector3D.FromArray(this.player.transform.position);
+        const lakeside = this.lakes.find(lake => {
+            if (!lake.definition.openBanks) return false;
+            const center = Vector3D.FromArray(lake.definition.position);
+            const { width, depth, areaMargin } = lake.definition;
+            return Math.abs(position.x - center.x) <= width / 2 + areaMargin
+                && Math.abs(position.z - center.z) <= depth / 2 + areaMargin;
+        });
+        if (lakeside) return lakeside.definition.name;
+        const z = position.z;
         return Courtyard.areas.find(area => z >= area.minZ)?.name ?? 'Old grove';
     }
 
@@ -107,6 +126,11 @@ export class ToonRoomLevel extends Level3D {
         for (const visual of this.visuals) visual.SyncTransform();
         for (const indicator of this.indicators) indicator.OnUpdate();
         super.OnDrawn();
+    }
+
+    OnExit() {
+        this.warpTravel?.Detach();
+        super.OnExit();
     }
 
     OnGUI() {

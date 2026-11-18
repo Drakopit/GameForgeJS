@@ -38,3 +38,5 @@ or assets from another demo. Build output stays in ignored dist/.
 See the [examples catalog](../README.md) for learning order, scope and architecture
 conventions. The integration suite loads both source and portable builds; complete
 human gameplay testing and device-specific performance checks remain separate.
+
+See [enemy perception and patrol](../../docs/guides/enemy-ai.md) for AI behavior, configuration and supported navigation.

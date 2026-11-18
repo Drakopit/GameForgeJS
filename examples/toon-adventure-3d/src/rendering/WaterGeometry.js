@@ -3,7 +3,7 @@ import { Geometry3D } from 'gameforgejs/3d';
 
 // A small fixed-topology grid. Only heights and normals change during playback.
 export class WaterGeometry extends Geometry3D {
-    constructor({ width, depth, segments, amplitude }) {
+    constructor({ width, depth, segments, amplitude, waveFrequencyX = Settings.waveFrequencyX, waveFrequencyZ = Settings.waveFrequencyZ }) {
         const positions = [];
         const normals = [];
         const uvs = [];
@@ -24,13 +24,15 @@ export class WaterGeometry extends Geometry3D {
         this.width = width;
         this.depth = depth;
         this.amplitude = amplitude;
+        this.waveFrequencyX = waveFrequencyX;
+        this.waveFrequencyZ = waveFrequencyZ;
         this.Update(0);
     }
 
     HeightAt(x, z, phase) {
         // Damp waves at the bank so the shoreline stays joined to the ground.
         const edge = Math.cos(Math.PI * x / this.width) * Math.cos(Math.PI * z / this.depth);
-        const waves = Math.sin(x * Settings.waveFrequencyX + phase) + Settings.secondaryAmplitude * Math.sin(z * Settings.waveFrequencyZ - phase * Settings.secondarySpeed);
+        const waves = Math.sin(x * this.waveFrequencyX + phase) + Settings.secondaryAmplitude * Math.sin(z * this.waveFrequencyZ - phase * Settings.secondarySpeed);
         return this.amplitude * edge * waves;
     }
 

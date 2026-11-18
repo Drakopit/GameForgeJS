@@ -103,11 +103,11 @@ start from CLI templates, which contain only the minimum runnable behavior.
 <!-- examples:start -->
 | Example | Dimension | Purpose |
 | --- | --- | --- |
-| [Toon Adventure 3D](examples/toon-adventure-3d/index.html) | 3D | Three connected areas, five sentries, animated characters and interactive shallow water. |
+| [Toon Adventure 3D](examples/toon-adventure-3d/index.html) | 3D | A Toon ABS sandbox with two large lakes, linked warp gates, five sentries and shallow-water interaction. |
 | [Platformer Building Blocks 2D](examples/platformer-2d/index.html) | 2D | Two compact stages demonstrating tile collision, jump buffering, coyote time, collection and level transitions. |
 | [Movement & Collision 2D](examples/movement-collision-2d/index.html) | 2D | A compact 2D example for movement, collision, and collection. |
 | [Component Adventure 2D](examples/component-adventure-2d/index.html) | 2D | Top-down movement, reusable entity components, and room camera transitions. |
-| [Platform Adventure 2D](examples/platform-adventure-2d/index.html) | 2D | A platform/RPG showcase with composed manifests, inventory, skills, and campaign progression. |
+| [Platform Adventure 2D](examples/platform-adventure-2d/index.html) | 2D | Platform combat, patrol and pursuit AI, line of sight, inventory, skills and manifest-authored stages. |
 | [Tactical RPG 2D](examples/tactical-rpg-2d/index.html) | 2D | A turn-based grid game with pathfinding, movement range, and combat. |
 | [Fighting Arena 2D](examples/fighting-2d/index.html) | 2D | Character selection, arcade and versus modes, keyboard controls, and gamepad input. |
 | [Puzzle Battle 2D](examples/puzzle-battle-2d/index.html) | 2D | An arcade puzzle game with combos and competitive block exchanges. |
