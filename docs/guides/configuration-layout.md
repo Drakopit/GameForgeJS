@@ -1,7 +1,7 @@
 # Configuration layout and ownership
 
-New projects keep framework configuration in `config/`. DemoAdvanced is the
-first migrated example; Demo3D and DemoMiniGame3D now follow the same layout.
+New projects keep framework configuration in `config/`. platform-adventure-2d is the
+first migrated example; renderer-3d and sky-trail-3d now follow the same layout.
 Their editor resource prefixes also point to `config/`. Other examples remain supported with their existing
 layout while migration proceeds incrementally.
 
@@ -41,7 +41,7 @@ not require introducing new runtime initialization code.
 
 ## Reduce duplication before adding abstractions
 
-DemoAdvanced now stores only runtime overrides instead of copying engine defaults.
+platform-adventure-2d now stores only runtime overrides instead of copying engine defaults.
 Its action bindings remain explicit; compact formatting does not change their
 shape or introduce another input DSL. Dimensions and other omitted properties
 are inherited from `Config.Defaults()`: declare them explicitly when a game needs
@@ -59,7 +59,7 @@ array of paths, with later values overriding earlier values.
 - Project metadata paths, including `enginePath`, remain relative to the game root.
 - Resource paths are relative to the resource manifest URL. From
   `config/resources.json`, a game image normally uses `../assets/image.png`.
-- Workspace document paths remain relative to the game root. DemoAdvanced uses
+- Workspace document paths remain relative to the game root. platform-adventure-2d uses
   `resources: "config/resources.json"` and `resourcePrefix: "config/"` for the
   existing editor's asset resolver.
 - The external editor currently discovers `game.workspace.json` in the game root.

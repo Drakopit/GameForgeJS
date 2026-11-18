@@ -27,6 +27,7 @@ export { GamepadAlias } from "./Input/GamepadAlias.js";
 export { Input } from "./Input/Input.js";
 export { CharCode, KeyCode } from "./Input/KeyCode.js";
 export { Mouse } from "./Input/Mouse.js";
+export { TouchContact } from "./Input/TouchContact.js";
 export { Touch } from "./Input/Touch.js";
 export { Level } from "./Level/Level.js";
 export { Logger } from "./Logger.js";

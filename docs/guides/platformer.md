@@ -7,7 +7,7 @@ The movement lab is a small foundation, not the final 20-stage course.
 ## Run and explore
 
 1. From the repository, run `npm install` and `npm run dev`.
-2. Open `examples/DemoPlatformer/index.html` on the local server.
+2. Open `examples/platformer-2d/index.html` on the local server.
 3. Move with A/D or arrows. Press Space to jump; release early for a lower jump.
 4. Collect all four coins and reach the gold flag. The camera follows through a
    scrolling world. Enter advances to the second stage, then returns to the first

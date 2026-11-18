@@ -8,7 +8,7 @@ no custom renderer, separate animation loop, new dependency or manual canvas.
 ## 1. Find the water
 
 1. Run `node cli/index.cjs serve` from the repository root.
-2. Open `/examples/DemoToonABS/index.html` on the printed server address.
+2. Open `/examples/toon-adventure-3d/index.html` on the printed server address.
 3. Look to the right of the knight at the entrance. Approach using WASD/arrows or
    the controller's left stick/D-pad. Enter through the open left (west) bank.
 4. Watch the moving pale lines and small waves. Press B or Select/View to compare
@@ -21,7 +21,7 @@ walk back out. The three remaining stone edges retain their own collision boxes.
 
 ## 2. Change the pond data
 
-Open `examples/DemoToonABS/src/data/Pond.js`:
+Open `examples/toon-adventure-3d/src/data/Pond.js`:
 
 ```js
 position: [4.5, 0.18, 2.5],
@@ -66,8 +66,8 @@ spacing to avoid intersections. Keep the tutorial defaults for the verified look
 ## 4. Publish and verify
 
 ```sh
-node cli/index.cjs build --root examples/DemoToonABS
-node cli/index.cjs serve --root examples/DemoToonABS/dist
+node cli/index.cjs build --root examples/toon-adventure-3d
+node cli/index.cjs serve --root examples/toon-adventure-3d/dist
 ```
 
 Check animation, bank collision, H, B, combat and restart again. Browser regressions

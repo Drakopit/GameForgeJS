@@ -1,14 +1,6 @@
 const grid = document.querySelector("#examples");
 const status = document.querySelector("#status");
 const count = document.querySelector("#count");
-const aliases = {
-    fighting: "fighting2d",
-    adventure: "adventure2d",
-    zelda: "adventure2d",
-    solar: "solar3d",
-    mmo: "online",
-    terraria: "online",
-};
 
 function exampleUrl(entry) {
     return new URL("../" + entry.path, import.meta.url);
@@ -57,8 +49,8 @@ try {
     }
     const params = new URLSearchParams(location.search);
     const requested = params.get("demo");
-    const selected = aliases[requested] ?? requested;
-    const demo = catalog.find(entry => entry.id === selected);
+    const selected = requested;
+    const demo = catalog.find(entry => entry.id === selected || entry.aliases?.includes(selected));
     if (demo) {
         const destination = exampleUrl(demo);
         params.delete("demo");

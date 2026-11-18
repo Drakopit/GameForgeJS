@@ -67,9 +67,9 @@ async function main() {
         args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
     const servers = [];
     try {
-        const output = build(path.join(ROOT, 'examples/DemoMiniGame3D'), { output: path.join(temporary, 'build') }).output;
+        const output = build(path.join(ROOT, 'examples/sky-trail-3d'), { output: path.join(temporary, 'build') }).output;
         for (const [name, root, basePath, route] of [
-            ['source', ROOT, '/', 'examples/DemoMiniGame3D/'],
+            ['source', ROOT, '/', 'examples/sky-trail-3d/'],
             ['built', output, '/game/', 'game/'],
         ]) {
             const server = await startServer({ root, port: 0, basePath });

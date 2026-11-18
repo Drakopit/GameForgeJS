@@ -132,7 +132,7 @@ Each game can define its own aliases without touching the engine:
 
 Aliases can point to other aliases. For example, `LIGHT_ATTACK -> X -> button_2` under the Xbox profile.
 
-## Fighting Demo
+## Fighting Arena 2D
 
 The fighting demo uses its own configuration under `fighting.controls`, because it supports two players, a menu, arcade mode, and versus mode. It also resolves gamepad aliases:
 

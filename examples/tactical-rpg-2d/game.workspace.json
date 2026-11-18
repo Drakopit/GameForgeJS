@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "kind": "GameForgeJS.Workspace",
+  "id": "demo_tactical_rpg",
+  "name": "Tactical RPG 2D",
+  "resources": "config/resources.json",
+  "resourcePrefix": "./",
+  "levels2D": [
+    {
+      "id": "tactical_map",
+      "label": "Tactical Map",
+      "resources": "resources.json",
+      "resourcePrefix": "",
+      "documents": {
+        "stage": "assets/Manifests/tactical/stage.json",
+        "player": "assets/Manifests/tactical/player.json",
+        "enemies": "assets/Manifests/tactical/enemies.json"
+      }
+    }
+  ],
+  "scenes3D": []
+}

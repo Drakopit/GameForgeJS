@@ -18,7 +18,7 @@ function fixture(t) {
 }
 
 test('advanced 3D demos publish only declared groups and retain their editor manifest paths', () => {
-    for (const name of ['Demo3D', 'DemoMiniGame3D']) {
+    for (const name of ['renderer-3d', 'sky-trail-3d']) {
         const root = path.resolve(__dirname, '../examples', name);
         const plan = planBuild(root);
         assert.deepEqual(plan.runtimeModules, ['2d', '3d', 'core']);

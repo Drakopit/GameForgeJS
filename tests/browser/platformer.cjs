@@ -2,7 +2,8 @@ const assert = require('node:assert/strict');
 const { expect } = require('@playwright/test');
 
 async function waitForCondition(page, condition, argument) {
-    await expect.poll(() => page.evaluate(condition, argument)).toBe(true);
+    // Jump/animation phases can be shorter than the default polling backoff.
+    await expect.poll(() => page.evaluate(condition, argument), { intervals: [16, 32, 50] }).toBe(true);
 }
 
 async function readPlayer(page) {

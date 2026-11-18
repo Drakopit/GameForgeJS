@@ -9,7 +9,7 @@ not the finished adventure or final Zero to Hero course.
 ## 1. Run and observe
 
 Run `node cli/index.cjs serve` from the repository and open
-`/examples/DemoToonABS/index.html`. Use H for the framework help panel.
+`/examples/toon-adventure-3d/index.html`. Use H for the framework help panel.
 
 - The knight idles and runs when moving with WASD/arrows.
 - Space selects an unarmed punch, sampled against the gameplay attack timeline.
@@ -103,8 +103,8 @@ primitive. Water, pursuit, progression and the full adventure are not complete.
 ## 6. Publish and verify
 
 ```sh
-node cli/index.cjs build --root examples/DemoToonABS
-node cli/index.cjs serve --root examples/DemoToonABS/dist
+node cli/index.cjs build --root examples/toon-adventure-3d
+node cli/index.cjs serve --root examples/toon-adventure-3d/dist
 ```
 
 Verify textures, idle/run, combat, death, R and H again. Browser regressions also

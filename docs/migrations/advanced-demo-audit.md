@@ -9,16 +9,16 @@ Hero guides. Small labs validate APIs; they do not replace those games.
 | Area | Evidence in this checkout | Remaining work |
 | --- | --- | --- |
 | Distribution | `cli/lib/package.cjs` follows runtime imports and selects entire groups/addons; `tests/package.test.cjs` checks omitted dependencies and invalid declarations | Finer pruning is not implemented; group selection is not symbol-level tree shaking |
-| Advanced 2D | DemoAdvanced uses config-folder discovery, composed content manifests and shared parallax/state-machine addons | Audit combat, inventory and progression ownership before extracting further addons; complete course assets and 20-stage campaign remain outstanding |
-| 2D movement lab | DemoPlatformer validates movement, existing camera, Sprite/Animator, collection and level transitions | Two validation stages are not the final campaign; pause new lab features while establishing the 3D path |
-| 3D gameplay reference | DemoMiniGame3D uses Level3D, physics, imported model, course data, camera and HUD | Sky Trail is a platform game, not the Toon ABS adventure; player behavior is still concentrated in CubeGameLevel |
-| 3D rendering reference | Demo3D exercises scene manifests, lights, materials and models; DemoToonABS adds ToonMaterial, animated characters and a primitive room with one ABS encounter | Stylized water, finished environment art and complete adventure progression remain outstanding |
+| Advanced 2D | platform-adventure-2d uses config-folder discovery, composed content manifests and shared parallax/state-machine addons | Audit combat, inventory and progression ownership before extracting further addons; complete course assets and 20-stage campaign remain outstanding |
+| 2D movement lab | platformer-2d validates movement, existing camera, Sprite/Animator, collection and level transitions | Two validation stages are not the final campaign; pause new lab features while establishing the 3D path |
+| 3D gameplay reference | sky-trail-3d uses Level3D, physics, imported model, course data, camera and HUD | Sky Trail is a platform game, not the Toon ABS adventure; player behavior is still concentrated in CubeGameLevel |
+| 3D rendering reference | renderer-3d exercises scene manifests, lights, materials and models; toon-adventure-3d adds ToonMaterial, animated characters and a primitive room with one ABS encounter | Stylized water, finished environment art and complete adventure progression remain outstanding |
 | Character pipeline | SkeletalAnimator deforms two copied KayKit characters, with independent poses, embedded textures and compatible-rig clip libraries; source/build browser tests validate GPU updates | CPU implementation for a small cast; crossfades, general retargeting, attachments and crowd performance remain pending |
 | Tutorials | Zero to Hero defines both paths and a runnable starter/publication lesson | Remaining lessons must accompany tested gameplay checkpoints, with complete source and assets |
 
 ## Implemented in this checkpoint: 3D distribution baseline
 
-Demo3D and DemoMiniGame3D now keep runtime config, resources, CLI metadata and
+renderer-3d and sky-trail-3d now keep runtime config, resources, CLI metadata and
 distribution selection in `config/`. Resource URLs were rebased to `../assets/`.
 Their root `game.workspace.json` remains the editor discovery file and points to
 the relocated resource manifest, including each scene entry and its `config/`
@@ -41,19 +41,19 @@ not interchangeable: publishing a module does not initialize its services.
 Reproduce from the repository root:
 
 ```sh
-node cli/index.cjs build --root examples/DemoMiniGame3D --dry-run
-node cli/index.cjs build --root examples/DemoMiniGame3D
-node cli/index.cjs serve --root examples/DemoMiniGame3D/dist
+node cli/index.cjs build --root examples/sky-trail-3d --dry-run
+node cli/index.cjs build --root examples/sky-trail-3d
+node cli/index.cjs serve --root examples/sky-trail-3d/dist
 ```
 
 Expected: `core`, `2d`, `3d` in the plan; the Sky Trail menu opens, Enter starts
 the existing game, and textures/course/model resolve from the published folder.
-Repeat with `examples/Demo3D` for the rendering showcase. The build output is
+Repeat with `examples/renderer-3d` for the rendering showcase. The build output is
 not proof of ABS combat, skeletal animation or a completed Toon art direction.
 
 ## Next implementation order
 
-1. **Toon room checkpoint (implemented):** a dedicated DemoToonABS project uses Level3D,
+1. **Toon room checkpoint (implemented):** a dedicated toon-adventure-3d project uses Level3D,
    existing scene/physics services and config-folder distribution. Configurable
    banded lighting is verified on primitive geometry. Level, player, material and
    room data have separate files; the fixed camera uses PerspectiveCamera.

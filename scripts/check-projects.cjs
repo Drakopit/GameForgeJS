@@ -2,11 +2,13 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { ROOT, walk } = require('./lib/files.cjs');
 const { pathToFileURL } = require('node:url');
+const { loadPackage } = require('../cli/lib/package.cjs');
+const { parse } = require('acorn');
 const { configFile } = require('../cli/lib/config-paths.cjs');
 const errors = [];
 const fail = (file, message) => errors.push(`${path.relative(ROOT, file)}: ${message}`);
 const read = file => JSON.parse(fs.readFileSync(file, 'utf8'));
-const allowedRoots = new Set(['main.js', 'index.html', 'style.css', 'game.config.json', 'resources.json', 'game.workspace.json', 'gameforge.project.json', 'gameforgejs.package.json', 'package.json', 'README.md', '.gitignore']);
+const allowedRoots = new Set(['main.js', 'index.html', 'style.css', 'game.workspace.json', 'package.json', 'README.md', '.gitignore']);
 function reference(root, owner, value) {
     if (typeof value !== 'string' || /^(https?:|data:)/.test(value)) return;
     const target = path.resolve(root, value);
@@ -24,12 +26,17 @@ function reference(root, owner, value) {
 async function main() {
     const { ResourceManifestLoader } = await import(pathToFileURL(path.join(ROOT, 'src/core/Assets/ResourceManifestLoader.js')));
     const projects = [
-        ...fs.readdirSync(path.join(ROOT, 'examples'), { withFileTypes: true }).filter(d => d.isDirectory() && d.name.startsWith('Demo')).map(d => path.join(ROOT, 'examples', d.name)),
+        ...read(path.join(ROOT, 'examples/catalog.json')).map(entry => path.join(ROOT, 'examples', path.dirname(entry.path))),
         ...['minimal-2d', 'minimal-3d'].map(name => path.join(ROOT, 'cli/templates', name)),
     ];
     for (const root of projects) {
         for (const essential of ['index.html', 'main.js']) reference(root, root, essential);
-        for (const essential of ['game.config.json', 'resources.json']) reference(root, root, path.relative(root, configFile(root, essential)));
+        const configFiles = ['game.config.json', 'resources.json', 'gameforgejs.package.json'];
+        if (!root.startsWith(path.join(ROOT, 'cli/templates'))) configFiles.push('gameforge.project.json');
+        for (const essential of configFiles) reference(root, root, `config/${essential}`);
+        try { loadPackage(root); } catch (error) { fail(root, error.message); }
+        const mainSource = fs.readFileSync(path.join(root, 'main.js'), 'utf8');
+        if (!mainSource.includes('BootstrapGame') || !/modules:\s*\[/.test(mainSource)) fail(root, 'Entry must use BootstrapGame with a declared root module.');
         for (const entry of fs.readdirSync(root, { withFileTypes: true })) {
             if (!entry.isDirectory() && !allowedRoots.has(entry.name)) fail(root, `Non-essential file at project root: ${entry.name}`);
         }
@@ -50,19 +57,36 @@ async function main() {
         }
         for (const file of walk(root, new Set(['.js']))) {
             const source = fs.readFileSync(file, 'utf8');
+            if (/requestAnimationFrame\s*\(|setInterval\s*\(|document\.createElement\s*\(/.test(source)) fail(file, 'Gameplay must use framework loops and screens.');
+            if (/new\s+(?:Input|Touch|Mouse|GamePad)\s*\(/.test(source)) fail(file, 'Use the Input-owned devices instead of creating duplicate input listeners.');
+            const ast = parse(source, { ecmaVersion: 'latest', sourceType: 'module' });
+            const classes = ast.body.filter(node => node.type === 'ClassDeclaration' || node.type === 'ExportNamedDeclaration' && node.declaration?.type === 'ClassDeclaration');
+            if (classes.length > 1) fail(file, 'Keep each class in its own file.');
             if (/['"](?:\.\.\/)+src\/(core|2d|3d|network)/.test(source)) fail(file, 'Consume the public gameforgejs entry points, not engine internals.');
-            if (/examples\/Demo/.test(source)) fail(file, 'Example code must not depend on another demo or repository-root URLs.');
+            if (/examples\/[a-z0-9-]+\//.test(source)) fail(file, 'Example code must not depend on another demo or repository-root URLs.');
         }
     }
     const catalogFile = path.join(ROOT, 'examples/catalog.json');
     const catalog = read(catalogFile);
     const ids = new Set();
+    const allNames = new Set(catalog.map(entry => entry.id));
+    const registeredFolders = new Set(catalog.map(entry => path.dirname(entry.path)));
+    for (const folder of fs.readdirSync(path.join(ROOT, 'examples'), { withFileTypes: true }).filter(entry => entry.isDirectory())) {
+        if (folder.name !== 'showcase' && !registeredFolders.has(folder.name)) fail(catalogFile, `Unregistered example folder: ${folder.name}`);
+    }
     for (const entry of catalog) {
         if (ids.has(entry.id)) fail(catalogFile, `Duplicate example id: ${entry.id}`);
         ids.add(entry.id);
+        if (!/^[a-z]+(?:-[a-z0-9]+)*-(2d|3d)$/.test(entry.id) || path.dirname(entry.path) !== entry.id) fail(catalogFile, `Noncanonical example name/path: ${entry.id}`);
+        if (!entry.id.endsWith(entry.dimension.toLowerCase())) fail(catalogFile, `Dimension does not match example name: ${entry.id}`);
+        for (const alias of entry.aliases ?? []) {
+            if (allNames.has(alias)) fail(catalogFile, `Duplicate alias: ${alias}`);
+            allNames.add(alias);
+        }
+        reference(path.join(ROOT, 'examples'), catalogFile, `${entry.id}/README.md`);
         reference(path.join(ROOT, 'examples'), catalogFile, entry.path);
     }
-    const docs = [...walk(path.join(ROOT, 'docs'), new Set(['.md'])), path.join(ROOT, 'README.md')];
+    const docs = [...walk(path.join(ROOT, 'docs'), new Set(['.md'])), path.join(ROOT, 'README.md'), path.join(ROOT, 'examples/README.md'), ...catalog.map(entry => path.join(ROOT, 'examples', entry.id, 'README.md'))];
     for (const file of docs) {
         const source = fs.readFileSync(file, 'utf8');
         for (const match of source.matchAll(/\]\(([^)]+)\)/g)) {

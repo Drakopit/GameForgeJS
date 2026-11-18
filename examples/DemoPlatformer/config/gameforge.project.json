@@ -1,9 +1,0 @@
-{
-  "schemaVersion": 1,
-  "name": "DemoPlatformer",
-  "entry": "index.html",
-  "runtimeConfig": "config/game.config.json",
-  "resources": "config/resources.json",
-  "modules": [],
-  "enginePath": "../.."
-}

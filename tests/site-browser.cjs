@@ -15,7 +15,7 @@ async function main() {
     try {
         if (process.argv.includes('--capture-demos')) {
             const page = await browser.newPage({ viewport: { width: 1100, height: 800 } });
-            for (const [name, demo, presses] of [['sky-trail', 'DemoMiniGame3D', 1], ['platform-adventure', 'DemoAdvanced', 2], ['toon-adventure', 'DemoToonABS', 0]]) {
+            for (const [name, demo, presses] of [['sky-trail', 'sky-trail-3d', 1], ['platform-adventure', 'platform-adventure-2d', 2], ['toon-adventure', 'toon-adventure-3d', 0]]) {
                 await page.goto(`${url}examples/${demo}/index.html`, { waitUntil: 'networkidle' });
                 await page.evaluate(async () => { window.captureCore = await import('gameforgejs/core'); });
                 await page.waitForFunction(() => window.captureCore.Engine.running);
@@ -27,7 +27,7 @@ async function main() {
                 const level = await page.evaluate(async () => (await import('gameforgejs/core')).LevelHandler.current.constructor.name);
                 assert.ok(!/Menu|Selector/.test(level), `Capture did not reach gameplay: ${level}`);
                 const canvas = await page.locator('canvas').first().boundingBox();
-                assert.ok(canvas, 'Demo canvas is missing');
+                assert.ok(canvas, 'movement-collision-2d canvas is missing');
                 await page.screenshot({ path: path.join(root, `site/${name}.jpg`), type: 'jpeg', quality: 82, clip: canvas });
             }
             await page.close();

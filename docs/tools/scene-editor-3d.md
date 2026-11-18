@@ -47,9 +47,9 @@ goals, actors, and UI.
 references consistent when moving or renaming a scene.
 
 The 3D renderer example contains a scene document under
-`examples/Demo3D/assets/Manifests/scenes/`. Sky Trail has a different,
+`examples/renderer-3d/assets/Manifests/scenes/`. Sky Trail has a different,
 game-specific contract under
-`examples/DemoMiniGame3D/assets/Manifests/sky-trail/course.json`, describing
+`examples/sky-trail-3d/assets/Manifests/sky-trail/course.json`, describing
 platforms, coins, player spawn, and a goal.
 
 Do not treat a Sky Trail course as a generic `SceneManifest3D` scene.

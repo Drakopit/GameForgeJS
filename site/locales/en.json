@@ -78,5 +78,6 @@
   "image.platformer": "2D platformer demo in a snowy landscape",
   "image.skyCard": "Platforms, coins and a character in Sky Trail",
   "image.toon": "Toon knight beside shallow water in a forest with sentries",
-  "page.description": "GameForgeJS: an experimental native JavaScript framework for 2D and 3D browser games. Play demos, explore the architecture and follow its progress."
+  "page.description": "GameForgeJS: an experimental native JavaScript framework for 2D and 3D browser games. Play demos, explore the architecture and follow its progress.",
+  "demos.touch": "Touch and virtual controls"
 }

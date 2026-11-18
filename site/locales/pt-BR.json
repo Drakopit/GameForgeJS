@@ -75,8 +75,9 @@
   "a11y.nav": "Navegação principal",
   "a11y.sky": "Abrir a demo Sky Trail",
   "image.sky": "Sky Trail: personagem em plataformas suspensas com moedas, renderizado pela GameForgeJS",
-  "image.platformer": "Demo de plataforma 2D em uma paisagem de neve",
+  "image.platformer": "movement-collision-2d de plataforma 2D em uma paisagem de neve",
   "image.skyCard": "Plataformas, moedas e personagem da demo Sky Trail",
   "image.toon": "Cavaleiro Toon junto à água rasa em uma floresta com sentinelas",
-  "page.description": "GameForgeJS: framework experimental em JavaScript nativo para jogos 2D e 3D no navegador. Explore demos, conheça a arquitetura e acompanhe a evolução."
+  "page.description": "GameForgeJS: framework experimental em JavaScript nativo para jogos 2D e 3D no navegador. Explore demos, conheça a arquitetura e acompanhe a evolução.",
+  "demos.touch": "Toque e controles virtuais"
 }

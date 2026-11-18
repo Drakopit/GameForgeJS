@@ -80,7 +80,7 @@ cli/
 examples/
   catalog.json          Metadata consumed by the showcase and this table
   showcase/             Example browser, independent of the runtime
-  Demo*/
+  <purpose>-2d/ or <purpose>-3d/
     index.html          Browser entry
     main.js             Game bootstrap
     config/             Game settings, resource manifest and tooling metadata (migrated projects)
@@ -103,19 +103,20 @@ start from CLI templates, which contain only the minimum runnable behavior.
 <!-- examples:start -->
 | Example | Dimension | Purpose |
 | --- | --- | --- |
-| [Toon adventure — room checkpoint](examples/DemoToonABS/index.html) | 3D | Toon ABS checkpoint with banded lighting, telegraphed melee, one sentry, health and encounter restart. |
-| [Platformer movement lab](examples/DemoPlatformer/index.html) | 2D | Reusable movement component with tile collisions, coyote time, buffered jumps, and variable jump height. |
-| [Movement and collision](examples/Demo/index.html) | 2D | A compact 2D example for movement, collision, and collection. |
-| [Component adventure](examples/DemoAdventure2D/index.html) | 2D | Top-down movement, reusable entity components, and room camera transitions. |
-| [Platform adventure](examples/DemoAdvanced/index.html) | 2D | A platform/RPG showcase with composed manifests, inventory, skills, and campaign progression. |
-| [Tactical RPG](examples/DemoTacticalRPG/index.html) | 2D | A turn-based grid game with pathfinding, movement range, and combat. |
-| [Fighting game](examples/DemoFightingGame2D/index.html) | 2D | Character selection, arcade and versus modes, keyboard controls, and gamepad input. |
-| [Street Fight Puzzle](examples/DemoStreetFightPuzzle/index.html) | 2D | An arcade puzzle game with combos and competitive block exchanges. |
-| [3D renderer](examples/Demo3D/index.html) | 3D | A Render3D scene exploring cameras, models, lighting, materials, and shadows. |
-| [Solar system](examples/DemoSolarSystem/index.html) | 3D | Procedural celestial materials, sunlight, and animated planetary orbits. |
-| [Sky Trail](examples/DemoMiniGame3D/index.html) | 3D | A 3D platform game with moving terrain, physics, collectibles, and textured surfaces. |
-| [Online sandbox](examples/DemoOnlineMMO/index.html) | 2D | Same-origin multiplayer tabs, synchronized players, and canvas chat; optional external relay. |
-| [Addon playground](examples/DemoAddons/index.html) | 2D | Shared parallax layers and a patrol/rest state machine using the standard framework lifecycle. |
+| [Toon Adventure 3D](examples/toon-adventure-3d/index.html) | 3D | Three connected areas, five sentries, animated characters and interactive shallow water. |
+| [Platformer Building Blocks 2D](examples/platformer-2d/index.html) | 2D | Two compact stages demonstrating tile collision, jump buffering, coyote time, collection and level transitions. |
+| [Movement & Collision 2D](examples/movement-collision-2d/index.html) | 2D | A compact 2D example for movement, collision, and collection. |
+| [Component Adventure 2D](examples/component-adventure-2d/index.html) | 2D | Top-down movement, reusable entity components, and room camera transitions. |
+| [Platform Adventure 2D](examples/platform-adventure-2d/index.html) | 2D | A platform/RPG showcase with composed manifests, inventory, skills, and campaign progression. |
+| [Tactical RPG 2D](examples/tactical-rpg-2d/index.html) | 2D | A turn-based grid game with pathfinding, movement range, and combat. |
+| [Fighting Arena 2D](examples/fighting-2d/index.html) | 2D | Character selection, arcade and versus modes, keyboard controls, and gamepad input. |
+| [Puzzle Battle 2D](examples/puzzle-battle-2d/index.html) | 2D | An arcade puzzle game with combos and competitive block exchanges. |
+| [Renderer Showcase 3D](examples/renderer-3d/index.html) | 3D | A Render3D scene exploring cameras, models, lighting, materials, and shadows. |
+| [Solar System 3D](examples/solar-system-3d/index.html) | 3D | Procedural celestial materials, sunlight, and animated planetary orbits. |
+| [Sky Trail 3D](examples/sky-trail-3d/index.html) | 3D | Four expeditions, a gamepad-ready 3D menu, moving platforms, checkpoints and collectibles. |
+| [Online Sandbox 2D](examples/online-sandbox-2d/index.html) | 2D | Same-origin multiplayer tabs, synchronized players, and canvas chat; optional external relay. |
+| [Addon Building Blocks 2D](examples/addons-2d/index.html) | 2D | Shared parallax layers and a patrol/rest state machine using the standard framework lifecycle. |
+| [Touch Garden 2D](examples/touch-garden-2d/index.html) | 2D | Mobile building blocks: identified multi-touch, a virtual stick, a simultaneous dash action, collision and collectible entities. |
 <!-- examples:end -->
 
 ## Documentation
@@ -157,3 +158,6 @@ games in one page. See the architecture guide for the compatibility boundary.
 
 External authoring applications and multiplayer servers are separate
 projects. The local development server does not provide a game backend.
+
+See the [complete examples index](examples/README.md) for canonical demo names,
+controls, learning paths and the mobile Touch Garden building blocks.

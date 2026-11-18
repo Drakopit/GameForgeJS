@@ -1,0 +1,15 @@
+import { Module } from 'gameforgejs/core';
+import { module2D } from 'gameforgejs/2d';
+import { FightingCharacterSelectLevel } from '../screens/FightingCharacterSelectLevel.js';
+import { FightingGame2DLevel } from '../levels/FightingGame2DLevel.js';
+import { FightingGameMenuLevel } from '../screens/FightingGameMenuLevel.js';
+
+export class FightingModule extends Module {
+    constructor() {
+        super('fighting-2d', {
+            imports: [module2D()],
+            declarations: [FightingCharacterSelectLevel, FightingGame2DLevel, FightingGameMenuLevel],
+            exports: [FightingCharacterSelectLevel, FightingGame2DLevel, FightingGameMenuLevel],
+        });
+    }
+}

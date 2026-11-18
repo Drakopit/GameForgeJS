@@ -15,6 +15,8 @@ test("documentation local links point to existing files", () => {
     const documents = [
         path.join(root, "README.md"),
         ...walk(path.join(root, "docs")).filter(file => file.endsWith(".md")),
+        path.join(root, 'examples/README.md'),
+        ...JSON.parse(fs.readFileSync(path.join(root, 'examples/catalog.json'))).map(entry => path.join(root, 'examples', entry.id, 'README.md')),
     ];
     const broken = [];
     for (const file of documents) {
@@ -42,7 +44,9 @@ test("example catalog declares unique runnable game entries", () => {
     assert.equal(new Set(catalog.map(entry => entry.id)).size, catalog.length, "Example IDs must be unique");
     assert.equal(new Set(catalog.map(entry => entry.path)).size, catalog.length, "Example entries must be unique");
     for (const entry of catalog) {
-        assert.match(entry.id, /^[a-z0-9-]+$/);
+        assert.match(entry.id, /^[a-z]+(?:-[a-z0-9]+)*-(?:2d|3d)$/);
+        assert.equal(path.dirname(entry.path), entry.id);
+        for (const file of ['README.md', 'config/gameforge.project.json', 'config/gameforgejs.package.json']) assert.ok(fs.existsSync(path.join(examples, entry.id, file)));
         assert.ok(entry.name && entry.description, "Each example needs display metadata");
         assert.ok(["2D", "3D"].includes(entry.dimension));
         assert.match(entry.path, /^[A-Za-z0-9_-]+\/index\.html$/);

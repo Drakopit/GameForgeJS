@@ -8,7 +8,7 @@ This is a small exploration slice, not the finished adventure or final course.
 ## 1. Walk the route
 
 Run `node cli/index.cjs serve` from the repository root and open
-`/examples/DemoToonABS/index.html` at the printed server address.
+`/examples/toon-adventure-3d/index.html` at the printed server address.
 
 1. Press H for the ScreenUI controls; close it with H.
 2. Walk north with W/up through the courtyard. Space attacks in your facing direction.
@@ -23,7 +23,7 @@ and attack only within reach. Defeated bodies no longer collide; their death vis
 
 ## 2. Add another encounter
 
-Open `examples/DemoToonABS/src/data/Courtyard.js`. Each `areas` entry has a name,
+Open `examples/toon-adventure-3d/src/data/Courtyard.js`. Each `areas` entry has a name,
 a minimum Z boundary and a list of enemy spawn positions. Areas are ordered from
 south to north (decreasing Z). Add `[0, 0.55, -18]` to the old grove's enemy list,
 reload and verify that the HUD total becomes six. Keep spawns outside solid scenery.
@@ -62,8 +62,8 @@ and SHA-256 hashes. Original resource files are unchanged.
 ## 4. Check the published game
 
 ```sh
-node cli/index.cjs build --root examples/DemoToonABS
-node cli/index.cjs serve --root examples/DemoToonABS/dist
+node cli/index.cjs build --root examples/toon-adventure-3d
+node cli/index.cjs serve --root examples/toon-adventure-3d/dist
 ```
 
 Repeat the route, check the forest textures, clear enemies and restart. The browser
@@ -83,7 +83,7 @@ Its transition age advances through the existing level update, without wall-cloc
 reads or a second loop. Both widgets use ScreenUI and separate files under src/ui/.
 
 Skybox.FromImage uses sky_cross from config/resources.json. The cubemap cross was
-copied unchanged from DemoMiniGame3D; assets/sky/README.md records its repository
+copied unchanged from sky-trail-3d; assets/sky/README.md records its repository
 origin. It is separate from the KayKit assets and their license.
 
 | Action | Keyboard | Standard-layout gamepad |

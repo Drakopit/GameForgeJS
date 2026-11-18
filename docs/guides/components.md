@@ -74,7 +74,7 @@ resources when detached.
 
 ## Study the playable example
 
-`examples/DemoAdventure2D/src/entities/AdventurePlayer.js` combines
+`examples/component-adventure-2d/src/entities/AdventurePlayer.js` combines
 transform, bounds, health, input, top-down movement, melee attack, and a
 renderer. Its game-specific components live under the same example's
 `src/components/`.
@@ -83,7 +83,7 @@ The Slime entity combines shared state components with wandering behavior and
 a renderer. The camera uses a room-camera component for transitions.
 
 Run the example from the showcase, or open
-`/examples/DemoAdventure2D/index.html` on the repository development server.
+`/examples/component-adventure-2d/index.html` on the repository development server.
 Use this as an integration example; avoid moving the Adventure game's rules
 into the engine merely because more than one entity uses them.
 

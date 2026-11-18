@@ -4,7 +4,7 @@
 
 Public core entry point: gameforgejs/core.
 
-Documented exports: **50/51**.
+Documented exports: **51/52**.
 
 | Symbol | Kind | Summary |
 | --- | --- | --- |
@@ -52,7 +52,8 @@ Documented exports: **50/51**.
 | [`resolveModules`](#resolvemodules) | `function` | Resolve module imports/dependencies and validate declarations before setup. |
 | [`ResourceManifestLoader`](#resourcemanifestloader) | `class` | Queues images, audio, shaders, models and JSON declared by game resource manifests. |
 | [`Store`](#store) | `class` | This class is part of the GameForgeJS framework and provides functionality to save and restore game state in the browser's local storage. |
-| [`Touch`](#touch) | `class` | Manages touch input for the game framework. |
+| [`Touch`](#touch) | `class` | Identified multi-touch input owned by Input. Client coordinates can be converted through ToScreen to match a framework Screen, including CSS scaling/letterboxing. Legacy last-position accessors remain available. |
+| [`TouchContact`](#touchcontact) | `class` | Snapshot of one identified contact, in browser client coordinates. |
 | [`TransformComponent`](#transformcomponent) | `class` | Stores 2D position, rotation and scale and can mirror them onto its owner. |
 | [`Util`](#util) | `class` | Static identifier and utility helpers. |
 | [`Vector2D`](#vector2d) | `class` | Mutable two-dimensional vector with arithmetic and conversion helpers. |
@@ -1620,59 +1621,64 @@ Backs up the saved state to a different key in local storage.
 
 `class` from [`src/core/Input/Touch.js`](../../../src/core/Input/Touch.js)
 
-Manages touch input for the game framework.
-
-**Returns:** `Object`
-
-**Example**
-
-```js
-const touch = new Touch();
-// Touch event listeners are automatically added
-```
+Identified multi-touch input owned by Input. Client coordinates can be converted through ToScreen to match a framework Screen, including CSS scaling/letterboxing. Legacy last-position accessors remain available.
 
 ### Methods
 
+#### `touchStartHandler(event)`
+
+JSDoc pending.
+#### `touchMoveHandler(event)`
+
+JSDoc pending.
+#### `EndContacts(event, cancelled)`
+
+JSDoc pending.
+#### `Update()`
+
+Latch touch edges once per engine frame; Input calls this automatically.
+#### `ClearFrameData()`
+
+JSDoc pending.
+#### `GetActiveTouches()`
+
+JSDoc pending.
+#### `GetStartedTouches()`
+
+JSDoc pending.
+#### `GetEndedTouches()`
+
+JSDoc pending.
+#### `GetTouch(identifier)`
+
+JSDoc pending.
+#### `CancelAll()`
+
+JSDoc pending.
+#### `static ToScreen(position, screen)`
+
+Convert client-space Vector2D to logical Screen coordinates.
+#### `getTouchStartPosition()`
+
+JSDoc pending.
+#### `getTouchEndPosition()`
+
+JSDoc pending.
 #### `Dispose()`
 
 JSDoc pending.
-#### `touchStartHandler(event)`
 
-Handles the touch start event and updates the start position.
+## TouchContact
 
-**Parameters**
+`class` from [`src/core/Input/TouchContact.js`](../../../src/core/Input/TouchContact.js)
 
-| Name | Type | Description |
-| --- | --- | --- |
-| `event` | `TouchEvent` | The touch start event |
-#### `touchEndHandler(event)`
+Snapshot of one identified contact, in browser client coordinates.
 
-Handles the touch end event and updates the end position.
+### Methods
 
-**Parameters**
+#### `Clone()`
 
-| Name | Type | Description |
-| --- | --- | --- |
-| `event` | `TouchEvent` | The touch end event |
-#### `touchMoveHandler(event)`
-
-Handles the touch move event and updates the position.
-
-**Parameters**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| `event` | `TouchEvent` | The touch move event |
-#### `getTouchStartPosition()`
-
-Gets the touch start position.
-
-**Returns:** `Vector2D` - The start position of the last touch
-#### `getTouchEndPosition()`
-
-Gets the touch end position.
-
-**Returns:** `Vector2D` - The end position of the last touch
+JSDoc pending.
 
 ## TransformComponent
 

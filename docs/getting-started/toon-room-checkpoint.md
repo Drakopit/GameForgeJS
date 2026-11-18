@@ -16,7 +16,7 @@ From a checkout with dependencies installed:
 node cli/index.cjs serve
 ```
 
-Open `/examples/DemoToonABS/index.html` on the printed local server address.
+Open `/examples/toon-adventure-3d/index.html` on the printed local server address.
 You should see a green courtyard, two trees, two blocks and a golden sphere.
 WASD or arrows move the sphere; diagonal movement has the same speed as cardinal
 movement. The blocks stop it. R returns it to the entrance. B cycles 2, 3 and 4
@@ -29,7 +29,7 @@ directly from disk does not establish the module and asset loading environment.
 
 ## 2. Follow the files
 
-| File under `examples/DemoToonABS` | Responsibility |
+| File under `examples/toon-adventure-3d` | Responsibility |
 | --- | --- |
 | `main.js` | BootstrapGame, module2D/module3D and the initial level |
 | `config/game.config.json` | Screen and action bindings |
@@ -82,9 +82,9 @@ to use ordinary lighting without changing the level or physics.
 ## 4. Publish the same room
 
 ```sh
-node cli/index.cjs build --root examples/DemoToonABS --dry-run
-node cli/index.cjs build --root examples/DemoToonABS
-node cli/index.cjs serve --root examples/DemoToonABS/dist
+node cli/index.cjs build --root examples/toon-adventure-3d --dry-run
+node cli/index.cjs build --root examples/toon-adventure-3d
+node cli/index.cjs serve --root examples/toon-adventure-3d/dist
 ```
 
 The plan selects `core`, `2d` and `3d` and excludes network, compatibility and

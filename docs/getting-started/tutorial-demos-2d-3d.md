@@ -24,9 +24,9 @@ Useful references:
 - [Project layout and configuration](./new-project.md)
 - [Per-game input](./input-config.md)
 - [Reusable components](../guides/components.md)
-- Movement and collision: `examples/Demo/`
-- Components and room transitions: `examples/DemoAdventure2D/`
-- Manifests and campaign flow: `examples/DemoAdvanced/`
+- Movement and collision: `examples/movement-collision-2d/`
+- Components and room transitions: `examples/component-adventure-2d/`
+- Manifests and campaign flow: `examples/platform-adventure-2d/`
 
 ## A minimal 3D game
 
@@ -43,10 +43,10 @@ Useful references:
 
 - [3D rendering concepts](../guides/render3d.md)
 - [External scene document contract](../tools/scene-editor-3d.md)
-- Renderer scene: `examples/Demo3D/`
-- Animated celestial materials: `examples/DemoSolarSystem/`
+- Renderer scene: `examples/renderer-3d/`
+- Animated celestial materials: `examples/solar-system-3d/`
 - Moving platforms, textures, physics, and course data:
-  `examples/DemoMiniGame3D/`
+  `examples/sky-trail-3d/`
 
 Use the current `Level3D`, `Mesh`, `PerspectiveCamera`, and material
 APIs for new code. Deprecated compatibility exports are described in the

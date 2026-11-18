@@ -1,6 +1,6 @@
 # Sky Trail: a modular 3D platforming demo
 
-Run `node cli/index.cjs serve` and open `/examples/DemoMiniGame3D/index.html`.
+Run `node cli/index.cjs serve` and open `/examples/sky-trail-3d/index.html`.
 Choose **Sky Trail** for the normal course or **Sky Trail — Ventos Altos** for a
 harder timing variant of the same layout. The second variant moves platforms 20%
 faster, shortens the blinking platform's solid window and shifts intermediate coins.
@@ -81,8 +81,8 @@ new map. Session records are keyed by course asset name and are not saved to dis
 ## Validation and publication
 
 ```sh
-node cli/index.cjs build --root examples/DemoMiniGame3D
-node cli/index.cjs serve --root examples/DemoMiniGame3D/dist
+node cli/index.cjs build --root examples/sky-trail-3d
+node cli/index.cjs serve --root examples/sky-trail-3d/dist
 npm run test:browser
 ```
 

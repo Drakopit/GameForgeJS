@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "modules": [
+    "core",
+    "2d",
+    "network"
+  ],
+  "addons": []
+}

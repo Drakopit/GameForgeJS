@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "project": {
+    "name": "Renderer Showcase 3D",
+    "version": "1.0.0",
+    "author": "Camello"
+  },
+  "window": {
+    "title": "GameForgeJS — Renderer Showcase 3D",
+    "backgroundColor": "#000000",
+    "cursor": "default"
+  },
+  "screen": {
+    "width": 640,
+    "height": 480,
+    "fullScreen": true,
+    "pixelArt": true,
+    "antialiasing": false,
+    "orientation": "landscape"
+  }
+}

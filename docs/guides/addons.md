@@ -1,7 +1,7 @@
 # Addons that use the framework
 
-The first pilots are `ParallaxLayer2D`, `State` and `StateMachine`. DemoAdvanced
-and the independent [Addon playground](../../examples/DemoAddons/index.html)
+The first pilots are `ParallaxLayer2D`, `State` and `StateMachine`. platform-adventure-2d
+and the independent [Addon playground](../../examples/addons-2d/index.html)
 use the same implementations under `src/addons`. No runtime registration is
 required. They do not create a loop, canvas or input/audio service.
 

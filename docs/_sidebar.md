@@ -45,3 +45,6 @@
 
 - [Game module classes](guides/game-modules.md)
 - [Site localization](guides/site-localization.md)
+
+- [Examples audit](migrations/demos-audit.md)
+- [Touch Garden walkthrough](getting-started/touch-garden.md)

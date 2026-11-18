@@ -90,6 +90,7 @@ export class Input {
         this.instance.pendingKeysDown = {};
         this.instance.pendingKeysUp = {};
         this.instance.gamepad.Update();
+        this.instance.touch.Update();
     }
 
     /**
@@ -98,6 +99,7 @@ export class Input {
     static LateUpdate() {
         if (!this.instance) return;
         this.instance.gamepad.LateUpdate();
+        this.instance.touch.ClearFrameData();
         // Se implementou o ClearFrameData no Mouse.js
         if (typeof this.instance.mouse.ClearFrameData === "function") {
             this.instance.mouse.ClearFrameData();

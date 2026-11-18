@@ -11,7 +11,7 @@ and physics remain those described here; pursuit, inventory and water are pendin
 ## 1. Play the encounter
 
 From the repository root, run `node cli/index.cjs serve` and open
-`/examples/DemoToonABS/index.html` on the printed server address.
+`/examples/toon-adventure-3d/index.html` on the printed server address.
 
 1. Press H to read controls in the framework HUD. H closes help; it does not pause.
 2. Use WASD/arrows to approach the first sentry down the center aisle.
@@ -83,8 +83,8 @@ through thin obstacles and generalize collider sizes before reuse.
 ## 4. Publish and check the same behavior
 
 ```sh
-node cli/index.cjs build --root examples/DemoToonABS
-node cli/index.cjs serve --root examples/DemoToonABS/dist
+node cli/index.cjs build --root examples/toon-adventure-3d
+node cli/index.cjs serve --root examples/toon-adventure-3d/dist
 ```
 
 The distribution selects core, 2d, 3d and the state-machine addon. No parallax,

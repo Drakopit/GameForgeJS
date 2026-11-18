@@ -47,19 +47,19 @@ Configuration consolidation precedes the addon pilot. See
 
 The distribution manifest, group dependency analysis, publication validation and
 starter integration are the first delivery. Advanced is the first migrated demo;
-Demo3D and DemoMiniGame3D now also use selective distribution and config folders.
+renderer-3d and sky-trail-3d now also use selective distribution and config folders.
 Other demos retain their existing distribution behavior. Runtime APIs and game
 classes are unchanged. The parallax/state-machine pilot now has shared public
 entry points, an independent example and automated validation. The first platformer
 slice adds component-based movement, solid tile collision, coyote time, buffered
-jumps and variable jump height in DemoPlatformer. The demo also uses the existing
+jumps and variable jump height in platformer-2d. The demo also uses the existing
 Camera for a scrolling stage with separate stage data and a fixed HUD. Player
 animation uses Sprite and Animator with manifest-loaded sheets and a separate
 presentation component. Two small stages now validate collectible entities,
 collection-gated goals and the engine's existing level transition/cleanup flow.
 Enemies, checkpoints, persistence, full genre kits and final courses remain future work.
 
-The active 3D path now has DemoToonABS: a separate Level3D room with ToonMaterial,
+The active 3D path now has toon-adventure-3d: a separate Level3D room with ToonMaterial,
 overhead navigation, sphere/box collision, ScreenUI help and selective distribution. Its
 [checkpoint guide](getting-started/toon-room-checkpoint.md) documents primitive
 art and rendering limitations. The first ABS encounter now validates separate
@@ -81,3 +81,8 @@ and exports, independently of distribution manifests. Both engines share lifecyc
 phases for modules. Sky Trail and Toon ABS use the shared Canvas HUD primitives;
 the presentation page supports Portuguese and English with persisted selection.
 Vector Swizzling and the remaining full-game milestones stay on the roadmap.
+
+The examples audit now standardizes every runnable project under purpose-based
+2d/3d names, config folders, root modules and selective packages. Touch Garden adds
+identified multi-touch, virtual actions and screen-coordinate conversion before
+returning to Vector Swizzling and the complete-game roadmap.

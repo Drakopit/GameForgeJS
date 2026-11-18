@@ -1,3 +1,6 @@
+const { inspectPuzzleInput } = require('./browser/puzzle-input.cjs');
+const { inspectCatalogAliases } = require('./browser/catalog-aliases.cjs');
+const { inspectTouchGarden } = require('./browser/touch-garden.cjs');
 const { inspectSkyTrailMenu } = require('./browser/sky-trail-menu.cjs');
 const { inspectSkyTrail } = require('./browser/sky-trail.cjs');
 const { inspectToonWater } = require('./browser/toon-water.cjs');
@@ -42,25 +45,27 @@ async function inspect(browser, url, name, { starter = false, play = false } = {
         await page.waitForTimeout(500);
         const dimensions = await page.locator('canvas').evaluateAll(canvases => canvases.map(canvas => [canvas.width, canvas.height]));
         assert.ok(dimensions.some(([width, height]) => width > 0 && height > 0), 'No canvas with a nonzero size');
-        if (name.endsWith('-mini3d')) {
+        if (name.endsWith('-sky-trail-3d')) {
             await inspectSkyTrailMenu(page, path.join(screenshots, `${name}-menu.png`));
             play = false;
         }
         if (play) {
             // Exercise actual input, level transition, asset composition and gameplay.
-            for (let i = 0; i < (name.includes('advanced') ? 2 : 1); i++) {
+            for (let i = 0; i < (name.includes('platform-adventure-2d') ? 2 : 1); i++) {
                 await page.keyboard.down('Enter'); await page.waitForTimeout(100); await page.keyboard.up('Enter');
                 await page.waitForTimeout(500);
             }
             const current = await page.evaluate(async () => (await import('gameforgejs/core')).LevelHandler.current.constructor.name);
             assert.ok(!/Menu|Selector/.test(current), `Input did not enter gameplay: ${current}`);
         }
-        if (name.endsWith('-mini3d')) await inspectSkyTrail(page, path.join(screenshots, `${name}-sky-trail.png`));
-        if (name.endsWith('-platformer')) {
+        if (name.endsWith('-sky-trail-3d')) await inspectSkyTrail(page, path.join(screenshots, `${name}-sky-trail.png`));
+        if (name.endsWith('-touch-garden-2d')) await inspectTouchGarden(page, path.join(screenshots, `${name}.png`));
+        if (name.endsWith('-puzzle-battle-2d')) await inspectPuzzleInput(page);
+        if (name.endsWith('-platformer-2d')) {
             await inspectPlatformer(page, path.join(screenshots, `${name}.png`));
             await inspectPlatformerProgression(page);
         }
-        if (name.endsWith('-toonabs')) {
+        if (name.endsWith('-toon-adventure-3d')) {
             await inspectToonRoom(page, path.join(screenshots, `${name}.png`));
             await inspectToonCombat(page);
             await inspectToonAnimation(page, path.join(screenshots, `${name}-animation.png`));
@@ -81,7 +86,7 @@ async function inspect(browser, url, name, { starter = false, play = false } = {
             const after = await page.locator('canvas').screenshot();
             assert.ok(!after.equals(before), '3D starter scene does not animate');
         }
-        if (starter || play || name === 'source-demo3d') await page.screenshot({ path: path.join(screenshots, `${name}.png`) });
+        if (starter || play || name === 'source-renderer-3d') await page.screenshot({ path: path.join(screenshots, `${name}.png`) });
         assert.deepEqual([...errors], [], 'Browser errors');
         if (!starter) {
             await page.evaluate(async () => {
@@ -93,7 +98,7 @@ async function inspect(browser, url, name, { starter = false, play = false } = {
         console.log(`PASS ${name}`);
     } catch (error) {
         failures.push(name);
-        console.error(`FAIL ${name}: ${error.message}\n${[...errors].join('\n')}`);
+        console.error(`FAIL ${name}: ${error.stack ?? error.message}\n${[...errors].join('\n')}`);
         await page.screenshot({ path: path.join(screenshots, `${name}-failure.png`) }).catch(() => {});
     } finally { await page.close(); }
 }
@@ -112,7 +117,8 @@ async function main() {
     }
     try {
         const source = await serve({ root: ROOT });
-        for (const entry of catalog) await inspect(browser, `${source}examples/${entry.path}`, `source-${entry.id}`, { play: ['advanced', 'mini3d'].includes(entry.id) });
+        await inspectCatalogAliases(browser, source, catalog);
+        for (const entry of catalog) await inspect(browser, `${source}examples/${entry.path}`, `source-${entry.id}`, { play: ['platform-adventure-2d', 'sky-trail-3d'].includes(entry.id) });
         for (const template of ['minimal-2d', 'minimal-3d']) {
             const project = path.join(temporary, template);
             createProject(project, { template });
@@ -128,7 +134,7 @@ async function main() {
             const project = path.join(ROOT, 'examples', path.dirname(entry.path));
             const output = build(project, { output: path.join(temporary, `build-${entry.id}`) }).output;
             const url = await serve({ root: output, basePath: '/game/' });
-            await inspect(browser, url, `built-${entry.id}`, { play: ['advanced', 'mini3d'].includes(entry.id) });
+            await inspect(browser, url, `built-${entry.id}`, { play: ['platform-adventure-2d', 'sky-trail-3d'].includes(entry.id) });
         }
     } finally {
         await browser.close();

@@ -37,9 +37,10 @@
     "test": "node --test tests/*.test.cjs",
     "test:browser": "node tests/browser-smoke.cjs",
     "test:site": "node tests/site-browser.cjs",
-    "build": "node cli/index.cjs build --root examples/DemoAdvanced --out ../../dist/DemoAdvanced",
-    "publish": "node cli/index.cjs build --root examples/DemoAdvanced --out ../../dist/DemoAdvanced",
-    "test:sky-trail": "node tests/sky-trail-browser.cjs"
+    "build": "node cli/index.cjs build --root examples/platform-adventure-2d --out ../../dist/platform-adventure-2d",
+    "publish": "node cli/index.cjs build --root examples/platform-adventure-2d --out ../../dist/platform-adventure-2d",
+    "test:sky-trail": "node tests/sky-trail-browser.cjs",
+    "test:touch": "node tests/touch-browser.cjs"
   },
   "dependencies": {
     "acorn": "^8.19.0"

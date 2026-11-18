@@ -1,93 +1,149 @@
 [
   {
-    "id": "toonabs",
-    "name": "Toon adventure — room checkpoint",
-    "description": "Toon ABS checkpoint with banded lighting, telegraphed melee, one sentry, health and encounter restart.",
-    "path": "DemoToonABS/index.html",
-    "dimension": "3D"
+    "id": "toon-adventure-3d",
+    "name": "Toon Adventure 3D",
+    "description": "Three connected areas, five sentries, animated characters and interactive shallow water.",
+    "path": "toon-adventure-3d/index.html",
+    "dimension": "3D",
+    "aliases": [
+      "toonabs"
+    ]
   },
   {
-    "id": "platformer",
-    "name": "Platformer movement lab",
-    "description": "Reusable movement component with tile collisions, coyote time, buffered jumps, and variable jump height.",
-    "path": "DemoPlatformer/index.html",
-    "dimension": "2D"
+    "id": "platformer-2d",
+    "name": "Platformer Building Blocks 2D",
+    "description": "Two compact stages demonstrating tile collision, jump buffering, coyote time, collection and level transitions.",
+    "path": "platformer-2d/index.html",
+    "dimension": "2D",
+    "aliases": [
+      "platformer"
+    ]
   },
   {
-    "id": "immature",
-    "name": "Movement and collision",
+    "id": "movement-collision-2d",
+    "name": "Movement & Collision 2D",
     "description": "A compact 2D example for movement, collision, and collection.",
-    "path": "Demo/index.html",
-    "dimension": "2D"
+    "path": "movement-collision-2d/index.html",
+    "dimension": "2D",
+    "aliases": [
+      "immature"
+    ]
   },
   {
-    "id": "adventure2d",
-    "name": "Component adventure",
+    "id": "component-adventure-2d",
+    "name": "Component Adventure 2D",
     "description": "Top-down movement, reusable entity components, and room camera transitions.",
-    "path": "DemoAdventure2D/index.html",
-    "dimension": "2D"
+    "path": "component-adventure-2d/index.html",
+    "dimension": "2D",
+    "aliases": [
+      "adventure2d",
+      "adventure",
+      "zelda"
+    ]
   },
   {
-    "id": "advanced",
-    "name": "Platform adventure",
+    "id": "platform-adventure-2d",
+    "name": "Platform Adventure 2D",
     "description": "A platform/RPG showcase with composed manifests, inventory, skills, and campaign progression.",
-    "path": "DemoAdvanced/index.html",
-    "dimension": "2D"
+    "path": "platform-adventure-2d/index.html",
+    "dimension": "2D",
+    "aliases": [
+      "advanced"
+    ]
   },
   {
-    "id": "tactical",
-    "name": "Tactical RPG",
+    "id": "tactical-rpg-2d",
+    "name": "Tactical RPG 2D",
     "description": "A turn-based grid game with pathfinding, movement range, and combat.",
-    "path": "DemoTacticalRPG/index.html",
-    "dimension": "2D"
+    "path": "tactical-rpg-2d/index.html",
+    "dimension": "2D",
+    "aliases": [
+      "tactical"
+    ]
   },
   {
-    "id": "fighting2d",
-    "name": "Fighting game",
+    "id": "fighting-2d",
+    "name": "Fighting Arena 2D",
     "description": "Character selection, arcade and versus modes, keyboard controls, and gamepad input.",
-    "path": "DemoFightingGame2D/index.html",
-    "dimension": "2D"
+    "path": "fighting-2d/index.html",
+    "dimension": "2D",
+    "aliases": [
+      "fighting2d",
+      "fighting"
+    ]
   },
   {
-    "id": "streetfightpuzzle",
-    "name": "Street Fight Puzzle",
+    "id": "puzzle-battle-2d",
+    "name": "Puzzle Battle 2D",
     "description": "An arcade puzzle game with combos and competitive block exchanges.",
-    "path": "DemoStreetFightPuzzle/index.html",
-    "dimension": "2D"
+    "path": "puzzle-battle-2d/index.html",
+    "dimension": "2D",
+    "aliases": [
+      "streetfightpuzzle"
+    ]
   },
   {
-    "id": "demo3d",
-    "name": "3D renderer",
+    "id": "renderer-3d",
+    "name": "Renderer Showcase 3D",
     "description": "A Render3D scene exploring cameras, models, lighting, materials, and shadows.",
-    "path": "Demo3D/index.html",
-    "dimension": "3D"
+    "path": "renderer-3d/index.html",
+    "dimension": "3D",
+    "aliases": [
+      "demo3d"
+    ]
   },
   {
-    "id": "solar3d",
-    "name": "Solar system",
+    "id": "solar-system-3d",
+    "name": "Solar System 3D",
     "description": "Procedural celestial materials, sunlight, and animated planetary orbits.",
-    "path": "DemoSolarSystem/index.html",
-    "dimension": "3D"
+    "path": "solar-system-3d/index.html",
+    "dimension": "3D",
+    "aliases": [
+      "solar3d",
+      "solar"
+    ]
   },
   {
-    "id": "mini3d",
-    "name": "Sky Trail",
-    "description": "A 3D platform game with moving terrain, physics, collectibles, and textured surfaces.",
-    "path": "DemoMiniGame3D/index.html",
-    "dimension": "3D"
+    "id": "sky-trail-3d",
+    "name": "Sky Trail 3D",
+    "description": "Four expeditions, a gamepad-ready 3D menu, moving platforms, checkpoints and collectibles.",
+    "path": "sky-trail-3d/index.html",
+    "dimension": "3D",
+    "aliases": [
+      "mini3d"
+    ]
   },
   {
-    "id": "online",
-    "name": "Online sandbox",
+    "id": "online-sandbox-2d",
+    "name": "Online Sandbox 2D",
     "description": "Same-origin multiplayer tabs, synchronized players, and canvas chat; optional external relay.",
-    "path": "DemoOnlineMMO/index.html",
-    "dimension": "2D"
+    "path": "online-sandbox-2d/index.html",
+    "dimension": "2D",
+    "aliases": [
+      "online",
+      "mmo",
+      "terraria"
+    ]
   },
   {
-    "id": "addons",
-    "name": "Addon playground",
+    "id": "addons-2d",
+    "name": "Addon Building Blocks 2D",
     "description": "Shared parallax layers and a patrol/rest state machine using the standard framework lifecycle.",
-    "path": "DemoAddons/index.html",
-    "dimension": "2D"
+    "path": "addons-2d/index.html",
+    "dimension": "2D",
+    "aliases": [
+      "addons"
+    ]
+  },
+  {
+    "id": "touch-garden-2d",
+    "name": "Touch Garden 2D",
+    "description": "Mobile building blocks: identified multi-touch, a virtual stick, a simultaneous dash action, collision and collectible entities.",
+    "path": "touch-garden-2d/index.html",
+    "dimension": "2D",
+    "aliases": [
+      "touch",
+      "mobile"
+    ]
   }
 ]
