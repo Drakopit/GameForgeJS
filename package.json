@@ -41,7 +41,8 @@
     "publish": "node cli/index.cjs build --root examples/platform-adventure-2d --out ../../dist/platform-adventure-2d",
     "test:sky-trail": "node tests/sky-trail-browser.cjs",
     "test:touch": "node tests/touch-browser.cjs",
-    "capture:examples": "node scripts/capture-examples.cjs"
+    "capture:examples": "node scripts/capture-examples.cjs",
+    "test:fighting": "node tests/fighting-browser.cjs"
   },
   "dependencies": {
     "acorn": "^8.19.0"

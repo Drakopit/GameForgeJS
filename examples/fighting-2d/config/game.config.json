@@ -22,7 +22,8 @@
     "gamepadAliases": {
       "LIGHT_ATTACK": "X",
       "HEAVY_ATTACK": "Y",
-      "SPECIAL": "RB"
+      "SPECIAL": "RB",
+      "SUPER": "RT"
     }
   },
   "fighting": {
@@ -142,7 +143,8 @@
           },
           "up": {
             "buttons": [
-              "DPAD_UP"
+              "DPAD_UP",
+              "A"
             ],
             "axes": [
               "LEFT_STICK_UP"
@@ -150,7 +152,8 @@
           },
           "down": {
             "buttons": [
-              "DPAD_DOWN"
+              "DPAD_DOWN",
+              "LB"
             ],
             "axes": [
               "LEFT_STICK_DOWN"
@@ -164,8 +167,15 @@
           ],
           "special": [
             "SPECIAL"
+          ],
+          "super": [
+            "SUPER"
           ]
-        }
+        },
+        "super": [
+          "KeyU",
+          "KeyQ"
+        ]
       },
       "playerTwo": {
         "left": [
@@ -212,7 +222,8 @@
           },
           "up": {
             "buttons": [
-              "DPAD_UP"
+              "DPAD_UP",
+              "A"
             ],
             "axes": [
               "LEFT_STICK_UP"
@@ -220,7 +231,8 @@
           },
           "down": {
             "buttons": [
-              "DPAD_DOWN"
+              "DPAD_DOWN",
+              "LB"
             ],
             "axes": [
               "LEFT_STICK_DOWN"
@@ -234,8 +246,15 @@
           ],
           "special": [
             "SPECIAL"
+          ],
+          "super": [
+            "SUPER"
           ]
-        }
+        },
+        "super": [
+          "Digit0",
+          "Numpad0"
+        ]
       }
     }
   }

@@ -2,7 +2,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const assert = require('node:assert/strict');
-const { chromium } = require('@playwright/test');
+const { chromium, expect } = require('@playwright/test');
 const { startServer } = require('../cli/server.cjs');
 const catalog = require('../examples/catalog.json');
 
@@ -20,18 +20,30 @@ async function main() {
             const errors = [];
             page.on('pageerror', error => errors.push(error.message));
             await page.goto(`http://127.0.0.1:${server.address().port}/examples/${entry.path}`, { waitUntil: 'networkidle' });
-            await page.waitForFunction(async () => (await import('gameforgejs/core')).Engine.running);
+            await expect.poll(() => page.evaluate(async () => (await import('gameforgejs/core')).Engine.running), { timeout: 30000 }).toBe(true);
             await page.waitForTimeout(350);
-            if (['platform-adventure-2d', 'sky-trail-3d', 'fighting-2d'].includes(entry.id)) {
-                for (let step = 0; step < (entry.id === 'sky-trail-3d' ? 1 : 2); step++) {
-                    await page.keyboard.down('Enter');
-                    await page.waitForTimeout(120);
-                    await page.keyboard.up('Enter');
-                    await page.waitForTimeout(200);
-                }
+            const flow = {
+                'fighting-2d': ['FightingCharacterSelectLevel', 'FightingGame2DLevel'],
+                'platform-adventure-2d': ['AdvancedDemoPhaseSelector', 'AdvancedDemoFirstLevel'],
+                'sky-trail-3d': ['CubeGameLevel'],
+            }[entry.id];
+            for (const target of flow ?? []) {
+                await page.keyboard.down('Enter'); await page.waitForTimeout(120); await page.keyboard.up('Enter');
+                await expect.poll(() => page.evaluate(async () => (await import('gameforgejs/core')).LevelHandler.current.constructor.name),
+                    { timeout: 30000 }).toBe(target);
             }
-            if (['platform-adventure-2d', 'sky-trail-3d', 'fighting-2d'].includes(entry.id)) {
-                await page.waitForFunction(async () => !/Menu|Selector|Select/.test((await import('gameforgejs/core')).LevelHandler.current.constructor.name));
+            if (entry.id === 'fighting-2d') {
+                await expect.poll(() => page.evaluate(async () => (await import('gameforgejs/core')).LevelHandler.current.roundState),
+                    { timeout: 15000, intervals: [50] }).toBe('fight');
+                await page.keyboard.down('KeyU'); await page.waitForTimeout(120); await page.keyboard.up('KeyU');
+                await expect.poll(() => page.evaluate(async () => {
+                    const level = (await import('gameforgejs/core')).LevelHandler.current;
+                    return level.combat.projectiles.pool.some(shot => shot.active && shot.owner === level.playerOne);
+                }), { timeout: 15000, intervals: [16, 32] }).toBe(true);
+                await page.evaluate(async () => {
+                    const { Engine, LevelHandler } = await import('gameforgejs/core');
+                    Engine.Stop(); LevelHandler.current.OnDrawn(); LevelHandler.current.OnGUI();
+                });
             }
             if (entry.id === 'toon-adventure-3d') {
                 await page.evaluate(async () => {

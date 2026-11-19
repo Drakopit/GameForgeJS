@@ -1,3 +1,4 @@
+import { FightingHelp } from '../ui/FightingHelp.js';
 import { Level } from "gameforgejs/core";
 import { Screen } from "gameforgejs/2d";
 import { FIGHTING_GAME_FLOW, FightingGameSession, GoToFightingLevel } from "../state/FightingGameState.js";
@@ -12,7 +13,7 @@ const SCREEN = Object.freeze({
 const MENU_OPTIONS = Object.freeze([
     { label: "ARCADE", description: "Lute contra a sequencia de oponentes.", action: "arcade" },
     { label: "VERSUS", description: "Dois jogadores no mesmo teclado.", action: "versus" },
-    { label: "SAIR", description: "Voltar para a demo principal.", action: "exit" },
+    { label: "GUIA DE COMBATE", description: "Golpes, poderes, combos e controles.", action: "help" },
 ]);
 
 export class FightingGameMenuLevel extends Level {
@@ -27,6 +28,7 @@ export class FightingGameMenuLevel extends Level {
     OnStart() {
         this.screen = new Screen(this.TelaId, SCREEN.width, SCREEN.height, { config: this.context?.config });
         this.FocusCanvas();
+        this.help = new FightingHelp(this.screen);
         this.selectedIndex = 0;
         this.pulse = 0;
         super.OnStart();
@@ -44,6 +46,11 @@ export class FightingGameMenuLevel extends Level {
         super.OnUpdate(dt);
         const delta = dt ?? 0.016;
         this.pulse += delta;
+        if (this.help.visible) {
+            if (this.IsConfirmPressed() || keyboardDown(['Escape', 'KeyH']) || anyGamepadButtonDown(['B'])) this.help.Toggle();
+            return;
+        }
+        if (keyboardDown(['KeyH'])) { this.help.Toggle(); return; }
 
         if (this.IsUpPressed()) {
             this.selectedIndex = (this.selectedIndex + MENU_OPTIONS.length - 1) % MENU_OPTIONS.length;
@@ -74,8 +81,8 @@ export class FightingGameMenuLevel extends Level {
     }
 
     ActivateOption(option) {
-        if (option.action === "exit") {
-            window.location.href = "Main.html?demo=advanced";
+        if (option.action === "help") {
+            this.help.Toggle();
             return;
         }
 
@@ -91,6 +98,7 @@ export class FightingGameMenuLevel extends Level {
         this.DrawBackdrop(ctx);
         this.DrawTitle(ctx);
         this.DrawOptions(ctx);
+        this.help.OnDrawn();
     }
 
     DrawBackdrop(ctx) {

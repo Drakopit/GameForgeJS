@@ -86,7 +86,7 @@
   "example.component-adventure-2d": "Aventura composta por componentes de movimento, vida, colisão e câmera.",
   "example.platform-adventure-2d": "Combate de plataforma, patrulha e perseguição com linha de visão, inventário e habilidades.",
   "example.tactical-rpg-2d": "Estratégia por turnos com grade, busca de caminhos, alcance e planejamento de ações.",
-  "example.fighting-2d": "Seleção de personagens, combate animado, CPU e duelo local para dois jogadores.",
+  "example.fighting-2d": "Esferas de energia, super com barra, combos com buffer, CPU reativa e duelo local com quatro personagens.",
   "example.puzzle-battle-2d": "Pares de peças, rotação, combos, trocas de obstáculos e adversário CPU.",
   "example.renderer-3d": "Modelos, texturas, normal maps, iluminação e sombras carregados por manifests.",
   "example.solar-system-3d": "Materiais procedurais, luz pontual, órbitas, anéis e uma lua em uma cena 3D.",

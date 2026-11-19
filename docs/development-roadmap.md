@@ -93,3 +93,9 @@ shares HUDFrame and the owning level's Screen. Platform Adventure enemies now pa
 use sight/memory, return to a leash and check ledges. The Toon sandbox adds two large
 shallow lakes, four linked warp pads and an engine minimap. These remain incremental
 steps: deep water/swimming, full navigation and complete Zero to Hero games are pending.
+
+Fighting Arena now uses registered GameObject fighters/projectiles, component movement
+and Sprite visuals, CombatResolver2D and ComboController. Ranged energy attacks,
+meter-powered supers, projectile clashes and a distance-aware CPU replace the old
+melee-only special. Its focused browser suite covers combat and two-controller input
+in source and prefixed builds. These remain demo systems, not a new genre runtime.

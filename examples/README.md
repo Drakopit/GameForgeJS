@@ -22,7 +22,7 @@ are not designed for opening index.html through a file URL.
 | [Component Adventure 2D](component-adventure-2d/README.md) | `component-adventure-2d` | GameObject composition: bounds, health, walls, enemies and room camera behavior. |
 | [Platform Adventure 2D](platform-adventure-2d/README.md) | `platform-adventure-2d` | Advanced platform/RPG integration: perception/patrol/pursuit AI, combat states, inventory, skills, manifests and progression. |
 | [Tactical RPG 2D](tactical-rpg-2d/README.md) | `tactical-rpg-2d` | Turn-based domain models coordinated by framework levels: grid movement, pathfinding, ranges and battle flow. |
-| [Fighting Arena 2D](fighting-2d/README.md) | `fighting-2d` | A complete input/menu loop for local fighting, character selection, combat animation and CPU/versus flow. |
+| [Fighting Arena 2D](fighting-2d/README.md) | `fighting-2d` | An arcade/versus fighter with energy projectiles, supers, buffered melee chains, reactive CPU and four character profiles. |
 | [Puzzle Battle 2D](puzzle-battle-2d/README.md) | `puzzle-battle-2d` | Grid-based puzzle domain models: falling pairs, rotation, combos, garbage exchanges and a CPU opponent. |
 | [Renderer Showcase 3D](renderer-3d/README.md) | `renderer-3d` | Manifest-loaded rendering: cameras, models, textures, normal maps, lighting and shadows. |
 | [Solar System 3D](solar-system-3d/README.md) | `solar-system-3d` | Procedural celestial materials, lighting and coordinated orbit animation. |

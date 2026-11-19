@@ -109,7 +109,7 @@ start from CLI templates, which contain only the minimum runnable behavior.
 | [Component Adventure 2D](examples/component-adventure-2d/index.html) | 2D | Top-down movement, reusable entity components, and room camera transitions. |
 | [Platform Adventure 2D](examples/platform-adventure-2d/index.html) | 2D | Platform combat, patrol and pursuit AI, line of sight, inventory, skills and manifest-authored stages. |
 | [Tactical RPG 2D](examples/tactical-rpg-2d/index.html) | 2D | A turn-based grid game with pathfinding, movement range, and combat. |
-| [Fighting Arena 2D](examples/fighting-2d/index.html) | 2D | Character selection, arcade and versus modes, keyboard controls, and gamepad input. |
+| [Fighting Arena 2D](examples/fighting-2d/index.html) | 2D | Energy spheres, meter-powered supers, buffered melee chains, reactive CPU, local versus and four character profiles. |
 | [Puzzle Battle 2D](examples/puzzle-battle-2d/index.html) | 2D | An arcade puzzle game with combos and competitive block exchanges. |
 | [Renderer Showcase 3D](examples/renderer-3d/index.html) | 3D | A Render3D scene exploring cameras, models, lighting, materials, and shadows. |
 | [Solar System 3D](examples/solar-system-3d/index.html) | 3D | Procedural celestial materials, sunlight, and animated planetary orbits. |

@@ -86,7 +86,7 @@
   "example.component-adventure-2d": "Top-down movement, reusable entity components, and room camera transitions.",
   "example.platform-adventure-2d": "Platform combat, patrol and pursuit AI, line of sight, inventory, skills and manifest-authored stages.",
   "example.tactical-rpg-2d": "A turn-based grid game with pathfinding, movement range, and combat.",
-  "example.fighting-2d": "Character selection, arcade and versus modes, keyboard controls, and gamepad input.",
+  "example.fighting-2d": "Energy spheres, meter-powered supers, buffered combos, reactive CPU and local versus with four characters.",
   "example.puzzle-battle-2d": "An arcade puzzle game with combos and competitive block exchanges.",
   "example.renderer-3d": "A Render3D scene exploring cameras, models, lighting, materials, and shadows.",
   "example.solar-system-3d": "Procedural celestial materials, sunlight, and animated planetary orbits.",

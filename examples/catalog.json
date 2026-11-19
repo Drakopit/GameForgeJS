@@ -70,7 +70,7 @@
   {
     "id": "fighting-2d",
     "name": "Fighting Arena 2D",
-    "description": "Character selection, arcade and versus modes, keyboard controls, and gamepad input.",
+    "description": "Energy spheres, meter-powered supers, buffered melee chains, reactive CPU, local versus and four character profiles.",
     "path": "fighting-2d/index.html",
     "dimension": "2D",
     "aliases": [

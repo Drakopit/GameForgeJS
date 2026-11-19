@@ -1,3 +1,4 @@
+const { inspectFighting } = require('./browser/fighting.cjs');
 const { inspectEngineInfo } = require('./browser/engine-info.cjs');
 const { inspectToonSandbox } = require('./browser/toon-sandbox.cjs');
 const { inspectPlatformAdventureAI } = require('./browser/platform-adventure-ai.cjs');
@@ -65,6 +66,7 @@ async function inspect(browser, url, name, { starter = false, play = false } = {
         if (name.endsWith('-sky-trail-3d')) await inspectSkyTrail(page, path.join(screenshots, `${name}-sky-trail.png`));
         if (name.endsWith('-touch-garden-2d')) await inspectTouchGarden(page, path.join(screenshots, `${name}.png`));
         if (name.endsWith('-platform-adventure-2d')) await inspectPlatformAdventureAI(page);
+        if (name.endsWith('-fighting-2d')) await inspectFighting(page, path.join(screenshots, `${name}-fight.png`));
         if (name.endsWith('-puzzle-battle-2d')) await inspectPuzzleInput(page);
         if (name.endsWith('-platformer-2d')) {
             await inspectPlatformer(page, path.join(screenshots, `${name}.png`));
