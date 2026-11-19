@@ -882,6 +882,9 @@ Polls input at the beginning of an engine frame.
 #### `static LateUpdate()`
 
 Clears transient input state at the end of an engine frame.
+#### `static ClearKeyboard()`
+
+Release keyboard intent when focus moves into an engine-owned text editor.
 #### `keyDownHandler(event)`
 
 JSDoc pending.

@@ -18,15 +18,31 @@ import { Rectangle } from "../Graphics/Rectangle.js"; // Certifique-se de que a 
  * Canvas-rendered clickable UI button.
  *
  * @param {Screen} screen - Screen used for drawing and pointer input.
+ * @param {Object} [options] - Optional input behavior.
+ * @param {boolean} [options.pointerInput=false] - Invoke OnClick on native mouse/touch/pen
+ * gestures, including callbacks that open an OS keyboard. Call Dispose on removal.
  */
 export class Button {
-    constructor(screen) {
+    constructor(screen, { pointerInput = false } = {}) {
         this.screen = screen;
         this.color = "#428BCA";
         this.draw = new Draw(screen);
         this.mouse = new Mouse();
         this.rect = new Rectangle(0, 0, 80, 15);
         this.onClickHandler = null;
+        this.enabled = true;
+        this.pointerInput = pointerInput;
+        this.pointerHandler = event => {
+            if (!this.enabled || event.button > 0) return;
+            const bounds = screen.Canvas.getBoundingClientRect();
+            const x = (event.clientX - bounds.left) * screen.Canvas.width / bounds.width;
+            const y = (event.clientY - bounds.top) * screen.Canvas.height / bounds.height;
+            if (x >= this.rect.x && x <= this.rect.x + this.rect.width
+                && y >= this.rect.y && y <= this.rect.y + this.rect.height) {
+                event.preventDefault(); this.onClickHandler?.();
+            }
+        };
+        if (pointerInput) screen.Canvas.addEventListener('pointerdown', this.pointerHandler);
     }
 
     SetButton(rect) {
@@ -64,6 +80,7 @@ export class Button {
     }
 
     Update(callback) {
+        if (!this.enabled || this.pointerInput) return false;
         const cb = callback || this.onClickHandler;
         if (this.mouse.ClickDown(this.rect)) {
             if (typeof cb === 'function') {
@@ -72,6 +89,11 @@ export class Button {
             return true;
         }
         return false;
+    }
+
+    Dispose() {
+        this.screen.Canvas.removeEventListener('pointerdown', this.pointerHandler);
+        this.onClickHandler = null;
     }
 
     /**

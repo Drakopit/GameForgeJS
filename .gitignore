@@ -46,3 +46,7 @@ test-results/
 playwright-report/
 publish/
 *.tgz
+servers/**/bin/
+servers/**/obj/
+tests/online-motion/bin/
+tests/online-motion/obj/

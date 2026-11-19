@@ -127,7 +127,7 @@
   {
     "id": "online-sandbox-2d",
     "name": "Online Sandbox 2D",
-    "description": "Same-origin multiplayer tabs, synchronized players, and canvas chat; optional external relay.",
+    "description": "Cooperative mining/building, dedicated server rooms, predicted movement and mobile controls; backend required.",
     "path": "online-sandbox-2d/index.html",
     "dimension": "2D",
     "aliases": [

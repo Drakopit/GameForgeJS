@@ -5,5 +5,5 @@
     "2d",
     "network"
   ],
-  "addons": []
+  "addons": ["platformer"]
 }

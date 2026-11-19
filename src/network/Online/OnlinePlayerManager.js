@@ -75,7 +75,8 @@ export class OnlinePlayerManager {
                     : player.state[field];
                 player.displayState[field] = current + ((player.state[field] - current) * alpha);
             });
-            player.displayState = { ...player.state, ...player.displayState };
+            const interpolated = Object.fromEntries(["x", "y", "vx", "vy"].map(field => [field, player.displayState[field]]));
+            player.displayState = { ...player.state, ...interpolated };
         });
     }
 

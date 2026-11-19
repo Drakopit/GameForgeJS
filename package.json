@@ -42,7 +42,10 @@
     "test:sky-trail": "node tests/sky-trail-browser.cjs",
     "test:touch": "node tests/touch-browser.cjs",
     "capture:examples": "node scripts/capture-examples.cjs",
-    "test:fighting": "node tests/fighting-browser.cjs"
+    "test:fighting": "node tests/fighting-browser.cjs",
+    "server:online": "dotnet run --project servers/online-sandbox --urls http://127.0.0.1:8080",
+    "dev:online": "node cli/index.cjs serve --root . --port 3000",
+    "test:online": "dotnet build tests/online-motion --nologo && node tests/online-browser.cjs"
   },
   "dependencies": {
     "acorn": "^8.19.0"

@@ -49,6 +49,12 @@ JSDoc pending.
 #### `CutJump()`
 
 JSDoc pending.
+#### `CaptureState()`
+
+Capture the full fixed-step motion state for prediction/replay or checkpoints.
+#### `RestoreState(state)`
+
+Restore motion without moving the owner; the caller restores its position.
 #### `Reset()`
 
 Clear motion and pending commands after teleport/respawn. Does not move the owner.

@@ -44,9 +44,12 @@ export class OnlineEntitySync {
         const state = this.readState();
         if (!force && !this.changed(state)) return false;
 
-        this.elapsed = 0;
-        this.lastState = { ...state };
-        return this.network.sendPlayerState(state);
+        const sent = this.network.sendPlayerState(state);
+        if (sent) {
+            this.elapsed = 0;
+            this.lastState = { ...state };
+        }
+        return sent;
     }
 
     changed(state) {

@@ -91,7 +91,7 @@
   "example.renderer-3d": "Modelos, texturas, normal maps, iluminação e sombras carregados por manifests.",
   "example.solar-system-3d": "Materiais procedurais, luz pontual, órbitas, anéis e uma lua em uma cena 3D.",
   "example.sky-trail-3d": "Quatro percursos 3D com checkpoints, plataformas móveis, moedas e câmera de acompanhamento.",
-  "example.online-sandbox-2d": "Sandbox com sincronização entre abas, estado replicado e chat desenhado pela engine.",
+  "example.online-sandbox-2d": "Mineração e construção cooperativas, salas em servidor dedicado, previsão de movimento e controles móveis; requer backend.",
   "example.addons-2d": "Parallax e máquina de estados como addons sobre o ciclo de vida da framework.",
   "example.touch-garden-2d": "Multitouch com direção virtual, dash, colisões e coleta; também suporta teclado e gamepad.",
   "footer.contact": "Contato"

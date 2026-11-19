@@ -27,7 +27,7 @@ are not designed for opening index.html through a file URL.
 | [Renderer Showcase 3D](renderer-3d/README.md) | `renderer-3d` | Manifest-loaded rendering: cameras, models, textures, normal maps, lighting and shadows. |
 | [Solar System 3D](solar-system-3d/README.md) | `solar-system-3d` | Procedural celestial materials, lighting and coordinated orbit animation. |
 | [Sky Trail 3D](sky-trail-3d/README.md) | `sky-trail-3d` | A small 3D platforming game: four courses, moving/blinking terrain, checkpoints, pickups and following camera. |
-| [Online Sandbox 2D](online-sandbox-2d/README.md) | `online-sandbox-2d` | Optional networking: BroadcastChannel tabs by default, replicated player state and canvas chat; not a hosted MMO backend. |
+| [Online Sandbox 2D](online-sandbox-2d/README.md) | `online-sandbox-2d` | Cooperative mining/building, dedicated .NET server, rooms, prediction, canvas chat and mobile controls; backend deployment required. |
 | [Addon Building Blocks 2D](addons-2d/README.md) | `addons-2d` | Consume shared parallax and state-machine addons while retaining the existing level/entity lifecycle. |
 | [Touch Garden 2D](touch-garden-2d/README.md) | `touch-garden-2d` | Mobile building blocks: identified simultaneous touches, scaled screen coordinates, virtual steering, dash cooldown, collision and collection. |
 

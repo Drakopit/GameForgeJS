@@ -114,7 +114,7 @@ start from CLI templates, which contain only the minimum runnable behavior.
 | [Renderer Showcase 3D](examples/renderer-3d/index.html) | 3D | A Render3D scene exploring cameras, models, lighting, materials, and shadows. |
 | [Solar System 3D](examples/solar-system-3d/index.html) | 3D | Procedural celestial materials, sunlight, and animated planetary orbits. |
 | [Sky Trail 3D](examples/sky-trail-3d/index.html) | 3D | Four expeditions, a gamepad-ready 3D menu, moving platforms, checkpoints and collectibles. |
-| [Online Sandbox 2D](examples/online-sandbox-2d/index.html) | 2D | Same-origin multiplayer tabs, synchronized players, and canvas chat; optional external relay. |
+| [Online Sandbox 2D](examples/online-sandbox-2d/index.html) | 2D | Cooperative mining/building, dedicated server rooms, predicted movement and mobile controls; backend required. |
 | [Addon Building Blocks 2D](examples/addons-2d/index.html) | 2D | Shared parallax layers and a patrol/rest state machine using the standard framework lifecycle. |
 | [Touch Garden 2D](examples/touch-garden-2d/index.html) | 2D | Mobile building blocks: identified multi-touch, a virtual stick, a simultaneous dash action, collision and collectible entities. |
 <!-- examples:end -->

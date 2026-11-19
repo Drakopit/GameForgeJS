@@ -134,6 +134,22 @@ export class PlatformerController extends Component {
         if (!this.jumpHeld) this.vy = Math.max(this.vy, -this.settings.jumpSpeed * this.settings.jumpCutRatio);
     }
 
+    /** Capture the full fixed-step motion state for prediction/replay or checkpoints. */
+    CaptureState() {
+        return Object.fromEntries(['vx', 'vy', 'axis', 'grounded', 'jumpHeld', 'jumpPending',
+            'coyoteRemaining', 'bufferRemaining'].map(key => [key, this[key]]));
+    }
+
+    /** Restore motion without moving the owner; the caller restores its position. */
+    RestoreState(state) {
+        for (const key of ['vx', 'vy', 'axis', 'coyoteRemaining', 'bufferRemaining']) {
+            if (!Number.isFinite(state[key])) throw new TypeError(`Invalid platformer state: ${key}`);
+        }
+        Object.assign(this, { vx: state.vx, vy: state.vy, axis: Math.max(-1, Math.min(1, state.axis)),
+            coyoteRemaining: Math.max(0, state.coyoteRemaining), bufferRemaining: Math.max(0, state.bufferRemaining),
+            grounded: Boolean(state.grounded), jumpHeld: Boolean(state.jumpHeld), jumpPending: Boolean(state.jumpPending) });
+    }
+
     /** Clear motion and pending commands after teleport/respawn. Does not move the owner. */
     Reset() {
         this.vx = 0;

@@ -91,7 +91,7 @@
   "example.renderer-3d": "A Render3D scene exploring cameras, models, lighting, materials, and shadows.",
   "example.solar-system-3d": "Procedural celestial materials, sunlight, and animated planetary orbits.",
   "example.sky-trail-3d": "Four expeditions, a gamepad-ready 3D menu, moving platforms, checkpoints and collectibles.",
-  "example.online-sandbox-2d": "Same-origin multiplayer tabs, synchronized players, and canvas chat; optional external relay.",
+  "example.online-sandbox-2d": "Cooperative mining/building, dedicated server rooms, predicted movement and mobile controls; backend required.",
   "example.addons-2d": "Shared parallax layers and a patrol/rest state machine using the standard framework lifecycle.",
   "example.touch-garden-2d": "Mobile building blocks: identified multi-touch, a virtual stick, a simultaneous dash action, collision and collectible entities.",
   "footer.contact": "Contact"

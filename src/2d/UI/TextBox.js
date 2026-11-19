@@ -12,15 +12,22 @@
 import { Draw } from "../Graphics/Draw.js";
 import { Mouse } from "../../core/Input/Mouse.js";
 import { Rectangle } from "../Graphics/Rectangle.js";
+import { NativeTextInput } from './NativeTextInput.js';
 
 /**
  * Canvas-drawn editable text field for in-game GameForgeJS UI.
  *
  * @param {Screen} screen - Screen used for drawing and pointer coordinates.
+ * @param {Object} [options] - Optional text entry behavior.
+ * @param {boolean} [options.nativeInput=false] - Use OS keyboard/IME through an
+ * invisible platform input. Canvas still renders the field. Call Dispose on removal.
  */
 export class TextBox {
-    constructor(screen) {
+    constructor(screen, { nativeInput = false } = {}) {
         this.screen = screen;
+        this.nativeInput = nativeInput;
+        this.bridge = null;
+        this.onSubmit = null;
         this.color = "#DCE8FF";
         this.backgroundColor = "rgba(5, 12, 22, 0.92)";
         this.borderColor = "rgba(190, 213, 237, 0.46)";
@@ -32,6 +39,16 @@ export class TextBox {
         this.isActive = false;
         this.placeholder = "";
         this.maxLength = 120;
+        this.pointerFocus = event => {
+            const bounds = this.screen.Canvas.getBoundingClientRect();
+            const x = (event.clientX - bounds.left) * this.screen.Canvas.width / bounds.width;
+            const y = (event.clientY - bounds.top) * this.screen.Canvas.height / bounds.height;
+            const inside = x >= this.rect.x && x <= this.rect.x + this.rect.width
+                && y >= this.rect.y && y <= this.rect.y + this.rect.height;
+            if (inside) { event.preventDefault(); this.SetActive(true); }
+            else if (this.isActive) this.SetActive(false);
+        };
+        if (nativeInput) screen.Canvas.addEventListener('pointerdown', this.pointerFocus);
     }
 
     /**
@@ -68,10 +85,18 @@ export class TextBox {
      */
     SetText(text) {
         this.text = String(text ?? "").slice(0, this.maxLength);
+        if (this.bridge) this.bridge.element.value = this.text;
     }
 
     SetActive(active = true) {
         this.isActive = Boolean(active);
+        if (this.nativeInput && this.isActive) {
+            this.bridge ??= new NativeTextInput(this);
+            this.bridge.Focus();
+        } else if (this.bridge) {
+            this.bridge.Dispose();
+            this.bridge = null;
+        }
     }
 
     SetPlaceholder(text) {
@@ -92,6 +117,11 @@ export class TextBox {
      */
     GetText() {
         return this.text;
+    }
+
+    Dispose() {
+        this.SetActive(false); this.onSubmit = null;
+        this.screen.Canvas.removeEventListener('pointerdown', this.pointerFocus);
     }
 
     /**

@@ -43,9 +43,11 @@ export class Input {
 
         this.keyDownHandler = this.keyDownHandler.bind(this);
         this.keyUpHandler = this.keyUpHandler.bind(this);
+        this.blurHandler = () => Input.ClearKeyboard.call({ instance: this });
 
         target?.addEventListener("keydown", this.keyDownHandler);
         target?.addEventListener("keyup", this.keyUpHandler);
+        target?.addEventListener("blur", this.blurHandler);
 
         this.mouse = new Mouse({ shared, target });
         this.touch = new Touch({ shared, target });
@@ -63,6 +65,7 @@ export class Input {
     Dispose() {
         this.target?.removeEventListener("keydown", this.keyDownHandler);
         this.target?.removeEventListener("keyup", this.keyUpHandler);
+        this.target?.removeEventListener("blur", this.blurHandler);
         this.unsubscribe.forEach(unsubscribe => unsubscribe());
         this.unsubscribe = [];
         this.mouse.Dispose(); this.touch.Dispose(); this.gamepad.Dispose();
@@ -104,6 +107,16 @@ export class Input {
         if (typeof this.instance.mouse.ClearFrameData === "function") {
             this.instance.mouse.ClearFrameData();
         }
+    }
+
+    /** Release keyboard intent when focus moves into an engine-owned text editor. */
+    static ClearKeyboard() {
+        if (!this.instance) return;
+        this.instance.keys = {};
+        this.instance.keysDown = {};
+        this.instance.keysUp = {};
+        this.instance.pendingKeysDown = {};
+        this.instance.pendingKeysUp = {};
     }
 
     keyDownHandler(event) {

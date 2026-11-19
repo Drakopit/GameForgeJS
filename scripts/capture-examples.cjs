@@ -55,6 +55,16 @@ async function main() {
                     level.OnDrawn(); level.OnGUI();
                 });
             }
+            if (entry.id === 'online-sandbox-2d' && process.env.GAMEFORGE_ONLINE_SERVER) {
+                await page.evaluate(async endpoint => {
+                    window.captureCore = await import('gameforgejs/core');
+                    const level = window.captureCore.LevelHandler.current;
+                    level.ui.fields.server.SetText(endpoint);
+                    level.Connect(true);
+                }, process.env.GAMEFORGE_ONLINE_SERVER);
+                await page.waitForFunction(() => window.captureCore.LevelHandler.current.playing);
+                await page.waitForTimeout(500);
+            }
             await page.waitForTimeout(350);
             const bounds = await page.locator('canvas').first().boundingBox();
             assert.ok(bounds && bounds.width > 0 && bounds.height > 0, entry.id);
