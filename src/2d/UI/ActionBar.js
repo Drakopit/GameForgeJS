@@ -1,13 +1,14 @@
 import { Button } from './Button.js';
 import { Rectangle } from '../Graphics/Rectangle.js';
 import { HUDFrame } from './HUDFrame.js';
+import { Input } from '../../core/Input/Input.js';
 
 /**
  * Responsive Canvas action buttons. Keyboard/gamepad bindings stay in game config.
  * Layout before input/drawing; Dispose releases each native button's handler.
  */
 export class ActionBar {
-    /** @param {import('../Window/Screen.js').Screen} screen @param {import('../Graphics/Draw.js').Draw} draw @param {{label:string|(()=>string), run:()=>void}[]} actions */
+    /** @param {import('../Window/Screen.js').Screen} screen @param {import('../Graphics/Draw.js').Draw} draw @param {{label:string|(()=>string), run:()=>void, touchOnly?:boolean}[]} actions */
     constructor(screen, draw, actions) {
         this.screen = screen; this.frame = new HUDFrame(draw);
         this.buttons = actions.map(action => {
@@ -17,9 +18,11 @@ export class ActionBar {
     }
     Layout() {
         const gap = 7, width = 82, height = 44;
-        const columns = Math.max(1, Math.min(this.buttons.length, Math.floor((this.screen.Width - 150) / (width + gap))));
-        const rows = Math.ceil(this.buttons.length / columns);
-        this.buttons.forEach((action, index) => action.button.SetButton(new Rectangle(
+        for (const action of this.buttons) action.button.enabled = !action.touchOnly || Boolean(Input.instance?.presentation?.TouchVisible);
+        const visible = this.buttons.filter(action => action.button.enabled);
+        const columns = Math.max(1, Math.min(visible.length, Math.floor((this.screen.Width - 150) / (width + gap))));
+        const rows = Math.ceil(visible.length / columns);
+        visible.forEach((action, index) => action.button.SetButton(new Rectangle(
             this.screen.Width - 14 - columns * (width + gap) + index % columns * (width + gap),
             this.screen.Height - 14 - rows * (height + gap) + Math.floor(index / columns) * (height + gap), width, height)));
     }

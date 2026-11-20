@@ -1,5 +1,8 @@
 export { Module } from './Module.js';
 export { Timeline } from './Timeline.js';
+export { InputPresentation } from './Input/InputPresentation.js';
+export { ResponsiveLayout } from './Window/ResponsiveLayout.js';
+export { SoundEffects } from './Audio/SoundEffects.js';
 export { AssetManager } from "./Assets/AssetManager.js";
 export { createGame, Game, resolveModules } from "./Game.js";
 export { inputModule } from "./Input/InputModule.js";

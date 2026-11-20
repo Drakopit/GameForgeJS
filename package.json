@@ -29,7 +29,7 @@
   "scripts": {
     "start": "node cli/index.cjs serve",
     "dev": "node cli/index.cjs serve",
-    "check": "node scripts/check-js.js && node scripts/check-imports.js && node scripts/check-editor-assets.js && node scripts/check-projects.cjs && node scripts/check-runtime.js",
+    "check": "node scripts/check-js.js && node scripts/check-imports.js && node scripts/check-editor-assets.js && node scripts/check-projects.cjs && node scripts/check-runtime.js && node scripts/generate-catalog.cjs --check",
     "check:editor-assets": "node scripts/check-editor-assets.js",
     "docs": "node scripts/generate-docs.js",
     "docs:check": "node scripts/generate-docs.js --check",
@@ -49,7 +49,11 @@
     "typecheck:foundry": "tsc -p examples/storm-foundry-2d/config/tsconfig.json",
     "test:foundry": "npm run typecheck:foundry && node tests/foundry-browser.cjs",
     "test:lessons": "node tests/lessons-browser.cjs",
-    "check:pages": "node scripts/check-pages.cjs"
+    "check:pages": "node scripts/check-pages.cjs",
+    "catalog": "node scripts/generate-catalog.cjs",
+    "catalog:check": "node scripts/generate-catalog.cjs --check",
+    "test:presentation": "node tests/catalog-input-browser.cjs",
+    "test:viewport": "node tests/viewport-browser.cjs"
   },
   "dependencies": {
     "acorn": "^8.19.0"

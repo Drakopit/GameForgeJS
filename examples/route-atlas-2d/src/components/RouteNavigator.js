@@ -8,7 +8,7 @@ export class RouteNavigator extends Component {
     Travel(id) {
         const progress = this.level.progress;
         if (this.destination || this.level.mode !== 'map' || !progress.Neighbors(progress.current).includes(id)) return false;
-        this.from = this.position.Clone(); this.destination = id; this.elapsed = 0; return true;
+        this.from = this.position.Clone(); this.destination = id; this.elapsed = 0; this.level.sound.Play('select'); return true;
     }
     OnUpdate(dt) {
         this.cooldown = Math.max(0, this.cooldown - dt);

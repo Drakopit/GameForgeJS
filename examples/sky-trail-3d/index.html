@@ -2,7 +2,7 @@
 <html lang="en">
 	<head>
 		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 		<title>Sky Trail 3D - GameForgeJS</title>
 		<style>
 			html,
@@ -14,21 +14,7 @@
 				font-family: system-ui, sans-serif
 			}
 
-			canvas {
-				display: block;
-				--canvas-ratio: 1.5;
-				position: fixed !important;
-				inset: auto !important;
-				left: 50% !important;
-				top: 50% !important;
-				transform: translate(-50%, -50%);
-				width: min(100vw, calc(100vh * var(--canvas-ratio))) !important;
-				height: min(100vh, calc(100vw / var(--canvas-ratio))) !important
-			}
-
-			canvas[width="960"] {
-				--canvas-ratio: 1.7777777778
-			}
+			canvas { display: block; }
 
 
 		</style>

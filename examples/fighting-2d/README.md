@@ -8,7 +8,10 @@ spheres, a meter-powered super, guard, jumping, dash and a distance-aware CPU.
 Run `npm start` at the repository root and open `/examples/fighting-2d/index.html`,
 or select Fighting Arena in the launcher. Choose ARCADE, then your character.
 VERSUS lets two people select fighters and play on one keyboard or two gamepads.
-The menu's third option opens the in-engine combat guide.
+The menu's third option opens the in-engine combat guide. Mouse/touch can select
+menu options and character cards. On mobile, native action buttons and a virtual
+stick support simultaneous movement and attacks; desktop pads stay hidden unless
+explicitly enabled in the guide. The guide pauses combat and clears queued menu input.
 
 | Action | Player 1 | Player 2 | Standard gamepad |
 | --- | --- | --- | --- |
@@ -23,7 +26,8 @@ The menu's third option opens the in-engine combat guide.
 | Back to menu | Escape | Escape | Select / Back |
 
 Gamepad labels above use Xbox's standard layout; the existing alias/profile system
-and config/game.config.json own bindings. Player 1 uses slot 0 and Player 2 slot 1.
+and config/game.config.json own bindings. Player 1 and Player 2 occupy stable seats rather than hardcoded browser slots. Sparse
+slots and disconnect/reconnect do not transfer the remaining controller to the wrong player.
 Double tap a horizontal direction for a dash. The HUD displays power and super readiness.
 
 ## Try the combat
@@ -80,3 +84,13 @@ The fighting suite checks source and prefixed portable builds: keyboard powers,
 blocking, jumps, supers, clashes, a three-hit chain, CPU activity, two gamepad slots,
 held-button behavior, buffered taps, stable entity ownership and teardown.
 The complete browser suite also includes the combat scenario.
+
+Bindings live only in config/game.config.json; native button tokens keep physical
+controls independent of Xbox/PlayStation art. config/prompts.json references those
+bindings and never changes them. Touch buttons use the existing Touch contacts,
+ActionBar and VirtualStick. FightingViewport fits the authored arena to a native
+responsive Screen and releases its viewport observers at exit.
+
+The [future fighting architecture note](../../docs/plans/fighting-game.md) describes
+fixed-frame motion commands, cancels, juggle rules, finishers and a full tower.
+Those future systems are not claimed as delivered by this input polish.

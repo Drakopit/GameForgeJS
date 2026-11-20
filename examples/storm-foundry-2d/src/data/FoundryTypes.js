@@ -29,6 +29,6 @@
  */
 /** @typedef {Exclude<keyof FxSettings, 'name'|'label'|'additive'|'reflection'>} NumericSetting */
 /** @typedef {{seed: number, limits: {rain: number, particles: number, splashes: number, ripples: number, props: number}, presets: FxSettings[]}} ShowcaseData */
-/** @typedef {{config: object, assets: {jsons: Record<string, unknown>}}} FoundryContext */
+/** @typedef {{config: object, assets: {jsons: Record<string, unknown>}, services: Map<string, unknown>}} FoundryContext */
 /** @typedef {{actor: import('../entities/FoundryProp.js').FoundryProp, point: import('gameforgejs/core').Vector2D, speed: number, surface: boolean}} Impact */
 export {};

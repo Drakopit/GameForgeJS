@@ -8,13 +8,13 @@ const JOYSTICK_DEAD_ZONE = 0.15;
 export class OnlineControls {
     constructor(level) {
         this.level = level; this.screen = level.screen; this.touch = Input.instance.touch;
-        this.mobile = navigator.maxTouchPoints > 0;
         this.materialIndex = 0; this.axis = 0; this.jumpPressed = false;
         this.target = null; this.stickId = null; this.buttons = {};
         this.mousePosition = { x: 0, y: 0 };
         this.Layout();
     }
     get Material() { return MATERIALS[this.materialIndex]; }
+    get mobile() { return Boolean(Input.instance?.presentation?.TouchVisible); }
     Layout() {
         const scale = this.level.ui.controlScale;
         const size = BUTTON_SIZE * scale, h = this.screen.Height, w = this.screen.Width;
@@ -35,22 +35,21 @@ export class OnlineControls {
         const ui = this.level.ui;
         this.axis = 0; this.jumpPressed = false; this.jumpHeld = false;
         this.pressed = new Set(); this.held = new Set();
-        if (!this.level.playing || ui.paused || ui.IsTyping || document.hidden || !document.hasFocus()) {
+        if (!this.level.playing || ui.paused || ui.help.visible || ui.IsTyping || document.hidden || !document.hasFocus()) {
             this.stickId = null; return;
         }
         for (const contact of this.touch.GetStartedTouches()) {
-            this.mobile = true;
             const point = Touch.ToScreen(contact.position, this.screen);
-            const button = Object.entries(this.buttons).find(([, box]) => this.Inside(point, box));
+            const button = this.mobile && Object.entries(this.buttons).find(([, box]) => this.Inside(point, box));
             if (button) this.pressed.add(button[0]);
-            else if (point.x < this.screen.Width * 0.45 && point.y > this.screen.Height * 0.55 && this.stickId === null) {
+            else if (this.mobile && point.x < this.screen.Width * 0.45 && point.y > this.screen.Height * 0.55 && this.stickId === null) {
                 this.stickId = contact.identifier;
                 this.origin = point;
             } else if (point.y > 150) this.target = this.level.WorldTile(point);
         }
         for (const contact of this.touch.GetActiveTouches()) {
             const point = Touch.ToScreen(contact.position, this.screen);
-            for (const [id, box] of Object.entries(this.buttons)) if (this.Inside(point, box)) this.held.add(id);
+            for (const [id, box] of Object.entries(this.buttons)) if (this.mobile && this.Inside(point, box)) this.held.add(id);
         }
         const stickContact = this.stickId === null ? null : this.touch.GetTouch(this.stickId);
         if (stickContact) {

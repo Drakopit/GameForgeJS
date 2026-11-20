@@ -1,4 +1,4 @@
-import { InfoPanel } from 'gameforgejs/2d';
+import { InputHelpPanel as InfoPanel } from 'gameforgejs/2d';
 import { Vector3D } from 'gameforgejs/core';
 import { ActionManager } from "gameforgejs/core";
 import { AssetManager } from "gameforgejs/core";
@@ -40,12 +40,7 @@ export class SolarSystemLevel extends Level3D {
     }
 
     BuildScene() {
-        this.help = new InfoPanel(this.ui.Draw, { title: 'SOLAR SYSTEM / CONTROLS', lines: [
-            'WASD / arrows or left stick / D-pad: orbit and zoom.',
-            'H / Start: toggle this guide. Escape / B: back.',
-            'Orbit distances and planet sizes are illustrative.',
-            'Procedural materials, point lighting, rings and a moon.',
-        ] });
+        this.help = new InfoPanel(this.ui.Draw, { title: 'SOLAR SYSTEM / CONTROLS', lines: [] });
         this.camera = new PerspectiveCamera({
             fov: 58,
             aspect: this.width / this.height,
@@ -192,11 +187,11 @@ export class SolarSystemLevel extends Level3D {
             const r = planet.orbit;
             const x = Math.cos(planet.angle) * r;
             const zPlane = Math.sin(planet.angle) * r;
-            
+
             // Apply inclination to Y axis
             const y = -zPlane * Math.sin(inc);
             const z = zPlane * Math.cos(inc);
-            
+
             planet.mesh.transform.SetPosition(x, y, z);
             planet.mesh.transform.rotation.y += delta * planet.rotation;
 
@@ -248,4 +243,5 @@ export class SolarSystemLevel extends Level3D {
         draw.DrawText("WASD / stick: orbit + zoom | H / Start: help", 28, 74);
         this.help.OnDrawn();
     }
+    OnExit() { this.help?.Dispose(); super.OnExit(); }
 }

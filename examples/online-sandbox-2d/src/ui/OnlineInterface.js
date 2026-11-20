@@ -1,5 +1,5 @@
-import { ActionManager } from 'gameforgejs/core';
-import { Button, Draw, HUDFrame, Rectangle, TextBox } from 'gameforgejs/2d';
+import { ActionManager, Input } from 'gameforgejs/core';
+import { Button, Draw, HUDFrame, Rectangle, TextBox, InputHelpPanel } from 'gameforgejs/2d';
 import { OnlineLobby } from './OnlineLobby.js';
 
 const CHAT_HOLD_SECONDS = 6;
@@ -11,6 +11,7 @@ export class OnlineInterface {
     constructor(level) {
         this.level = level; this.screen = level.screen;
         this.frame = new HUDFrame(new Draw(this.screen));
+        this.help = new InputHelpPanel(new Draw(this.screen),{title:'Online Sandbox / Controls'});
         this.fields = {}; this.buttons = {}; this.messages = []; this.chatAge = 0;
         this.selection = 0; this.volume = 0.35; this.controlScale = 1;
         this.lobby = new OnlineLobby(this);
@@ -33,8 +34,9 @@ export class OnlineInterface {
             pause: () => this.TogglePause(), resume: () => this.TogglePause(),
             leave: () => level.Leave(), chat: () => this.FocusChat(),
             invite: () => this.CopyInvite(),
+            help: () => this.help.Toggle(),
             volume: () => { this.volume = this.volume > 0 ? 0 : 0.35; },
-            controls: () => { this.controlScale = this.controlScale === 1 ? 1.2 : 1; },
+            controls: () => {const p=Input.instance.presentation;p.SetTouchMode(p.TouchVisible?'off':'on');},
             done: () => { for (const field of Object.values(this.fields)) field.SetActive(false); },
         };
         for (const [id, callback] of Object.entries(callbacks)) {
@@ -65,6 +67,8 @@ export class OnlineInterface {
     Update(dt) {
         for (const field of Object.values(this.fields)) field.OnUpdate(dt);
         this.chatAge += dt;
+        if (!this.IsTyping && ActionManager.IsActionDown('HELP')) this.help.Toggle();
+        if (this.help.visible) return;
         if (!this.IsTyping && ActionManager.IsActionDown('PAUSE')) this.TogglePause();
         if (!this.IsTyping && ActionManager.IsActionDown('CHAT')) this.FocusChat();
         if (this.IsTyping) return;
@@ -93,6 +97,7 @@ export class OnlineInterface {
         const f = this.frame, session = this.level.session;
         if (!this.level.playing) {
             this.lobby.Draw(width, height);
+            this.help.OnDrawn();
             return;
         }
         f.Panel({ x: 12, y: 12, width: width - 24, height: 78 });
@@ -113,20 +118,22 @@ export class OnlineInterface {
         }
         ctx.restore();
         if (this.fields.chat.isActive) this.Field('chat', 12, Math.min(chatY + MAX_CHAT_LINES * 20, height - 56), chatWidth);
-        if (!this.level.controls.mobile) f.Text('A/D move · Space jump · Q mine · F place · E beacon · R material · Enter chat · Esc menu', 18, height - 18,
-            { size: 12, maxWidth: width - 36 });
+        if (!this.level.controls.mobile) this.help.DrawAction('HELP',18,height-44);
+        this.LayoutButton('help','?',width-60,100,38);
         if (this.paused) {
             for (const button of Object.values(this.buttons)) button.enabled = false;
             ctx.fillStyle = 'rgba(5,12,22,.8)'; ctx.fillRect(0, 0, width, height);
             f.Panel({ x, y: height / 2 - 160, width: panelWidth, height: 310 });
             f.Text('REST A MOMENT', x + 24, height / 2 - 120, { size: 24, color: '#ffe6a0' });
             f.Text('The shared world keeps running.', x + 24, height / 2 - 96);
-            const labels = ['Resume', `Sound: ${this.volume ? 'on' : 'off'}`, `Touch controls: ${this.controlScale === 1 ? 'normal' : 'large'}`, 'Leave room'];
+            const labels = ['Resume', `Sound: ${this.volume ? 'on' : 'off'}`, `Touch controls: ${Input.instance.presentation.TouchVisible?'on':'off'}`, 'Leave room'];
             ['resume', 'volume', 'controls', 'leave'].forEach((id, index) =>
                 this.LayoutButton(id, labels[index], x + 20, height / 2 - 74 + index * 52, panelWidth - 40, this.selection % 4 === index));
         }
+        this.help.OnDrawn();
     }
     Dispose() {
+        this.help.Dispose();
         for (const field of Object.values(this.fields)) field.Dispose();
         for (const button of Object.values(this.buttons)) button.Dispose();
     }

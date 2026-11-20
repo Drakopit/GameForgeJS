@@ -1,10 +1,15 @@
 import { GetFightingControls } from './FightingControls.js';
+import { Input } from 'gameforgejs/core';
+import { FightingPadSeats } from './FightingPadSeats.js';
 import { keyboardHeld, keyboardDown, gamepadDirectionHeld, gamepadDirectionDown,
     gamepadButtonDown, gamepadButtonHeld, anyGamepadButtonDown } from './FightingInput.js';
 
 export class FightingInputReader {
-    constructor(context) {
-        this.controls = GetFightingControls();
+    constructor(context, touch = null) {
+        this.touch = touch;
+        this.controls = structuredClone(GetFightingControls());
+        this.seats = new FightingPadSeats();
+        this.playerSeats = {playerOne:this.controls.playerOne.gamepad.index,playerTwo:this.controls.playerTwo.gamepad.index};
         this.held = new Map();
         this.queued = new Map();
         this.global = {};
@@ -15,11 +20,14 @@ export class FightingInputReader {
     }
 
     Capture() {
+        this.seats.Update(Input.GetConnectedGamepadIndices());
+        for(const name of ['playerOne','playerTwo'])this.controls[name].gamepad.index=this.seats.Resolve(this.playerSeats[name]);
+        this.touch?.Update();
         this.CapturePlayer('p1', this.controls.playerOne);
         this.CapturePlayer('p2', this.controls.playerTwo);
-        this.global.help ||= keyboardDown(['KeyH']) || anyGamepadButtonDown(['START']);
-        this.global.back ||= keyboardDown(this.controls.menu.cancel) || anyGamepadButtonDown(['BACK']);
-        this.global.confirm ||= keyboardDown(this.controls.menu.confirm) || anyGamepadButtonDown(['A']);
+        this.global.help ||= keyboardDown(this.controls.system.help) || anyGamepadButtonDown(this.controls.system.gamepad.help);
+        this.global.back ||= keyboardDown(this.controls.menu.cancel) || anyGamepadButtonDown(this.controls.menu.gamepad.cancel);
+        this.global.confirm ||= keyboardDown(this.controls.menu.confirm) || anyGamepadButtonDown(this.controls.menu.gamepad.confirm);
     }
 
     CapturePlayer(id, keys) {
@@ -49,6 +57,7 @@ export class FightingInputReader {
         for (const direction of ['left', 'right', 'down']) {
             input[direction] = keyboardHeld(keys[direction]) || gamepadDirectionHeld(direction, pad.index, pad[direction]);
         }
+        if (fighter.id === 'p1' && this.touch) for (const [action, value] of Object.entries(this.touch.Read())) input[action] ||= value;
         return input;
     }
 
@@ -57,9 +66,9 @@ export class FightingInputReader {
         this.global[name] = false;
         return pressed;
     }
-    HelpPressed() { return this.Consume('help', () => keyboardDown(['KeyH']) || anyGamepadButtonDown(['START'])); }
-    BackPressed() { return this.Consume('back', () => keyboardDown(this.controls.menu.cancel) || anyGamepadButtonDown(['BACK'])); }
-    ConfirmPressed() { return this.Consume('confirm', () => keyboardDown(this.controls.menu.confirm) || anyGamepadButtonDown(['A'])); }
-    ClearQueued() { this.queued.clear(); this.global = {}; }
+    HelpPressed() { return this.Consume('help', () => keyboardDown(this.controls.system.help) || anyGamepadButtonDown(this.controls.system.gamepad.help)); }
+    BackPressed() { return this.Consume('back', () => keyboardDown(this.controls.menu.cancel) || anyGamepadButtonDown(this.controls.menu.gamepad.cancel)); }
+    ConfirmPressed() { return this.Consume('confirm', () => keyboardDown(this.controls.menu.confirm) || anyGamepadButtonDown(this.controls.menu.gamepad.confirm)); }
+    ClearQueued() { this.queued.clear(); this.global = {}; this.touch?.Clear(); }
     Dispose() { this.removeFrame?.(); this.removeFrame = null; this.queued.clear(); this.held.clear(); }
 }

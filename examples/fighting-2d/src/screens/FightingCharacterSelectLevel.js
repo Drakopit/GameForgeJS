@@ -1,5 +1,5 @@
 import { Level } from "gameforgejs/core";
-import { Screen } from "gameforgejs/2d";
+import { Screen, Draw, ActionBar } from "gameforgejs/2d";
 import { AssetManager } from "gameforgejs/core";
 import {
     FIGHTING_GAME_CHARACTERS,
@@ -9,6 +9,7 @@ import {
 } from "../state/FightingGameState.js";
 import { GetFightingControls } from "../input/FightingControls.js";
 import { anyGamepadButtonDown, anyGamepadDirectionDown, keyboardDown } from "../input/FightingInput.js";
+import { FightingViewport } from '../presentation/FightingViewport.js';
 
 const SCREEN = Object.freeze({
     width: 960,
@@ -33,6 +34,10 @@ export class FightingCharacterSelectLevel extends Level {
     OnStart() {
         this.screen = new Screen(this.TelaId, SCREEN.width, SCREEN.height, { config: this.context?.config });
         this.FocusCanvas();
+        this.viewport = new FightingViewport(this.screen);
+        this.touchMenu=new ActionBar(this.screen,new Draw(this.screen),[
+            {label:'SELECT',touchOnly:true,run:()=>this.Confirm()}, {label:'BACK',touchOnly:true,run:()=>this.Cancel()},
+        ]);
         this.cursorIndex = FightingGameSession.p1Index;
         this.selectionStep = "p1";
         this.pulse = 0;
@@ -50,6 +55,12 @@ export class FightingCharacterSelectLevel extends Level {
     OnUpdate(dt) {
         super.OnUpdate(dt);
         this.pulse += dt ?? 0.016;
+        for(const point of this.viewport.PointerStarts()) {
+            const index=Math.floor((point.x-97)/198);
+            if(point.y>=168&&point.y<=388&&index>=0&&index<FIGHTING_GAME_CHARACTERS.length&&point.x<=97+index*198+172){
+                this.cursorIndex=index;this.Confirm();return;
+            }
+        }
 
         if (this.IsDirectionPressed("left")) {
             this.MoveCursor(-1);
@@ -133,11 +144,14 @@ export class FightingCharacterSelectLevel extends Level {
         if (!this.screen) return;
 
         this.screen.Refresh();
+        this.viewport.Begin();
         const ctx = this.screen.Context;
         this.DrawBackdrop(ctx);
         this.DrawHeader(ctx);
         this.DrawCharacterGrid(ctx);
         this.DrawSelectionSummary(ctx);
+        this.viewport.End();
+        this.touchMenu.Draw();
     }
 
     DrawBackdrop(ctx) {
@@ -315,6 +329,8 @@ export class FightingCharacterSelectLevel extends Level {
     }
 
     OnExit() {
+        this.viewport?.Dispose();
+        this.touchMenu?.Dispose();
         super.OnExit();
     }
 }

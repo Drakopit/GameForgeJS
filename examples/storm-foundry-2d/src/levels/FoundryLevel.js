@@ -9,6 +9,7 @@ import { FoundryHUD } from '../ui/FoundryHUD.js';
 import { FoundryInput } from '../input/FoundryInput.js';
 import { RuntimeTelemetry } from '../components/RuntimeTelemetry.js';
 import { RequireResource } from '../data/RequireResource.js';
+import { FoundryAudio } from '../components/FoundryAudio.js';
 
 /** Composition root only: engine lifecycle delegates simulation, input, passes and UI. */
 export class FoundryLevel extends Level {
@@ -33,6 +34,7 @@ export class FoundryLevel extends Level {
             const prop = new FoundryProp(this.world); this.world.props.push(prop); this.AddEntity(prop);
         }
         this.AddEntity(this.world);
+        this.world.AddComponent(new FoundryAudio(context.services.get('audio'),this.world));
         this.resources.telemetry = new RuntimeTelemetry();
         this.resources.renderer = new FoundryRenderer(this.world, this.screen);
         this.resources.hud = new FoundryHUD(this); this.resources.controls = new FoundryInput(this);

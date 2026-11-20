@@ -38,5 +38,11 @@
       "name": "sky_cross",
       "path": "../assets/sky/daylight-cross.png"
     }
+  ],
+  "jsons": [
+    {
+      "name": "prompts",
+      "path": "./prompts.json"
+    }
   ]
 }

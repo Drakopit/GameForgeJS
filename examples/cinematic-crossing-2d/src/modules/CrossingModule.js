@@ -1,3 +1,4 @@
+import { CourierSteps } from '../components/CourierSteps.js';
 import { Module } from 'gameforgejs/core';
 import { module2D } from 'gameforgejs/2d';
 import { CourierControl } from '../components/CourierControl.js';
@@ -12,6 +13,6 @@ import { CrossingHUD } from '../ui/CrossingHUD.js';
 export class CrossingModule extends Module {
     constructor() {
         super('cinematic-crossing-2d', { imports: [module2D()],
-            declarations: [CourierControl, CourierVisual, CrossingSequence, WaypointMotion, Courier, CrossingLandscape, CrossingLevel, CrossingHUD], exports: [CrossingLevel] });
+            declarations: [CourierSteps, CourierControl, CourierVisual, CrossingSequence, WaypointMotion, Courier, CrossingLandscape, CrossingLevel, CrossingHUD], exports: [CrossingLevel] });
     }
 }

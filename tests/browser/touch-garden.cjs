@@ -17,6 +17,8 @@ async function inspectTouchGarden(page, screenshotPath) {
     try {
         await session.send('Emulation.setTouchEmulationEnabled', { enabled: true });
         await page.waitForFunction(async () => !!(await import('gameforgejs/core')).LevelHandler.current?.controls);
+        // This helper deliberately exercises touch even in the desktop smoke context.
+        await page.evaluate(async () => (await import('gameforgejs/core')).Input.instance.presentation.SetTouchMode('on'));
         const start = await client(96, 690);
         const steer = await client(136, 690);
         const action = await client(384, 690);

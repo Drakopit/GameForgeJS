@@ -1,11 +1,14 @@
-import { Draw, HUDFrame } from 'gameforgejs/2d';
+import { Draw, HUDFrame, Button, Rectangle } from 'gameforgejs/2d';
 import { RoundSettings, ScreenSettings } from '../data/FightingSettings.js';
 import { FightingGameSession } from '../state/FightingGameState.js';
 import { FightingHelp } from './FightingHelp.js';
 
 const Layout = Object.freeze({ barWidth: 350, barHeight: 18, margin: 24, panelWidth: 380, panelHeight: 116 });
 export class FightingHUD {
-    constructor(screen) { this.frame = new HUDFrame(new Draw(screen)); this.help = new FightingHelp(screen); }
+    constructor(screen) {
+        this.screen=screen;this.frame = new HUDFrame(new Draw(screen)); this.help = new FightingHelp(screen);
+        this.helpButton=new Button(screen,{pointerInput:true});this.helpButton.OnClick(()=>this.help.Toggle());
+    }
     Draw(level) {
         this.DrawFighter(level.playerOne, false); this.DrawFighter(level.playerTwo, true);
         const frame = this.frame;
@@ -14,10 +17,25 @@ export class FightingHUD {
         frame.Text(`ROUND ${level.roundNumber}`, 480, 72, { size: 10, align: 'center', color: frame.theme.gold });
         frame.Text(FightingGameSession.mode.toUpperCase(), 480, 89, { size: 9, align: 'center', color: frame.theme.muted });
         frame.Panel({ x: 16, y: 474, width: 928, height: 52 });
-        frame.Text('P1  A/D mover · W salto · S defesa · J leve · K pesado · L poder · U super', 30, 495, { size: 12 });
-        frame.Text('PAD  X leve · Y pesado · RB poder · RT super · A salto · LB defesa     H / Start: ajuda', 30, 514, { size: 11, color: frame.theme.muted });
+        this.help.DrawRow('p1-light',30,480); this.help.DrawRow('p1-heavy',200,480); this.help.DrawRow('p1-special',380,480); this.help.DrawRow('p1-super',560,480);
+        frame.Text('READ THE TELEGRAPH · CONFIRM YOUR CHAIN',30,514,{size:11,color:frame.theme.muted});
         this.DrawRoundState(level);
-        this.help.OnDrawn();
+    }
+    DrawUtility() {
+        const rect=new Rectangle(this.screen.Width/2-26,this.screen.Height<500?this.screen.Height-48:80,52,42);
+        this.helpButton.SetButton(rect);this.frame.Panel(rect);this.frame.Text('?',rect.x+26,rect.y+28,{align:'center',size:20});
+    }
+    DrawCompact(level) {
+        const width=this.screen.Width/2-24;
+        for(const [index,fighter]of level.fighters.entries()){
+            const x=12+index*(this.screen.Width/2);this.frame.Text(fighter.name,x,24,{size:14,maxWidth:width});
+            this.frame.Meter(fighter.hp/fighter.maxHp,{x,y:34,width,height:12},this.frame.theme.green);
+            this.frame.Meter(fighter.meter/100,{x,y:53,width,height:6},this.frame.theme.gold);
+        }
+        this.viewportState=level.roundState;
+        this.frame.Text(level.roundState==='fight'?String(Math.ceil(level.roundTimer)):level.roundState.toUpperCase(),this.screen.Width/2,76,{align:'center',size:16});
+        this.frame.Text(level.playerOne.noticeRemaining>0?level.playerOne.notice:level.playerOne.CanStartAttack('special')?'POWER READY':'POWER RECHARGING',
+            this.screen.Width/2,143,{align:'center',size:13,maxWidth:this.screen.Width-24,color:this.frame.theme.gold});
     }
     DrawFighter(fighter, right) {
         const frame = this.frame;

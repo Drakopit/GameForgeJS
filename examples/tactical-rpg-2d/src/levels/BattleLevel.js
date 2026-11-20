@@ -1,3 +1,5 @@
+import { InputHelpPanel, Draw as ControlGuideDraw } from 'gameforgejs/2d';
+import { ActionManager as ControlGuideActions } from 'gameforgejs/core';
 import { Level } from "gameforgejs/core";
 import { Screen } from "gameforgejs/2d";
 import { Draw } from "gameforgejs/2d";
@@ -23,6 +25,7 @@ export class BattleLevel extends Level {
 
     OnStart() {
         this.screen = new Screen("BattleScreen", W, H, { config: this.context?.config });
+        this.controlsHelp=new InputHelpPanel(new ControlGuideDraw(this.screen),{title:'Controls'});
         this.draw = new Draw(this.screen);
         this.assets = AssetManager.instance;
 
@@ -41,6 +44,8 @@ export class BattleLevel extends Level {
     }
 
     OnExit() {
+        this.controlsHelp?.Dispose();
+
         super.OnExit();
     }
 
@@ -56,6 +61,8 @@ export class BattleLevel extends Level {
     }
 
     OnUpdate(dt) {
+        if(ControlGuideActions.IsActionDown('HELP'))this.controlsHelp?.Toggle();
+
         super.OnUpdate(dt);
         this.animTime += dt;
 
@@ -347,5 +354,7 @@ export class BattleLevel extends Level {
         this.draw.Color = "#FFFFFF";
         this.draw.FontSize = "14px";
         this.draw.DrawText(this.log, 14, 466);
-    }
+
+        this.controlsHelp?.OnDrawn();
+}
 }

@@ -9,6 +9,8 @@ const Layout = Object.freeze({
 });
 
 export class SkyTrailHUD {
+    get helpVisible() {return this.help?.view?.visible ?? this._helpVisible ?? false;}
+    set helpVisible(value) {this._helpVisible=value;if(this.help?.view)this.help.view.visible=value;}
     constructor() {
         this.helpVisible = false;
         this.help = new SkyTrailHelp();
@@ -37,8 +39,8 @@ export class SkyTrailHUD {
         frame.Text(`${altitude} m  /  ${level.checkpoint ? 'Checkpoint ativo' : 'Encontre o checkpoint'}`, 30, level.height - 25,
             { size: 11, color: frame.theme.muted });
         const device = Input.GetConnectedGamepadIndices().length ? 'GAMEPAD' : 'TECLADO';
-        frame.Text(`${device}   •   H / Y  AJUDA`, level.width - 30, level.height - 35, { size: 11, align: 'right' });
-        if (this.helpVisible) this.help.Draw(level.ui.Draw);
+        this.help.view?.DrawAction('HELP',level.width-170,level.height-55);
+        this.help.Draw(level.ui.Draw, this.helpVisible);
         if (level.gameState === 'WON') this.DrawResult(level);
     }
 

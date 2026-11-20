@@ -34,12 +34,13 @@ export function anyGamepadButtonDown(buttons) {
     const pad = GamePad.instance;
     if (!pad) return false;
 
-    return Object.keys(pad.gamepads).some(padIndex => gamepadButtonDown(buttons, padIndex));
+    return Input.GetConnectedGamepadIndices().some(index => gamepadButtonDown(buttons, index));
 }
 
 export function gamepadDirectionHeld(direction, padIndex = 0, binding = null) {
     const pad = GamePad.instance;
     if (!pad) return false;
+    padIndex = padIndex;
 
     const resolved = directionBinding(direction, binding);
     if (asButtonIndexes(resolved.buttons).some(button => pad.GetButton(button, padIndex))) return true;
@@ -53,6 +54,7 @@ export function gamepadDirectionHeld(direction, padIndex = 0, binding = null) {
 export function gamepadDirectionDown(direction, padIndex = 0, binding = null) {
     const pad = GamePad.instance;
     if (!pad) return false;
+    padIndex = padIndex;
 
     const resolved = directionBinding(direction, binding);
     if (asButtonIndexes(resolved.buttons).some(button => pad.GetButtonDown(button, padIndex))) return true;
@@ -64,8 +66,9 @@ export function anyGamepadDirectionDown(direction, binding = null) {
     const pad = GamePad.instance;
     if (!pad) return false;
 
-    return Object.keys(pad.gamepads).some(padIndex => gamepadDirectionDown(direction, padIndex, binding));
+    return Input.GetConnectedGamepadIndices().some(index => gamepadDirectionDown(direction, index, binding));
 }
+
 
 function directionBinding(direction, binding) {
     if (typeof binding === "string" || typeof binding === "number") {

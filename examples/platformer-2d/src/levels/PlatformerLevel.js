@@ -139,4 +139,5 @@ export class PlatformerLevel extends Level {
         super.OnGUI();
         this.hud.Draw(this);
     }
+    OnExit() { this.hud?.help?.Dispose(); super.OnExit(); }
 }

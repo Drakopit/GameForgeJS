@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "title": "Route Atlas 2D / Controls",
+  "rows": [
+    {
+      "label": "Move",
+      "actions": [
+        "UP",
+        "LEFT",
+        "DOWN",
+        "RIGHT"
+      ]
+    },
+    {
+      "label": "Enter stage",
+      "actions": [
+        "ACTION"
+      ]
+    },
+    {
+      "label": "Reset",
+      "actions": [
+        "RESET"
+      ]
+    },
+    {
+      "label": "Help",
+      "actions": [
+        "HELP"
+      ]
+    },
+    {
+      "label": "Back to map",
+      "actions": [
+        "SKIP"
+      ]
+    }
+  ],
+  "notes": [
+    "A branching overworld graph, smooth node travel, playable shard trials and event-driven stage unlocks."
+  ]
+}

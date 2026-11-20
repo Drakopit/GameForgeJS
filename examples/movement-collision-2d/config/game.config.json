@@ -16,83 +16,19 @@
     "fullScreen": true,
     "pixelArt": true,
     "antialiasing": false,
-    "orientation": "landscape"
+    "orientation": "landscape",
+    "responsive": {
+      "mode": "contain"
+    }
   },
   "input": {
     "gamepadProfile": "xbox",
     "actionMappings": {
-      "RIGHT": [
-        {
-          "device": "keyboard",
-          "input": "KeyD"
-        },
-        {
-          "device": "keyboard",
-          "input": "ArrowRight"
-        },
-        {
-          "device": "gamepad",
-          "input": "LEFT_STICK_RIGHT"
-        },
-        {
-          "device": "gamepad",
-          "input": "DPAD_RIGHT"
-        }
-      ],
-      "LEFT": [
-        {
-          "device": "keyboard",
-          "input": "KeyA"
-        },
-        {
-          "device": "keyboard",
-          "input": "ArrowLeft"
-        },
-        {
-          "device": "gamepad",
-          "input": "LEFT_STICK_LEFT"
-        },
-        {
-          "device": "gamepad",
-          "input": "DPAD_LEFT"
-        }
-      ],
-      "DOWN": [
-        {
-          "device": "keyboard",
-          "input": "KeyS"
-        },
-        {
-          "device": "keyboard",
-          "input": "ArrowDown"
-        },
-        {
-          "device": "gamepad",
-          "input": "LEFT_STICK_DOWN"
-        },
-        {
-          "device": "gamepad",
-          "input": "DPAD_DOWN"
-        }
-      ],
-      "UP": [
-        {
-          "device": "keyboard",
-          "input": "KeyW"
-        },
-        {
-          "device": "keyboard",
-          "input": "ArrowUp"
-        },
-        {
-          "device": "gamepad",
-          "input": "LEFT_STICK_UP"
-        },
-        {
-          "device": "gamepad",
-          "input": "DPAD_UP"
-        }
-      ]
+      "RIGHT": [{"device":"keyboard","input":"KeyD"},{"device":"keyboard","input":"ArrowRight"},{"device":"gamepad","input":"LEFT_STICK_RIGHT"},{"device":"gamepad","input":"DPAD_RIGHT"}],
+      "LEFT": [{"device":"keyboard","input":"KeyA"},{"device":"keyboard","input":"ArrowLeft"},{"device":"gamepad","input":"LEFT_STICK_LEFT"},{"device":"gamepad","input":"DPAD_LEFT"}],
+      "DOWN": [{"device":"keyboard","input":"KeyS"},{"device":"keyboard","input":"ArrowDown"},{"device":"gamepad","input":"LEFT_STICK_DOWN"},{"device":"gamepad","input":"DPAD_DOWN"}],
+      "UP": [{"device":"keyboard","input":"KeyW"},{"device":"keyboard","input":"ArrowUp"},{"device":"gamepad","input":"LEFT_STICK_UP"},{"device":"gamepad","input":"DPAD_UP"}],
+      "HELP": [{"device":"keyboard","input":"KeyH"},{"device":"gamepad","input":"RIGHT_STICK_BUTTON"}]
     }
   }
 }

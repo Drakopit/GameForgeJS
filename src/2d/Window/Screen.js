@@ -87,11 +87,11 @@ export class Screen {
     /**
      * @doc Method
      * @description Initialize scene
-     * @param {canvas} canvas 
+     * @param {canvas} canvas
      * @param {context} context
      * @example
      *  var canvas = document.getElementById("canvasName");
-     *  var context= canvas.getContext('2d');     
+     *  var context= canvas.getContext('2d');
      *  screen.Init(canvas, context);
      */
     Init(screenName) {
@@ -108,7 +108,7 @@ export class Screen {
             // Garante que o CSS não vai embaçar a imagem se o canvas for redimensionado
             this.canvas.style.imageRendering = "pixelated";
         }
-        GameViewport.Apply(this.canvas, GameViewport.IsFullScreen(this.config));
+        GameViewport.Apply(this.canvas, GameViewport.IsFullScreen(this.config), this.config);
     }
 
     /**
@@ -157,7 +157,7 @@ export class Screen {
 
     /**
      * @doc Method
-     * @param {width} width 
+     * @param {width} width
      * @param {height} height
      * @description Resize screen
      * @example

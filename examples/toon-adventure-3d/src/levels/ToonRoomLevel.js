@@ -129,6 +129,7 @@ export class ToonRoomLevel extends Level3D {
     }
 
     OnExit() {
+        this.hud?.Dispose();
         this.warpTravel?.Detach();
         super.OnExit();
     }

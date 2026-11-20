@@ -1,3 +1,5 @@
+import { InputHelpPanel, Draw as ControlGuideDraw } from 'gameforgejs/2d';
+import { ActionManager as ControlGuideActions } from 'gameforgejs/core';
 import { Level } from "gameforgejs/core";
 import { Draw } from "gameforgejs/2d";
 import { ActionManager } from "gameforgejs/core";
@@ -61,11 +63,14 @@ export class AdvancedDemoResultScreen extends Level {
     OnStart() {
         this.elapsed = 0;
         this.screen = new Screen(this.TelaId, RESULT_SCREEN.width, RESULT_SCREEN.height, { config: this.context?.config });
+        this.controlsHelp=new InputHelpPanel(new ControlGuideDraw(this.screen),{title:'Controls'});
         this.draw = new Draw(this.screen);
         super.OnStart();
     }
 
     OnUpdate(dt) {
+        if(ControlGuideActions.IsActionDown('HELP'))this.controlsHelp?.Toggle();
+
         super.OnUpdate(dt);
         this.elapsed += dt ?? 0.016;
 
@@ -220,6 +225,12 @@ export class AdvancedDemoResultScreen extends Level {
     }
 
     OnExit() {
+        this.controlsHelp?.Dispose();
+
         super.OnExit();
     }
+
+    OnGUI() {super.OnGUI();
+        this.controlsHelp?.OnDrawn();
+}
 }

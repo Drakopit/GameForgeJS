@@ -17,5 +17,11 @@
       "path": ".././assets/Chars/Char_5.png"
     }
   ],
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "jsons": [
+    {
+      "name": "prompts",
+      "path": "./prompts.json"
+    }
+  ]
 }

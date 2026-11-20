@@ -1,6 +1,6 @@
 import { Vector3D } from 'gameforgejs/core';
 import { WarpSettings } from '../data/WarpSettings.js';
-import { HUDFrame } from 'gameforgejs/2d';
+import { HUDFrame, InputHelpPanel } from 'gameforgejs/2d';
 import { AreaAnnouncement } from './AreaAnnouncement.js';
 import { HealthBar } from './HealthBar.js';
 
@@ -13,10 +13,13 @@ const Layout = Object.freeze({
 });
 
 export class ToonRoomHUD {
+    get helpVisible() {return this.helpView?.visible ?? this._helpVisible ?? false;}
+    set helpVisible(value) {this._helpVisible=value;if(this.helpView)this.helpView.visible=value;}
     constructor(ui) {
         this.draw = ui.Draw;
         this.frame = new HUDFrame(this.draw);
         this.helpVisible = false;
+        this.helpView = new InputHelpPanel(this.draw,{title:"Toon Adventure / Controls"});
         this.travelRemaining = 0;
         this.healthBar = new HealthBar(this.frame, Layout.health);
         this.announcement = new AreaAnnouncement(this.draw);
@@ -57,6 +60,7 @@ export class ToonRoomHUD {
             { size: 11, color: frame.theme.text, align: 'right' });
         this.DrawWorldMap(level);
         this.announcement.Draw(level.width);
+        this.helpView.visible=this.helpVisible;
         if (this.helpVisible) this.DrawHelp();
     }
 
@@ -89,20 +93,7 @@ export class ToonRoomHUD {
         ctx.restore();
     }
 
-    DrawHelp() {
-        const frame = this.frame;
-        frame.Panel(Layout.help);
-        frame.Text('EXPEDIÇÃO NA FLORESTA', 189, 207, { size: 21, color: frame.theme.gold, weight: 700 });
-        const lines = [
-            'Mover: WASD / setas ou analógico esquerdo / D-pad',
-            'Atacar: Space / X (Xbox), Square (PS), Y (Nintendo)',
-            'Ajuda: H / Start / Options / + — o mundo continua ativo',
-            'Recomeçar: R / botão superior    Luz: B / Select / Share / Minus',
-            'Amarelo: preparação. Vermelho: impacto. Esquive e contra-ataque.',
-            'Lagos: água rasa reduz a velocidade. Explore as margens abertas.',
-            'Entre nos círculos luminosos para viajar; saia do destino para voltar.',
-        ];
-        lines.forEach((text, index) => frame.Text(text, 189, 240 + index * 28, { size: 14, maxWidth: 580 }));
-        frame.Text('Personagens e floresta: KayKit / Kay Lousberg (CC0)', 189, 471, { size: 11, color: frame.theme.muted });
-    }
+    DrawHelp() { this.helpView.visible = true; this.helpView.OnDrawn(); }
+
+    Dispose() {this.helpView.Dispose();}
 }

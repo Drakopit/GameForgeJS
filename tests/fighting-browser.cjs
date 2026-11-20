@@ -7,6 +7,7 @@ const { startServer } = require('../cli/server.cjs');
 const { build } = require('../cli/lib/build.cjs');
 const { inspectFighting, enterFight } = require('./browser/fighting.cjs');
 const { inspectFightingGamepad } = require('./browser/fighting-gamepad.cjs');
+const { inspectFightingMobile, inspectFightingSparsePads } = require('./browser/fighting-access.cjs');
 async function main() {
     const root = path.resolve(__dirname, '..');
     const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'gameforge-fighting-'));
@@ -18,15 +19,18 @@ async function main() {
             const directory = mode === 'source' ? root : build(path.join(root, 'examples/fighting-2d'), { output: path.join(temp, 'game') }).output;
             const server = await startServer({ root: directory, port: 0, basePath: '/game/' }); servers.push(server);
             const url = `http://127.0.0.1:${server.address().port}/game/${mode === 'source' ? 'examples/fighting-2d/index.html' : ''}`;
-            for (const scenario of ['combat', 'versus-gamepad']) {
-                const page = await browser.newPage({ viewport: { width: 1100, height: 800 } });
+            for (const scenario of ['combat', 'versus-gamepad', 'sparse-pads', 'mobile-controls']) {
+                const mobile=scenario==='mobile-controls';
+                const page = await browser.newPage({ viewport: mobile?{width:390,height:844}:{ width: 1100, height: 800 },isMobile:mobile,hasTouch:mobile });
                 const errors = [];
                 page.on('pageerror', error => errors.push(error.message));
                 page.on('response', response => { if (response.status() >= 400 && !response.url().endsWith('favicon.ico')) errors.push(response.url()); });
                 await page.goto(url, { waitUntil: 'networkidle' });
                 try {
                 if (scenario === 'combat') await inspectFighting(page, `test-results/browser/${mode}-fighting.png`);
-                else { await enterFight(page, { versus: true }); await inspectFightingGamepad(page); }
+                else if(scenario==='versus-gamepad'){ await enterFight(page, { versus: true }); await inspectFightingGamepad(page); }
+                else if(mobile)await inspectFightingMobile(page);
+                else await inspectFightingSparsePads(page);
                 } catch (error) {
                     console.error(mode, scenario, url, errors);
                     throw error;

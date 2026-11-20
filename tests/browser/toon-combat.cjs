@@ -2,12 +2,31 @@ const assert = require('node:assert/strict');
 const { expect } = require('@playwright/test');
 
 async function inspectToonCombat(page) {
+    // Observe the accepted input, not a sub-second phase that software WebGL
+    // can finish between browser polling samples under load.
+    await page.evaluate(async () => {
+        const attack = (await import('gameforgejs/core')).LevelHandler.current.player.attack;
+        attack.inputProbe = { count: 0, original: attack.Start };
+        attack.Start = function () {
+            const accepted = this.inputProbe.original.call(this);
+            if (accepted) this.inputProbe.count++;
+            return accepted;
+        };
+    });
     await page.keyboard.press('KeyR');
-    await page.keyboard.down('Space');
-    await expect.poll(() => page.evaluate(async () => {
-        return (await import('gameforgejs/core')).LevelHandler.current.player.attack.phase;
-    })).not.toBe('ready');
-    await page.keyboard.up('Space');
+    try {
+        await page.keyboard.down('Space');
+        await expect.poll(() => page.evaluate(async () => {
+            return (await import('gameforgejs/core')).LevelHandler.current.player.attack.inputProbe.count;
+        })).toBeGreaterThan(0);
+    } finally {
+        await page.keyboard.up('Space');
+        await page.evaluate(async () => {
+            const attack = (await import('gameforgejs/core')).LevelHandler.current.player.attack;
+            attack.Start = attack.inputProbe.original;
+            delete attack.inputProbe;
+        });
+    }
 
     const result = await page.evaluate(async () => {
         const { Engine, LevelHandler } = await import('gameforgejs/core');

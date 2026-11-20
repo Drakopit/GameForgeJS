@@ -15,6 +15,7 @@ export class VirtualStick {
     }
     /** Call each engine frame; origin can follow responsive HUD layout. */
     Update() {
+        if (Input.instance?.presentation && !Input.instance.presentation.TouchVisible) { this.Cancel(); return; }
         const touch = Input.instance?.touch;
         this.direction.Set(0, 0);
         if (!touch) return;
@@ -29,6 +30,7 @@ export class VirtualStick {
         if (length > this.radius * this.deadzone) this.direction.Copy(delta.DivideScalar(Math.max(this.radius, length)));
     }
     Draw(context) {
+        if (Input.instance?.presentation && !Input.instance.presentation.TouchVisible) return;
         context.save();
         context.strokeStyle = '#a4d7d9'; context.fillStyle = '#102d4077'; context.lineWidth = 2;
         context.beginPath(); context.arc(this.origin.x, this.origin.y, this.radius, 0, Math.PI * 2); context.fill(); context.stroke();

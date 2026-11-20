@@ -1,3 +1,4 @@
+import { FoundryAudio } from '../components/FoundryAudio.js';
 // @ts-check
 import { Module } from 'gameforgejs/core';
 import { module2D } from 'gameforgejs/2d';
@@ -15,7 +16,7 @@ import { PropPhysics } from '../systems/PropPhysics.js';
 export class FoundryModule extends Module {
     constructor() {
         super('storm-foundry-2d', { imports: [module2D()],
-            declarations: [FoundryLevel, FoundryWorld, FoundryProp, WeatherEmitter, ParticleEmitter,
+            declarations: [FoundryAudio, FoundryLevel, FoundryWorld, FoundryProp, WeatherEmitter, ParticleEmitter,
                 RippleField, WaterContact, PropForces, PropVisual, PropPhysics], exports: [FoundryLevel] });
     }
 }

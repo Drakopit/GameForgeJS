@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "title": "Renderer Showcase 3D / Controls",
+  "rows": [
+    {
+      "label": "Help",
+      "actions": [
+        "HELP"
+      ]
+    }
+  ],
+  "notes": [
+    "A Render3D scene exploring cameras, models, lighting, materials, and shadows."
+  ]
+}

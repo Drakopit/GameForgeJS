@@ -4,6 +4,7 @@ import { Mouse } from "./Mouse.js";
 import { Touch } from "./Touch.js";
 import { Engine } from "../Engine.js";
 import { Config } from "../Config.js";
+import { InputPresentation } from './InputPresentation.js';
 
 /**
  * @doc Class Input
@@ -53,6 +54,7 @@ export class Input {
         this.mouse = new Mouse({ shared, target });
         this.touch = new Touch({ shared, target });
         this.gamepad = new GamePad({ shared, target });
+        this.presentation = new InputPresentation(this);
 
         const scoped = { instance: this };
         this.unsubscribe = [
@@ -95,6 +97,7 @@ export class Input {
         this.instance.pendingKeysUp = {};
         this.instance.gamepad.Update();
         this.instance.touch.Update();
+        this.instance.presentation.Update();
     }
 
     /**

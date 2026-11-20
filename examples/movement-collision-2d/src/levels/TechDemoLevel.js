@@ -1,3 +1,5 @@
+import { InputHelpPanel, Draw as ControlGuideDraw } from 'gameforgejs/2d';
+import { ActionManager as ControlGuideActions } from 'gameforgejs/core';
 import { Level } from "gameforgejs/core";
 import { Player } from "../entities/Player.js";
 import { Coin } from "../entities/Coin.js";
@@ -18,7 +20,8 @@ export class TechDemoLevel extends Level {
 
         const width = 640;
         const height = 480;
-        this.screen = new Screen("gameCanvas", width, height, { config: this.context?.config }); // Acessa a tela criada pela Engine
+        this.screen = new Screen("gameCanvas", width, height, { config: this.context?.config });
+        this.controlsHelp=new InputHelpPanel(new ControlGuideDraw(this.screen),{title:'Controls'}); // Acessa a tela criada pela Engine
         this.draw = new Draw(this.screen);
 
         // Instancia os objetos
@@ -31,6 +34,8 @@ export class TechDemoLevel extends Level {
     }
 
     OnUpdate(dt) {
+        if(ControlGuideActions.IsActionDown('HELP'))this.controlsHelp?.Toggle();
+
         super.OnUpdate(dt); // Atualiza todas as entidades filhas
 
         // Checagem de Colisão (Player x Coin)
@@ -54,5 +59,9 @@ export class TechDemoLevel extends Level {
 
         this.draw.FontSize = "14px";
         this.draw.DrawText(`Use W, A, S, D para mover e coletar!`, 20, this.screen.height - 20);
-    }
+
+        this.controlsHelp?.OnDrawn();
+}
+
+    OnExit() {this.controlsHelp?.Dispose();super.OnExit();}
 }

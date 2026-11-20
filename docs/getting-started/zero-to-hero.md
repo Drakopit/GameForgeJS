@@ -11,17 +11,22 @@ See the [implementation audit](../migrations/advanced-demo-audit.md) for current
 evidence and the active Toon room → ABS encounter → model animation → water and
 progression sequence. The 2D lab is a supporting checkpoint, not the final campaign.
 
+The [current readiness assessment](../plans/zero-to-hero-readiness.md) separates
+implemented building blocks from the unfinished full games and reproducible course.
+
 The [first Toon room checkpoint](toon-room-checkpoint.md) is now executable:
 banded lighting, overhead movement, solid obstacles and selective publication.
 Its primitive art remains temporary; the initial room lesson covers navigation and rendering.
 
 [Checkpoint 2](toon-abs-checkpoint.md) extends that room with one sentry, melee
-windows, damage, invulnerability, knockback and restart. The complete adventure,
-animated characters, progression and water remain outstanding.
+windows, damage, invulnerability, knockback and restart. Later checkpoints add
+animated characters, continuous exploration and shallow-water interaction. The
+complete adventure, saved progression and ending remain outstanding.
 
 [Checkpoint 3](toon-character-checkpoint.md) now replaces the character placeholders
 with copied KayKit models, embedded textures and verified CPU skeletal playback.
-Clip blending, full environment art, progression and water are still pending.
+Clip blending, finished environment art and complete progression remain pending;
+the later water checkpoint now covers the basic shallow-water behavior.
 
 ## Format for every chapter
 
@@ -102,8 +107,8 @@ and ending, not just a combat arena.
 
 Model-animation lessons must state the supported renderer subset. Checkpoint 3
 verifies CPU skinning and compatible-rig LINEAR/STEP playback; it does not provide
-general retargeting or clip blending. Water lessons still require implementation
-and visual verification before they can be presented as working instructions.
+general retargeting or clip blending. The basic water lesson is Checkpoint 5;
+swimming, buoyancy and reflected/refracted scenery remain separate future work.
 
 ## Path B: original 2D platformer with at least 20 levels
 

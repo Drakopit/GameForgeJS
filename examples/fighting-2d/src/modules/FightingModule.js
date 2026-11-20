@@ -1,3 +1,6 @@
+import { FightingPadSeats } from '../input/FightingPadSeats.js';
+import { FightingTouchControls } from '../input/FightingTouchControls.js';
+import { FightingViewport } from '../presentation/FightingViewport.js';
 import { Module } from 'gameforgejs/core';
 import { module2D } from 'gameforgejs/2d';
 import { FightingCharacterSelectLevel } from '../screens/FightingCharacterSelectLevel.js';
@@ -8,7 +11,7 @@ export class FightingModule extends Module {
     constructor() {
         super('fighting-2d', {
             imports: [module2D()],
-            declarations: [FightingCharacterSelectLevel, FightingGame2DLevel, FightingGameMenuLevel],
+            declarations: [FightingPadSeats, FightingTouchControls, FightingViewport, FightingCharacterSelectLevel, FightingGame2DLevel, FightingGameMenuLevel],
             exports: [FightingCharacterSelectLevel, FightingGame2DLevel, FightingGameMenuLevel],
         });
     }

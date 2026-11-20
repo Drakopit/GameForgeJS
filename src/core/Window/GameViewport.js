@@ -1,6 +1,5 @@
 import { Config } from "../Config.js";
 import { Vector2D } from '../Math/Vector2D.js';
-
 /**
  * Applies the responsive full-window canvas mode selected by a game config.
  *
@@ -22,9 +21,12 @@ export class GameViewport {
         }
         const canvas = screen.Canvas;
         this.Apply(canvas, true);
+        canvas.style.transform = 'none';
+        canvas.style.aspectRatio = 'auto';
         const viewport = window.visualViewport;
         const sides = ['top', 'right', 'bottom', 'left'];
-        for (const side of sides) canvas.style.setProperty(`--gameforge-safe-${side}`, `env(safe-area-inset-${side}, 0px)`);
+        for (const side of sides)
+            canvas.style.setProperty(`--gameforge-safe-${side}`, `env(safe-area-inset-${side}, 0px)`);
         const resize = () => {
             const style = getComputedStyle(canvas);
             const safe = Object.fromEntries(sides.map(side => [side,
@@ -51,7 +53,6 @@ export class GameViewport {
             viewport?.removeEventListener('scroll', resize);
         };
     }
-
     /**
      * Reads the active game's `screen.fullScreen` setting.
      * @returns {boolean} Whether full-window canvas presentation is enabled.
@@ -60,27 +61,28 @@ export class GameViewport {
         const config = gameConfig?.screen?.fullScreen
             ?? gameConfig?.window?.fullScreen
             ?? false;
-
         return typeof config === "object"
             ? config.enabled === true
             : config === true;
     }
-
     /**
      * Styles a game canvas to occupy the browser window responsively.
      * @param {HTMLCanvasElement} canvas - Game canvas element.
      * @param {boolean} [enabled] - Optional setting override.
      * @returns {HTMLCanvasElement} The supplied canvas.
      */
-    static Apply(canvas, enabled = this.IsFullScreen()) {
+    static Apply(canvas, enabled = this.IsFullScreen(), config = Config.data) {
+        const mode = config?.screen?.responsive?.mode;
+        if (canvas && mode === 'contain')
+            return this.Contain(canvas);
+        if (mode === 'adaptive')
+            enabled = true;
         if (!canvas || !enabled) {
             return canvas;
         }
-
         document.body.style.overflow = "hidden";
         document.body.style.width = "100vw";
         document.body.style.height = "100vh";
-
         canvas.style.position = "fixed";
         canvas.style.inset = "0";
         canvas.style.width = "100vw";
@@ -88,7 +90,24 @@ export class GameViewport {
         canvas.style.boxSizing = "border-box";
         canvas.style.border = "0";
         canvas.style.margin = "0";
-
         return canvas;
+    }
+    /** CSS follows browser bars/rotation without resizing a fixed-coordinate game world. */
+    static Contain(canvas) {
+        const ratio = canvas.width / Math.max(1, canvas.height);
+        const width = '(100vw - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px))';
+        const height = '(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px))';
+        Object.assign(canvas.style, { position: 'fixed', inset: 'auto',
+            left: 'calc(env(safe-area-inset-left, 0px) + ' + width + ' / 2)',
+            top: 'calc(env(safe-area-inset-top, 0px) + ' + height + ' / 2)',
+            transform: 'translate(-50%, -50%)', width: `min(calc(${width}), calc(${height} * ${ratio}))`,
+            height: `min(calc(${height}), calc(${width} * ${1 / ratio}))`, aspectRatio: String(ratio), boxSizing: 'border-box', margin: '0', touchAction: 'none' });
+        document.body.style.overflow = 'hidden';
+        return canvas;
+    }
+    /** Keep native WebGL and transparent UI surfaces on the exact same viewport. */
+    static Align(source, target) {
+        for (const property of ['position', 'left', 'top', 'width', 'height', 'inset', 'transform', 'aspectRatio'])
+            target.Canvas.style[property] = source.Canvas.style[property];
     }
 }

@@ -9,7 +9,8 @@
       "aether"
     ],
     "path": "aether-observatory-3d/index.html",
-    "screenshot": "site/examples/aether-observatory-3d.jpg"
+    "screenshot": "site/examples/aether-observatory-3d.jpg",
+    "category": "environments"
   },
   {
     "id": "cinematic-crossing-2d",
@@ -21,7 +22,8 @@
       "cutscene"
     ],
     "path": "cinematic-crossing-2d/index.html",
-    "screenshot": "site/examples/cinematic-crossing-2d.jpg"
+    "screenshot": "site/examples/cinematic-crossing-2d.jpg",
+    "category": "patterns"
   },
   {
     "id": "route-atlas-2d",
@@ -33,7 +35,8 @@
       "atlas"
     ],
     "path": "route-atlas-2d/index.html",
-    "screenshot": "site/examples/route-atlas-2d.jpg"
+    "screenshot": "site/examples/route-atlas-2d.jpg",
+    "category": "patterns"
   },
   {
     "id": "boss-patterns-2d",
@@ -44,7 +47,8 @@
       "boss"
     ],
     "path": "boss-patterns-2d/index.html",
-    "screenshot": "site/examples/boss-patterns-2d.jpg"
+    "screenshot": "site/examples/boss-patterns-2d.jpg",
+    "category": "patterns"
   },
   {
     "id": "storm-foundry-2d",
@@ -56,7 +60,8 @@
       "foundry",
       "fx"
     ],
-    "screenshot": "site/examples/storm-foundry-2d.jpg"
+    "screenshot": "site/examples/storm-foundry-2d.jpg",
+    "category": "fx"
   },
   {
     "id": "toon-adventure-3d",
@@ -67,7 +72,8 @@
     "aliases": [
       "toonabs"
     ],
-    "screenshot": "site/examples/toon-adventure-3d.jpg"
+    "screenshot": "site/examples/toon-adventure-3d.jpg",
+    "category": "environments"
   },
   {
     "id": "platformer-2d",
@@ -78,7 +84,8 @@
     "aliases": [
       "platformer"
     ],
-    "screenshot": "site/examples/platformer-2d.jpg"
+    "screenshot": "site/examples/platformer-2d.jpg",
+    "category": "physics"
   },
   {
     "id": "movement-collision-2d",
@@ -89,7 +96,8 @@
     "aliases": [
       "immature"
     ],
-    "screenshot": "site/examples/movement-collision-2d.jpg"
+    "screenshot": "site/examples/movement-collision-2d.jpg",
+    "category": "core"
   },
   {
     "id": "component-adventure-2d",
@@ -102,7 +110,8 @@
       "adventure",
       "zelda"
     ],
-    "screenshot": "site/examples/component-adventure-2d.jpg"
+    "screenshot": "site/examples/component-adventure-2d.jpg",
+    "category": "core"
   },
   {
     "id": "platform-adventure-2d",
@@ -113,7 +122,8 @@
     "aliases": [
       "advanced"
     ],
-    "screenshot": "site/examples/platform-adventure-2d.jpg"
+    "screenshot": "site/examples/platform-adventure-2d.jpg",
+    "category": "patterns"
   },
   {
     "id": "tactical-rpg-2d",
@@ -124,7 +134,8 @@
     "aliases": [
       "tactical"
     ],
-    "screenshot": "site/examples/tactical-rpg-2d.jpg"
+    "screenshot": "site/examples/tactical-rpg-2d.jpg",
+    "category": "patterns"
   },
   {
     "id": "fighting-2d",
@@ -136,7 +147,8 @@
       "fighting2d",
       "fighting"
     ],
-    "screenshot": "site/examples/fighting-2d.jpg"
+    "screenshot": "site/examples/fighting-2d.jpg",
+    "category": "patterns"
   },
   {
     "id": "puzzle-battle-2d",
@@ -147,7 +159,8 @@
     "aliases": [
       "streetfightpuzzle"
     ],
-    "screenshot": "site/examples/puzzle-battle-2d.jpg"
+    "screenshot": "site/examples/puzzle-battle-2d.jpg",
+    "category": "patterns"
   },
   {
     "id": "renderer-3d",
@@ -158,7 +171,8 @@
     "aliases": [
       "demo3d"
     ],
-    "screenshot": "site/examples/renderer-3d.jpg"
+    "screenshot": "site/examples/renderer-3d.jpg",
+    "category": "environments"
   },
   {
     "id": "solar-system-3d",
@@ -170,7 +184,8 @@
       "solar3d",
       "solar"
     ],
-    "screenshot": "site/examples/solar-system-3d.jpg"
+    "screenshot": "site/examples/solar-system-3d.jpg",
+    "category": "environments"
   },
   {
     "id": "sky-trail-3d",
@@ -181,7 +196,8 @@
     "aliases": [
       "mini3d"
     ],
-    "screenshot": "site/examples/sky-trail-3d.jpg"
+    "screenshot": "site/examples/sky-trail-3d.jpg",
+    "category": "environments"
   },
   {
     "id": "online-sandbox-2d",
@@ -194,7 +210,8 @@
       "mmo",
       "terraria"
     ],
-    "screenshot": "site/examples/online-sandbox-2d.jpg"
+    "screenshot": "site/examples/online-sandbox-2d.jpg",
+    "category": "network"
   },
   {
     "id": "addons-2d",
@@ -205,7 +222,8 @@
     "aliases": [
       "addons"
     ],
-    "screenshot": "site/examples/addons-2d.jpg"
+    "screenshot": "site/examples/addons-2d.jpg",
+    "category": "core"
   },
   {
     "id": "touch-garden-2d",
@@ -217,6 +235,7 @@
       "touch",
       "mobile"
     ],
-    "screenshot": "site/examples/touch-garden-2d.jpg"
+    "screenshot": "site/examples/touch-garden-2d.jpg",
+    "category": "core"
   }
 ]

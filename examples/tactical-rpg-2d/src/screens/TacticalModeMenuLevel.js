@@ -1,3 +1,5 @@
+import { InputHelpPanel, Draw as ControlGuideDraw } from 'gameforgejs/2d';
+import { ActionManager as ControlGuideActions } from 'gameforgejs/core';
 import { Level } from "gameforgejs/core";
 import { Screen } from "gameforgejs/2d";
 import { Draw } from "gameforgejs/2d";
@@ -29,16 +31,21 @@ export class TacticalModeMenuLevel extends Level {
 
     OnStart() {
         this.screen = new Screen("TacticalModeMenu", W, H, { config: this.context?.config });
+        this.controlsHelp=new InputHelpPanel(new ControlGuideDraw(this.screen),{title:'Controls'});
         this.draw = new Draw(this.screen);
         this.selected = BattleState.battleMode === BATTLE_MODES.FINAL_FANTASY_TACTICS ? 1 : 0;
         super.OnStart();
     }
 
     OnExit() {
+        this.controlsHelp?.Dispose();
+
         super.OnExit();
     }
 
     OnUpdate(dt) {
+        if(ControlGuideActions.IsActionDown('HELP'))this.controlsHelp?.Toggle();
+
         super.OnUpdate(dt);
 
         if (ActionManager.IsActionDown("UP")) {
@@ -113,4 +120,8 @@ export class TacticalModeMenuLevel extends Level {
         this.draw.Color = "#CBD6C7";
         this.draw.DrawText(option.subtitle, x + 20, y + 58);
     }
+
+    OnGUI() {super.OnGUI();
+        this.controlsHelp?.OnDrawn();
+}
 }

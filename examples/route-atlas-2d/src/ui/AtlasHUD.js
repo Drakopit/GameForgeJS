@@ -1,14 +1,10 @@
 import { ActionManager, Vector2D } from 'gameforgejs/core';
-import { Draw, HUDFrame, ActionBar, InfoPanel, VirtualStick } from 'gameforgejs/2d';
+import { Draw, HUDFrame, ActionBar, InputHelpPanel as InfoPanel, VirtualStick } from 'gameforgejs/2d';
 
 export class AtlasHUD {
     constructor(level) {
         this.level = level; const draw = new Draw(level.screen); this.frame = new HUDFrame(draw); this.stick = new VirtualStick(level.screen);
-        this.help = new InfoPanel(draw, {title: 'Graph → stage → unlock', lines: [
-            'Move: arrows / WASD / left stick / touch stick.', 'Tap an adjacent available node to travel.',
-            'Enter / A / ENTER: play the selected stage.', 'Collect three shards. Red sentries return you to start.',
-            'A clear opens outgoing routes; both branches work.', 'BACK / Escape / B: leave stage. R: reset progress.',
-        ]});
+        this.help = new InfoPanel(draw, {title: 'Graph → stage → unlock', lines: []});
         this.bar = new ActionBar(level.screen, draw, [{label: 'ENTER', run: () => level.EnterStage()},
             {label: 'BACK', run: () => level.mode = 'map'}, {label: 'RESET', run: () => level.Reset()}, {label: 'HELP', run: () => this.help.Toggle()}]);
     }
@@ -31,5 +27,5 @@ export class AtlasHUD {
         this.frame.Text(text, 20, 83, {size: 13, maxWidth: level.screen.Width - 40});
         this.stick.Draw(level.screen.Context); this.bar.Draw(); this.help.OnDrawn();
     }
-    Dispose() { this.bar.Dispose(); this.stick.Cancel(); }
+    Dispose() { this.help.Dispose(); this.bar.Dispose(); this.stick.Cancel(); }
 }

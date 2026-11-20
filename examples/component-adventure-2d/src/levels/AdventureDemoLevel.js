@@ -1,3 +1,5 @@
+import { InputHelpPanel, Draw as ControlGuideDraw } from 'gameforgejs/2d';
+import { ActionManager as ControlGuideActions } from 'gameforgejs/core';
 import { Draw } from "gameforgejs/2d";
 import { Screen } from "gameforgejs/2d";
 import { GameObject } from "gameforgejs/2d";
@@ -35,6 +37,7 @@ export class AdventureDemoLevel extends Level {
 
     OnStart() {
         this.screen = new Screen("Adventure2D", ADVENTURE_SCREEN.width, ADVENTURE_SCREEN.height, { config: this.context?.config });
+        this.controlsHelp=new InputHelpPanel(new ControlGuideDraw(this.screen),{title:'Controls'});
         this.draw = new Draw(this.screen);
         this.rooms = ROOMS;
         this.rooms.forEach(room => {
@@ -66,6 +69,8 @@ export class AdventureDemoLevel extends Level {
     }
 
     OnExit() {
+        this.controlsHelp?.Dispose();
+
         super.OnExit();
     }
 
@@ -81,6 +86,8 @@ export class AdventureDemoLevel extends Level {
     }
 
     OnUpdate(dt) {
+        if(ControlGuideActions.IsActionDown('HELP'))this.controlsHelp?.Toggle();
+
         super.OnUpdate(dt);
         this._updateHitSparks(dt);
         this._handleRoomExit();
@@ -392,7 +399,9 @@ export class AdventureDemoLevel extends Level {
         this.draw.Color = "#cbd8c2";
         this.draw.FontSize = "11px";
         this.draw.DrawText("Setas/WASD: mover | Z/Enter/X: espada | atravesse portas iluminadas", ADVENTURE_SCREEN.width - 12, 22);
-    }
+
+        this.controlsHelp?.OnDrawn();
+}
 }
 
 function entitySortY(entity) {

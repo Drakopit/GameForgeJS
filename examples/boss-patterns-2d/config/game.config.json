@@ -14,7 +14,21 @@
     "height": 640,
     "fullScreen": true,
     "pixelArt": false,
-    "antialiasing": true
+    "antialiasing": true,
+    "responsive": {
+      "mode": "adaptive"
+    }
+  },
+  "audio": {
+    "masterVolume": 0.55,
+    "cues": {
+      "select": {
+        "frequency": 480,
+        "endFrequency": 650,
+        "duration": 0.07,
+        "volume": 0.045
+      }
+    }
   },
   "input": {
     "gamepadProfile": "xbox",

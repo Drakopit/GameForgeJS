@@ -1,3 +1,5 @@
+import { InputHelpPanel, Draw as ControlGuideDraw } from 'gameforgejs/2d';
+import { ActionManager as ControlGuideActions } from 'gameforgejs/core';
 import { Level } from "gameforgejs/core";
 import { Screen } from "gameforgejs/2d";
 import { Draw } from "gameforgejs/2d";
@@ -21,6 +23,7 @@ export class StreetFightPuzzleScene extends Level {
 
     OnStart() {
         this.screen = new Screen(this.TelaId, 800, 600, { config: this.context?.config });
+        this.controlsHelp=new InputHelpPanel(new ControlGuideDraw(this.screen),{title:'Controls'});
         this.draw = new Draw(this.screen);
 
         if (this.screen.Canvas) {
@@ -37,7 +40,7 @@ export class StreetFightPuzzleScene extends Level {
         this.board1 = new PuzzleBoard(PuzzleConfig.BOARD_1_POS.x, PuzzleConfig.BOARD_1_POS.y, true);
         this.piece1 = new FallingPiece(this.board1, { left: 'PUZZLE_LEFT', right: 'PUZZLE_RIGHT', rotate: 'PUZZLE_ROTATE', drop: 'PUZZLE_DROP' }, false);
         this.fighter1 = new PuzzleFighter(PuzzleConfig.FIGHTER_1_POS.x, PuzzleConfig.FIGHTER_1_POS.y, Characters.BLAZE);
-        
+
         // P2 Setup (CPU)
         this.board2 = new PuzzleBoard(PuzzleConfig.BOARD_2_POS.x, PuzzleConfig.BOARD_2_POS.y, false);
         this.piece2 = new FallingPiece(this.board2, null, true);
@@ -45,18 +48,18 @@ export class StreetFightPuzzleScene extends Level {
         this.cpuController = new CpuPuzzleController(this.board2, this.piece2);
 
         this.hud = new PuzzleHUD();
-        
+
         this.p1NextGems = [];
         this.p2NextGems = [];
-        
+
         this.gameEnded = false;
-        
+
         this.bindEvents();
 
         // Generate initial next pieces
         this.p1NextGems = [this.generateRandomGem(), this.generateRandomGem()];
         this.p2NextGems = [this.generateRandomGem(), this.generateRandomGem()];
-        
+
         this.spawnPiece(1);
         this.spawnPiece(2);
 
@@ -102,6 +105,8 @@ export class StreetFightPuzzleScene extends Level {
     }
 
     OnUpdate(dt) {
+        if(ControlGuideActions.IsActionDown('HELP'))this.controlsHelp?.Toggle();
+
         super.OnUpdate(dt);
         // Fallback for dt if undefined
         const delta = dt ?? 0.016;
@@ -153,7 +158,7 @@ export class StreetFightPuzzleScene extends Level {
     OnDrawn() {
         if (!this.screen) return;
         this.screen.Refresh();
-        
+
         const ctx = this.screen.Context;
 
         this.board1.draw(ctx);
@@ -182,4 +187,10 @@ export class StreetFightPuzzleScene extends Level {
             ctx.textAlign = "left";
         }
     }
+
+    OnExit() {this.controlsHelp?.Dispose();super.OnExit();}
+
+    OnGUI() {super.OnGUI();
+        this.controlsHelp?.OnDrawn();
+}
 }

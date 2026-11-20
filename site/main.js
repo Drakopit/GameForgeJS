@@ -1,4 +1,7 @@
 import { SiteLocalization } from './SiteLocalization.js';
+import { CatalogNavigation } from './CatalogNavigation.js';
+
+new CatalogNavigation().Start();
 
 const localization = new SiteLocalization();
 localization.Start().catch(error => {

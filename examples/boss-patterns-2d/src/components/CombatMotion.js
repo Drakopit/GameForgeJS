@@ -12,6 +12,7 @@ export class CombatMotion extends Component {
         if (direction.Length() > 0.1 && this.dash <= 0) this.facing.Copy(direction.Normalize());
         if (level.dashQueued && this.cooldown === 0) {
             this.dash = rules.dashSeconds; this.cooldown = rules.dashCooldown;
+            level.sound.Play('jump');
             actor.health.invulnerabilityTimer = Math.max(actor.health.invulnerabilityTimer, rules.dashSeconds);
         }
         level.dashQueued = false;

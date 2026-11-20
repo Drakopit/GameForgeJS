@@ -2,13 +2,17 @@
 
 This directory contains independent runnable projects, not a second runtime.
 Each example consumes public gameforgejs imports and follows BootstrapGame → Module
-→ Level/Level3D → Screen/entities/components. `showcase/` is the HTML launcher,
-not a gameplay example. `catalog.json` is the authoritative list of runnable entries.
+→ Level/Level3D → Screen/entities/components. `showcase/` preserves old launcher
+links; the categorized catalog lives on the root presentation page.
+`catalog.json` is the authoritative list of runnable entries.
+
+See the [responsive viewport and input audit](../docs/guides/responsive-viewports.md)
+for all 19 examples, including remaining mobile gameplay work.
 
 ## Run
 
 From the repository root, run `npm ci` once, then `npm start`. Open
-`/examples/showcase/index.html` on the printed server address, or use the direct
+`/#jogos` on the printed server address, or use the direct
 entry described by each README. Use an HTTP server: ES modules and resource manifests
 are not designed for opening index.html through a file URL.
 
@@ -134,3 +138,10 @@ have H + gamepad help; addon instructions are always visible in its HUD. See
 [the UI guide](../docs/guides/in-engine-info.md),
 [enemy AI](../docs/guides/enemy-ai.md) and
 [Toon lakes/warps](../docs/getting-started/toon-sandbox-checkpoint.md).
+
+## Input presentation and sound
+
+Each project loads config/prompts.json. Help reads real bindings and cached native
+keyboard/controller sprites; it does not remap controls when artwork changes.
+Touch pads default to mobile/coarse input and can be enabled or disabled explicitly
+in the guide. See the [presentation and feedback guide](../docs/guides/input-prompts-and-feedback.md).

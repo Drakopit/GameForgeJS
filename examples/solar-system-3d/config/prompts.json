@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "title": "Solar System 3D / Controls",
+  "rows": [
+    {
+      "label": "Move",
+      "actions": [
+        "UP",
+        "LEFT",
+        "DOWN",
+        "RIGHT"
+      ]
+    },
+    {
+      "label": "Attack",
+      "actions": [
+        "ATTACK"
+      ]
+    },
+    {
+      "label": "Cancel",
+      "actions": [
+        "CANCEL"
+      ]
+    },
+    {
+      "label": "Help",
+      "actions": [
+        "HELP"
+      ]
+    }
+  ],
+  "notes": [
+    "Procedural celestial materials, sunlight, and animated planetary orbits."
+  ]
+}

@@ -22,6 +22,9 @@ export class AudioManager {
         this.isInitialized = false;
         this.resumeAudio = null;
         this.activeSources = new Set();
+        this.volume = 1;
+        this.muted = false;
+        this.maxVoices = 24;
     }
 
     // A inicialização deve ser chamada no primeiro clique/interação do usuário
@@ -37,20 +40,22 @@ export class AudioManager {
             // Lida com as políticas chatas de Autoplay do Chrome/Firefox
             if (this.context.state === 'suspended') {
                 const resumeAudio = this.resumeAudio = () => {
-                    this.context.resume().then(() => {
+                    this.context?.resume().then(() => {
                         console.log('GameForgeJS: AudioContext retomado com sucesso.');
                         document.removeEventListener('click', resumeAudio);
                         document.removeEventListener('keydown', resumeAudio);
+                        document.removeEventListener('pointerdown', resumeAudio, true);
                         this.resumeAudio = null;
-                    });
+                    }).catch(() => { /* A disposed or policy-blocked context stays silent. */ });
                 };
                 document.addEventListener('click', resumeAudio);
                 document.addEventListener('keydown', resumeAudio);
+                document.addEventListener('pointerdown', resumeAudio, true);
             }
 
             // --- SETUP DA ROTA DE ÁUDIO (Gain -> Analyser -> Caixas de Som) ---
             this.masterGain = this.context.createGain();
-            this.masterGain.gain.value = 1.0; // Volume Global (1.0 = 100%, 0.5 = 50%)
+            this.masterGain.gain.value = this.muted ? 0 : this.volume;
 
             this.analyserNode = this.context.createAnalyser();
             this.analyserNode.fftSize = 256; // Tamanho do buffer para análise de espectro
@@ -67,10 +72,34 @@ export class AudioManager {
     }
 
     SetGlobalVolume(volume) {
+        this.volume = Math.max(0, Math.min(1, Number(volume) || 0));
         if (this.masterGain) {
             // value = Math.max(0, Math.min(1, volume)) para travar entre 0 e 1
-            this.masterGain.gain.value = Math.max(0, Math.min(1, Number(volume) || 0));
+            this.masterGain.gain.value = this.muted ? 0 : this.volume;
         }
+    }
+
+    /** Mute preserves the chosen master volume. */
+    SetMuted(muted) { this.muted = Boolean(muted); this.SetGlobalVolume(this.volume); }
+
+    /**
+     * Native, bounded synthesised feedback. Suspended audio is dropped, never
+     * queued for a burst after unlock. Returns whether a voice actually started.
+     */
+    PlayTone({frequency = 440, endFrequency = frequency, duration = 0.1, volume = 0.08, wave = 'sine'} = {}) {
+        if (![frequency,endFrequency,duration,volume].every(Number.isFinite) || frequency < 20 || endFrequency < 20
+            || frequency > 20000 || endFrequency > 20000 || duration <= 0 || duration > 2 || volume < 0 || volume > 1
+            || !['sine','triangle','square','sawtooth'].includes(wave)) throw new RangeError('Invalid sound cue.');
+        const ctx = this.context;
+        if (!ctx || ctx.state !== 'running' || this.muted || this.volume === 0 || this.activeSources.size >= this.maxVoices) return false;
+        const oscillator = ctx.createOscillator(), gain = ctx.createGain(), now = ctx.currentTime;
+        oscillator.type = wave; oscillator.frequency.setValueAtTime(frequency,now);
+        oscillator.frequency.exponentialRampToValueAtTime(endFrequency,now+duration);
+        gain.gain.setValueAtTime(0,now);gain.gain.linearRampToValueAtTime(volume,now+Math.min(0.008,duration/3));
+        gain.gain.exponentialRampToValueAtTime(0.0001,now+duration);
+        oscillator.connect(gain);gain.connect(this.masterGain);this.activeSources.add(oscillator);
+        oscillator.onended=()=>{oscillator.disconnect();gain.disconnect();this.activeSources.delete(oscillator);};
+        oscillator.start(now);oscillator.stop(now+duration+0.01);return true;
     }
 
     /**
@@ -122,7 +151,7 @@ export class AudioManager {
     StopBGM() {
         if (this.currentBGM) {
             try {
-                // Tenta parar a música. Se ela estiver "suspended" pelo navegador, 
+                // Tenta parar a música. Se ela estiver "suspended" pelo navegador,
                 // isso pode dar erro, então o catch ignora o erro e continua a limpeza.
                 this.currentBGM.stop();
             } catch (e) {
@@ -147,6 +176,7 @@ export class AudioManager {
         if (this.resumeAudio) {
             globalThis.document?.removeEventListener("click", this.resumeAudio);
             globalThis.document?.removeEventListener("keydown", this.resumeAudio);
+            globalThis.document?.removeEventListener('pointerdown', this.resumeAudio, true);
         }
         this.resumeAudio = null;
         this.masterGain?.disconnect();

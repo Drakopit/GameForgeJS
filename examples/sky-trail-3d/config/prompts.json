@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "title": "Sky Trail 3D / Controls",
+  "rows": [
+    {
+      "label": "Move",
+      "actions": [
+        "UP",
+        "LEFT",
+        "DOWN",
+        "RIGHT",
+        "FORWARD",
+        "BACK"
+      ]
+    },
+    {
+      "label": "Attack",
+      "actions": [
+        "ATTACK"
+      ]
+    },
+    {
+      "label": "Jump",
+      "actions": [
+        "JUMP"
+      ]
+    },
+    {
+      "label": "Cancel",
+      "actions": [
+        "CANCEL"
+      ]
+    },
+    {
+      "label": "Camera left",
+      "actions": [
+        "CAMERA_LEFT"
+      ]
+    },
+    {
+      "label": "Camera right",
+      "actions": [
+        "CAMERA_RIGHT"
+      ]
+    },
+    {
+      "label": "Boost",
+      "actions": [
+        "BOOST"
+      ]
+    },
+    {
+      "label": "Help",
+      "actions": [
+        "HELP"
+      ]
+    },
+    {
+      "label": "Reset",
+      "actions": [
+        "RESET"
+      ]
+    }
+  ],
+  "notes": [
+    "Four expeditions, a gamepad-ready 3D menu, moving platforms, checkpoints and collectibles."
+  ]
+}

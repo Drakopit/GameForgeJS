@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "title": "Storm Foundry FX Lab 2D / Controls",
+  "rows": [
+    {
+      "label": "Move",
+      "actions": [
+        "UP",
+        "LEFT",
+        "DOWN",
+        "RIGHT"
+      ]
+    },
+    {
+      "label": "Lab",
+      "actions": [
+        "LAB"
+      ]
+    },
+    {
+      "label": "Drop",
+      "actions": [
+        "DROP"
+      ]
+    },
+    {
+      "label": "Burst",
+      "actions": [
+        "BURST"
+      ]
+    },
+    {
+      "label": "Gust",
+      "actions": [
+        "GUST"
+      ]
+    },
+    {
+      "label": "Reset",
+      "actions": [
+        "RESET"
+      ]
+    },
+    {
+      "label": "Debug",
+      "actions": [
+        "DEBUG"
+      ]
+    },
+    {
+      "label": "Telemetry",
+      "actions": [
+        "TELEMETRY"
+      ]
+    },
+    {
+      "label": "Help",
+      "actions": [
+        "HELP"
+      ]
+    },
+    {
+      "label": "Previous",
+      "actions": [
+        "PREVIOUS"
+      ]
+    },
+    {
+      "label": "Next",
+      "actions": [
+        "NEXT"
+      ]
+    },
+    {
+      "label": "Tab previous",
+      "actions": [
+        "TAB_PREVIOUS"
+      ]
+    },
+    {
+      "label": "Tab next",
+      "actions": [
+        "TAB_NEXT"
+      ]
+    }
+  ],
+  "notes": [
+    "Layered rain, reactive water reflections, dynamic props, bounded particle pools and an in-engine live FX playground."
+  ]
+}

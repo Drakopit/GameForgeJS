@@ -101,6 +101,10 @@
     {
       "name": "tactical_catalog",
       "path": ".././assets/Manifests/tactical/catalog.json"
+    },
+    {
+      "name": "prompts",
+      "path": "./prompts.json"
     }
   ],
   "schemaVersion": 1

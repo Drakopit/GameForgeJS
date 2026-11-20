@@ -1,4 +1,4 @@
-import { Touch, Vector2D } from 'gameforgejs/core';
+import { Input, Touch, Vector2D } from 'gameforgejs/core';
 import { GardenSettings as Settings } from '../data/GardenSettings.js';
 
 export class TouchControls {
@@ -17,6 +17,7 @@ export class TouchControls {
 
     Update() {
         this.dashPressed = this.helpPressed = this.resetPressed = false;
+        if (!Input.instance?.presentation?.TouchVisible) {this.identifier=null;this.direction.Set(0,0);return;}
         const cancelled = new Set(this.touch.GetEndedTouches().filter(contact => contact.cancelled).map(contact => contact.identifier));
         for (const contact of this.touch.GetStartedTouches()) {
             if (cancelled.has(contact.identifier)) continue;

@@ -1,4 +1,4 @@
-import { Level, EventEmitter, ObjectPool, GameViewport } from 'gameforgejs/core';
+import { Level, EventEmitter, ObjectPool, GameViewport, SoundEffects } from 'gameforgejs/core';
 import { Screen, GameObject } from 'gameforgejs/2d';
 import { ArenaView } from '../entities/ArenaView.js';
 import { ArenaPlayer } from '../entities/ArenaPlayer.js';
@@ -13,21 +13,24 @@ export class ArenaLevel extends Level {
         this.caption = 'Ember Warden / Boss Patterns'; this.rules = context.assets.jsons.scenario;
         this.screen = new Screen('boss-arena', 960, 640, {config: context.config});
         this.events = new EventEmitter(); this.result = ''; this.message = 'Read the gold telegraph. Shoot, evade, punish.';
+        this.sound = new SoundEffects(context.services.get('audio'),context.config.audio?.cues);
         this.dashQueued = false; this.shootQueued = false;
         this.view = this.AddEntity(new ArenaView(this));
         this.player = this.AddEntity(new ArenaPlayer(this)); this.boss = this.AddEntity(new ArenaBoss(this));
         this.brain = new BossDirector(this); this.boss.AddComponent(this.brain);
-        this.hazards = new HazardField(this); const field = new GameObject(); field.AddComponent(this.hazards); this.AddEntity(field);
+        this.hazards = new HazardField(this); const field = new GameObject(); field.AddComponent(this.sound); field.AddComponent(this.hazards); this.AddEntity(field);
         const capacity = this.rules.projectiles.capacity;
         this.projectiles = new ObjectPool(() => this.AddEntity(new ArenaProjectile(this)), capacity, {maxSize: capacity});
-        this.hud = new ArenaHUD(this); this.removeTelegraph = this.events.on('boss:telegraph', name => this.message = name);
+        this.hud = new ArenaHUD(this);
+        this.removeTelegraph = this.events.on('boss:telegraph', name => {this.message = name;this.sound.Play('warning');});
+        this.removeHit = this.events.on('combat:hit',()=>this.sound.Play('hit'));
         this.releaseViewport = GameViewport.Bind(this.screen, {onResize: () => this.hud.stick.Cancel()}); super.OnStart(context);
     }
     Emit(position, velocity, team) {
         if (this.result) return;
-        const projectile = this.projectiles.Get(); if (projectile) projectile.Launch(position, velocity, team);
+        const projectile = this.projectiles.Get(); if (projectile) {projectile.Launch(position, velocity, team);if(team==='player')this.sound.Play('shot');}
     }
-    Finish(result) { this.result = result; for (const projectile of this.projectiles.pool) projectile.Release(); this.hazards.hazards.length = 0; }
+    Finish(result) { this.result = result; this.sound.Play(result==='VICTORY'?'success':'hit'); for (const projectile of this.projectiles.pool) projectile.Release(); this.hazards.hazards.length = 0; }
     Reset() {
         this.result = ''; this.message = 'Read the gold telegraph. Shoot, evade, punish.'; this.dashQueued = this.shootQueued = false;
         this.player.position.Set(480, 490); this.boss.position.Set(480, 220);
@@ -36,5 +39,5 @@ export class ArenaLevel extends Level {
     }
     OnUpdate(dt) { this.hud.Update(); super.OnUpdate(dt); }
     OnGUI() { this.hud.Draw(); }
-    OnExit() { this.releaseViewport?.(); this.removeTelegraph?.(); this.hud?.Dispose(); super.OnExit(); this.projectiles?.pool.splice(0); }
+    OnExit() { this.releaseViewport?.(); this.removeTelegraph?.(); this.removeHit?.(); this.hud?.Dispose(); super.OnExit(); this.projectiles?.pool.splice(0); }
 }

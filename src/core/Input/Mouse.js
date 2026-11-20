@@ -52,6 +52,7 @@ export class Mouse {
      * // Automatically handled by the class
      */
     mouseMoveHandler(event) {
+        if (event.sourceCapabilities?.firesTouchEvents) return;
         this.position.x = event.clientX;
         this.position.y = event.clientY;
     }
@@ -64,6 +65,9 @@ export class Mouse {
      * // Automatically handled by the class
      */
     mouseDownHandler(event) {
+        // Touch owns this gesture; compatibility mouse events must not select a
+        // second menu/scene after the original touch has already navigated.
+        if (event.sourceCapabilities?.firesTouchEvents) return;
         this.clickPosition.x = event.clientX;
         this.clickPosition.y = event.clientY;
 
@@ -82,6 +86,7 @@ export class Mouse {
      * // Automatically handled by the class
      */
     mouseUpHandler(event) {
+        if (event.sourceCapabilities?.firesTouchEvents) return;
         this.releasePosition.x = event.clientX;
         this.releasePosition.y = event.clientY;
 

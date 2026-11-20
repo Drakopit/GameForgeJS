@@ -120,7 +120,7 @@ async function inspect(page, id, mobile) {
         await page.waitForFunction(x => window.level.player.position.x > x + 10, x);
         await page.waitForFunction(() => window.level.projectiles.pool.some(p => p.active && p.team === 'player'));
         if (mobile) await touchStick(page, false); else {await page.keyboard.up('d'); await page.keyboard.up('Space');}
-        await clickAction(page, 'DASH');
+        if (mobile) await clickAction(page, 'DASH'); else await page.keyboard.press('c');
         await page.waitForFunction(() => window.level.player.motion.cooldown > 0);
         const checks = await page.evaluate(() => {
             const level = window.level; window.engine.Engine.Stop(); level.Reset();

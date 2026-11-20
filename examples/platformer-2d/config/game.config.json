@@ -6,86 +6,19 @@
   "screen": {
     "width": 960,
     "height": 544,
-    "pixelArt": true
+    "pixelArt": true,
+    "responsive": {
+      "mode": "contain"
+    }
   },
   "input": {
     "actionMappings": {
-      "LEFT": [
-        {
-          "device": "keyboard",
-          "input": "KeyA"
-        },
-        {
-          "device": "keyboard",
-          "input": "ArrowLeft"
-        },
-        {
-          "device": "gamepad",
-          "input": "LEFT_STICK_LEFT"
-        },
-        {
-          "device": "gamepad",
-          "input": "DPAD_LEFT"
-        }
-      ],
-      "RIGHT": [
-        {
-          "device": "keyboard",
-          "input": "KeyD"
-        },
-        {
-          "device": "keyboard",
-          "input": "ArrowRight"
-        },
-        {
-          "device": "gamepad",
-          "input": "LEFT_STICK_RIGHT"
-        },
-        {
-          "device": "gamepad",
-          "input": "DPAD_RIGHT"
-        }
-      ],
-      "JUMP": [
-        {
-          "device": "keyboard",
-          "input": "Space"
-        },
-        {
-          "device": "gamepad",
-          "input": "button_0"
-        }
-      ],
-      "RESET": [
-        {
-          "device": "keyboard",
-          "input": "KeyR"
-        },
-        {
-          "device": "gamepad",
-          "input": "button_3"
-        }
-      ],
-      "CONTINUE": [
-        {
-          "device": "keyboard",
-          "input": "Enter"
-        },
-        {
-          "device": "gamepad",
-          "input": "START"
-        }
-      ],
-      "HELP": [
-        {
-          "device": "keyboard",
-          "input": "KeyH"
-        },
-        {
-          "device": "gamepad",
-          "input": "SELECT"
-        }
-      ]
+      "LEFT": [{"device":"keyboard","input":"KeyA"},{"device":"keyboard","input":"ArrowLeft"},{"device":"gamepad","input":"LEFT_STICK_LEFT"},{"device":"gamepad","input":"DPAD_LEFT"}],
+      "RIGHT": [{"device":"keyboard","input":"KeyD"},{"device":"keyboard","input":"ArrowRight"},{"device":"gamepad","input":"LEFT_STICK_RIGHT"},{"device":"gamepad","input":"DPAD_RIGHT"}],
+      "JUMP": [{"device":"keyboard","input":"Space"},{"device":"gamepad","input":"button_0"}],
+      "RESET": [{"device":"keyboard","input":"KeyR"},{"device":"gamepad","input":"button_3"}],
+      "CONTINUE": [{"device":"keyboard","input":"Enter"},{"device":"gamepad","input":"START"}],
+      "HELP": [{"device":"keyboard","input":"KeyH"},{"device":"gamepad","input":"SELECT"}]
     }
   },
   "project": {

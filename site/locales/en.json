@@ -103,5 +103,15 @@
   "example.route-atlas-2d": "A branching overworld graph, smooth node travel, playable shard trials and event-driven stage unlocks.",
   "example.boss-patterns-2d": "A three-phase boss with aimed fans, rings, marked charges, delayed hazards, pooled projectiles and dash invulnerability.",
   "a11y.aether": "Open Aether Observatory 3D",
-  "image.aether": "Native 3D floating islands, observatory architecture and atmospheric fog"
+  "image.aether": "Native 3D floating islands, observatory architecture and atmospheric fog",
+  "category.core": "ECS & Core",
+  "category.physics": "2D & Physics",
+  "category.environments": "3D & Environments",
+  "category.patterns": "Gameplay Patterns",
+  "category.fx": "Audio & FX",
+  "category.network": "Networking",
+  "catalog.all": "All categories",
+  "catalog.filter": "Choose a category",
+  "catalog.notFound": "That example is unavailable. Choose a demo below.",
+  "progress.readiness": "Readiness estimate: 6.3/10 (63%). See the assessment and remaining gates."
 }

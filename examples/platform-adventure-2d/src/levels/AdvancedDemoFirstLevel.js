@@ -1,3 +1,5 @@
+import { InputHelpPanel, Draw as ControlGuideDraw } from 'gameforgejs/2d';
+import { ActionManager as ControlGuideActions } from 'gameforgejs/core';
 import { Level } from "gameforgejs/core";
 import { Draw } from "gameforgejs/2d";
 import { AssetManager } from "gameforgejs/core";
@@ -72,6 +74,7 @@ export class AdvancedDemoFirstLevel extends Level {
         const width = this.levelConfig.screen.width;
         const height = this.levelConfig.screen.height;
         this.screen = new Screen(this.TelaId, width, height, { config: this.context?.config });
+        this.controlsHelp=new InputHelpPanel(new ControlGuideDraw(this.screen),{title:'Controls'});
         this.draw = new Draw(this.screen);
 
         this.GameWorld = { ...this.levelConfig.world };
@@ -415,6 +418,8 @@ export class AdvancedDemoFirstLevel extends Level {
     }
 
     OnUpdate(dt) {
+        if(ControlGuideActions.IsActionDown('HELP'))this.controlsHelp?.Toggle();
+
         this.progressHUD?.OnUpdate(dt);
         this.PersistProgressionIfDirty();
         const isUiBlocking = this.progressHUD?.BlocksGameplay() ?? false;
@@ -535,6 +540,8 @@ export class AdvancedDemoFirstLevel extends Level {
     }
 
     OnExit() {
+        this.controlsHelp?.Dispose();
+
         this.PersistProgressionIfDirty(true);
         super.OnExit();
         this.entities = [];
@@ -552,4 +559,8 @@ export class AdvancedDemoFirstLevel extends Level {
         this.screen = null;
         this.levelConfig = null;
     }
+
+    OnGUI() {super.OnGUI();
+        this.controlsHelp?.OnDrawn();
+}
 }

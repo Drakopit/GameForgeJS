@@ -1,14 +1,10 @@
 import { ActionManager } from 'gameforgejs/core';
-import { ActionBar, HUDFrame, Draw, VirtualStick, InfoPanel } from 'gameforgejs/2d';
+import { ActionBar, HUDFrame, Draw, VirtualStick, InputHelpPanel as InfoPanel } from 'gameforgejs/2d';
 
 export class CrossingHUD {
     constructor(level) {
         this.level = level; this.frame = new HUDFrame(new Draw(level.screen)); this.stick = new VirtualStick(level.screen);
-        this.help = new InfoPanel(new Draw(level.screen), {title: 'A reusable cinematic', lines: [
-            'PLAY / Space / A: replay. SKIP / Esc / B: skip.', 'After the scene: A/D / left stick / touch to walk.',
-            'Parallel Timeline tracks: framing, zoom and fade.', 'One-shot cues: dialogue beats. Waypoints: courier.',
-            'Completion, skip and cancellation release controls.',
-        ]});
+        this.help = new InfoPanel(new Draw(level.screen), {title: 'A reusable cinematic', lines: []});
         this.bar = new ActionBar(level.screen, new Draw(level.screen), [
             {label: 'PLAY', run: () => level.Play()}, {label: 'SKIP', run: () => level.sequence.Skip()}, {label: 'HELP', run: () => this.help.Toggle()},
         ]);
@@ -33,5 +29,5 @@ export class CrossingHUD {
         }
         this.stick.Draw(screen.Context); this.bar.Draw(); this.help.OnDrawn();
     }
-    Dispose() { this.bar.Dispose(); this.stick.Cancel(); }
+    Dispose() { this.help.Dispose(); this.bar.Dispose(); this.stick.Cancel(); }
 }

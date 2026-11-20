@@ -1,16 +1,12 @@
 import { ActionManager, Vector2D } from 'gameforgejs/core';
-import { Draw, HUDFrame, ActionBar, VirtualStick, InfoPanel } from 'gameforgejs/2d';
+import { Draw, HUDFrame, ActionBar, VirtualStick, InputHelpPanel as InfoPanel } from 'gameforgejs/2d';
 
 export class ArenaHUD {
     constructor(level) {
         this.level = level; const draw = new Draw(level.screen); this.frame = new HUDFrame(draw); this.stick = new VirtualStick(level.screen);
-        this.help = new InfoPanel(draw, {title: 'Read → evade → punish', lines: [
-            'WASD / left stick / touch stick: move.', 'Hold Space / A or tap FIRE: shoot toward boss.',
-            'C / Y / DASH: evade through attacks.', 'Gold fan/circle/lane: locked aim before an attack.',
-            'Punish during recovery. Three health phases.', 'Hazards first mark, then burn. R / RETRY: reset.',
-        ]});
-        this.bar = new ActionBar(level.screen, draw, [{label: 'FIRE', run: () => level.shootQueued = true},
-            {label: 'DASH', run: () => level.dashQueued = true}, {label: 'RETRY', run: () => level.Reset()}, {label: 'HELP', run: () => this.help.Toggle()}]);
+        this.help = new InfoPanel(draw, {title: 'Read → evade → punish', lines: []});
+        this.bar = new ActionBar(level.screen, draw, [{label: 'FIRE', touchOnly: true, run: () => level.shootQueued = true},
+            {label: 'DASH', touchOnly: true, run: () => level.dashQueued = true}, {label: 'RETRY', run: () => level.Reset()}, {label: 'HELP', run: () => this.help.Toggle()}]);
     }
     Direction() {
         const value = this.stick.direction.Add(new Vector2D(ActionManager.GetActionValue('RIGHT') - ActionManager.GetActionValue('LEFT'), ActionManager.GetActionValue('DOWN') - ActionManager.GetActionValue('UP')));
@@ -38,5 +34,5 @@ export class ArenaHUD {
             frame.Text('RETRY / R / Select to play again', width / 2, y + 75, {size: 14, align: 'center'});
         }
     }
-    Dispose() { this.bar.Dispose(); this.stick.Cancel(); }
+    Dispose() { this.help.Dispose(); this.bar.Dispose(); this.stick.Cancel(); }
 }

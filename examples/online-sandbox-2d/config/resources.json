@@ -1,10 +1,31 @@
 {
   "schemaVersion": 1,
-  "jsons": [{ "name": "world-rules", "path": "./world.rules.json" }],
+  "jsons": [
+    {
+      "name": "world-rules",
+      "path": "./world.rules.json"
+    },
+    {
+      "name": "prompts",
+      "path": "./prompts.json"
+    }
+  ],
   "images": [
-    { "name": "player-idle", "path": "../assets/player/idle.svg" },
-    { "name": "player-run", "path": "../assets/player/run.svg" },
-    { "name": "player-jump", "path": "../assets/player/jump.svg" },
-    { "name": "player-fall", "path": "../assets/player/fall.svg" }
+    {
+      "name": "player-idle",
+      "path": "../assets/player/idle.svg"
+    },
+    {
+      "name": "player-run",
+      "path": "../assets/player/run.svg"
+    },
+    {
+      "name": "player-jump",
+      "path": "../assets/player/jump.svg"
+    },
+    {
+      "name": "player-fall",
+      "path": "../assets/player/fall.svg"
+    }
   ]
 }

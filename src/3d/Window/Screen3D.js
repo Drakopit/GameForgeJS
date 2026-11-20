@@ -95,7 +95,7 @@ export class Screen3D {
         this.canvas.tabIndex = 0;
         this.canvas.setAttribute("width", this.width);
         this.canvas.setAttribute("height", this.height);
-        GameViewport.Apply(this.canvas, GameViewport.IsFullScreen(this.config));
+        GameViewport.Apply(this.canvas, GameViewport.IsFullScreen(this.config), this.config);
 
         // Initialize WebGL context. WebGL2 is preferred by Render3D, while the
         // legacy 3D helpers still work with the same returned context.

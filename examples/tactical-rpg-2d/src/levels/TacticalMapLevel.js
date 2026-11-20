@@ -1,3 +1,5 @@
+import { InputHelpPanel, Draw as ControlGuideDraw } from 'gameforgejs/2d';
+import { ActionManager as ControlGuideActions } from 'gameforgejs/core';
 import { Draw } from "gameforgejs/2d";
 import { AssetManager } from "gameforgejs/core";
 import { Level } from "gameforgejs/core";
@@ -16,6 +18,7 @@ export class TacticalMapLevel extends Level {
 
     OnStart() {
         this.screen = new Screen("TacticalMap", W, H, { config: this.context?.config });
+        this.controlsHelp=new InputHelpPanel(new ControlGuideDraw(this.screen),{title:'Controls'});
         this.draw = new Draw(this.screen);
         this.assets = AssetManager.instance;
         this.battle = new TacticalBattleManager({
@@ -30,10 +33,14 @@ export class TacticalMapLevel extends Level {
     }
 
     OnExit() {
+        this.controlsHelp?.Dispose();
+
         super.OnExit();
     }
 
     OnUpdate(dt) {
+        if(ControlGuideActions.IsActionDown('HELP'))this.controlsHelp?.Toggle();
+
         super.OnUpdate(dt);
         const flow = this.battle.Update(dt);
         if (flow?.next) this.Next = true;
@@ -47,5 +54,7 @@ export class TacticalMapLevel extends Level {
     OnGUI() {
         super.OnGUI();
         this.battle.DrawHud(this.FPS);
-    }
+
+        this.controlsHelp?.OnDrawn();
+}
 }

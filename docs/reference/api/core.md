@@ -4,7 +4,7 @@
 
 Public core entry point: gameforgejs/core.
 
-Documented exports: **52/53**.
+Documented exports: **55/56**.
 
 | Symbol | Kind | Summary |
 | --- | --- | --- |
@@ -36,6 +36,7 @@ Documented exports: **52/53**.
 | [`HealthComponent`](#healthcomponent) | `class` | Tracks hit points, invulnerability time and owner damage/death callbacks. |
 | [`Input`](#input) | `class` | Manages per-frame keyboard, mouse, touch and polled gamepad input. Gamepad state is polled during the engine update so controllers already available to the browser are detected without reconnecting. |
 | [`inputModule`](#inputmodule) | `function` | Input belongs to a game and its target; canvas targets should be focusable. |
+| [`InputPresentation`](#inputpresentation) | `class` | Per-input presentation preferences. Reads existing devices; owns no listeners. Touch visibility depends on primary coarse/mobile input, never window width alone. |
 | [`JsonManifestComposer`](#jsonmanifestcomposer) | `class` | Combines JSON game manifests referenced through their `compose` entries. |
 | [`key`](#key) | `function` | Encodes a coordinate for pathfinding maps. |
 | [`KeyCode`](#keycode) | `const` | Legacy-friendly names mapped to browser keyboard `code` values. |
@@ -51,6 +52,8 @@ Documented exports: **52/53**.
 | [`reconstructPath`](#reconstructpath) | `function` | Reconstructs a discovered route from predecessor entries. |
 | [`resolveModules`](#resolvemodules) | `function` | Resolve module imports/dependencies and validate declarations before setup. |
 | [`ResourceManifestLoader`](#resourcemanifestloader) | `class` | Queues images, audio, shaders, models and JSON declared by game resource manifests. |
+| [`ResponsiveLayout`](#responsivelayout) | `class` | Aspect-preserving world layout and coordinate conversion, independent of DOM/renderers. |
+| [`SoundEffects`](#soundeffects) | `class` | Engine-clocked cue throttling over a borrowed AudioManager; no independent context. |
 | [`Store`](#store) | `class` | This class is part of the GameForgeJS framework and provides functionality to save and restore game state in the browser's local storage. |
 | [`Timeline`](#timeline) | `class` | Reusable, engine-clocked sequence of parallel tracks and one-shot cues. A track samples normalized progress; a cue runs once when its time is crossed. Skip applies track endpoints without playing unvisited cues. Completion always releases game-owned control locks through onFinish, including cancellation. |
 | [`Touch`](#touch) | `class` | Identified multi-touch input owned by Input. Client coordinates can be converted through ToScreen to match a framework Screen, including CSS scaling/letterboxing. Legacy last-position accessors remain available. |
@@ -307,6 +310,12 @@ JSDoc pending.
 #### `SetGlobalVolume(volume)`
 
 JSDoc pending.
+#### `SetMuted(muted)`
+
+Mute preserves the chosen master volume.
+#### `PlayTone({frequency = 440, endFrequency = frequency, duration = 0.1, volume = 0.08, wave = 'sine'} = {})`
+
+Native, bounded synthesised feedback. Suspended audio is dropped, never queued for a burst after unlock. Returns whether a voice actually started.
 #### `PlaySFX(audioBuffer, localVolume = 1.0)`
 
 Plays a one-shot sound effect. Creates a source and releases its audio nodes when playback ends.
@@ -821,6 +830,12 @@ Fit a Screen to the visible browser area, excluding device safe-area insets. Tra
 Reads the active game's `screen.fullScreen` setting.
 
 **Returns:** `boolean` - Whether full-window canvas presentation is enabled.
+#### `static Contain(canvas)`
+
+CSS follows browser bars/rotation without resizing a fixed-coordinate game world.
+#### `static Align(source, target)`
+
+Keep native WebGL and transparent UI surfaces on the exact same viewport.
 
 ## getNeighbors
 
@@ -1052,6 +1067,24 @@ JSDoc pending.
 `function` from [`src/core/Input/InputModule.js`](../../../src/core/Input/InputModule.js)
 
 Input belongs to a game and its target; canvas targets should be focusable.
+
+## InputPresentation
+
+`class` from [`src/core/Input/InputPresentation.js`](../../../src/core/Input/InputPresentation.js)
+
+Per-input presentation preferences. Reads existing devices; owns no listeners. Touch visibility depends on primary coarse/mobile input, never window width alone.
+
+### Methods
+
+#### `SetProfile(profile)`
+
+JSDoc pending.
+#### `SetTouchMode(mode)`
+
+JSDoc pending.
+#### `Update()`
+
+JSDoc pending.
 
 ## JsonManifestComposer
 
@@ -1589,6 +1622,62 @@ Queues images, audio, shaders, models and JSON declared by game resource manifes
 #### `static Validate(manifest)`
 
 Validate the shared resource-manifest contract before starting any asset loads.
+
+## ResponsiveLayout
+
+`class` from [`src/core/Window/ResponsiveLayout.js`](../../../src/core/Window/ResponsiveLayout.js)
+
+Aspect-preserving world layout and coordinate conversion, independent of DOM/renderers.
+
+**Parameters**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `width` | `number` | Positive authored world width. |
+| `height` | `number` | Positive authored world height. |
+
+### Methods
+
+#### `Fit(width, height, { reserveBottom = 0 } = {})`
+
+Center the authored rectangle above an optional control strip.
+
+**Parameters**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `width` | `number` | Available logical Screen width. |
+| `height` | `number` | Available logical Screen height. |
+
+**Returns:** `{scale:number,x:number,y:number,width:number,height:number` - } Fitted rectangle.
+#### `ToWorld(point, view)`
+
+Convert a logical Screen point into authored world coordinates.
+
+**Returns:** `Vector2D` - World position; points in letterboxing remain outside the world.
+#### `ToScreen(point, view)`
+
+Convert an authored world point into logical Screen coordinates.
+
+**Returns:** `Vector2D` - Logical Screen position.
+
+## SoundEffects
+
+`class` from [`src/core/Audio/SoundEffects.js`](../../../src/core/Audio/SoundEffects.js)
+
+Engine-clocked cue throttling over a borrowed AudioManager; no independent context.
+
+### Methods
+
+#### `Play(name)`
+
+JSDoc pending.
+#### `OnUpdate(dt)`
+
+JSDoc pending.
+#### `OnDestroy()`
+
+JSDoc pending.
 
 ## Store
 

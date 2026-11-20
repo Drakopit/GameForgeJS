@@ -1,4 +1,4 @@
-import { GameViewport } from 'gameforgejs/core';
+import { GameViewport, SoundEffects } from 'gameforgejs/core';
 import { GameObject } from 'gameforgejs/2d';
 import { Level3D, AmbientLight, HemisphereLight, DirectionalLight, Mesh, PrimitiveMesh, StandardMaterial,
     Transform3D, Rigidbody3D, SphereCollider3D } from 'gameforgejs/3d';
@@ -13,6 +13,7 @@ export class ObservatoryLevel extends Level3D {
     constructor() { super({width: 960, height: 640, clearColor: [0.17, 0.28, 0.38, 1]}); this.caption = 'Aether Observatory'; }
     BuildScene() {
         this.rules = this.context.assets.jsons.scenario; this.subtitle = ''; this.jumpQueued = false;
+        this.sound = new SoundEffects(this.context.services.get('audio'),this.context.config.audio?.cues);
         this.scene.fog = this.rules.environment.fog;
         this.scene.Add(new AmbientLight({intensity: 0.22}));
         this.scene.Add(new HemisphereLight({skyColor: [0.6, 0.85, 1], groundColor: [0.3, 0.25, 0.35], intensity: 0.5}));
@@ -24,20 +25,19 @@ export class ObservatoryLevel extends Level3D {
         this.player = new MeshActor(this.scene, mesh, this.physics, new Rigidbody3D({damping: 1}), new SphereCollider3D({radius: 0.65}));
         this.player.AddComponent(new ExplorerMotion(this, this.player)); this.AddEntity(this.player);
         this.rig = new ObservatoryCamera(this); this.tour = new ObservatoryTour(this);
-        const director = new GameObject(); director.AddComponent(this.rig); director.AddComponent(this.tour); this.AddEntity(director);
+        const director = new GameObject(); director.AddComponent(this.sound); director.AddComponent(this.rig); director.AddComponent(this.tour); this.AddEntity(director);
         this.hud = new ObservatoryHUD(this); this.ResetPlayer();
         // Suppress the browser menu only on this canvas; Mouse still owns input.
         this.preventContextMenu = event => event.preventDefault();
         this.ui.Screen.Canvas.addEventListener('contextmenu', this.preventContextMenu);
         this.releaseViewport = GameViewport.Bind(this.ui.Screen, {maxWidth: 1440, onResize: () => {
-            const overlay = this.ui.Screen.Canvas, world = this.screen3D.Canvas;
-            for (const property of ['position', 'left', 'top', 'width', 'height', 'inset']) world.style[property] = overlay.style[property];
+            GameViewport.Align(this.ui.Screen,this.screen3D);
             this.hud.stick.Cancel(); this.rig.pointer = null;
         }});
         this.StartTour();
     }
     ResetPlayer() { this.player.mesh.transform.SetPosition(...this.rules.movement.spawn); this.player.body.velocity.fill(0); this.jumpQueued = false; }
-    StartTour() { this.player.body.velocity.fill(0); this.tour.Play(); }
+    StartTour() { this.player.body.velocity.fill(0); this.tour.Play(); this.sound.Play('transition'); }
     OnUpdate(dt) { this.hud.Update(dt); super.OnUpdate(dt); }
     OnGUI() { this.hud.Draw(); }
     OnExit() {

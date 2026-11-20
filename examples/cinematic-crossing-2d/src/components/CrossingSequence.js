@@ -9,7 +9,7 @@ export class CrossingSequence extends Timeline {
                 level.magnification = 1 + Math.sin(t * Math.PI) * 0.24;
                 level.fade = Math.max(0, 1 - t * duration, 1 - (1 - t) * duration);
             }},
-        ], cues: level.rules.beats.map(beat => ({at: beat.at, run: () => level.dialogue = beat.text})),
+        ], cues: level.rules.beats.map(beat => ({at: beat.at, run: () => {level.dialogue = beat.text;level.sound.Play('select');}})),
         onFinish: reason => {
             level.courier.path.playing = false;
             if (reason === 'skipped') level.courier.position.Copy(level.courier.path.points.at(-1));

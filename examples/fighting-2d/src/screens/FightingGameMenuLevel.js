@@ -1,9 +1,10 @@
 import { FightingHelp } from '../ui/FightingHelp.js';
 import { Level } from "gameforgejs/core";
-import { Screen } from "gameforgejs/2d";
+import { Screen, Draw, ActionBar } from "gameforgejs/2d";
 import { FIGHTING_GAME_FLOW, FightingGameSession, GoToFightingLevel } from "../state/FightingGameState.js";
 import { GetFightingControls } from "../input/FightingControls.js";
 import { anyGamepadButtonDown, anyGamepadDirectionDown, keyboardDown } from "../input/FightingInput.js";
+import { FightingViewport } from '../presentation/FightingViewport.js';
 
 const SCREEN = Object.freeze({
     width: 960,
@@ -28,6 +29,10 @@ export class FightingGameMenuLevel extends Level {
     OnStart() {
         this.screen = new Screen(this.TelaId, SCREEN.width, SCREEN.height, { config: this.context?.config });
         this.FocusCanvas();
+        this.viewport = new FightingViewport(this.screen);
+        this.touchMenu = new ActionBar(this.screen,new Draw(this.screen),MENU_OPTIONS.map((option,index)=>({
+            label:option.action==='help'?'GUIDE':option.label,touchOnly:true,run:()=>{this.selectedIndex=index;this.ActivateOption(option);},
+        })));
         this.help = new FightingHelp(this.screen);
         this.selectedIndex = 0;
         this.pulse = 0;
@@ -51,6 +56,12 @@ export class FightingGameMenuLevel extends Level {
             return;
         }
         if (keyboardDown(['KeyH'])) { this.help.Toggle(); return; }
+        for(const point of this.viewport.PointerStarts()) {
+            const index=Math.floor((point.y-242)/80);
+            if(point.x>=310&&point.x<=650&&index>=0&&index<MENU_OPTIONS.length&&point.y<=242+index*80+68) {
+                this.selectedIndex=index;this.ActivateOption(MENU_OPTIONS[index]);return;
+            }
+        }
 
         if (this.IsUpPressed()) {
             this.selectedIndex = (this.selectedIndex + MENU_OPTIONS.length - 1) % MENU_OPTIONS.length;
@@ -94,10 +105,13 @@ export class FightingGameMenuLevel extends Level {
         if (!this.screen) return;
 
         this.screen.Refresh();
+        this.viewport.Begin();
         const ctx = this.screen.Context;
         this.DrawBackdrop(ctx);
         this.DrawTitle(ctx);
         this.DrawOptions(ctx);
+        this.viewport.End();
+        if(!this.help.visible)this.touchMenu.Draw();else for(const action of this.touchMenu.buttons)action.button.enabled=false;
         this.help.OnDrawn();
     }
 
@@ -225,6 +239,9 @@ export class FightingGameMenuLevel extends Level {
     }
 
     OnExit() {
+        this.viewport?.Dispose();
+        this.touchMenu?.Dispose();
+        this.help?.Dispose();
         super.OnExit();
     }
 }

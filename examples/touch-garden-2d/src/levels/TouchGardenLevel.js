@@ -49,6 +49,7 @@ export class TouchGardenLevel extends Level {
     OnGUI() { super.OnGUI(); this.hud.Draw(this); }
 
     OnExit() {
+        this.hud?.Dispose();
         this.controls.Reset();
         super.OnExit();
     }

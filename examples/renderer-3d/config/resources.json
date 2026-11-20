@@ -17,6 +17,10 @@
     {
       "name": "render3d_showcase_scene",
       "path": "../assets/Manifests/scenes/render3d-showcase.scene.json"
+    },
+    {
+      "name": "prompts",
+      "path": "./prompts.json"
     }
   ],
   "schemaVersion": 1

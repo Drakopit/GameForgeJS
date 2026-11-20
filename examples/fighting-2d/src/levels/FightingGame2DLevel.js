@@ -9,13 +9,17 @@ import { FightingEffects } from '../presentation/FightingEffects.js';
 import { FightingHUD } from '../ui/FightingHUD.js';
 import { ArenaSettings, ScreenSettings, RoundSettings as Round, CombatSettings } from '../data/FightingSettings.js';
 import { FIGHTING_GAME_FLOW, FightingGameSession, GoToFightingLevel } from '../state/FightingGameState.js';
+import { FightingViewport } from '../presentation/FightingViewport.js';
+import { FightingTouchControls } from '../input/FightingTouchControls.js';
 
 export class FightingGame2DLevel extends Level {
     constructor() { super(); this.caption = 'GameForgeJS — Fighting Arena 2D'; this.TelaId = 'FightingGame2D'; this.arena = ArenaSettings; }
     OnStart(context = this.context) {
         this.screen = new Screen(this.TelaId, ScreenSettings.width, ScreenSettings.height, { config: context.config });
         this.screen.Canvas.focus();
-        this.input = new FightingInputReader(context);
+        this.viewport = new FightingViewport(this.screen,{combat:true});
+        this.touch = new FightingTouchControls(this.screen);
+        this.input = new FightingInputReader(context,this.touch);
         this.background = new FightingArena(); this.effects = new FightingEffects(); this.hud = new FightingHUD(this.screen);
         this.combat = new FightingCombat(this);
         this.CreateFighters(); this.StartRound(true);
@@ -34,6 +38,7 @@ export class FightingGame2DLevel extends Level {
         this.cpu = new FightingCPU();
     }
     StartRound(resetMatch = false) {
+        this.hud.help.visible=false;
         if (resetMatch) {
             this.roundNumber = 1; this.matchWinner = null; this.advanceRequested = false;
             for (const fighter of this.fighters) fighter.roundWins = 0;
@@ -54,6 +59,7 @@ export class FightingGame2DLevel extends Level {
             else GoToFightingLevel(this, FIGHTING_GAME_FLOW.menuIndex);
             return;
         }
+        if(this.hud.help.visible){this.input.ClearQueued();return;}
         if (this.matchWinner) {
             this.advanceRequested ||= confirmPressed;
             this.UpdateMatchOver(delta);
@@ -100,15 +106,22 @@ export class FightingGame2DLevel extends Level {
     }
     OnDrawn() {
         this.screen.Refresh();
+        this.viewport.Begin();
         const ctx = this.screen.Context; const shake = this.effects.Offset();
         ctx.save(); ctx.translate(shake.x, shake.y);
         this.background.DrawArena(ctx);
         // The level owns its background pass; each registered entity owns its drawing.
         for (const entity of [...this.entities].sort((a, b) => a.position.y - b.position.y)) entity.OnDrawn();
-        this.effects.Draw(ctx); ctx.restore();
+        this.effects.Draw(ctx); ctx.restore();this.viewport.End();
     }
-    OnGUI() { super.OnGUI(); this.hud.Draw(this); }
+    OnGUI() {
+        if(this.screen.Width>=600){this.viewport.Begin();this.hud.Draw(this);this.viewport.End();}
+        else this.hud.DrawCompact(this);
+        this.touch.Draw();this.hud.DrawUtility();this.hud.help.OnDrawn();
+    }
     OnExit() {
+        this.hud?.help?.Dispose();
+        this.hud?.helpButton?.Dispose();this.touch?.Dispose();this.viewport?.Dispose();
         this.input?.Dispose();
         this.combat?.Clear();
         try { super.OnExit(); }

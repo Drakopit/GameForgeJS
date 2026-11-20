@@ -63,6 +63,10 @@
     {
       "name": "sky_trail_course_aurora",
       "path": "../assets/Manifests/sky-trail/aurora.json"
+    },
+    {
+      "name": "prompts",
+      "path": "./prompts.json"
     }
   ],
   "models": [

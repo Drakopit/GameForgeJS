@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "title": "Platform Adventure 2D / Controls",
+  "rows": [
+    {
+      "label": "Move",
+      "actions": [
+        "UP",
+        "LEFT",
+        "DOWN",
+        "RIGHT"
+      ]
+    },
+    {
+      "label": "Attack",
+      "actions": [
+        "ATTACK"
+      ]
+    },
+    {
+      "label": "Cancel",
+      "actions": [
+        "CANCEL"
+      ]
+    },
+    {
+      "label": "Jump",
+      "actions": [
+        "JUMP"
+      ]
+    },
+    {
+      "label": "Inventory",
+      "actions": [
+        "INVENTORY"
+      ]
+    },
+    {
+      "label": "Skill tree",
+      "actions": [
+        "SKILL_TREE"
+      ]
+    },
+    {
+      "label": "Help",
+      "actions": [
+        "HELP"
+      ]
+    }
+  ],
+  "notes": [
+    "Platform combat, patrol and pursuit AI, line of sight, inventory, skills and manifest-authored stages."
+  ]
+}

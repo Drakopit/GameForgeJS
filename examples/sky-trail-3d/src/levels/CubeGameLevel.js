@@ -124,4 +124,5 @@ export class CubeGameLevel extends Level3D {
         super.OnGUI();
         this.hud.Draw(this);
     }
+    OnExit() { this.hud?.help?.Dispose(); super.OnExit(); }
 }

@@ -16,20 +16,14 @@
     "fullScreen": true,
     "pixelArt": true,
     "antialiasing": false,
-    "orientation": "landscape"
+    "orientation": "landscape",
+    "responsive": {
+      "mode": "contain"
+    }
   },
   "input": {
     "actionMappings": {
-      "HELP": [
-        {
-          "device": "keyboard",
-          "input": "KeyH"
-        },
-        {
-          "device": "gamepad",
-          "input": "START"
-        }
-      ]
+      "HELP": [{"device":"keyboard","input":"KeyH"},{"device":"gamepad","input":"START"}]
     }
   }
 }

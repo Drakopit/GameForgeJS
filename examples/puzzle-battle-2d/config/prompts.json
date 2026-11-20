@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "title": "Puzzle Battle 2D / Controls",
+  "rows": [
+    {
+      "label": "Puzzle left",
+      "actions": [
+        "PUZZLE_LEFT"
+      ]
+    },
+    {
+      "label": "Puzzle right",
+      "actions": [
+        "PUZZLE_RIGHT"
+      ]
+    },
+    {
+      "label": "Puzzle rotate",
+      "actions": [
+        "PUZZLE_ROTATE"
+      ]
+    },
+    {
+      "label": "Puzzle drop",
+      "actions": [
+        "PUZZLE_DROP"
+      ]
+    },
+    {
+      "label": "Reset",
+      "actions": [
+        "RESET"
+      ]
+    },
+    {
+      "label": "Help",
+      "actions": [
+        "HELP"
+      ]
+    }
+  ],
+  "notes": [
+    "An arcade puzzle game with combos and competitive block exchanges."
+  ]
+}

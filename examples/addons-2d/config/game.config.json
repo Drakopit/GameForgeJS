@@ -7,7 +7,10 @@
     "width": 800,
     "height": 420,
     "pixelArt": false,
-    "antialiasing": true
+    "antialiasing": true,
+    "responsive": {
+      "mode": "contain"
+    }
   },
   "project": {
     "name": "Addon Building Blocks 2D"

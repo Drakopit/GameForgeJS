@@ -48,9 +48,7 @@ export class Level3D extends Level {
         this.context = context;
         document.title = this.caption ?? document.title;
         this.screen3D = new Screen3D(this.canvasId, this.width, this.height, { config: context?.config });
-        this.screen3D.Canvas.style.position = "absolute";
-        this.screen3D.Canvas.style.left = "0px";
-        this.screen3D.Canvas.style.top = "0px";
+        if (!this.screen3D.Canvas.style.position) Object.assign(this.screen3D.Canvas.style,{position:'absolute',left:'0px',top:'0px'});
         this.screen3D.Canvas.style.zIndex = "1";
 
         if (this.useUI) {

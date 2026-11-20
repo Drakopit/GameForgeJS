@@ -1,5 +1,5 @@
 // @ts-check
-import { Draw, HUDFrame, InfoPanel } from 'gameforgejs/2d';
+import { Draw, HUDFrame, InputHelpPanel as InfoPanel } from 'gameforgejs/2d';
 import { FoundryPanel } from './FoundryPanel.js';
 
 /** In-engine typography and a compact diagnostic readout; no HTML/CSS gameplay UI. */
@@ -7,14 +7,7 @@ export class FoundryHUD {
     /** @param {import('../levels/FoundryLevel.js').FoundryLevel} level */
     constructor(level) {
         this.level = level;
-        this.info = new InfoPanel(new Draw(level.screen), { title: 'STORM FOUNDRY / HELP', lines: [
-            'Mouse / touch: drag and release to throw a prop.',
-            'Space / A: drop · B / X: burst · G / Y: wind gust', 'L / Start: lab · I / Select: inspect · T: telemetry',
-            '[ / LB and ] / RB: presets · R / B: reset · H / R3: help',
-            'Lab: D-pad selects/tunes/pages; Q/E or LT/RT changes tabs.',
-            'Touch: drag sliders, tap toggles and preset buttons.',
-            'Canvas approximations: no HDR, fluid solver or SSR.',
-        ] });
+        this.info = new InfoPanel(new Draw(level.screen), { title: 'STORM FOUNDRY / HELP', lines: [] });
         this.frame = new HUDFrame(new Draw(level.screen), { panel: 'rgba(5,15,24,0.94)',
             border: 'rgba(86,136,146,0.55)', gold: '#f4bc78', text: '#dbe9e9' });
         this.panel = new FoundryPanel(level, this.frame);
@@ -51,8 +44,7 @@ export class FoundryHUD {
         if (!compact && !this.panel.open) {
             f.Text('ACTIVE PRESET', 40, screen.Height - 150, { size: 10, color: '#729b9f' });
             f.Text(level.model.current.name, 40, screen.Height - 120, { size: 23, color: '#dbece7', weight: 700 });
-            f.Text('Drag to throw  ·  B burst  ·  G gust  ·  R reset  ·  L lab  ·  I inspect', 24, screen.Height - 77,
-                { size: 11, color: '#779ba6', maxWidth: screen.Width - 48 });
+            this.info.DrawAction('HELP',24,screen.Height-100);
         }
         if (level.model.debug) this.DrawInspector();
         this.panel.Draw();
@@ -79,10 +71,8 @@ export class FoundryHUD {
     DrawHelp() {
         const screen = this.level.screen;
         const width = Math.min(580, screen.Width - 32), x = (screen.Width - width) / 2;
-        const lineHeight = Math.min(27, (screen.Height - 100) / this.info.lines.length);
-        const height = 65 + this.info.lines.length * lineHeight;
-        this.info.layout = { x, y: (screen.Height - height) / 2, width, lineHeight };
+        this.info.layout = { x, y: 80, width, lineHeight: 27 };
         this.info.OnDrawn();
     }
-    Dispose() { this.panel.Dispose(); }
+    Dispose() { this.info.Dispose(); this.panel.Dispose(); }
 }

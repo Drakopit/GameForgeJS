@@ -103,5 +103,15 @@
   "example.route-atlas-2d": "Mapa com rotas ramificadas, navegação entre nós, desafios jogáveis e liberação de fases por eventos.",
   "example.boss-patterns-2d": "Boss em três fases com leques, anéis, investidas sinalizadas, hazards e projéteis reciclados.",
   "a11y.aether": "Abrir Aether Observatory 3D",
-  "image.aether": "Ilhas flutuantes em 3D nativo, arquitetura do observatório e fog atmosférico"
+  "image.aether": "Ilhas flutuantes em 3D nativo, arquitetura do observatório e fog atmosférico",
+  "category.core": "ECS e fundamentos",
+  "category.physics": "2D e física",
+  "category.environments": "3D e ambientes",
+  "category.patterns": "Mecânicas de jogo",
+  "category.fx": "Áudio e efeitos",
+  "category.network": "Multiplayer",
+  "catalog.all": "Todas as categorias",
+  "catalog.filter": "Escolha uma categoria",
+  "catalog.notFound": "Esse exemplo não está disponível. Escolha uma demo abaixo.",
+  "progress.readiness": "Prontidão estimada: 6,3/10 (63%). Veja a avaliação e as metas restantes."
 }

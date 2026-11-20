@@ -1,13 +1,16 @@
-import { HUDFrame } from 'gameforgejs/2d';
-import { Vector2D } from 'gameforgejs/core';
+import { Draw, HUDFrame, InputHelpPanel } from 'gameforgejs/2d';
+import { Input, Vector2D } from 'gameforgejs/core';
 import { GardenSettings as Settings } from '../data/GardenSettings.js';
 
 export class TouchGardenHUD {
+    get helpVisible() {return this.help?.visible ?? this._helpVisible ?? false;}
+    set helpVisible(value) {this._helpVisible=value;if(this.help)this.help.visible=value;}
     constructor(screen, controls) {
         this.screen = screen;
         this.controls = controls;
         this.frame = new HUDFrame({ screen });
         this.helpVisible = false;
+        this.help = new InputHelpPanel(new Draw(screen),{title:'Touch Garden / Controls'});
     }
 
     Draw(level) {
@@ -23,10 +26,8 @@ export class TouchGardenHUD {
         frame.Meter(level.collected / level.crystals.length, { x: 30, y: 103, width: 420, height: 5 }, frame.theme.gold);
         frame.Text(level.collected === level.crystals.length ? 'Garden cleared. Keep exploring, or tap R to replay.' : 'Collect the crystals. Dash around the stone planters.', 240, 141,
             { size: 12, color: frame.theme.text, align: 'center', maxWidth: 450 });
-        this.DrawControls(level.player.motion);
-        frame.Text('Left thumb: move   •   Right thumb: dash', 240, 770, { size: 12, align: 'center', color: frame.theme.muted });
-        frame.Text(`${this.controls.touch.GetActiveTouches().length} active touches  /  H: help  /  R: reset`, 240, 790, { size: 10, align: 'center', color: frame.theme.muted });
-        if (this.helpVisible) this.DrawHelp();
+        if (Input.instance?.presentation?.TouchVisible) this.DrawControls(level.player.motion);
+        this.help.visible=this.helpVisible;this.help.OnDrawn();
     }
 
     DrawControls(motion) {
@@ -45,22 +46,7 @@ export class TouchGardenHUD {
         ctx.restore();
         this.frame.Text('MOVE', origin.x, origin.y + 5, { size: 10, color: '#153c43', weight: 700, align: 'center' });
         this.frame.Text('DASH', Settings.action.x, Settings.action.y + 5, { size: 15, color: this.frame.theme.gold, weight: 700, align: 'center' });
-        this.frame.Text('Space / A', Settings.action.x, Settings.action.y + 24, { size: 9, color: this.frame.theme.muted, align: 'center' });
     }
 
-    DrawHelp() {
-        this.frame.Panel({ x: 40, y: 205, width: 400, height: 330 });
-        this.frame.Text('TOUCH FIELD GUIDE', 62, 240, { size: 21, color: this.frame.theme.gold, weight: 700 });
-        const lines = [
-            'Drag in the lower-left area to steer.',
-            'Use a second finger on DASH while moving.',
-            'The green ring shows dash recovery.',
-            'Release or cancel to stop the stick.',
-            'Stone planters block movement and dashes.',
-            'Keyboard: WASD/arrows, Space, H, R.',
-            'Gamepad: left stick/D-pad, A, Start, Y.',
-            'Tap ? or press H to close. Play stays active.',
-        ];
-        lines.forEach((text, index) => this.frame.Text(text, 62, 276 + index * 29, { size: 13, maxWidth: 356 }));
-    }
+    Dispose() {this.help.Dispose();}
 }

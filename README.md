@@ -37,8 +37,11 @@ npm start
 ```
 
 Open the URL printed by the server and visit
-`/examples/showcase/index.html`. Each example also has its own `index.html`.
+`/#jogos` for the categorized catalog. Each example also has its own `index.html`.
 Existing `Main.html?demo=advanced` links redirect to the corresponding game.
+
+See [responsive viewports and the demo input audit](docs/guides/responsive-viewports.md)
+for presentation configuration and the remaining mobile work in each example.
 
 To create a separate game from this checkout:
 

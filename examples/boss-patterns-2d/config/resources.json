@@ -4,6 +4,10 @@
     {
       "name": "scenario",
       "path": "./scenario.json"
+    },
+    {
+      "name": "prompts",
+      "path": "./prompts.json"
     }
   ]
 }

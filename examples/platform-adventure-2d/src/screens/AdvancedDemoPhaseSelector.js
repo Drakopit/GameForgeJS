@@ -1,3 +1,5 @@
+import { InputHelpPanel, Draw as ControlGuideDraw } from 'gameforgejs/2d';
+import { ActionManager as ControlGuideActions } from 'gameforgejs/core';
 import { Level } from "gameforgejs/core";
 import { Draw } from "gameforgejs/2d";
 import { ActionManager } from "gameforgejs/core";
@@ -18,6 +20,7 @@ export class AdvancedDemoPhaseSelector extends Level {
 
     OnStart() {
         this.screen = new Screen(this.TelaId, 640, 480, { config: this.context?.config });
+        this.controlsHelp=new InputHelpPanel(new ControlGuideDraw(this.screen),{title:'Controls'});
         this.draw = new Draw(this.screen);
         this.progress = AdvancedDemoProgress.Load();
         this.selectedIndex = this.FindFirstUnlockedIndex();
@@ -32,6 +35,8 @@ export class AdvancedDemoPhaseSelector extends Level {
     }
 
     OnUpdate(dt) {
+        if(ControlGuideActions.IsActionDown('HELP'))this.controlsHelp?.Toggle();
+
         super.OnUpdate(dt);
         if (ActionManager.IsActionDown("LEFT") || ActionManager.IsActionDown("UP")) {
             this.selectedIndex = (this.selectedIndex + ADVANCED_DEMO_PHASES.length - 1) % ADVANCED_DEMO_PHASES.length;
@@ -203,6 +208,12 @@ export class AdvancedDemoPhaseSelector extends Level {
     }
 
     OnExit() {
+        this.controlsHelp?.Dispose();
+
         super.OnExit();
     }
+
+    OnGUI() {super.OnGUI();
+        this.controlsHelp?.OnDrawn();
+}
 }

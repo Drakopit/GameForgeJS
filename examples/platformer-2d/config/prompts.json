@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "title": "Platformer Building Blocks 2D / Controls",
+  "rows": [
+    {
+      "label": "Move",
+      "actions": [
+        "LEFT",
+        "RIGHT"
+      ]
+    },
+    {
+      "label": "Jump",
+      "actions": [
+        "JUMP"
+      ]
+    },
+    {
+      "label": "Reset",
+      "actions": [
+        "RESET"
+      ]
+    },
+    {
+      "label": "Continue",
+      "actions": [
+        "CONTINUE"
+      ]
+    },
+    {
+      "label": "Help",
+      "actions": [
+        "HELP"
+      ]
+    }
+  ],
+  "notes": [
+    "Two compact stages demonstrating tile collision, jump buffering, coyote time, collection and level transitions."
+  ]
+}

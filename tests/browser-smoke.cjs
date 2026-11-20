@@ -44,7 +44,11 @@ async function inspect(browser, url, name, { starter = false, play = false } = {
         await page.waitForFunction(async () => (await import('gameforgejs/core')).Engine.running, null, { timeout: 15000 });
         assert.equal(await page.locator('body').evaluate(body => [...body.children].some(element => !['SCRIPT', 'CANVAS'].includes(element.tagName))), false,
             'Game UI escaped the engine canvas');
-        await page.waitForTimeout(500);
+        await page.waitForFunction(async () => {
+            const { LevelHandler } = await import('gameforgejs/core');
+            return LevelHandler.current?._started && [...document.querySelectorAll('canvas')]
+                .some(canvas => canvas.width > 0 && canvas.height > 0);
+        }, null, { timeout: 15000 });
         const dimensions = await page.locator('canvas').evaluateAll(canvases => canvases.map(canvas => [canvas.width, canvas.height]));
         assert.ok(dimensions.some(([width, height]) => width > 0 && height > 0), 'No canvas with a nonzero size');
         if (['-renderer-3d', '-solar-system-3d', '-platformer-2d'].some(id => name.endsWith(id))) {

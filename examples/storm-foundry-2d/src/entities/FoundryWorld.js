@@ -43,10 +43,10 @@ export class FoundryWorld extends GameObject {
     /** @param {number} x @param {number} y @param {number} [vx] @param {number} [vy] */
     Drop(x, y, vx = 70, vy = -180) {
         const actor = this.props.find(prop => !prop.active);
-        if (actor) actor.Launch(x, y, vx, vy);
+        if (actor) {actor.Launch(x, y, vx, vy);this.events.emit('prop:launched');}
     }
-    Burst() { this.emission.Emit(120, 1.5); this.trauma = Math.min(1, this.trauma + 0.35); }
-    Gust() { this.gust = -300; this.trauma = Math.min(1, this.trauma + 0.3); }
+    Burst() { this.emission.Emit(120, 1.5); this.trauma = Math.min(1, this.trauma + 0.35); this.events.emit('fx:burst'); }
+    Gust() { this.gust = -300; this.trauma = Math.min(1, this.trauma + 0.3); this.events.emit('wind:gust'); }
     /** @param {number} width @param {number} height */
     Resize(width, height) {
         const scaleX = width / this.width, scaleY = height / this.height;

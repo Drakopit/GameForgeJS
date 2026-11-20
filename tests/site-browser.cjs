@@ -24,7 +24,7 @@ async function main() {
             assert.equal(await page.locator('.demo-card').count(), catalog.length);
             assert.equal(await page.locator('.demo-card img').count(), catalog.length);
             for (const entry of catalog) {
-                assert.equal(await page.locator(`.demo-card[href="Main.html?demo=${entry.id}"] img`).getAttribute('src'), entry.screenshot);
+                assert.equal(await page.locator(`.demo-card[href="examples/${entry.path}"] img`).getAttribute('src'), entry.screenshot);
             }
             for (const href of ['https://github.com/Drakopit', 'https://www.linkedin.com/in/patrickcamello/', 'mailto:patrickcamelo@yahoo.com.br']) {
                 assert.equal(await page.locator(`footer a[href="${href}"]`).count(), 1);
