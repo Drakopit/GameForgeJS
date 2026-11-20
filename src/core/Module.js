@@ -13,6 +13,10 @@ import { Base } from './Base.js';
  * @param {boolean} [options.enabled=true] - Whether frame hooks run.
  */
 export class Module extends Base {
+    /**
+     * @param {string} id
+     * @param {{imports?: (Function | Module | {id: string, setup: Function})[], declarations?: Function[], exports?: Function[], requires?: string[], enabled?: boolean}} [options]
+     */
     constructor(id, { imports = [], declarations = [], exports = [], requires = [], enabled = true } = {}) {
         super();
         this.id = id;

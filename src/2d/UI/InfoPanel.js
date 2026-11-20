@@ -7,6 +7,7 @@ import { HUDFrame } from './HUDFrame.js';
  * @param {Object} options - Title, text lines and panel rectangle.
  */
 export class InfoPanel {
+    /** @param {import('../Graphics/Draw.js').Draw} draw @param {{title?: string, lines?: string[], x?: number, y?: number, width?: number, lineHeight?: number}} [options] */
     constructor(draw, { title, lines = [], x = 20, y = 110, width = 620, lineHeight = 27 } = {}) {
         this.frame = new HUDFrame(draw);
         this.title = title;

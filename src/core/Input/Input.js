@@ -22,6 +22,7 @@ import { Config } from "../Config.js";
  * @returns {Object}
  */
 export class Input {
+    /** @type {Input | null} */
     static instance = null;
 
     static Initialize() {

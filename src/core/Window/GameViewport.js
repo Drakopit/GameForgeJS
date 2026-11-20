@@ -14,7 +14,7 @@ export class GameViewport {
      * returned cleanup stops observing; the level still owns the Screen.
      * @param {Screen} screen - Screen whose logical size follows the visible area.
      * @param {Object} [options] - Logical width limits and resize notification.
-     * @returns {Function} Remove the viewport event listeners.
+     * @returns {() => void} Remove the viewport event listeners.
      */
     static Bind(screen, { minWidth = 360, maxWidth = 1200, onResize = null } = {}) {
         if (!Number.isFinite(minWidth) || !Number.isFinite(maxWidth) || !(minWidth > 0 && maxWidth >= minWidth)) {

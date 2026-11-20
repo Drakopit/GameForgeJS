@@ -22,9 +22,9 @@ export class Mouse {
         this.clickPosition = new Vector2D(0, 0);
         this.releasePosition = new Vector2D(0, 0);
 
-        this.buttons = {};
-        this.buttonsDown = {};
-        this.buttonsUp = {};
+        /** @type {Record<number, boolean>} */ this.buttons = {};
+        /** @type {Record<number, boolean>} */ this.buttonsDown = {};
+        /** @type {Record<number, boolean>} */ this.buttonsUp = {};
 
         this.mouseMoveHandler = this.mouseMoveHandler.bind(this);
         this.mouseDownHandler = this.mouseDownHandler.bind(this);

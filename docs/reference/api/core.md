@@ -655,7 +655,7 @@ Registers a listener for an event name.
 | `event` | `string` | Event name. |
 | `callback` | `Function` | Listener callback. |
 
-**Returns:** `Function` - Unsubscribe callback.
+**Returns:** `() => void` - Unsubscribe callback.
 #### `once(event, callback)`
 
 JSDoc pending.
@@ -814,7 +814,7 @@ Fit a Screen to the visible browser area, excluding device safe-area insets. Tra
 | `screen` | `Screen` | Screen whose logical size follows the visible area. |
 | `[options]` | `Object` | Logical width limits and resize notification. |
 
-**Returns:** `Function` - Remove the viewport event listeners.
+**Returns:** `() => void` - Remove the viewport event listeners.
 #### `static IsFullScreen(gameConfig = Config.data)`
 
 Reads the active game's `screen.fullScreen` setting.
@@ -1543,10 +1543,18 @@ Reuses inactive objects, such as projectiles and particles, to reduce allocation
 
 #### `Get()`
 
-Returns an available object, creating one if necessary.
+Returns an available object, creating one if necessary; returns null at a configured capacity.
+
+**Returns:** `T | null`
 #### `Release(obj)`
 
-Marks an object as available for reuse.
+JSDoc pending.
+
+**Parameters**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `obj` | `T` |  |
 
 ## reconstructPath
 

@@ -11,7 +11,7 @@ export class EventEmitter {
      * Registers a listener for an event name.
      * @param {string} event - Event name.
      * @param {Function} callback - Listener callback.
-     * @returns {Function} Unsubscribe callback.
+     * @returns {() => void} Unsubscribe callback.
      */
     on(event, callback) {
         if (!this.listeners[event]) {

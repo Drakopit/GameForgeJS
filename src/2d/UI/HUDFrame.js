@@ -32,6 +32,7 @@ export class HUDFrame {
         ctx.restore();
     }
 
+    /** @param {string} text @param {number} x @param {number} y @param {{size?: number, color?: string, align?: CanvasTextAlign, weight?: number, maxWidth?: number}} [options] */
     Text(text, x, y, { size = 12, color = this.theme.text, align = 'left', weight = 400, maxWidth } = {}) {
         const ctx = this.context;
         ctx.save();

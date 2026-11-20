@@ -26,9 +26,14 @@ test('npm pack installs offline and the installed CLI builds an independent proj
     };
     const packed = JSON.parse(command(npmCli, ['pack', '--json', '--ignore-scripts', '--pack-destination', temporary], engine));
     const archive = path.join(temporary, packed[0].filename);
+    // The CLI's parser is already installed by npm ci. Pack it as an explicit
+    // offline fixture instead of relying on a developer's warm registry cache.
+    const parserRoot = path.dirname(require.resolve('acorn/package.json'));
+    const parserPack = JSON.parse(command(npmCli, ['pack', '--json', '--ignore-scripts', '--pack-destination', temporary], parserRoot));
+    const parserArchive = path.join(temporary, parserPack[0].filename);
     const root = path.join(temporary, 'independent-game');
     createProject(root, { template: 'minimal-3d' });
-    command(npmCli, ['install', '--offline', '--ignore-scripts', '--no-audit', '--no-fund', archive], root);
+    command(npmCli, ['install', '--offline', '--ignore-scripts', '--no-audit', '--no-fund', parserArchive, archive], root);
     const manifestFile = path.join(root, 'config/gameforge.project.json');
     const manifest = JSON.parse(fs.readFileSync(manifestFile, 'utf8'));
     manifest.enginePath = './nonexistent-development-checkout';

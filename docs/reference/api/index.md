@@ -13,7 +13,7 @@ npm run docs
 | Module | Purpose | Documented Exports |
 | --- | --- | --- |
 | [core](./core.md) | Public core entry point: gameforgejs/core. | 51/52 |
-| [2d](./2d.md) | Public 2d entry point: gameforgejs/2d. | 82/83 |
+| [2d](./2d.md) | Public 2d entry point: gameforgejs/2d. | 84/85 |
 | [3d](./3d.md) | Public 3d entry point: gameforgejs/3d. | 35/35 |
 | [network](./network.md) | Public network entry point: gameforgejs/network. | 11/11 |
 | [compat](./compat.md) | Public compat entry point: gameforgejs/compat. | 11/11 |

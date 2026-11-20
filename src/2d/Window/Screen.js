@@ -23,6 +23,7 @@ export const PIXELATED_RENDERING = true; // Ativa o modo pixelado para gráficos
  * @param {number} [height] - Logical canvas height.
  */
 export class Screen {
+    /** @param {string} id @param {number} [width] @param {number} [height] @param {{config?: object, parent?: HTMLElement | null}} [options] */
     constructor(id, width, height, { config, parent = null } = {}) {
         this.id = id;
         this.config = config;

@@ -311,6 +311,7 @@ export class HealthComponent extends Component {
  * Disables or removes short-lived owner objects after an elapsed duration.
  */
 export class LifetimeComponent extends Component {
+    /** @param {{duration?: number, mode?: 'disable'|'destroy', onExpire?: ((owner: object, component: LifetimeComponent) => void) | null}} [options] */
     constructor({ duration = 1, mode = "disable", onExpire = null } = {}) {
         super();
         this.duration = duration;
