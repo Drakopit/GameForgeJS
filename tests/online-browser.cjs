@@ -7,6 +7,7 @@ const { chromium } = require('@playwright/test');
 const { startServer } = require('../cli/server.cjs');
 const { build } = require('../cli/lib/build.cjs');
 const { verifyMotion } = require('./online-motion.cjs');
+const { inspectMobileViewport, inspectLobbyCaret, inspectLandscapeLobby } = require('./browser/online-mobile-ui.cjs');
 
 const root = path.resolve(__dirname, '..');
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -190,6 +191,7 @@ async function main() {
         assert.equal(new URL(invite).searchParams.get('room'), room);
         assert.equal(new URL(invite).searchParams.get('server'), endpoint);
         assert(!invite.includes('resumeToken'));
+        await inspectMobileViewport(bob, path.join(root, 'test-results/browser/online-mobile-safe-area.png'));
         await bob.setViewportSize({ width: 844, height: 390 });
         await pause(100);
         assert(await bob.evaluate(() => window.onlineCore.LevelHandler.current.screen.Width === 844));
@@ -228,9 +230,18 @@ async function main() {
             await page.waitForFunction(() => !window.onlineCore.LevelHandler.current.ui.paused);
             await page.evaluate(async () => { await window.onlineCore.Engine.Dispose(); });
             await context.close();
+            const mobile = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
+            const lobby = await mobile.newPage(); lobby.setDefaultTimeout(12000);
+            lobby.on('pageerror', error => errors.push(error.stack));
+            await lobby.goto(`http://127.0.0.1:${portable.address().port}/play/?server=${encodeURIComponent(endpoint)}`);
+            await inspect(lobby);
+            await inspectLobbyCaret(lobby);
+            await inspectLandscapeLobby(lobby, path.join(root, 'test-results/browser/online-lobby-landscape-safe-area.png'));
+            await lobby.evaluate(async () => { await window.onlineCore.Engine.Dispose(); });
+            await mobile.close();
         } finally { await new Promise(resolve => portable.close(resolve)); }
         assert.deepEqual(errors, []);
-        console.log('PASS source + portable clients: multiplayer, mobile multitouch/jump, chat, pause, resize, gamepad menus/movement, disposal');
+        console.log('PASS source + portable clients: multiplayer, touch, safe areas, keyboard, caret blink/selection, landscape lobby, gamepad, disposal');
     } finally {
         await browser?.close(); backend.kill();
         await new Promise(resolve => staticServer.close(resolve));

@@ -1,4 +1,4 @@
-import { Level, Vector2D } from 'gameforgejs/core';
+import { GameViewport, Level } from 'gameforgejs/core';
 import { Screen } from 'gameforgejs/2d';
 import { TilePlatformerWorld } from 'gameforgejs/addons/platformer';
 import { OnlineSession } from '../network/OnlineSession.js';
@@ -9,21 +9,15 @@ import { OnlineInterface } from '../ui/OnlineInterface.js';
 import { OnlineWorldView } from '../world/OnlineWorldView.js';
 import { OnlineAudio } from '../audio/OnlineAudio.js';
 
-const MAX_LOGICAL_WIDTH = 1200;
-const MIN_LOGICAL_WIDTH = 360;
-
 /** Scene orchestration; transport, movement, input and presentation have separate owners. */
 export class OnlineMMOLevel extends Level {
     constructor() { super(); this.caption = 'GameForgeJS — Skybound Together'; this.TelaId = 'online-sandbox'; }
     OnStart(context = this.context) {
         this.rules = context.assets.jsons['world-rules'];
         this.screen = new Screen(this.TelaId, 960, 600, { config: context.config });
-        this.resize = () => {
-            const width = Math.max(MIN_LOGICAL_WIDTH, Math.min(MAX_LOGICAL_WIDTH, window.innerWidth));
-            this.screen.Resize(new Vector2D(width, Math.round(width * window.innerHeight / window.innerWidth)));
-            this.controls?.touch.CancelAll();
-        };
-        this.resize(); window.addEventListener('resize', this.resize);
+        this.releaseViewport = GameViewport.Bind(this.screen, {
+            onResize: () => { this.controls?.touch.CancelAll(); this.controls?.Layout(); },
+        });
         this.preventMenu = event => event.preventDefault();
         this.screen.Canvas.addEventListener('contextmenu', this.preventMenu);
         this.session = new OnlineSession(); this.remote = new SnapshotBuffer();
@@ -84,7 +78,7 @@ export class OnlineMMOLevel extends Level {
     OnExit() {
         this.session.Disconnect(); this.ui.Dispose(); this.view.Dispose();
         for (const remove of this.subscriptions) remove();
-        window.removeEventListener('resize', this.resize);
+        this.releaseViewport();
         this.screen.Canvas.removeEventListener('contextmenu', this.preventMenu);
         super.OnExit();
     }

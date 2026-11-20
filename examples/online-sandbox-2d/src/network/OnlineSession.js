@@ -4,7 +4,8 @@ import { PLAYER_COLORS } from '../data/OnlineWorldData.js';
 
 const BACKPRESSURE_BYTES = 32768;
 const INPUT_BATCH_SIZE = 2;
-const CONNECTION_TIMEOUT = 10;
+const CONNECTION_TIMEOUT = 90;
+const SERVER_WAKE_NOTICE_SECONDS = 10;
 
 /** Dedicated-server protocol; never treats a peer's state as authoritative. */
 export class OnlineSession extends EventEmitter {
@@ -87,6 +88,9 @@ export class OnlineSession extends EventEmitter {
     Update(dt) {
         if (!this.client) return;
         this.elapsed += dt; this.pingAge += dt;
+        if (this.status === 'connecting' && this.elapsed > SERVER_WAKE_NOTICE_SECONDS) {
+            this.message = 'The free server may be waking up. First connection can take about a minute…';
+        }
         if (this.status === 'connecting' && this.elapsed > CONNECTION_TIMEOUT) {
             this.client.Disconnect(); this.status = 'error';
             this.message = 'Server unavailable. Start the backend or enter a deployed WSS address.';

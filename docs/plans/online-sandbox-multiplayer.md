@@ -5,7 +5,8 @@ below record the original source review. The client now uses a dedicated .NET 10
 server, sequenced input replay, remote interpolation, canvas lobby/chat, mobile
 controls and a shared cooperative objective. See the [demo guide](../../examples/online-sandbox-2d/README.md)
 and [deployment guide](../../servers/online-sandbox/README.md). Docker/VPS configuration
-is included; no public backend or domain has been provisioned yet.
+is included. The public backend is now available at `wss://gameforgejs.onrender.com/ws`;
+the demo uses it by default and allows a longer initial connection for free-host wake-up.
 
 ## Findings
 

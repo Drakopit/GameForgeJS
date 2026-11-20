@@ -14,7 +14,7 @@ export class NativeTextInput {
         this.element.value = owner.text;
         Object.assign(this.element.style, { position: 'fixed', width: '1px', height: '1px',
             opacity: '0', padding: '0', border: '0', fontSize: '16px', pointerEvents: 'none' });
-        this.onInput = () => { owner.text = this.element.value.slice(0, owner.maxLength); };
+        this.onInput = () => { owner.text = this.element.value.slice(0, owner.maxLength); owner.ResetCaretBlink(); };
         this.onKey = event => {
             event.stopPropagation();
             if (event.isComposing) return;
@@ -31,11 +31,14 @@ export class NativeTextInput {
     }
     Focus() {
         Input.ClearKeyboard();
+        this.Position();
+        this.element.focus({ preventScroll: true });
+    }
+    Position() {
         const canvas = this.owner.screen.Canvas;
         const bounds = canvas.getBoundingClientRect();
         this.element.style.left = `${bounds.left + this.owner.rect.x * bounds.width / canvas.width}px`;
         this.element.style.top = `${bounds.top + this.owner.rect.y * bounds.height / canvas.height}px`;
-        this.element.focus({ preventScroll: true });
     }
     Dispose() {
         this.element.removeEventListener('input', this.onInput);

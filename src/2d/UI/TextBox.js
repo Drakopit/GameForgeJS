@@ -14,6 +14,10 @@ import { Mouse } from "../../core/Input/Mouse.js";
 import { Rectangle } from "../Graphics/Rectangle.js";
 import { NativeTextInput } from './NativeTextInput.js';
 
+const CARET_BLINK_SECONDS = 0.5;
+const TEXT_PADDING = 8;
+const CARET_HEIGHT = 16;
+
 /**
  * Canvas-drawn editable text field for in-game GameForgeJS UI.
  *
@@ -39,13 +43,15 @@ export class TextBox {
         this.isActive = false;
         this.placeholder = "";
         this.maxLength = 120;
+        this.blinkTime = 0;
+        this.textScroll = 0;
         this.pointerFocus = event => {
             const bounds = this.screen.Canvas.getBoundingClientRect();
             const x = (event.clientX - bounds.left) * this.screen.Canvas.width / bounds.width;
             const y = (event.clientY - bounds.top) * this.screen.Canvas.height / bounds.height;
             const inside = x >= this.rect.x && x <= this.rect.x + this.rect.width
                 && y >= this.rect.y && y <= this.rect.y + this.rect.height;
-            if (inside) { event.preventDefault(); this.SetActive(true); }
+            if (inside) { event.preventDefault(); this.SetActive(true); this.PlaceCaret(x); }
             else if (this.isActive) this.SetActive(false);
         };
         if (nativeInput) screen.Canvas.addEventListener('pointerdown', this.pointerFocus);
@@ -61,6 +67,7 @@ export class TextBox {
      */
     SetBox(rect) {
         this.rect = rect;
+        if (rect.width > 0 && rect.height > 0) this.bridge?.Position();
     }
 
     /**
@@ -86,10 +93,12 @@ export class TextBox {
     SetText(text) {
         this.text = String(text ?? "").slice(0, this.maxLength);
         if (this.bridge) this.bridge.element.value = this.text;
+        this.ResetCaretBlink();
     }
 
     SetActive(active = true) {
         this.isActive = Boolean(active);
+        this.ResetCaretBlink();
         if (this.nativeInput && this.isActive) {
             this.bridge ??= new NativeTextInput(this);
             this.bridge.Focus();
@@ -106,6 +115,35 @@ export class TextBox {
     SetMaxLength(maxLength) {
         this.maxLength = Math.max(1, Math.trunc(maxLength));
         this.text = this.text.slice(0, this.maxLength);
+        if (this.bridge) {
+            this.bridge.element.maxLength = this.maxLength;
+            this.bridge.element.value = this.text;
+        }
+    }
+
+    /** Advance caret animation from the owner's existing update lifecycle. */
+    OnUpdate(dt = 1 / 60) {
+        if (this.isActive) this.blinkTime = (this.blinkTime + Math.max(0, dt)) % (CARET_BLINK_SECONDS * 2);
+    }
+
+    ResetCaretBlink() { this.blinkTime = 0; }
+
+    /** Position the native insertion point at the clicked Canvas text location. */
+    PlaceCaret(pointerX) {
+        if (!this.bridge) return;
+        const ctx = this.screen.Context;
+        ctx.save(); ctx.font = `13px ${this.draw.font}`;
+        const target = pointerX - this.rect.x - TEXT_PADDING + this.textScroll;
+        let index = 0;
+        while (index < this.text.length) {
+            const before = ctx.measureText(this.text.slice(0, index)).width;
+            const after = ctx.measureText(this.text.slice(0, index + 1)).width;
+            if (target < (before + after) / 2) break;
+            index++;
+        }
+        ctx.restore();
+        this.bridge.element.setSelectionRange(index, index);
+        this.ResetCaretBlink();
     }
 
     /**
@@ -152,10 +190,10 @@ export class TextBox {
     Click() {
         if (!this.mouse.buttonsDown?.[0]) return false;
         const point = this.mouse.getPositionRelative(this.screen.Canvas);
-        this.isActive = point.x >= this.rect.x
+        this.SetActive(point.x >= this.rect.x
             && point.x <= this.rect.x + this.rect.width
             && point.y >= this.rect.y
-            && point.y <= this.rect.y + this.rect.height;
+            && point.y <= this.rect.y + this.rect.height);
         return this.isActive;
     }
 
@@ -179,7 +217,39 @@ export class TextBox {
         this.draw.Color = this.text ? this.color : "rgba(220, 232, 255, 0.44)";
         this.draw.FontSize = "13px";
         ctx.textBaseline = "middle";
-        this.draw.DrawText(this.text || this.placeholder, this.rect.x + 8, this.rect.y + this.rect.height / 2, this.rect.width - 16);
+        ctx.textAlign = 'left';
+        this.DrawTextEntry(ctx);
         ctx.restore();
+    }
+
+    DrawTextEntry(ctx) {
+        const start = this.bridge?.element.selectionStart ?? this.text.length;
+        const end = this.bridge?.element.selectionEnd ?? start;
+        const signature = `${this.text}:${start}:${end}`;
+        if (signature !== this.lastSelection) { this.ResetCaretBlink(); this.lastSelection = signature; }
+        const width = Math.max(0, this.rect.width - TEXT_PADDING * 2);
+        const caret = ctx.measureText(this.text.slice(0, start)).width;
+        const textWidth = ctx.measureText(this.text).width;
+        if (this.isActive) {
+            this.textScroll = Math.max(0, Math.min(this.textScroll, caret));
+            this.textScroll = Math.max(this.textScroll, caret - width + 2);
+        } else this.textScroll = 0;
+        this.textScroll = Math.min(this.textScroll, Math.max(0, textWidth - width + 2));
+        ctx.beginPath();
+        ctx.rect(this.rect.x + TEXT_PADDING, this.rect.y + 2, width, this.rect.height - 4);
+        ctx.clip();
+        const x = this.rect.x + TEXT_PADDING - this.textScroll;
+        const y = this.rect.y + this.rect.height / 2;
+        if (this.isActive && end > start) {
+            ctx.fillStyle = 'rgba(244,210,106,0.3)';
+            ctx.fillRect(x + caret, y - CARET_HEIGHT / 2,
+                ctx.measureText(this.text.slice(start, end)).width, CARET_HEIGHT);
+        }
+        ctx.fillStyle = this.text ? this.color : 'rgba(220,232,255,0.44)';
+        ctx.fillText(this.text || this.placeholder, x, y);
+        if (this.isActive && this.blinkTime < CARET_BLINK_SECONDS) {
+            ctx.fillStyle = this.activeBorderColor;
+            ctx.fillRect(x + caret, y - CARET_HEIGHT / 2, 2, CARET_HEIGHT);
+        }
     }
 }

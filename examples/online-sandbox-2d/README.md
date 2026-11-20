@@ -21,7 +21,12 @@ node cli/index.cjs serve --root examples/online-sandbox-2d/dist
 The launcher also accepts `Main.html?demo=online-sandbox-2d`. Create a room and use
 **Invite** to send the link. The local endpoint only works on your computer; friends
 on the internet need a deployed WSS backend. The lobby accepts its address and
-invites include it automatically. There is no public backend provisioned yet.
+invites include it automatically. The published demo now defaults to
+`wss://gameforgejs.onrender.com/ws`; its health endpoint is
+[gameforgejs.onrender.com/health](https://gameforgejs.onrender.com/health).
+For a local backend, replace the lobby's server address with `ws://127.0.0.1:8080/ws`
+or open the demo with `?server=ws%3A%2F%2F127.0.0.1%3A8080%2Fws`.
+The free host can take about a minute to wake up; the lobby allows time for that.
 See the [server guide](../../servers/online-sandbox/README.md) for Docker and VPS setup.
 
 ## Controls
@@ -44,6 +49,12 @@ sound and enlarge touch controls. Chat fades after six seconds of inactivity and
 includes server-authored join/disconnect/reconnect notices. Name and chat fields
 use the framework TextBox's optional native input bridge for IME/mobile keyboard;
 all visible panels, fields, labels and controls are drawn in the engine canvas.
+Focused TextBox fields show a blinking caret, native selection and horizontal
+scrolling for long addresses. Their animation advances through the scene's update
+lifecycle. GameViewport.Bind fits the canvas to VisualViewport and device safe
+insets, so browser toolbars and the home gesture area do not cover touch buttons.
+The lobby switches to a compact layout in landscape and keeps the active text
+field visible while the software keyboard is open.
 
 ## Structure and ownership
 

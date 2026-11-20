@@ -20,6 +20,11 @@ Default local endpoint: `ws://127.0.0.1:8080/ws`; health: `http://127.0.0.1:8080
 The production frontend needs a deployed **WSS** endpoint; GitHub Pages only hosts
 the client. There is no silent local-tab fallback.
 
+The published demo is configured for `wss://gameforgejs.onrender.com/ws`.
+For local development, enter `ws://127.0.0.1:8080/ws` in the lobby or pass it in
+the `server` query parameter. The public health endpoint is
+[https://gameforgejs.onrender.com/health](https://gameforgejs.onrender.com/health).
+
 ## Docker on a development machine
 
 From the repository root:

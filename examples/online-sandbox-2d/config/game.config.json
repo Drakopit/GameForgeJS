@@ -18,7 +18,7 @@
     "fullScreen": true
   },
   "network": {
-    "serverUrl": ""
+    "serverUrl": "wss://gameforgejs.onrender.com/ws"
   },
   "input": {
     "gamepadProfile": "xbox",

@@ -23,3 +23,23 @@ The project gate rejects HTML body information in all catalog examples and templ
 Browser tests verify that runnable bodies contain only script/canvas elements and
 that help opens via keyboard and standard gamepad and visibly changes the UI canvas.
 The presentation website and example browser remain ordinary accessible web pages.
+
+## Responsive mobile screens and text entry
+
+For a full-window 2D Screen, opt into `GameViewport.Bind(screen)` from
+`gameforgejs/core`. Keep its returned cleanup and call it in OnExit. It resizes
+logical coordinates and the CSS canvas together using the visual viewport, including
+browser toolbar/keyboard changes, viewport offsets and device safe-area insets.
+Use `viewport-fit=cover` in the page's viewport meta tag to expose notch/home-area
+insets. Lay out the HUD from Screen.Width/Height after resizing; do not position
+touch buttons from window.innerHeight. The scene remains the owner of the Screen
+and the normal framework loop.
+
+`TextBox(screen, { nativeInput: true })` uses the OS keyboard/IME while all visible
+rendering stays in Canvas. The owning UI calls `textBox.OnUpdate(dt)` to advance the
+blinking caret and `DrawCursor()` to render text, selection and horizontal scrolling.
+Dispose the text field when removing it. Native input is created only while focused;
+its position follows the field when a mobile keyboard changes the viewport.
+
+Online Sandbox demonstrates these patterns with a compact landscape lobby and a
+focused-field layout when the software keyboard leaves little vertical space.

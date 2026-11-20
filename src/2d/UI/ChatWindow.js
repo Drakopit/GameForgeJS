@@ -67,7 +67,8 @@ export class ChatWindow {
         }
     }
 
-    OnUpdate() {
+    OnUpdate(dt) {
+        this.input.OnUpdate(dt);
         if (!this.mouse.buttonsDown?.[0]) return;
         const position = this.mouse.getPositionRelative(this.screen.Canvas);
         const insideInput = this.ContainsPoint(position, this.input.rect);

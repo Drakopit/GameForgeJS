@@ -803,6 +803,18 @@ Applies the responsive full-window canvas mode selected by a game config. Logica
 
 ### Methods
 
+#### `static Bind(screen, { minWidth = 360, maxWidth = 1200, onResize = null } = {})`
+
+Fit a Screen to the visible browser area, excluding device safe-area insets. Tracks browser bars, keyboard, rotation and visual viewport panning. The returned cleanup stops observing; the level still owns the Screen.
+
+**Parameters**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `screen` | `Screen` | Screen whose logical size follows the visible area. |
+| `[options]` | `Object` | Logical width limits and resize notification. |
+
+**Returns:** `Function` - Remove the viewport event listeners.
 #### `static IsFullScreen(gameConfig = Config.data)`
 
 Reads the active game's `screen.fullScreen` setting.

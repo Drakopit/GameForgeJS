@@ -1,5 +1,6 @@
 import { ActionManager } from 'gameforgejs/core';
 import { Button, Draw, HUDFrame, Rectangle, TextBox } from 'gameforgejs/2d';
+import { OnlineLobby } from './OnlineLobby.js';
 
 const CHAT_HOLD_SECONDS = 6;
 const CHAT_FADE_SECONDS = 0.6;
@@ -12,6 +13,7 @@ export class OnlineInterface {
         this.frame = new HUDFrame(new Draw(this.screen));
         this.fields = {}; this.buttons = {}; this.messages = []; this.chatAge = 0;
         this.selection = 0; this.volume = 0.35; this.controlScale = 1;
+        this.lobby = new OnlineLobby(this);
         for (const [id, placeholder, length] of [
             ['name', 'Your name', 20], ['room', 'Six-letter room code', 6],
             ['server', 'wss://your-server/ws', 240], ['chat', 'Message… Enter to send', 160],
@@ -33,6 +35,7 @@ export class OnlineInterface {
             invite: () => this.CopyInvite(),
             volume: () => { this.volume = this.volume > 0 ? 0 : 0.35; },
             controls: () => { this.controlScale = this.controlScale === 1 ? 1.2 : 1; },
+            done: () => { for (const field of Object.values(this.fields)) field.SetActive(false); },
         };
         for (const [id, callback] of Object.entries(callbacks)) {
             const button = this.buttons[id] = new Button(this.screen, { pointerInput: true });
@@ -60,6 +63,7 @@ export class OnlineInterface {
         }
     }
     Update(dt) {
+        for (const field of Object.values(this.fields)) field.OnUpdate(dt);
         this.chatAge += dt;
         if (!this.IsTyping && ActionManager.IsActionDown('PAUSE')) this.TogglePause();
         if (!this.IsTyping && ActionManager.IsActionDown('CHAT')) this.FocusChat();
@@ -88,18 +92,7 @@ export class OnlineInterface {
         const panelWidth = Math.min(440, width - 32), x = (width - panelWidth) / 2;
         const f = this.frame, session = this.level.session;
         if (!this.level.playing) {
-            const y = Math.max(12, (height - 470) / 2);
-            f.Panel({ x, y, width: panelWidth, height: 460 });
-            f.Text('SKYBOUND • TOGETHER', x + 20, y + 40, { size: 23, color: '#ffe6a0', weight: 700 });
-            f.Text('Explore, build a bridge, restore the beacon.', x + 20, y + 67, { size: 13, maxWidth: panelWidth - 40 });
-            f.Text('NAME', x + 20, y + 100); this.Field('name', x + 20, y + 110, panelWidth - 40);
-            f.Text('ROOM CODE · leave empty to create', x + 20, y + 176); this.Field('room', x + 20, y + 186, panelWidth - 40);
-            f.Text('DEDICATED SERVER', x + 20, y + 252); this.Field('server', x + 20, y + 262, panelWidth - 40);
-            this.LayoutButton('create', 'Create room', x + 20, y + 326, (panelWidth - 50) / 2, this.selection === 0);
-            this.LayoutButton('join', 'Join friend', x + panelWidth / 2 + 5, y + 326, (panelWidth - 50) / 2, this.selection === 1);
-            f.Text(session.message || (session.status === 'connecting' ? 'Connecting…' : 'Gamepad: D-pad to choose · A to confirm'), x + 20, y + 400,
-                { size: 12, color: '#b8d9df', maxWidth: panelWidth - 40 });
-            f.Text('Needs the backend running locally or on a VPS.', x + 20, y + 429, { size: 12 });
+            this.lobby.Draw(width, height);
             return;
         }
         f.Panel({ x: 12, y: 12, width: width - 24, height: 78 });
@@ -119,7 +112,7 @@ export class OnlineInterface {
                 { size: 12, color: message.system ? '#ffe6a0' : '#eef7ff', maxWidth: chatWidth - 20 }));
         }
         ctx.restore();
-        if (this.fields.chat.isActive) this.Field('chat', 12, chatY + MAX_CHAT_LINES * 20, chatWidth);
+        if (this.fields.chat.isActive) this.Field('chat', 12, Math.min(chatY + MAX_CHAT_LINES * 20, height - 56), chatWidth);
         if (!this.level.controls.mobile) f.Text('A/D move · Space jump · Q mine · F place · E beacon · R material · Enter chat · Esc menu', 18, height - 18,
             { size: 12, maxWidth: width - 36 });
         if (this.paused) {

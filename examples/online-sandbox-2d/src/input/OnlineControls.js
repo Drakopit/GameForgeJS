@@ -18,13 +18,15 @@ export class OnlineControls {
     Layout() {
         const scale = this.level.ui.controlScale;
         const size = BUTTON_SIZE * scale, h = this.screen.Height, w = this.screen.Width;
+        const landscape = w > h;
         this.stick = { x: 76 * scale, y: h - 85 * scale, radius: JOYSTICK_RADIUS * scale };
         this.buttons = {
             jump: { x: w - size - 18, y: h - size - 20, width: size, height: size, label: 'JUMP' },
             mine: { x: w - size * 2 - 30, y: h - size - 20, width: size, height: size, label: 'MINE' },
             place: { x: w - size - 18, y: h - size * 2 - 32, width: size, height: size, label: 'BUILD' },
             interact: { x: w - size * 2 - 30, y: h - size * 2 - 32, width: size, height: size, label: 'USE' },
-            cycle: { x: 12, y: h - 190 * scale, width: 104, height: 42, label: this.Material.toUpperCase() },
+            cycle: { x: landscape ? (w - 104) / 2 : 12, y: landscape ? h - 62 : h - 190 * scale,
+                width: 104, height: 42, label: this.Material.toUpperCase() },
         };
     }
     Inside(point, box) { return point.x >= box.x && point.x <= box.x + box.width && point.y >= box.y && point.y <= box.y + box.height; }
@@ -85,7 +87,7 @@ export class OnlineControls {
             y: Math.floor((player.position.y + rules.playerHeight / 2) / rules.tileSize) };
     }
     Draw() {
-        if (!this.level.playing || !this.mobile || this.level.ui.paused) return;
+        if (!this.level.playing || !this.mobile || this.level.ui.paused || this.level.ui.IsTyping) return;
         const frame = this.level.ui.frame, ctx = this.screen.Context;
         ctx.save(); ctx.globalAlpha = 0.75;
         const stick = this.stick;
