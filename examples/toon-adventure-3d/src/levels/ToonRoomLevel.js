@@ -74,12 +74,13 @@ export class ToonRoomLevel extends Level3D {
                 for (const mesh of visual.model.meshes) mesh.material.bands = this.bands;
             }
         }
+        if(this.hud.helpVisible)return;
         super.OnUpdate(dt);
         this.hud.OnUpdate(dt, this.areaName);
     }
 
     OnFixedUpdate(dt) {
-        if (this.result) return;
+        if (this.result || this.hud.helpVisible) return;
         super.OnFixedUpdate(dt);
         this.warpTravel.OnFixedUpdate(dt);
         if (!this.player.health.IsAlive()) this.FinishEncounter('defeat');

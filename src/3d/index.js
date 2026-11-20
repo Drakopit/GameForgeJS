@@ -38,3 +38,14 @@ export { PhysicsWorld3D } from "./Physics/PhysicsWorld3D.js";
 export { Model3D } from "./Model/Model3D.js";
 export { ModelMeshFactory } from "./Model/ModelMeshFactory.js";
 export { SkeletalAnimator } from "./Animation/SkeletalAnimator.js";
+
+export { SurfaceMaterial } from './Render3D/Material/SurfaceMaterial.js';
+export { SurfaceAnimator } from './Environment/SurfaceAnimator.js';
+export { RainEmitter } from './Environment/RainEmitter.js';
+export { RainRenderer } from './Environment/RainRenderer.js';
+
+export { OrthographicCamera } from './Render3D/Camera/OrthographicCamera.js';
+
+export { HeightGrid } from './Navigation/HeightGrid.js';
+
+export { WetSurfaceResponse } from './Environment/WetSurfaceResponse.js';

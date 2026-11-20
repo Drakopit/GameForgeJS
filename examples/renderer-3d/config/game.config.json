@@ -23,7 +23,8 @@
   },
   "input": {
     "actionMappings": {
-      "HELP": [{"device":"keyboard","input":"KeyH"},{"device":"gamepad","input":"START"}]
+      "HELP": [{"device":"keyboard","input":"KeyH"},{"device":"gamepad","input":"START"}],
+      "WEATHER": [{"device":"keyboard","input":"KeyT"},{"device":"gamepad","input":"button_4"}]
     }
   }
 }

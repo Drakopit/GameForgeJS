@@ -46,10 +46,10 @@ export class FightingCombat {
         }
     }
     ApplyHit(attacker, defender, attack, position, direction = attacker.facingRight ? 1 : -1) {
-        const blocked = defender.IsBlocking({ position: { x: defender.position.x - direction } });
+        const blocked = defender.IsBlocking({ position: { x: defender.position.x - direction } },attack);
         const damage = Math.ceil(attack.damage * attacker.stats.damageMult * (blocked ? Settings.chipRatio : 1));
         defender.TakeHit({ damage, direction, blocked, knockback: attack.knockback * (blocked ? Settings.blockPush : 1),
-            hitStun: blocked ? Settings.blockStun : attack.hitStun });
+            hitStun: blocked ? Settings.blockStun : attack.hitStun,knockdown:attack.knockdown });
         attacker.OnHit(attack.meterGain, blocked);
         this.level.effects.Impact(position, blocked ? '#75d7ff' : attacker.tint, blocked);
         this.level.effects.Shake(blocked ? 2 : attack.shake);

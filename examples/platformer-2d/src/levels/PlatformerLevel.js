@@ -1,9 +1,11 @@
-import { Level, ActionManager, Vector2D, AssetManager } from 'gameforgejs/core';
+import { Level, ActionManager, Vector2D, AssetManager, GameViewport, Input } from 'gameforgejs/core';
 import { Screen, Draw, Camera } from 'gameforgejs/2d';
 import { TilePlatformerWorld } from 'gameforgejs/addons/platformer';
 import { Player } from '../entities/Player.js';
 import { Coin } from '../entities/Coin.js';
 import { PlatformerHUD } from '../ui/PlatformerHUD.js';
+import { PlatformerControls } from '../input/PlatformerControls.js';
+import { PlatformerScenery } from '../rendering/PlatformerScenery.js';
 
 export class PlatformerLevel extends Level {
     constructor(stage) {
@@ -26,6 +28,9 @@ export class PlatformerLevel extends Level {
         });
         const assets = context.assets ?? AssetManager.instance;
         this.player = new Player(this.world, this.screen, this.stage.spawn, assets);
+        this.controls=new PlatformerControls(this);
+        this.player.controller.input=this.controls;
+        this.scenery=new PlatformerScenery();
         this.AddEntity(this.player);
         this.coins = this.stage.coins.map(position => {
             const coin = new Coin(this.screen, position);
@@ -40,6 +45,7 @@ export class PlatformerLevel extends Level {
             height: this.stage.rows * this.stage.tileSize,
         });
         this.camera.Update(this.player, 0);
+        this.releaseViewport=GameViewport.Bind(this.screen,{onResize:()=>this.LayoutWorld()});
         this.won = false;
         super.OnStart(context);
     }
@@ -52,7 +58,16 @@ export class PlatformerLevel extends Level {
         });
     }
 
+    LayoutWorld() {
+        const reserve=Input.instance.presentation.TouchVisible?140:0;
+        this.viewHeight=Math.max(100,Math.min(this.stage.rows*this.stage.tileSize,this.screen.Height-reserve));
+        this.viewTop=Math.max(0,(this.screen.Height-reserve-this.viewHeight)/2);
+        this.camera.size.Set(this.screen.Width,this.viewHeight);this.camera.Update(this.player,0);
+    }
+
     OnUpdate(dt) {
+        this.controls.Update();
+        this.LayoutWorld();
         if (ActionManager.IsActionDown('HELP')) this.hud.help.Toggle();
         if (ActionManager.IsActionDown('RESET')) {
             this.RestartStage();
@@ -61,10 +76,12 @@ export class PlatformerLevel extends Level {
             this.Next = true;
             return;
         }
+        if (this.hud.help.visible || this.won) return;
         super.OnUpdate(dt);
     }
 
     OnFixedUpdate(dt) {
+        if (this.hud.help.visible || this.won) return;
         super.OnFixedUpdate(dt);
         const worldHeight = this.stage.rows * this.stage.tileSize;
         if (this.player.position.y > worldHeight + 64) {
@@ -98,8 +115,8 @@ export class PlatformerLevel extends Level {
 
     OnDrawn() {
         this.screen.Refresh();
-        this.draw.Color = '#254b60';
-        this.draw.DrawRect(0, 0, this.screen.width, this.screen.height);
+        this.scenery.Draw(this);
+        const ctx=this.screen.Context;ctx.save();ctx.beginPath();ctx.rect(0,this.viewTop,this.screen.Width,this.viewHeight);ctx.clip();ctx.translate(0,this.viewTop);
         this.camera.Begin();
         try {
             this.DrawTerrain();
@@ -111,6 +128,7 @@ export class PlatformerLevel extends Level {
             }
         } finally {
             this.camera.End();
+            ctx.restore();
         }
     }
 
@@ -122,8 +140,10 @@ export class PlatformerLevel extends Level {
 
                 this.draw.Color = '#416f66';
                 this.draw.DrawRect(x * tileSize, y * tileSize, tileSize, tileSize);
-                this.draw.Color = '#91c98e';
-                this.draw.DrawRect(x * tileSize, y * tileSize, tileSize, 4);
+                if(!getTile(x,y-1)) {
+                    this.draw.Color = '#b6dfa2';
+                    this.draw.DrawRect(x * tileSize, y * tileSize, tileSize, 4);
+                }
             }
         }
     }
@@ -138,6 +158,7 @@ export class PlatformerLevel extends Level {
     OnGUI() {
         super.OnGUI();
         this.hud.Draw(this);
+        this.controls.Draw();
     }
-    OnExit() { this.hud?.help?.Dispose(); super.OnExit(); }
+    OnExit() { this.releaseViewport?.();this.controls?.Dispose();this.hud?.help?.Dispose(); super.OnExit(); }
 }

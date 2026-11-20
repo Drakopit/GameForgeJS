@@ -344,6 +344,13 @@ export class WebGL3DRenderer {
         this.#set1f(shader, "uHeightScale", material.heightScale ?? 0);
         this.#set1f(shader, "uRoughness", material.roughness ?? 0.72);
         this.#set1f(shader, "uMetallic", material.metallic ?? 0);
+        this.#set1f(shader, 'uSurface', material.surface ?? 0);
+        this.#set1f(shader, 'uSurfaceTime', material.time ?? 0);
+        this.#set1f(shader, 'uSurfaceScale', material.surfaceScale ?? 1);
+        this.#set1f(shader, 'uWetness', material.wetness ?? 0);
+        this.#set1f(shader, 'uReflection', material.reflection ?? 0);
+        this.#set1i(shader, 'uRippleCount', material.ripples?.length ?? 0);
+        if (material.rippleUniforms) this.gl.uniform4fv(shader.GetUniform('uRipples[0]'),material.rippleUniforms);
 
         this.#bindTexture(shader, 0, "uAlbedoMap", "uHasAlbedoMap", material.albedoMap, this.whiteTexture);
         this.#bindTexture(shader, 1, "uNormalMap", "uHasNormalMap", material.normalMap, this.normalTexture);

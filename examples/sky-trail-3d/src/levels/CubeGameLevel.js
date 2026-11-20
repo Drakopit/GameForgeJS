@@ -53,13 +53,14 @@ export class CubeGameLevel extends Level3D {
     OnUpdate(dt) {
         if (ActionManager.IsActionDown('CANCEL')) { this.Back = true; return; }
         if (ActionManager.IsActionDown('HELP')) this.hud.helpVisible = !this.hud.helpVisible;
+        if(this.hud.helpVisible)return;
         if (ActionManager.IsActionDown('RESET') || (this.gameState === 'WON' && ActionManager.IsActionDown('ATTACK'))) this.ResetGame();
         super.OnUpdate(dt);
         this.followCamera.Update(dt);
     }
 
     OnFixedUpdate(dt) {
-        if (this.gameState !== 'PLAYING') return;
+        if (this.gameState !== 'PLAYING' || this.hud.helpVisible) return;
         this.time += dt;
         // Update moving solids and carry their passenger before the framework physics step.
         this.platforms.Update(this.time);

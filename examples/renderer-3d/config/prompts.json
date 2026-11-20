@@ -7,6 +7,12 @@
       "actions": [
         "HELP"
       ]
+    },
+    {
+      "label": "Rain toggle",
+      "actions": [
+        "WEATHER"
+      ]
     }
   ],
   "notes": [

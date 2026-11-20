@@ -20,7 +20,7 @@ export class CrossingLevel extends Level {
     }
     Play() { this.sequence.Cancel(); this.courier.path.Restart(); this.sequence.Play(); this.sound.Play('transition'); }
     OnUpdate(dt) {
-        this.hud.Update(); super.OnUpdate(dt);
+        this.hud.Update(); if(!this.hud.help.visible)super.OnUpdate(dt);
         const baseZoom = Math.min(this.screen.Width / 760, this.screen.Height / 580);
         this.camera.SetZoom(baseZoom * this.magnification);
         const response = this.sequence.time === 0 ? 1 : 1 - Math.exp(-6 * dt);

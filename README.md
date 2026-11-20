@@ -106,6 +106,7 @@ start from CLI templates, which contain only the minimum runnable behavior.
 <!-- examples:start -->
 | Example | Dimension | Purpose |
 | --- | --- | --- |
+| [Highland Tactics 3D](examples/highland-tactics-3d/index.html) | 3D | True 3D terraced tactics: CT turns, height-aware paths, line of sight, facing bonuses and native surface/weather effects. |
 | [Aether Observatory 3D](examples/aether-observatory-3d/index.html) | 3D | Native WebGL floating islands, shaded architecture, fog, physics traversal, orbit/chase cameras and a skippable cinematic. |
 | [Cinematic Crossing 2D](examples/cinematic-crossing-2d/index.html) | 2D | Parallel camera, zoom and fade tracks, waypoint movement, dialogue cues and clean skip/replay control states. |
 | [Route Atlas 2D](examples/route-atlas-2d/index.html) | 2D | A branching overworld graph, smooth node travel, playable shard trials and event-driven stage unlocks. |

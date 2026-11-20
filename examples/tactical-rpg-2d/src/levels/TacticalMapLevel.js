@@ -40,6 +40,7 @@ export class TacticalMapLevel extends Level {
 
     OnUpdate(dt) {
         if(ControlGuideActions.IsActionDown('HELP'))this.controlsHelp?.Toggle();
+        if (this.controlsHelp.visible) return;
 
         super.OnUpdate(dt);
         const flow = this.battle.Update(dt);

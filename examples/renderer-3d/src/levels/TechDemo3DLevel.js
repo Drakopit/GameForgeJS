@@ -1,9 +1,11 @@
 import { RendererHUD } from '../ui/RendererHUD.js';
+import { SurfaceGallery } from '../entities/SurfaceGallery.js';
 import { ActionManager, AssetManager, Vector3D } from "gameforgejs/core";
 import {
     Level3D,
     SceneManifest3D,
     Texture,
+    SurfaceMaterial,
 } from "gameforgejs/3d";
 
 const Motion = Object.freeze({ sphereHeight: -0.15, bobSpeed: 1.8, bobDistance: 0.18,
@@ -40,6 +42,8 @@ export class TechDemo3DLevel extends Level3D {
         const floor = content.objects.find(object => object.name === "NormalMappedFloor");
         this.cube = content.objects.find(object => object.name === "RotatingCube");
         this.sphere = content.objects.find(object => object.name === "SpecularSphere");
+        if(this.sphere)this.sphere.material=new SurfaceMaterial({preset:'metal',albedoColor:'#e5b574'});
+        this.gallery=this.AddEntity(new SurfaceGallery(this.scene));
 
         for (const object of [floor, this.cube]) {
             if (!object?.material) continue;
@@ -51,6 +55,7 @@ export class TechDemo3DLevel extends Level3D {
     OnUpdate(dt) {
         super.OnUpdate(dt);
         if (ActionManager.IsActionDown('HELP')) this.hud.help.Toggle();
+        if (ActionManager.IsActionDown('WEATHER')) this.gallery.ToggleRain();
         this.time += dt;
 
         if (this.cube) {

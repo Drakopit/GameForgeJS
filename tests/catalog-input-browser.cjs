@@ -18,9 +18,9 @@ async function main(){
     try{
         const page=await browser.newPage({viewport:{width:1280,height:850}}),documents=[];
         page.on('request',request=>{if(request.isNavigationRequest()&&request.frame()===page.mainFrame())documents.push(request.url());});
-        await page.goto(base);assert.equal(await page.locator('[data-group]').count(),6);assert.equal(await page.locator('.demo-card').count(),19);
+        await page.goto(base);assert.equal(await page.locator('[data-group]').count(),6);assert.equal(await page.locator('.demo-card').count(),20);
         await page.locator('[data-category="core"]').click();assert.equal(await page.locator('.demo-card:visible').count(),4);
-        await page.locator('[data-category="patterns"]').click();assert.equal(await page.locator('.demo-card:visible').count(),7);
+        await page.locator('[data-category="patterns"]').click();assert.equal(await page.locator('.demo-card:visible').count(),8);
         await page.locator('[data-category="all"]').click();
         const count=documents.length;await page.locator('.demo-card[href="examples/boss-patterns-2d/index.html"]').click();
         await page.evaluate(async()=>{window.fx=await import('gameforgejs/core');});
@@ -64,7 +64,7 @@ async function main(){
                 assert.deepEqual(errors,[]);await page.evaluate(()=>window.fx.Engine.Dispose());
             }finally{await context.close();}
         }
-        for(const route of ['Main.html','examples/showcase/index.html']){const page=await browser.newPage();await page.goto(base+route);await page.waitForURL(url=>url.pathname.endsWith('/index.html')&&url.hash==='#jogos');assert.equal(await page.locator('.demo-card').count(),19);await page.close();}
+        for(const route of ['Main.html','examples/showcase/index.html']){const page=await browser.newPage();await page.goto(base+route);await page.waitForURL(url=>url.pathname.endsWith('/index.html')&&url.hash==='#jogos');assert.equal(await page.locator('.demo-card').count(),20);await page.close();}
         console.log('PASS mobile/coarse detection, narrow desktop, responsive prompt layout and legacy list redirects');
     }finally{await browser.close();await new Promise(resolve=>server.close(resolve));}
 }

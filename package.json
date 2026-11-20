@@ -53,7 +53,8 @@
     "catalog": "node scripts/generate-catalog.cjs",
     "catalog:check": "node scripts/generate-catalog.cjs --check",
     "test:presentation": "node tests/catalog-input-browser.cjs",
-    "test:viewport": "node tests/viewport-browser.cjs"
+    "test:viewport": "node tests/viewport-browser.cjs",
+    "test:polish": "node tests/polish-browser.cjs"
   },
   "dependencies": {
     "acorn": "^8.19.0"

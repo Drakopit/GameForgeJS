@@ -240,7 +240,7 @@ export class SolarSystemLevel extends Level3D {
         draw.DrawText("Sistema Solar - Render3D", 28, 46);
         draw.Color = "#DDE7FF";
         draw.FontSize = "14px";
-        draw.DrawText("WASD / stick: orbit + zoom | H / Start: help", 28, 74);
+        this.help.DrawAction('HELP',28,56);
         this.help.OnDrawn();
     }
     OnExit() { this.help?.Dispose(); super.OnExit(); }

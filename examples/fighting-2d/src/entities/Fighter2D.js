@@ -34,6 +34,7 @@ export class Fighter2D extends GameObject {
         this.bufferRemaining = this.noticeRemaining = 0;
         this.bufferedAttack = null; this.notice = ''; this.shotsFired = 0;
         this.command = {};
+        this.landTimer=0;this.knockedDown=false;this.hitReaction='hurt';
         this.combo.Reset(); this.boxes.ResetHitMemory(); this.motor.Reset();
         this.ChangeState('idle');
     }
@@ -44,6 +45,7 @@ export class Fighter2D extends GameObject {
 
     OnUpdate(dt) {
         this.stateTimer = Math.max(0, this.stateTimer - dt);
+        this.landTimer=Math.max(0,this.landTimer-dt);
         this.invulnerableTimer = Math.max(0, this.invulnerableTimer - dt);
         this.powerCooldown = Math.max(0, this.powerCooldown - dt);
         this.noticeRemaining = Math.max(0, this.noticeRemaining - dt);
@@ -55,7 +57,7 @@ export class Fighter2D extends GameObject {
         this.meter = Math.min(Combat.maxMeter, this.meter + Combat.passiveMeterPerSecond * dt);
         this.displayHp = Math.max(this.hp, this.displayHp - Combat.healthTrailSpeed * dt);
         const command = this.command;
-        const requested = ['super', 'special', 'heavy', 'light'].find(name => command[name]);
+        const requested = ['super', 'special', 'heavy', 'medium', 'light'].find(name => command[name]);
         if (requested) {
             this.bufferedAttack = requested; this.bufferRemaining = Combat.inputBufferSeconds;
             if (this.currentAttackName === 'light' && requested === 'heavy'
@@ -97,6 +99,11 @@ export class Fighter2D extends GameObject {
     }
 
     StartAttack(name, chained = false) {
+        if(!chained){
+            if(!this.IsGrounded()&&['light','medium','heavy'].includes(name))name=name==='light'?'aerialLight':'aerialHeavy';
+            else if(this.command.crouch)name=({light:'crouchLight',medium:'sweep',heavy:'crouchHeavy',special:'weaponSpecial'})[name]??name;
+            else if(name==='heavy'&&this.motor.dashRemaining>0)name='dashStrike';
+        }
         if (!this.CanStartAttack(name)) {
             this.notice = (FighterAttacks[name]?.meterCost ?? 0) > this.meter ? 'SUPER: precisa de 50 EN'
                 : !this.IsGrounded() ? 'Poder: aterrise para lançar' : 'Poder recarregando';
@@ -126,9 +133,11 @@ export class Fighter2D extends GameObject {
         this.velocity.x = hit.direction * hit.knockback;
         this.invulnerableTimer = Combat.invulnerabilitySeconds;
         this.currentAttackName = null; this.hitOnce = false;
+        this.knockedDown=Boolean(hit.knockdown&&!hit.blocked&&this.hp>0);
+        this.hitReaction=hit.knockback>=200?'knockback':'hurt';
         this.bufferedAttack = null; this.combo.Reset();
         this.ChangeState(this.hp === 0 ? 'ko' : hit.blocked ? 'guard' : 'hurt');
-        this.stateTimer = hit.hitStun;
+        this.stateTimer = hit.hitStun+(this.knockedDown?0.5:0);
     }
 
     OnHit(meterGain = 0, blocked = false) {
@@ -145,8 +154,11 @@ export class Fighter2D extends GameObject {
     PlayDefeat() { this.currentAttackName = null; this.ChangeState('ko'); }
     IsGrounded() { return this.position.y >= this.groundY - Settings.footTolerance && this.velocity.y >= 0; }
     IsActionLocked() { return Boolean(FighterAttacks[this.state]) || this.state === 'hurt' || this.state === 'ko' || this.state === 'guard' && this.stateTimer > 0; }
-    IsInvulnerable() { return this.invulnerableTimer > 0 || this.hp <= 0; }
-    IsBlocking(source) { return this.state === 'guard' && this.IsGrounded() && (source.position.x > this.position.x ? this.facingRight : !this.facingRight); }
+    IsInvulnerable() { return this.invulnerableTimer > 0 || this.hp <= 0 || this.state==='hurt'&&this.knockedDown; }
+    IsBlocking(source,attack={}) {
+        const correctHeight=Boolean(attack.level==='low'?this.command.crouch:attack.level==='high'?!this.command.crouch:true);
+        return this.state === 'guard' && correctHeight && this.IsGrounded() && (source.position.x > this.position.x ? this.facingRight : !this.facingRight);
+    }
     CanHit() {
         const attack = this.GetCurrentAttack();
         const elapsed = attack ? attack.duration - this.stateTimer : 0;
@@ -162,5 +174,5 @@ export class Fighter2D extends GameObject {
         return { x: this.position.x + (this.facingRight ? 18 : -18 - attack.range),
             y: this.position.y + attack.yOffset, width: attack.range, height: attack.height };
     }
-    GetHurtBox() { return { x: this.position.x - this.size.x / 2, y: this.position.y - this.size.y, width: this.size.x, height: this.size.y }; }
+    GetHurtBox() { const height=this.command.crouch&&this.IsGrounded()?this.size.y*0.65:this.size.y;return { x: this.position.x - this.size.x / 2, y: this.position.y - height, width: this.size.x, height }; }
 }

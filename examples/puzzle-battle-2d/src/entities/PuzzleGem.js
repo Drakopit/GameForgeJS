@@ -33,6 +33,7 @@ export class PuzzleGem {
      */
     render(ctx, x, y, size = PuzzleConfig.GEM_SIZE) {
         if (this.type === GemType.EMPTY) return;
+        ctx.save();
 
         let palette = this.colorMap[this.color] || this.colorMap["red"];
         if (this.type === GemType.GARBAGE) {
@@ -41,7 +42,7 @@ export class PuzzleGem {
 
         // Base square
         ctx.fillStyle = palette.main;
-        ctx.fillRect(x, y, size, size);
+        ctx.fillRect(x+1, y+1, size-2, size-2);
         
         // Highlight and shadow for 3D gem effect
         ctx.fillStyle = palette.light;
@@ -67,5 +68,6 @@ export class PuzzleGem {
             ctx.textBaseline = "middle";
             ctx.fillText(this.timer.toString(), x + size / 2, y + size / 2);
         }
+        ctx.restore();
     }
 }

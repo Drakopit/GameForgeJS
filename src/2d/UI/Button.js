@@ -13,6 +13,7 @@
 import { Draw } from "../Graphics/Draw.js";
 import { Mouse } from "../../core/Input/Mouse.js";
 import { Rectangle } from "../Graphics/Rectangle.js"; // Certifique-se de que a classe Rectangle está corretamente importada
+const handledPointers = new WeakSet();
 
 /**
  * Canvas-rendered clickable UI button.
@@ -33,12 +34,14 @@ export class Button {
         this.enabled = true;
         this.pointerInput = pointerInput;
         this.pointerHandler = event => {
-            if (!this.enabled || event.button > 0) return;
+            if (!this.enabled || event.button > 0 || handledPointers.has(event)
+                || (screen.inputModal && screen.inputModal !== this.modalOwner)) return;
             const bounds = screen.Canvas.getBoundingClientRect();
             const x = (event.clientX - bounds.left) * screen.Canvas.width / bounds.width;
             const y = (event.clientY - bounds.top) * screen.Canvas.height / bounds.height;
             if (x >= this.rect.x && x <= this.rect.x + this.rect.width
                 && y >= this.rect.y && y <= this.rect.y + this.rect.height) {
+                handledPointers.add(event);
                 event.preventDefault(); this.onClickHandler?.();
             }
         };
@@ -80,7 +83,7 @@ export class Button {
     }
 
     Update(callback) {
-        if (!this.enabled || this.pointerInput) return false;
+        if (!this.enabled || this.pointerInput || (this.screen.inputModal && this.screen.inputModal !== this.modalOwner)) return false;
         const cb = callback || this.onClickHandler;
         if (this.mouse.ClickDown(this.rect)) {
             if (typeof cb === 'function') {

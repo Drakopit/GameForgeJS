@@ -113,5 +113,6 @@
   "catalog.all": "All categories",
   "catalog.filter": "Choose a category",
   "catalog.notFound": "That example is unavailable. Choose a demo below.",
-  "progress.readiness": "Readiness estimate: 6.3/10 (63%). See the assessment and remaining gates."
+  "progress.readiness": "Readiness estimate: 6.3/10 (63%). See the assessment and remaining gates.",
+  "example.highland-tactics-3d": "True 3D terraced tactics: CT turns, height-aware paths, line of sight, facing bonuses and native surface/weather effects."
 }

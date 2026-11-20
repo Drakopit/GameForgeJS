@@ -23,7 +23,8 @@ export class AtlasLevel extends Level {
         this.mode = 'stage'; this.events.emit('stage:entered', this.progress.current); this.sound.Play('transition');
     }
     Reset() { this.mode = 'map'; this.progress.Reset(); this.navigator.destination = null; this.navigator.position.Copy(this.progress.nodes.get(this.progress.start)); this.message = 'Progress reset.'; }
-    OnUpdate(dt) { this.hud.Update(); super.OnUpdate(dt); }
+    OnUpdate(dt) { this.hud.Update(); if(!this.hud.help.visible)super.OnUpdate(dt); }
+    OnFixedUpdate(dt) {if(!this.hud.help.visible)super.OnFixedUpdate(dt);}
     OnGUI() { this.hud.Draw(); }
     OnExit() { this.releaseViewport?.(); this.removeClear?.(); this.hud?.Dispose(); super.OnExit(); }
 }

@@ -15,13 +15,14 @@ export class PlatformerHUD {
                 : 'Stage complete! Enter / Start for the next stage.';
         }
 
-        this.frame.Panel({ x: 12, y: 12, width: 935, height: 92 });
+        this.frame.Panel({ x: 12, y: 12, width: level.screen.Width-24, height: 92 });
         this.draw.Color = '#edf5ec';
         this.draw.FontSize = '20px';
-        this.draw.DrawText(level.stage.title, 24, 36);
+        this.frame.Text(level.stage.title,24,38,{size:20,weight:700,maxWidth:level.screen.Width-185});
         this.draw.FontSize = '14px';
-        this.draw.DrawText(`Coins: ${level.collectedCount}/${level.coins.length} | ${instruction}`, 24, 62);
-        this.help.DrawAction('HELP',24,68);
+        this.frame.Text(`Coins ${level.collectedCount}/${level.coins.length}`,24,64,{size:15});
+        this.frame.Text(instruction,24,88,{size:12,maxWidth:level.screen.Width-48});
+        this.help.DrawAction('HELP',level.screen.Width-145,20);
         this.help.OnDrawn();
     }
 }

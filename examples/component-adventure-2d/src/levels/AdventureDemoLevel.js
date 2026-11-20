@@ -87,6 +87,7 @@ export class AdventureDemoLevel extends Level {
 
     OnUpdate(dt) {
         if(ControlGuideActions.IsActionDown('HELP'))this.controlsHelp?.Toggle();
+        if(this.controlsHelp.visible)return;
 
         super.OnUpdate(dt);
         this._updateHitSparks(dt);
@@ -398,7 +399,8 @@ export class AdventureDemoLevel extends Level {
         this.draw.SetTextAlign("right");
         this.draw.Color = "#cbd8c2";
         this.draw.FontSize = "11px";
-        this.draw.DrawText("Setas/WASD: mover | Z/Enter/X: espada | atravesse portas iluminadas", ADVENTURE_SCREEN.width - 12, 22);
+        this.draw.DrawText('Explore · Defeat sentries · Cross the lit doors', ADVENTURE_SCREEN.width - 170, 22);
+        this.controlsHelp.DrawAction('HELP',ADVENTURE_SCREEN.width-145,2);
 
         this.controlsHelp?.OnDrawn();
 }

@@ -17,7 +17,19 @@ The launcher also accepts `Main.html?demo=puzzle-battle-2d`.
 
 ## Controls
 
-A/D: move, W: rotate, S: drop, R: retry after defeat. Gamepad D-pad, A: rotate, Y: retry. Right board is CPU-controlled.
+A/D: move, W: rotate, S: drop, R: retry, P: pause. Gamepad D-pad, A: rotate,
+Y: retry, Start: pause. Right board is CPU-controlled. Native touch buttons expose
+movement, rotation/drop, pause, retry and help; they stay hidden on desktop unless enabled.
+
+The opening pair includes a red crash core: move it beside the red starter gems
+to see a clear and garbage transfer immediately. Glowing cores break connected
+same-color gems. Landing ghosts show where a pair will settle. Stones count down
+by locked pieces; overflow loses the duel. Retry starts a new match in the same
+Screen, with an actual result state rather than reloading the page.
+
+PuzzleLayout adapts cell pixels and board/HUD placement to portrait/landscape;
+the rules continue using row/column coordinates. PuzzleHUD restores Canvas state
+and uses the native HUDFrame aesthetic. No HTML game overlay is created.
 
 ## Structure and ownership
 

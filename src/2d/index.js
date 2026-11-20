@@ -39,3 +39,5 @@ export { Screen } from "./Window/Screen.js";
 export { ScreenUI } from "./Window/ScreenUI.js";
 
 export { InfoPanel } from './UI/InfoPanel.js';
+
+export { PlanarReflection2D } from './Graphics/PlanarReflection2D.js';

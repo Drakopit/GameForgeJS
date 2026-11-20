@@ -63,7 +63,18 @@ export class TacticalBattleManager {
     }
 
     _ensureBattleState() {
-        if (BattleState.initialized && BattleState.playerUnit?.SetRuntimeContext) return;
+        if (BattleState.initialized && BattleState.playerUnit?.SetRuntimeContext) {
+            // Scene exit destroys ECS components. Persist domain values, never
+            // re-enter the map with destroyed runtime entities from the arena.
+            if (BattleState.playerUnit._destroyed) {
+                const previousEnemy = BattleState.enemyUnit;
+                BattleState.playerUnit = BattleState.playerUnit.Recreate(this.grid, this.assets);
+                BattleState.enemies = BattleState.enemies.map(unit => unit.Recreate(this.grid, this.assets));
+                BattleState.enemyUnit = BattleState.enemies.find(unit => unit.id === previousEnemy?.id) ?? null;
+                if(BattleState.pendingReset)BattleState.ResetAll();
+            }
+            return;
+        }
 
         const playerRoot = this.playerDoc.player ?? {};
         const spawn = playerRoot.spawn ?? {};

@@ -35,6 +35,7 @@ export class TechDemoLevel extends Level {
 
     OnUpdate(dt) {
         if(ControlGuideActions.IsActionDown('HELP'))this.controlsHelp?.Toggle();
+        if(this.controlsHelp.visible)return;
 
         super.OnUpdate(dt); // Atualiza todas as entidades filhas
 
@@ -58,10 +59,12 @@ export class TechDemoLevel extends Level {
         this.draw.DrawText(`FPS: ${this.FPS}`, this.screen.width - 110, 30);
 
         this.draw.FontSize = "14px";
-        this.draw.DrawText(`Use W, A, S, D para mover e coletar!`, 20, this.screen.height - 20);
+        this.controlsHelp.DrawAction('HELP',20,this.screen.Height-44);
+        this.draw.DrawText('Collect the light. Keep moving.',180,this.screen.Height-20);
 
         this.controlsHelp?.OnDrawn();
 }
 
+    OnFixedUpdate(dt) {if(!this.controlsHelp.visible)super.OnFixedUpdate(dt);}
     OnExit() {this.controlsHelp?.Dispose();super.OnExit();}
 }

@@ -2,6 +2,7 @@ export const FIGHTING_GAME_FLOW = Object.freeze({
     menuIndex: 0,
     characterSelectIndex: 1,
     fightIndex: 2,
+    animationIndex: 3,
 });
 
 export const FIGHTING_GAME_CHARACTERS = Object.freeze([

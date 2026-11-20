@@ -48,6 +48,7 @@ export class FightingGame2DLevel extends Level {
         this.arcadeComplete = false; this.combat.Clear(); this.effects.Reset(); this.cpu.Reset();
         this.playerOne.ResetRound(Round.playerOneX, this.arena.groundY, true);
         this.playerTwo.ResetRound(Round.playerTwoX, this.arena.groundY, false);
+        this.playerOne.ChangeState('intro');this.playerTwo.ChangeState('intro');
     }
     OnUpdate(dt) {
         const delta = Math.min(dt ?? 1 / 60, CombatSettings.maxDelta);

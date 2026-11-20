@@ -1,5 +1,18 @@
 [
   {
+    "id": "highland-tactics-3d",
+    "name": "Highland Tactics 3D",
+    "description": "True 3D terraced tactics: CT turns, height-aware paths, line of sight, facing bonuses and native surface/weather effects.",
+    "dimension": "3D",
+    "aliases": [
+      "highland",
+      "fft-3d"
+    ],
+    "path": "highland-tactics-3d/index.html",
+    "screenshot": "site/examples/highland-tactics-3d.jpg",
+    "category": "patterns"
+  },
+  {
     "id": "aether-observatory-3d",
     "name": "Aether Observatory 3D",
     "description": "Native WebGL floating islands, shaded architecture, fog, physics traversal, orbit/chase cameras and a skippable cinematic.",

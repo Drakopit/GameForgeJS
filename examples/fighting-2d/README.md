@@ -94,3 +94,32 @@ responsive Screen and releases its viewport observers at exit.
 The [future fighting architecture note](../../docs/plans/fighting-game.md) describes
 fixed-frame motion commands, cancels, juggle rules, finishers and a full tower.
 Those future systems are not claimed as delivered by this input polish.
+
+## Complete sheet catalog and contextual attacks
+
+The four sheets are now audited cell-by-cell: 79 occupied cells each in Char_3,
+Char_3_No_Armor and Char_4, and 73 in Char_5. Every occupied cell is mapped and
+every declared cell contains pixels. The silver sheet has no alternate-outfit
+run; GetSheetAnimations omits that sequence instead of showing blank frames.
+
+FighterAnimations is the data registry. Clips declare exact row/column cells,
+including non-contiguous and multi-row sequences, FPS, looping and foot anchors.
+FighterVisual selects locomotion/reaction variants and delegates timing, clipping
+and mirroring to native Sprite. The aura uses its own native Sprite track.
+
+- Walk/backward walk, forward dash/back step, jump/fall/landing, high/low guard.
+- Light/medium/heavy, contextual crouching/aerial normals, dash strike and weapon power.
+- Hurt/knockback, knockdown/get-up, intro, victory, KO and aura.
+- P1 medium: I; P2 medium: 5/numpad 5; pad medium: left trigger; native touch MEDIUM button.
+- S/down plus a normal selects the crouching version; normals in the air select
+  aerial versions. Crouch + power selects the weapon projectile.
+- Down crouches/guards low; Shift or the pad guard button guards high. Low attacks
+  require low guard; aerial high attacks require high guard; mids permit either.
+- A low heavy can knock down; get-up is temporarily invulnerable. Hitboxes,
+  recovery, damage and windows live in FighterAttacks, separately from the art.
+
+The menu's Animation Lab cycles every sequence on every fighter using keyboard,
+gamepad or native touch buttons. The alternate costume and meditation pose are
+inspection/auxiliary sequences, not invented combat transformations. The four
+sheets remain visual variants with tuning; this is not a claim of four unrelated
+commercial movesets. See the [catalog/sheet audit](../../docs/plans/demo-polish-audit.md).

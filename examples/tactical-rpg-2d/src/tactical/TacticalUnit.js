@@ -9,6 +9,7 @@ import { TacticalUnitRendererComponent } from "./TacticalUnitRendererComponent.j
 export class TacticalUnit extends GameObject {
     constructor({ col, row, grid, assets, config = {}, defaults = {} } = {}) {
         super();
+        this.definition = { config, defaults };
         const stats = { ...(defaults.stats ?? {}), ...(config.stats ?? {}) };
         const bodySize = config.bodySize ?? defaults.bodySize ?? { width: 48, height: 56 };
         const pixel = grid.TileToPixel(col, row);
@@ -102,6 +103,15 @@ export class TacticalUnit extends GameObject {
         this.grid = grid;
         this.renderer?.SetRuntimeAssets(assets);
         return this;
+    }
+
+    Recreate(grid, assets) {
+        const unit = new TacticalUnit({ col: this.col, row: this.row, grid, assets, ...this.definition });
+        unit.startCol = this.startCol;
+        unit.startRow = this.startRow;
+        unit.hp = this.hp;
+        unit.active = this.active;
+        return unit;
     }
 
     SetMoving(moving) {

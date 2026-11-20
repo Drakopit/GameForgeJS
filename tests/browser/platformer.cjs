@@ -85,7 +85,8 @@ async function inspectPlatformer(page, screenshotPath) {
 
     // Exercise camera follow and both bounds independently of a timed playthrough.
     await teleport(page, 1000, 380);
-    await waitForCamera(page, 520);
+    const logicalWidth=await page.evaluate(async()=>(await import('gameforgejs/core')).LevelHandler.current.screen.Width);
+    await waitForCamera(page,Math.max(0,1000-logicalWidth/2));
     const rendering = await page.evaluate(async () => {
         const level = (await import('gameforgejs/core')).LevelHandler.current;
         const transform = level.screen.Context.getTransform();
@@ -94,7 +95,7 @@ async function inspectPlatformer(page, screenshotPath) {
             translation: [transform.e, transform.f],
         };
     });
-    assert.equal(rendering.screenX, 480, 'Player must stay centered while following');
+    assert.equal(rendering.screenX, logicalWidth/2, 'Player must stay centered while following');
     assert.deepEqual(rendering.translation, [0, 0], 'Camera transform leaked into HUD');
     await page.screenshot({ path: screenshotPath });
 
@@ -109,7 +110,7 @@ async function inspectPlatformer(page, screenshotPath) {
         }, coin);
     }
     await teleport(page, 1896, 450);
-    await waitForCamera(page, 960);
+    await waitForCamera(page,1920-logicalWidth);
     await waitForGround(page);
     await waitForCondition(page, async () => (await import('gameforgejs/core')).LevelHandler.current.won);
 

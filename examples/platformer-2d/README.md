@@ -21,6 +21,12 @@ A/D/arrows or left stick/D-pad: move; Space/A: jump; R/Y: reset; Enter/Start: ne
 
 H / gamepad Select opens the in-engine field guide.
 
+Mobile uses native VirtualStick and jump/help buttons. NEXT appears only after
+stage completion. The existing PlatformerController receives an input facade;
+physics, jump buffering, coyote time and variable jump height remain addon-owned.
+GameViewport updates the native camera/HUD, with a clipped world view above the
+reserved touch area. Help and the clear state freeze gameplay until continued.
+
 ## Structure and ownership
 
 - main.js uses BootstrapGame and declares the level order.

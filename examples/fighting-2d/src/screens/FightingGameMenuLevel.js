@@ -14,7 +14,7 @@ const SCREEN = Object.freeze({
 const MENU_OPTIONS = Object.freeze([
     { label: "ARCADE", description: "Lute contra a sequencia de oponentes.", action: "arcade" },
     { label: "VERSUS", description: "Dois jogadores no mesmo teclado.", action: "versus" },
-    { label: "GUIA DE COMBATE", description: "Golpes, poderes, combos e controles.", action: "help" },
+    { label: "ANIMATION LAB", description: "Todas as sequencias dos quatro lutadores. H: ajuda.", action: "animations" },
 ]);
 
 export class FightingGameMenuLevel extends Level {
@@ -92,6 +92,7 @@ export class FightingGameMenuLevel extends Level {
     }
 
     ActivateOption(option) {
+        if(option.action==='animations'){GoToFightingLevel(this,FIGHTING_GAME_FLOW.animationIndex);return;}
         if (option.action === "help") {
             this.help.Toggle();
             return;

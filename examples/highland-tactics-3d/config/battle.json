@@ -1,0 +1,153 @@
+{
+  "heights": [
+    [
+      1,
+      1,
+      1,
+      1,
+      2,
+      2,
+      2,
+      2,
+      2
+    ],
+    [
+      1,
+      1,
+      1,
+      1,
+      1,
+      2,
+      2,
+      2,
+      2
+    ],
+    [
+      0,
+      0,
+      1,
+      1,
+      1,
+      1,
+      2,
+      2,
+      2
+    ],
+    [
+      0,
+      0,
+      0,
+      1,
+      1,
+      1,
+      1,
+      2,
+      2
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    [
+      0,
+      0,
+      null,
+      0,
+      0,
+      1,
+      1,
+      1,
+      1
+    ],
+    [
+      0,
+      0,
+      null,
+      null,
+      0,
+      0,
+      1,
+      1,
+      1
+    ],
+    [
+      0,
+      0,
+      null,
+      null,
+      0,
+      0,
+      0,
+      1,
+      1
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1
+    ]
+  ],
+  "units": [
+    {
+      "id": "lyra",
+      "name": "Lyra",
+      "team": "ally",
+      "col": 1,
+      "row": 5,
+      "facing": 0,
+      "hp": 40,
+      "speed": 24,
+      "attack": 13,
+      "color": "#77c9cf"
+    },
+    {
+      "id": "orin",
+      "name": "Orin",
+      "team": "ally",
+      "col": 2,
+      "row": 3,
+      "facing": 1,
+      "hp": 44,
+      "speed": 20,
+      "attack": 14,
+      "color": "#dfbc77"
+    },
+    {
+      "id": "guard",
+      "name": "Ash Guard",
+      "team": "enemy",
+      "col": 6,
+      "row": 2,
+      "facing": 2,
+      "hp": 32,
+      "speed": 18,
+      "attack": 10,
+      "color": "#b66b72"
+    },
+    {
+      "id": "scout",
+      "name": "Ash Scout",
+      "team": "enemy",
+      "col": 7,
+      "row": 4,
+      "facing": 3,
+      "hp": 30,
+      "speed": 22,
+      "attack": 11,
+      "color": "#c58a67"
+    }
+  ]
+}

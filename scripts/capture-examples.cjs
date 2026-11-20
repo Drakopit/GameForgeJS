@@ -26,6 +26,7 @@ async function main() {
                 'fighting-2d': ['FightingCharacterSelectLevel', 'FightingGame2DLevel'],
                 'platform-adventure-2d': ['AdvancedDemoPhaseSelector', 'AdvancedDemoFirstLevel'],
                 'sky-trail-3d': ['CubeGameLevel'],
+                'tactical-rpg-2d': ['TacticalMapLevel'],
             }[entry.id];
             for (const target of flow ?? []) {
                 await page.keyboard.down('Enter'); await page.waitForTimeout(120); await page.keyboard.up('Enter');
@@ -44,6 +45,11 @@ async function main() {
                     const { Engine, LevelHandler } = await import('gameforgejs/core');
                     Engine.Stop(); LevelHandler.current.OnDrawn(); LevelHandler.current.OnGUI();
                 });
+            }
+            if(entry.id==='highland-tactics-3d'){
+                await page.waitForFunction(async()=>(await import('gameforgejs/core')).LevelHandler.current.turn.phase==='command');
+                await page.keyboard.press('Enter');
+                await page.waitForFunction(async()=>(await import('gameforgejs/core')).LevelHandler.current.turn.phase==='move');
             }
             if (['aether-observatory-3d', 'cinematic-crossing-2d', 'route-atlas-2d', 'boss-patterns-2d'].includes(entry.id)) {
                 // Capture real, reproducible engine states that expose the mechanic.

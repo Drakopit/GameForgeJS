@@ -65,6 +65,7 @@ export class PuzzleBoard {
         
         // Decrease garbage timers
         this.tickGarbage();
+        this.processBoard();
 
         return true;
     }
@@ -87,8 +88,8 @@ export class PuzzleBoard {
     receiveGarbage(amount) {
         // Drop garbage gems from the top
         let placed = 0;
-        for (let c = 0; c < PuzzleConfig.COLS; c++) {
-            if (placed >= amount) break;
+        for (let index = 0; index < amount; index++) {
+            const c = index % PuzzleConfig.COLS;
             // Find highest empty spot
             let r = 0;
             while (r < PuzzleConfig.ROWS && this.grid[r][c] === null) {
@@ -97,7 +98,7 @@ export class PuzzleBoard {
             if (r > 0) {
                 this.grid[r - 1][c] = new PuzzleGem(GemType.GARBAGE, "garbage", PuzzleConfig.GARBAGE_TIMER_TURNS);
                 placed++;
-            }
+            } else { this.gameOver=true; break; }
         }
         // Force gravity if needed
         this.applyGravity();
@@ -210,9 +211,10 @@ export class PuzzleBoard {
     }
 
     draw(ctx) {
+        const cell=this.cellSize??this.board?.cellSize??PuzzleConfig.GEM_SIZE;
         // Draw board background
-        const width = PuzzleConfig.COLS * PuzzleConfig.GEM_SIZE;
-        const height = PuzzleConfig.ROWS * PuzzleConfig.GEM_SIZE;
+        const width = PuzzleConfig.COLS * cell;
+        const height = PuzzleConfig.ROWS * cell;
         
         ctx.fillStyle = "#222222";
         ctx.fillRect(this.x, this.y, width, height);
@@ -226,12 +228,12 @@ export class PuzzleBoard {
         ctx.lineWidth = 1;
         ctx.beginPath();
         for (let c = 1; c < PuzzleConfig.COLS; c++) {
-            ctx.moveTo(this.x + c * PuzzleConfig.GEM_SIZE, this.y);
-            ctx.lineTo(this.x + c * PuzzleConfig.GEM_SIZE, this.y + height);
+            ctx.moveTo(this.x + c * cell, this.y);
+            ctx.lineTo(this.x + c * cell, this.y + height);
         }
         for (let r = 1; r < PuzzleConfig.ROWS; r++) {
-            ctx.moveTo(this.x, this.y + r * PuzzleConfig.GEM_SIZE);
-            ctx.lineTo(this.x + width, this.y + r * PuzzleConfig.GEM_SIZE);
+            ctx.moveTo(this.x, this.y + r * cell);
+            ctx.lineTo(this.x + width, this.y + r * cell);
         }
         ctx.stroke();
 
@@ -239,9 +241,9 @@ export class PuzzleBoard {
         for (let r = 0; r < PuzzleConfig.ROWS; r++) {
             for (let c = 0; c < PuzzleConfig.COLS; c++) {
                 if (this.grid[r][c] !== null) {
-                    const gx = this.x + c * PuzzleConfig.GEM_SIZE;
-                    const gy = this.y + r * PuzzleConfig.GEM_SIZE;
-                    this.grid[r][c].render(ctx, gx, gy);
+                    const gx = this.x + c * cell;
+                    const gy = this.y + r * cell;
+                    this.grid[r][c].render(ctx, gx, gy,cell);
                 }
             }
         }

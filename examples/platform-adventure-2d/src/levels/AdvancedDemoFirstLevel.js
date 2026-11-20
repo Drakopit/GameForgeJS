@@ -419,6 +419,7 @@ export class AdvancedDemoFirstLevel extends Level {
 
     OnUpdate(dt) {
         if(ControlGuideActions.IsActionDown('HELP'))this.controlsHelp?.Toggle();
+        if(this.controlsHelp.visible)return;
 
         this.progressHUD?.OnUpdate(dt);
         this.PersistProgressionIfDirty();

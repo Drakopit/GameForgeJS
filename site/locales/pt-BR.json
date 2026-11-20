@@ -113,5 +113,6 @@
   "catalog.all": "Todas as categorias",
   "catalog.filter": "Escolha uma categoria",
   "catalog.notFound": "Esse exemplo não está disponível. Escolha uma demo abaixo.",
-  "progress.readiness": "Prontidão estimada: 6,3/10 (63%). Veja a avaliação e as metas restantes."
+  "progress.readiness": "Prontidão estimada: 6,3/10 (63%). Veja a avaliação e as metas restantes.",
+  "example.highland-tactics-3d": "Batalha tática em 3D: terreno elevado, turnos CT, linha de visão, direção das unidades e superfícies/clima nativos."
 }

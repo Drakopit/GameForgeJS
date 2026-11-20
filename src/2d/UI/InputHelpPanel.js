@@ -24,11 +24,17 @@ export class InputHelpPanel extends InfoPanel {
                     audio.SetMuted(!audio.muted); } },
             { id: 'next', run: () => this.page++ },
             { id: 'close', run: () => this.visible = false },
-        ].map(item => { const button = new Button(this.screen, { pointerInput: true }); button.enabled = false; button.OnClick(item.run); return { ...item, button }; });
+        ].map(item => { const button = new Button(this.screen, { pointerInput: true }); button.modalOwner=this; button.enabled = false; button.OnClick(item.run); return { ...item, button }; });
     }
     get visible() { return this._visible ?? false; }
-    set visible(value) { this._visible = Boolean(value); for (const item of this.buttons ?? [])
-        item.button.enabled = this._visible; }
+    set visible(value) {
+        this._visible = Boolean(value);
+        if(this.screen){
+            if(this._visible)this.screen.inputModal=this;
+            else if(this.screen.inputModal===this)this.screen.inputModal=null;
+        }
+        for (const item of this.buttons ?? []) item.button.enabled = this._visible;
+    }
     DrawAction(action, x, y) {
         const profile = Input.instance?.presentation?.Profile ?? 'keyboard';
         const glyphs = this.registry.ForAction(action, profile);
@@ -55,9 +61,16 @@ export class InputHelpPanel extends InfoPanel {
         const ctx = this.screen.Context;
         ctx.save();
         ctx.scale(unit, unit);
-        const width = Math.min(unit > 1 ? 600 : this.layout.width, screenWidth - 24), x = Math.max(12, Math.min(this.layout.x / unit, screenWidth - width - 12));
-        const y = Math.max(12, Math.min(this.layout.y / unit, screenHeight - 240));
-        const height = Math.min(510, screenHeight - y - 12), rowsPerPage = Math.max(1, Math.floor((height - 154) / 42));
+        // A right-hand drawer keeps the scene visible and remains usable on
+        // short landscape screens. Pagination owns overflow, never the stage.
+        const width = Math.min(360, screenWidth - 24);
+        const x = screenWidth - width - 12;
+        const y = 12;
+        const height = Math.min(510, screenHeight - 24);
+        const compact = height < 290;
+        const footerHeight = compact ? 48 : 98;
+        const rowHeight = compact ? 34 : 42;
+        const rowsPerPage = Math.max(1, Math.floor((height - footerHeight - 70) / rowHeight));
         const rows = this.data.rows ?? Object.keys(ActionManager.mappings).map(action => ({ label: action.replaceAll('_', ' ').toLowerCase(), actions: [action] }));
         const pages = Math.max(1, Math.ceil(rows.length / rowsPerPage));
         this.page %= pages;
@@ -66,7 +79,7 @@ export class InputHelpPanel extends InfoPanel {
         frame.Text(this.data.title ?? this.title ?? 'Controls', x + 14, y + 28, { size: 20, weight: 700, maxWidth: width - 82 });
         frame.Text(`${profile.toUpperCase()} · ${this.page + 1}/${pages}`, x + 14, y + 50, { size: 12, color: frame.theme.muted });
         rows.slice(this.page * rowsPerPage, (this.page + 1) * rowsPerPage).forEach((row, index) => {
-            const top = y + 64 + index * 42;
+            const top = y + 64 + index * rowHeight;
             frame.Text(row.label, x + 14, top + 24, { size: 14, maxWidth: width * 0.42 });
             const descriptors = this.registry.FromPaths(row.sources, profile).concat((row.actions ?? []).flatMap(action => {
                 const glyphs = this.registry.ForAction(action, profile);
@@ -79,10 +92,11 @@ export class InputHelpPanel extends InfoPanel {
                 frame.Text('—', x + width * 0.5, top + 24, { size: 14, color: frame.theme.muted });
         });
         const labels = { profile: `Profile: ${presentation?.profile ?? 'auto'}`, touch: `Touch ${presentation?.touchMode ?? 'auto'}`, sound: AudioManager._instance?.muted ? 'Sound off' : 'Sound on', next: 'More' };
-        const buttonWidth = (width - 35) / 2;
+        const columns = compact ? 4 : 2;
+        const buttonWidth = (width - 24 - (columns - 1) * 7) / columns;
         this.buttons.filter(item => item.id !== 'close').forEach((item, index) => {
             item.button.enabled = true;
-            const rect = new Rectangle(x + 12 + index % 2 * (buttonWidth + 7), y + height - 98 + Math.floor(index / 2) * 46, buttonWidth, 42);
+            const rect = new Rectangle(x + 12 + index % columns * (buttonWidth + 7), y + height - footerHeight + Math.floor(index / columns) * 46, buttonWidth, 42);
             item.button.SetButton(new Rectangle(rect.x * unit, rect.y * unit, rect.width * unit, rect.height * unit));
             frame.Panel(rect);
             frame.Text(labels[item.id], rect.x + rect.width / 2, rect.y + 26, { align: 'center', size: 13, maxWidth: rect.width - 12 });

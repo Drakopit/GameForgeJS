@@ -234,17 +234,17 @@ export class TacticalMapRenderer {
         draw.FontSize = "14px";
         draw.Font = "monospace";
         draw.SetTextAlign("left");
-        draw.DrawText(message, 10, barY + 22);
+        this.level.screen.Context.fillText(message, 12, barY + 19, 616);
 
         if (showActionHelp) {
             draw.Color = "#888888";
             draw.FontSize = "11px";
-            draw.DrawText(`Modo: ${battleModeLabel} | Setas: cursor | Z/A: confirmar | X/B: cancelar`, 10, barY + 42);
+            draw.DrawText(`${battleModeLabel} · Move cursor / Confirm / Back · H: controls`, 12, barY + 38);
         }
 
         draw.Color = "#AAAAAA";
         draw.SetTextAlign("right");
-        draw.DrawText(`FPS: ${fps}`, 630, barY + 22);
+        draw.SetTextAlign("left");
     }
 
     Image(name) {

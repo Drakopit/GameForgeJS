@@ -20,6 +20,7 @@ are not designed for opening index.html through a file URL.
 
 | Example | Canonical folder / launcher ID | Purpose |
 | --- | --- | --- |
+| [Highland Tactics 3D](highland-tactics-3d/README.md) | `highland-tactics-3d` | True 3D terraced tactical skirmish: CT, height/LOS, four-way facing, action budgets and native surfaces/weather. |
 | [Aether Observatory 3D](aether-observatory-3d/README.md) | `aether-observatory-3d` | Native WebGL floating islands, shaded architecture, fog, physics traversal, orbit/chase cameras and a skippable cinematic. |
 | [Cinematic Crossing 2D](cinematic-crossing-2d/README.md) | `cinematic-crossing-2d` | Parallel camera, zoom and fade tracks, waypoint movement, dialogue cues and clean skip/replay control states. |
 | [Route Atlas 2D](route-atlas-2d/README.md) | `route-atlas-2d` | A branching overworld graph, smooth node travel, playable shard trials and event-driven stage unlocks. |

@@ -33,7 +33,7 @@ export class AddonLevel extends Level {
         this.draw.Color = '#c7e5d9';
         this.draw.DrawRect(0, 0, this.screen.width, this.screen.height);
         this.layers.forEach(layer => layer.OnDrawn());
-        super.OnDrawn();
+        for(const entity of this.entities)entity.OnDrawn();
     }
     OnGUI() {
         super.OnGUI();

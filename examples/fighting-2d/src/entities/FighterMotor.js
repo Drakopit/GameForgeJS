@@ -44,6 +44,7 @@ export class FighterMotor extends Component {
         fighter.velocity.y += Settings.gravity * dt;
         fighter.position.AddSelf(fighter.velocity.MultiplyScalar(dt));
         if (fighter.position.y >= fighter.groundY) {
+            if(fighter.velocity.y>80)fighter.landTimer=0.12;
             fighter.position.y = fighter.groundY; fighter.velocity.y = 0;
         }
         const arena = fighter.level.arena;

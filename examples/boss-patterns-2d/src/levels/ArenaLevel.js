@@ -37,7 +37,8 @@ export class ArenaLevel extends Level {
         this.player.health.Reset(); this.boss.health.Reset(); this.player.motion.Reset(); this.player.velocity.SetVelocity(0, 0); this.brain.Reset();
         for (const projectile of this.projectiles.pool) projectile.Release(); this.hazards.hazards.length = 0;
     }
-    OnUpdate(dt) { this.hud.Update(); super.OnUpdate(dt); }
+    OnUpdate(dt) { this.hud.Update(); if(!this.hud.help.visible)super.OnUpdate(dt); }
+    OnFixedUpdate(dt) {if(!this.hud.help.visible)super.OnFixedUpdate(dt);}
     OnGUI() { this.hud.Draw(); }
     OnExit() { this.releaseViewport?.(); this.removeTelegraph?.(); this.removeHit?.(); this.hud?.Dispose(); super.OnExit(); this.projectiles?.pool.splice(0); }
 }
