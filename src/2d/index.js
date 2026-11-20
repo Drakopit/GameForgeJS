@@ -24,6 +24,8 @@ export { ParticleSystem } from "./Particle/ParticleSystem.js";
 export { Scene } from "./Scene/Scene.js";
 export { Button } from "./UI/Button.js";
 export { Slider } from './UI/Slider.js';
+export { VirtualStick } from './UI/VirtualStick.js';
+export { ActionBar } from './UI/ActionBar.js';
 export { ChatWindow } from "./UI/ChatWindow.js";
 export { Label } from "./UI/Label.js";
 export { NineSlice } from "./UI/NineSlice.js";

@@ -49,20 +49,23 @@ async function inspectToonRoom(page, screenshotPath) {
     assert.equal(collision.error, 0, 'WebGL reported a rendering error');
     const uniforms = await page.evaluate(async () => {
         const level = (await import('gameforgejs/core')).LevelHandler.current;
-        const { StandardMaterial, ToonMaterial, Mesh, PrimitiveMesh } = await import('gameforgejs/3d');
+        const { StandardMaterial, ToonMaterial, Mesh, PrimitiveMesh, Scene3D } = await import('gameforgejs/3d');
         const renderer = level.renderer;
         const shader = renderer.standardShader;
         const probe = new Mesh({ geometry: PrimitiveMesh.Cube(0.1), material: new StandardMaterial() });
-        level.scene.Add(probe);
-        renderer.Render(level.scene, level.camera);
+        // A probe must be the actual draw being inspected. Depth sorting means
+        // insertion at the end of the gameplay scene no longer makes it last.
+        const probeScene = new Scene3D(); probe.frustumCulled = false; probeScene.Add(probe);
+        renderer.Render(probeScene, level.camera);
         const standardBands = renderer.gl.getUniform(shader.program, shader.GetUniform('uToonBands'));
         probe.material = new ToonMaterial({ bands: 4 });
-        renderer.Render(level.scene, level.camera);
+        renderer.Render(probeScene, level.camera);
         const toonBands = renderer.gl.getUniform(shader.program, shader.GetUniform('uToonBands'));
-        level.scene.Remove(probe);
-        return { standardBands, toonBands };
+        probe.material = new StandardMaterial(); renderer.Render(probeScene, level.camera);
+        const standardAgain = renderer.gl.getUniform(shader.program, shader.GetUniform('uToonBands'));
+        return { standardBands, toonBands, standardAgain };
     });
-    assert.deepEqual(uniforms, { standardBands: 0, toonBands: 4 }, 'Lighting mode leaked between materials');
+    assert.deepEqual(uniforms, { standardBands: 0, toonBands: 4, standardAgain: 0 }, 'Lighting mode leaked between materials');
     await page.screenshot({ path: screenshotPath });
 }
 

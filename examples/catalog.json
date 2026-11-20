@@ -1,5 +1,52 @@
 [
   {
+    "id": "aether-observatory-3d",
+    "name": "Aether Observatory 3D",
+    "description": "Native WebGL floating islands, shaded architecture, fog, physics traversal, orbit/chase cameras and a skippable cinematic.",
+    "dimension": "3D",
+    "aliases": [
+      "observatory",
+      "aether"
+    ],
+    "path": "aether-observatory-3d/index.html",
+    "screenshot": "site/examples/aether-observatory-3d.jpg"
+  },
+  {
+    "id": "cinematic-crossing-2d",
+    "name": "Cinematic Crossing 2D",
+    "description": "Parallel camera, zoom and fade tracks, waypoint movement, dialogue cues and clean skip/replay control states.",
+    "dimension": "2D",
+    "aliases": [
+      "cinematic",
+      "cutscene"
+    ],
+    "path": "cinematic-crossing-2d/index.html",
+    "screenshot": "site/examples/cinematic-crossing-2d.jpg"
+  },
+  {
+    "id": "route-atlas-2d",
+    "name": "Route Atlas 2D",
+    "description": "A branching overworld graph, smooth node travel, playable shard trials and event-driven stage unlocks.",
+    "dimension": "2D",
+    "aliases": [
+      "overworld",
+      "atlas"
+    ],
+    "path": "route-atlas-2d/index.html",
+    "screenshot": "site/examples/route-atlas-2d.jpg"
+  },
+  {
+    "id": "boss-patterns-2d",
+    "name": "Boss Patterns 2D",
+    "description": "A three-phase boss with aimed fans, rings, marked charges, delayed hazards, pooled projectiles and dash invulnerability.",
+    "dimension": "2D",
+    "aliases": [
+      "boss"
+    ],
+    "path": "boss-patterns-2d/index.html",
+    "screenshot": "site/examples/boss-patterns-2d.jpg"
+  },
+  {
     "id": "storm-foundry-2d",
     "name": "Storm Foundry FX Lab 2D",
     "description": "Layered rain, reactive water reflections, dynamic props, bounded particle pools and an in-engine live FX playground.",

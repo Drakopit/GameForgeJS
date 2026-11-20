@@ -44,7 +44,20 @@ async function inspectToonExploration(page, screenshotPath) {
             z: player.transform.position[2],
             area: level.areaName,
         };
-        const textured = level.scenery.every(prop => prop.materials.every(material => material.albedoMap?.ready));
+        // Off-camera props deliberately keep their GPU textures lazy. Validate
+        // decoded sources everywhere, and actual uploads on visible surfaces.
+        const textures = level.scenery.flatMap(prop => prop.materials.map(material => material.albedoMap));
+        const sources = [...new Set(textures.map(texture => texture?.source))];
+        const decoded = await Promise.all(sources.map(async source => {
+            if (typeof source !== 'string') return source?.width > 0 && source.height > 0;
+            const image = new Image(); image.src = source; await image.decode(); return image.naturalWidth > 0;
+        }));
+        const textured = textures.every(Boolean) && decoded.every(Boolean);
+        const visibleTextures = level.renderer.renderQueue.Build(level.scene.GetRenderableObjects(), level.camera)
+            .map(mesh => mesh.material.albedoMap).filter(Boolean);
+        await Promise.all(visibleTextures.map(texture => texture.loading));
+        level.OnDrawn();
+        const visibleTextured = visibleTextures.every(texture => texture.contexts.get(level.renderer.gl)?.texture);
         const bodiesBefore = level.physics.bodies.length;
         for (let i = 0; i < 3; i++) level.RestartEncounter();
         const reset = level.enemies.every(enemy => enemy.health.hp === 3 && enemy.body.enabled
@@ -55,7 +68,7 @@ async function inspectToonExploration(page, screenshotPath) {
         level.OnDrawn();
         level.OnGUI();
         return { traveled, nextEnemyAlive, cameraFollowed, forestArea, pairHP, repeatedHP, cleared,
-            textured, reset, bodiesStable, count: level.enemies.length, glError: level.renderer.gl.getError() };
+            textured, visibleTextured, reset, bodiesStable, count: level.enemies.length, glError: level.renderer.gl.getError() };
     });
     assert.equal(result.count, 5);
     assert.equal(result.traveled, true, 'Player stopped after first kill');
@@ -69,6 +82,7 @@ async function inspectToonExploration(page, screenshotPath) {
     assert.ok(result.cleared.z < -20, 'Clearing all enemies stopped exploration');
     assert.equal(result.cleared.area, 'Old grove');
     assert.equal(result.textured, true);
+    assert.equal(result.visibleTextured, true, 'Visible scenery texture was not uploaded');
     assert.equal(result.reset, true);
     assert.equal(result.bodiesStable, true);
     assert.equal(result.glError, 0);

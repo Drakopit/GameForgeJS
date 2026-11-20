@@ -1,3 +1,5 @@
+import { Vector2D } from './Vector2D.js';
+
 /**
  * @doc Class Vector3D
  * @namespace Math
@@ -19,6 +21,25 @@ export class Vector3D {
 
     static Zero() {
         return new Vector3D(0, 0, 0);
+    }
+
+    /** Two-axis swizzles are independent copies; assign to write back explicitly. */
+    get xy() { return new Vector2D(this.x, this.y); }
+    set xy(value) { this.x = value.x; this.y = value.y; }
+    get xz() { return new Vector2D(this.x, this.z); }
+    set xz(value) { this.x = value.x; this.z = value.y; }
+    get yz() { return new Vector2D(this.y, this.z); }
+    set yz(value) { this.y = value.x; this.z = value.y; }
+
+    /**
+     * Read any two/three XYZ axes, including repetitions, into a new vector.
+     * @param {string} pattern - Two or three axes, for example xz, zyx or xx.
+     * @returns {Vector2D|Vector3D} Independent vector; mutations do not write back.
+     */
+    Swizzle(pattern) {
+        if (typeof pattern !== 'string' || !/^[xyz]{2,3}$/.test(pattern)) throw new RangeError('Swizzle expects two or three XYZ axes.');
+        const values = [...pattern].map(axis => this[axis]);
+        return values.length === 2 ? new Vector2D(...values) : new Vector3D(...values);
     }
 
     static One() {

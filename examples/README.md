@@ -16,6 +16,10 @@ are not designed for opening index.html through a file URL.
 
 | Example | Canonical folder / launcher ID | Purpose |
 | --- | --- | --- |
+| [Aether Observatory 3D](aether-observatory-3d/README.md) | `aether-observatory-3d` | Native WebGL floating islands, shaded architecture, fog, physics traversal, orbit/chase cameras and a skippable cinematic. |
+| [Cinematic Crossing 2D](cinematic-crossing-2d/README.md) | `cinematic-crossing-2d` | Parallel camera, zoom and fade tracks, waypoint movement, dialogue cues and clean skip/replay control states. |
+| [Route Atlas 2D](route-atlas-2d/README.md) | `route-atlas-2d` | A branching overworld graph, smooth node travel, playable shard trials and event-driven stage unlocks. |
+| [Boss Patterns 2D](boss-patterns-2d/README.md) | `boss-patterns-2d` | A three-phase boss with aimed fans, rings, marked charges, delayed hazards, pooled projectiles and dash invulnerability. |
 | [Storm Foundry FX Lab 2D](storm-foundry-2d/README.md) | `storm-foundry-2d` | Rain, water/reflection passes, bounded particles, dynamic props and a live tuning lab. |
 | [Toon Adventure 3D](toon-adventure-3d/README.md) | `toon-adventure-3d` | A Toon ABS sandbox: animated characters, five sentries, two large lakes, paired warp pads, minimap and shallow-water interaction. |
 | [Platformer Building Blocks 2D](platformer-2d/README.md) | `platformer-2d` | Reusable addon mechanics: solid tiles, coyote time, buffered/variable jumps, animation and two collection stages. |
@@ -47,6 +51,13 @@ The platformer building blocks contain two short stages; the Toon adventure is a
 incremental checkpoint. Neither is presented as the final Zero to Hero game/course.
 Ventos Altos is a timing variant inside Sky Trail, alongside two distinct extra routes.
 The online sandbox synchronizes browser tabs unless explicitly configured otherwise.
+
+## Focused mechanics learning path
+
+1. [Camera + Timeline in 2D](cinematic-crossing-2d/README.md): parallel tracks, dialogue cues, waypoint movement and skip/replay.
+2. [Route Atlas](route-atlas-2d/README.md): graph state → stage entry → clear event → outgoing unlocks.
+3. [Boss Patterns](boss-patterns-2d/README.md): telegraph → attack strategy → recovery, health phases and capped projectiles.
+4. [Aether Observatory](aether-observatory-3d/README.md): the same timeline/control ownership in native WebGL, with mesh components, physics and camera traversal.
 
 ## Shared project contract
 

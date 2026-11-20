@@ -6,10 +6,13 @@
  *
  * @param {Object} [options] - Initial scene properties.
  * @param {number[]} [options.backgroundColor] - RGBA fallback clear color.
+ * @param {{color:number[],near:number,far:number}|null} [options.fog=null] - Optional distance fog for Standard, Toon and Unlit surfaces; far must exceed near.
  */
 export class Scene3D {
-    constructor({ backgroundColor = [0.03, 0.04, 0.07, 1] } = {}) {
+    constructor({ backgroundColor = [0.03, 0.04, 0.07, 1], fog = null } = {}) {
         this.backgroundColor = [...backgroundColor];
+        // Optional linear distance fog for native Standard/Toon/Unlit materials.
+        this.fog = fog;
         this.objects = [];
         this.lights = [];
         this.camera = null;

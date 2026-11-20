@@ -1,3 +1,5 @@
+import { FOG_UNIFORMS } from './FogShader.js';
+
 export const STANDARD_VERTEX_SHADER = `#version 300 es
 precision highp float;
 
@@ -35,6 +37,7 @@ void main() {
 
 export const STANDARD_FRAGMENT_SHADER = `#version 300 es
 precision highp float;
+${FOG_UNIFORMS}
 
 #define MAX_POINT_LIGHTS 4
 #define MAX_SPOT_LIGHTS 2
@@ -264,5 +267,5 @@ void main() {
         emissive += texture(uEmissiveMap, surfaceUv).rgb;
     }
 
-    outColor = vec4(litColor + emissive, baseColor.a);
+    outColor = vec4(applyFog(litColor + emissive, length(uCameraPosition - vWorldPosition)), baseColor.a);
 }`;

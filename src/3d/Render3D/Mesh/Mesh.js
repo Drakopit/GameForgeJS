@@ -9,6 +9,7 @@ import { StandardMaterial } from "../Material/StandardMaterial.js";
  * @param {Geometry3D|null} [options.geometry=null] - Geometry buffers.
  * @param {Material} [options.material] - Surface material.
  * @param {Transform3D} [options.transform] - World transform.
+ * @param {boolean} [options.frustumCulled=true] - Reject meshes outside camera planes; disable for custom displaced geometry.
  */
 export class Mesh {
     constructor({
@@ -19,6 +20,7 @@ export class Mesh {
         castShadow = true,
         receiveShadow = true,
         visible = true,
+        frustumCulled = true,
     } = {}) {
         this.name = name;
         this.geometry = geometry;
@@ -27,6 +29,7 @@ export class Mesh {
         this.castShadow = castShadow;
         this.receiveShadow = receiveShadow;
         this.visible = visible;
+        this.frustumCulled = frustumCulled;
     }
 
     /**

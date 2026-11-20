@@ -12,7 +12,7 @@
   "hero.node": "Node.js is an optional development tool.",
   "hero.browser": "IN YOUR BROWSER",
   "hero.capture": "An actual framework screenshot.",
-  "hero.play": "Open Storm Foundry",
+  "hero.play": "Explore Aether Observatory",
   "principles.runtime": "Independent runtime",
   "principles.components": "Inheritance + components",
   "principles.config": "Per-game configuration",
@@ -97,5 +97,11 @@
   "footer.contact": "Contact",
   "example.storm-foundry-2d": "Layered rain, reactive water reflections, dynamic props, bounded particles and a live FX playground.",
   "a11y.foundry": "Open the Storm Foundry FX lab",
-  "image.foundry": "Storm Foundry: layered rain, water reflections and reactive props rendered by GameForgeJS."
+  "image.foundry": "Storm Foundry: layered rain, water reflections and reactive props rendered by GameForgeJS.",
+  "example.aether-observatory-3d": "Native WebGL floating islands, shaded architecture, fog, physics traversal, orbit/chase cameras and a skippable cinematic.",
+  "example.cinematic-crossing-2d": "Parallel camera, zoom and fade tracks, waypoint movement, dialogue cues and clean skip/replay control states.",
+  "example.route-atlas-2d": "A branching overworld graph, smooth node travel, playable shard trials and event-driven stage unlocks.",
+  "example.boss-patterns-2d": "A three-phase boss with aimed fans, rings, marked charges, delayed hazards, pooled projectiles and dash invulnerability.",
+  "a11y.aether": "Open Aether Observatory 3D",
+  "image.aether": "Native 3D floating islands, observatory architecture and atmospheric fog"
 }

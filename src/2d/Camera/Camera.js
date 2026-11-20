@@ -65,8 +65,8 @@ export class Camera extends Base {
      */
     LookAt(Obj) {
         this.position = Obj.position.SubtractValue(new Vector2D(
-            (this.size.GetValue().x * 0.5) * this.zoom,
-            (this.size.GetValue().y * 0.5) * this.zoom
+            (this.size.GetValue().x * 0.5) / this.zoom,
+            (this.size.GetValue().y * 0.5) / this.zoom
         ));
     }
 
@@ -76,11 +76,7 @@ export class Camera extends Base {
      * @description Zooms in by a given factor.
      */
     ZoomIn(value) {
-        this.zoom *= value;
-        this.size = new Vector2D(
-            this.size.GetValue().x * this.zoom,
-            this.size.GetValue().y * this.zoom
-        );
+        this.SetZoom(this.zoom * value);
     }
 
     /**
@@ -89,11 +85,7 @@ export class Camera extends Base {
      * @description Zooms out by a given factor.
      */
     ZoomOut(value) {
-        this.zoom /= value;
-        this.size = new Vector2D(
-            this.size.GetValue().x / this.zoom,
-            this.size.GetValue().y / this.zoom
-        );
+        this.SetZoom(this.zoom / value);
     }
 
     /**
@@ -103,8 +95,8 @@ export class Camera extends Base {
     StrictLimit() {
         const worldWidth = this.GameWorld.width;
         const worldHeight = this.GameWorld.height;
-        const cameraWidth = this.size.GetValue().x;
-        const cameraHeight = this.size.GetValue().y;
+        const cameraWidth = this.size.GetValue().x / this.zoom;
+        const cameraHeight = this.size.GetValue().y / this.zoom;
 
         // Clamp the position to ensure the camera stays within the world bounds
         this.position.x = Math.max(0, Math.min(this.position.x, worldWidth - cameraWidth));
@@ -118,11 +110,19 @@ export class Camera extends Base {
     Begin() {
         if (this.screen && this.screen.Context) {
             this.screen.Context.save();
+            this.screen.Context.scale(this.zoom, this.zoom);
             this.screen.Context.translate(
                 -this.position.x + this.shake.offset.x,
                 -this.position.y + this.shake.offset.y
             );
         }
+    }
+
+    /** Set magnification without cumulatively changing the viewport size. */
+    SetZoom(value) {
+        if (!Number.isFinite(value) || value <= 0) throw new RangeError('Camera zoom must be positive.');
+        this.zoom = value;
+        return this;
     }
 
     /**

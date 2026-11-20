@@ -1,0 +1,28 @@
+import { Level, EventEmitter, GameViewport } from 'gameforgejs/core';
+import { Screen, GameObject } from 'gameforgejs/2d';
+import { RouteProgress } from '../data/RouteProgress.js';
+import { RouteNavigator } from '../components/RouteNavigator.js';
+import { StageTrial } from '../components/StageTrial.js';
+import { AtlasView } from '../entities/AtlasView.js';
+import { AtlasHUD } from '../ui/AtlasHUD.js';
+
+export class AtlasLevel extends Level {
+    OnStart(context = this.context) {
+        this.caption = 'Route Atlas / Interactive World Map'; this.rules = context.assets.jsons.scenario;
+        this.screen = new Screen('atlas', 960, 640, {config: context.config});
+        this.progress = new RouteProgress(this.rules); this.events = new EventEmitter(); this.mode = 'map'; this.message = 'Enter Tide Harbor to open the first route.';
+        this.navigator = new RouteNavigator(this); this.trial = new StageTrial(this);
+        this.view = this.AddEntity(new AtlasView(this)); const state = new GameObject(); state.AddComponent(this.navigator); state.AddComponent(this.trial); this.AddEntity(state);
+        this.hud = new AtlasHUD(this);
+        this.removeClear = this.events.on('stage:cleared', id => { this.progress.Clear(id); this.message = 'Stage clear! New routes are highlighted.'; });
+        this.releaseViewport = GameViewport.Bind(this.screen, {onResize: () => this.hud.stick.Cancel()}); super.OnStart(context);
+    }
+    EnterStage() {
+        if (this.mode !== 'map' || this.navigator.destination) return;
+        this.mode = 'stage'; this.events.emit('stage:entered', this.progress.current);
+    }
+    Reset() { this.mode = 'map'; this.progress.Reset(); this.navigator.destination = null; this.navigator.position.Copy(this.progress.nodes.get(this.progress.start)); this.message = 'Progress reset.'; }
+    OnUpdate(dt) { this.hud.Update(); super.OnUpdate(dt); }
+    OnGUI() { this.hud.Draw(); }
+    OnExit() { this.releaseViewport?.(); this.removeClear?.(); this.hud?.Dispose(); super.OnExit(); }
+}

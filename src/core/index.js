@@ -1,4 +1,5 @@
 export { Module } from './Module.js';
+export { Timeline } from './Timeline.js';
 export { AssetManager } from "./Assets/AssetManager.js";
 export { createGame, Game, resolveModules } from "./Game.js";
 export { inputModule } from "./Input/InputModule.js";

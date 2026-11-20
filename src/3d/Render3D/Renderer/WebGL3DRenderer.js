@@ -1,4 +1,5 @@
 import { Mat4 } from "../../../core/Math/Mat4.js";
+import { RenderQueue3D } from './RenderQueue3D.js';
 import { Texture } from "../Texture/Texture.js";
 import { Shader } from "../Shader/Shader.js";
 import { STANDARD_FRAGMENT_SHADER, STANDARD_VERTEX_SHADER } from "../Shader/StandardShader.js";
@@ -44,6 +45,9 @@ export class WebGL3DRenderer {
         }
 
         this.clearColor = [...clearColor];
+        this.renderQueue = new RenderQueue3D();
+        /** Main camera pass only; shadow and skybox draws are not included. */
+        this.stats = { visible: 0, culled: 0, triangles: 0 };
         this.geometryCache = new WeakMap();
         this.textureCache = new Map();
         this.shadowCache = new WeakMap();
@@ -94,7 +98,9 @@ export class WebGL3DRenderer {
         this.#beginMainPass(scene.backgroundColor ?? this.clearColor);
         this.#drawSkybox(scene.skybox, camera);
 
-        const objects = scene.GetRenderableObjects();
+        const objects = this.renderQueue.Build(scene.GetRenderableObjects(), camera);
+        this.stats = { visible: objects.length, culled: this.renderQueue.culled,
+            triangles: objects.reduce((sum, mesh) => sum + (mesh.geometry.indices?.length ?? mesh.geometry.vertexCount) / 3, 0) };
         for (const mesh of objects) {
             this.#drawMesh(mesh, scene, camera, shadowState);
         }
@@ -124,6 +130,7 @@ export class WebGL3DRenderer {
         this.textureCache.clear();
         this.shadowCache = new WeakMap();
         this.skyboxCache = new WeakMap();
+        this.renderQueue.bounds = new WeakMap();
     }
 
     #configureState() {
@@ -267,6 +274,11 @@ export class WebGL3DRenderer {
         this.#setMatrix(shader, "uModel", model);
         this.#setMatrix(shader, "uView", camera.viewMatrix);
         this.#setMatrix(shader, "uProjection", camera.projectionMatrix);
+        this.#setVec3(shader, 'uFogColor', scene.fog?.color ?? [0, 0, 0]);
+        this.#setVec3(shader, 'uCameraPosition', camera.position);
+        this.#set1f(shader, 'uFogNear', scene.fog?.near ?? 0);
+        this.#set1f(shader, 'uFogFar', scene.fog?.far ?? 0);
+        gl.depthMask(!material.transparent);
 
         if (material.transparent) {
             gl.enable(gl.BLEND);
@@ -308,6 +320,7 @@ export class WebGL3DRenderer {
         }
 
         gl.bindVertexArray(null);
+        gl.depthMask(true);
     }
 
     #getShaderForMaterial(material) {

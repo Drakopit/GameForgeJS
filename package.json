@@ -47,7 +47,9 @@
     "dev:online": "node cli/index.cjs serve --root . --port 3000",
     "test:online": "dotnet build tests/online-motion --nologo && node tests/online-browser.cjs",
     "typecheck:foundry": "tsc -p examples/storm-foundry-2d/config/tsconfig.json",
-    "test:foundry": "npm run typecheck:foundry && node tests/foundry-browser.cjs"
+    "test:foundry": "npm run typecheck:foundry && node tests/foundry-browser.cjs",
+    "test:lessons": "node tests/lessons-browser.cjs",
+    "check:pages": "node scripts/check-pages.cjs"
   },
   "dependencies": {
     "acorn": "^8.19.0"

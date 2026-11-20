@@ -12,7 +12,7 @@
   "hero.node": "Node.js é uma ferramenta opcional de desenvolvimento.",
   "hero.browser": "NO NAVEGADOR",
   "hero.capture": "Uma captura real da framework.",
-  "hero.play": "Abrir Storm Foundry",
+  "hero.play": "Explorar Aether Observatory",
   "principles.runtime": "Runtime independente",
   "principles.components": "Herança + componentes",
   "principles.config": "Configuração por jogo",
@@ -97,5 +97,11 @@
   "footer.contact": "Contato",
   "example.storm-foundry-2d": "Chuva em camadas, reflexos e ondas na água, props dinâmicos, partículas limitadas e um laboratório de efeitos ao vivo.",
   "a11y.foundry": "Abrir o laboratório de efeitos Storm Foundry",
-  "image.foundry": "Storm Foundry: chuva em camadas, reflexos na água e props reativos renderizados pela GameForgeJS."
+  "image.foundry": "Storm Foundry: chuva em camadas, reflexos na água e props reativos renderizados pela GameForgeJS.",
+  "example.aether-observatory-3d": "Ilhas flutuantes em WebGL nativo: iluminação, fog, física, câmera orbital e cinemática com opção de pular.",
+  "example.cinematic-crossing-2d": "Câmera, zoom e fade em trilhas paralelas, movimento por pontos, diálogos e devolução limpa do controle.",
+  "example.route-atlas-2d": "Mapa com rotas ramificadas, navegação entre nós, desafios jogáveis e liberação de fases por eventos.",
+  "example.boss-patterns-2d": "Boss em três fases com leques, anéis, investidas sinalizadas, hazards e projéteis reciclados.",
+  "a11y.aether": "Abrir Aether Observatory 3D",
+  "image.aether": "Ilhas flutuantes em 3D nativo, arquitetura do observatório e fog atmosférico"
 }

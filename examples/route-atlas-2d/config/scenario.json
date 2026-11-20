@@ -1,0 +1,14 @@
+{
+  "travelSeconds": 0.55, "trialSpeed": 230,
+  "nodes": [
+    {"id": "harbor", "name": "Tide Harbor", "x": 120, "y": 430},
+    {"id": "grove", "name": "Moss Grove", "x": 300, "y": 380},
+    {"id": "ridge", "name": "Amber Ridge", "x": 450, "y": 220},
+    {"id": "marsh", "name": "Moon Marsh", "x": 470, "y": 480},
+    {"id": "gate", "name": "Twin Gate", "x": 640, "y": 340},
+    {"id": "spire", "name": "Wind Spire", "x": 750, "y": 170},
+    {"id": "summit", "name": "Star Summit", "x": 860, "y": 260},
+    {"id": "cove", "name": "Secret Cove", "x": 810, "y": 500}
+  ],
+  "edges": [["harbor", "grove"], ["grove", "ridge"], ["grove", "marsh"], ["ridge", "gate"], ["marsh", "gate"], ["gate", "spire"], ["spire", "summit"], ["gate", "cove"]]
+}

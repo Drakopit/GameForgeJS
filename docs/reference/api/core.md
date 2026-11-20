@@ -4,7 +4,7 @@
 
 Public core entry point: gameforgejs/core.
 
-Documented exports: **51/52**.
+Documented exports: **52/53**.
 
 | Symbol | Kind | Summary |
 | --- | --- | --- |
@@ -52,6 +52,7 @@ Documented exports: **51/52**.
 | [`resolveModules`](#resolvemodules) | `function` | Resolve module imports/dependencies and validate declarations before setup. |
 | [`ResourceManifestLoader`](#resourcemanifestloader) | `class` | Queues images, audio, shaders, models and JSON declared by game resource manifests. |
 | [`Store`](#store) | `class` | This class is part of the GameForgeJS framework and provides functionality to save and restore game state in the browser's local storage. |
+| [`Timeline`](#timeline) | `class` | Reusable, engine-clocked sequence of parallel tracks and one-shot cues. A track samples normalized progress; a cue runs once when its time is crossed. Skip applies track endpoints without playing unvisited cues. Completion always releases game-owned control locks through onFinish, including cancellation. |
 | [`Touch`](#touch) | `class` | Identified multi-touch input owned by Input. Client coordinates can be converted through ToScreen to match a framework Screen, including CSS scaling/letterboxing. Legacy last-position accessors remain available. |
 | [`TouchContact`](#touchcontact) | `class` | Snapshot of one identified contact, in browser client coordinates. |
 | [`TransformComponent`](#transformcomponent) | `class` | Stores 2D position, rotation and scale and can mirror them onto its owner. |
@@ -1640,6 +1641,57 @@ Backs up the saved state to a different key in local storage.
 
 **Returns:** `void`
 
+## Timeline
+
+`class` from [`src/core/Timeline.js`](../../../src/core/Timeline.js)
+
+Reusable, engine-clocked sequence of parallel tracks and one-shot cues. A track samples normalized progress; a cue runs once when its time is crossed. Skip applies track endpoints without playing unvisited cues. Completion always releases game-owned control locks through onFinish, including cancellation.
+
+### Methods
+
+#### `Play()`
+
+JSDoc pending.
+#### `OnUpdate(dt)`
+
+JSDoc pending.
+
+**Parameters**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `dt` | `number` |  |
+#### `Sample(previous)`
+
+JSDoc pending.
+
+**Parameters**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `previous` | `number` |  |
+#### `FireCues()`
+
+JSDoc pending.
+#### `Skip()`
+
+JSDoc pending.
+#### `Cancel()`
+
+JSDoc pending.
+#### `Finish(reason)`
+
+JSDoc pending.
+
+**Parameters**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `reason` | `'completed'\|'skipped'\|'cancelled'` |  |
+#### `OnDestroy()`
+
+JSDoc pending.
+
 ## Touch
 
 `class` from [`src/core/Input/Touch.js`](../../../src/core/Input/Touch.js)
@@ -1868,6 +1920,17 @@ var vector3D = new Vector3D(0, 0, 0);
 #### `static Zero()`
 
 JSDoc pending.
+#### `Swizzle(pattern)`
+
+Read any two/three XYZ axes, including repetitions, into a new vector.
+
+**Parameters**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `pattern` | `string` | Two or three axes, for example xz, zyx or xx. |
+
+**Returns:** `Vector2D|Vector3D` - Independent vector; mutations do not write back.
 #### `static One()`
 
 JSDoc pending.

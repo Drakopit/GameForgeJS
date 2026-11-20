@@ -45,6 +45,25 @@ async function main() {
                     Engine.Stop(); LevelHandler.current.OnDrawn(); LevelHandler.current.OnGUI();
                 });
             }
+            if (['aether-observatory-3d', 'cinematic-crossing-2d', 'route-atlas-2d', 'boss-patterns-2d'].includes(entry.id)) {
+                // Capture real, reproducible engine states that expose the mechanic.
+                await page.evaluate(async id => {
+                    const { Engine, LevelHandler } = await import('gameforgejs/core');
+                    Engine.Stop(); const level = LevelHandler.current;
+                    if (id === 'aether-observatory-3d') { level.StartTour(); level.tour.OnUpdate(6); }
+                    if (id === 'cinematic-crossing-2d') {
+                        level.Play(); for (let frame = 0; frame < 300; frame++) level.OnUpdate(1 / 60);
+                    }
+                    if (id === 'route-atlas-2d') {
+                        level.events.emit('stage:cleared', 'harbor'); level.events.emit('stage:cleared', 'grove');
+                        level.navigator.Travel('grove'); level.navigator.OnUpdate(1);
+                    }
+                    if (id === 'boss-patterns-2d') {
+                        level.Reset(); for (let frame = 0; frame < 145; frame++) {level.OnUpdate(1 / 60); level.OnFixedUpdate(1 / 60);}
+                    }
+                    level.OnDrawn(); level.OnGUI();
+                }, entry.id);
+            }
             if (entry.id === 'toon-adventure-3d') {
                 await page.evaluate(async () => {
                     const { Engine, LevelHandler } = await import('gameforgejs/core');

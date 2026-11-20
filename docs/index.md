@@ -15,6 +15,8 @@ want to change. English is the canonical language for this documentation.
 ## Guides
 
 - [Configuration layout and ownership](./guides/configuration-layout.md)
+- [Focused cinematics, world maps and boss patterns](./guides/cinematics-and-patterns.md)
+- [Static GitHub Pages and module MIME auditing](./guides/github-pages.md)
 
 - [Architecture and ownership](./architecture.md)
 - [Components and entity behavior](./guides/components.md)
