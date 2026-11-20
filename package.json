@@ -45,12 +45,15 @@
     "test:fighting": "node tests/fighting-browser.cjs",
     "server:online": "dotnet run --project servers/online-sandbox --urls http://127.0.0.1:8080",
     "dev:online": "node cli/index.cjs serve --root . --port 3000",
-    "test:online": "dotnet build tests/online-motion --nologo && node tests/online-browser.cjs"
+    "test:online": "dotnet build tests/online-motion --nologo && node tests/online-browser.cjs",
+    "typecheck:foundry": "tsc -p examples/storm-foundry-2d/config/tsconfig.json",
+    "test:foundry": "npm run typecheck:foundry && node tests/foundry-browser.cjs"
   },
   "dependencies": {
     "acorn": "^8.19.0"
   },
   "devDependencies": {
-    "@playwright/test": "^1.64.1"
+    "@playwright/test": "^1.64.1",
+    "typescript": "5.9.3"
   }
 }

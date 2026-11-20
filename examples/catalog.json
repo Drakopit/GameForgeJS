@@ -1,5 +1,17 @@
 [
   {
+    "id": "storm-foundry-2d",
+    "name": "Storm Foundry FX Lab 2D",
+    "description": "Layered rain, reactive water reflections, dynamic props, bounded particle pools and an in-engine live FX playground.",
+    "path": "storm-foundry-2d/index.html",
+    "dimension": "2D",
+    "aliases": [
+      "foundry",
+      "fx"
+    ],
+    "screenshot": "site/examples/storm-foundry-2d.jpg"
+  },
+  {
     "id": "toon-adventure-3d",
     "name": "Toon Adventure 3D",
     "description": "A Toon ABS sandbox with two large lakes, linked warp gates, five sentries and shallow-water interaction.",

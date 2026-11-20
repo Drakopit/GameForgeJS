@@ -103,6 +103,7 @@ start from CLI templates, which contain only the minimum runnable behavior.
 <!-- examples:start -->
 | Example | Dimension | Purpose |
 | --- | --- | --- |
+| [Storm Foundry FX Lab 2D](examples/storm-foundry-2d/index.html) | 2D | Layered rain, reactive water reflections, dynamic props, bounded particle pools and an in-engine live FX playground. |
 | [Toon Adventure 3D](examples/toon-adventure-3d/index.html) | 3D | A Toon ABS sandbox with two large lakes, linked warp gates, five sentries and shallow-water interaction. |
 | [Platformer Building Blocks 2D](examples/platformer-2d/index.html) | 2D | Two compact stages demonstrating tile collision, jump buffering, coyote time, collection and level transitions. |
 | [Movement & Collision 2D](examples/movement-collision-2d/index.html) | 2D | A compact 2D example for movement, collision, and collection. |
@@ -125,6 +126,7 @@ start from CLI templates, which contain only the minimum runnable behavior.
 - [Create a project](docs/getting-started/new-project.md)
 - [Learn from 2D and 3D examples](docs/getting-started/tutorial-demos-2d-3d.md)
 - [Architecture and ownership](docs/architecture.md)
+- [Standalone runtime and repository split proposal](docs/plans/repository-split.md)
 - [Migrate existing code](docs/migrations/repository-layout.md)
 - [CLI reference](docs/reference/cli.md)
 - [Input configuration](docs/getting-started/input-config.md)

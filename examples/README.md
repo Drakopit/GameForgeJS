@@ -16,6 +16,7 @@ are not designed for opening index.html through a file URL.
 
 | Example | Canonical folder / launcher ID | Purpose |
 | --- | --- | --- |
+| [Storm Foundry FX Lab 2D](storm-foundry-2d/README.md) | `storm-foundry-2d` | Rain, water/reflection passes, bounded particles, dynamic props and a live tuning lab. |
 | [Toon Adventure 3D](toon-adventure-3d/README.md) | `toon-adventure-3d` | A Toon ABS sandbox: animated characters, five sentries, two large lakes, paired warp pads, minimap and shallow-water interaction. |
 | [Platformer Building Blocks 2D](platformer-2d/README.md) | `platformer-2d` | Reusable addon mechanics: solid tiles, coyote time, buffered/variable jumps, animation and two collection stages. |
 | [Movement & Collision 2D](movement-collision-2d/README.md) | `movement-collision-2d` | Start here: Level, Screen, GameObject, Draw and AABB collection. |
@@ -32,6 +33,10 @@ are not designed for opening index.html through a file URL.
 | [Touch Garden 2D](touch-garden-2d/README.md) | `touch-garden-2d` | Mobile building blocks: identified simultaneous touches, scaled screen coordinates, virtual steering, dash cooldown, collision and collection. |
 
 ## Suggested learning paths
+
+For an advanced effects/composition lab, start with
+[Storm Foundry](storm-foundry-2d/README.md): rain, reactive surfaces, dynamic props,
+bounded particle pools and an in-engine live tuning panel.
 
 1. Foundations: movement-collision-2d → addons-2d → platformer-2d → component-adventure-2d.
 2. Genre systems: platform-adventure-2d, fighting-2d, puzzle-battle-2d and tactical-rpg-2d.

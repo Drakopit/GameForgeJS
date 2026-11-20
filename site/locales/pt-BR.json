@@ -12,7 +12,7 @@
   "hero.node": "Node.js é uma ferramenta opcional de desenvolvimento.",
   "hero.browser": "NO NAVEGADOR",
   "hero.capture": "Uma captura real da framework.",
-  "hero.play": "Jogar Sky Trail ↗",
+  "hero.play": "Abrir Storm Foundry",
   "principles.runtime": "Runtime independente",
   "principles.components": "Herança + componentes",
   "principles.config": "Configuração por jogo",
@@ -94,5 +94,8 @@
   "example.online-sandbox-2d": "Mineração e construção cooperativas, salas em servidor dedicado, previsão de movimento e controles móveis; requer backend.",
   "example.addons-2d": "Parallax e máquina de estados como addons sobre o ciclo de vida da framework.",
   "example.touch-garden-2d": "Multitouch com direção virtual, dash, colisões e coleta; também suporta teclado e gamepad.",
-  "footer.contact": "Contato"
+  "footer.contact": "Contato",
+  "example.storm-foundry-2d": "Chuva em camadas, reflexos e ondas na água, props dinâmicos, partículas limitadas e um laboratório de efeitos ao vivo.",
+  "a11y.foundry": "Abrir o laboratório de efeitos Storm Foundry",
+  "image.foundry": "Storm Foundry: chuva em camadas, reflexos na água e props reativos renderizados pela GameForgeJS."
 }
