@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 2,
+  "kind": "GameForgeJS.Workspace",
+  "id": "aether-observatory-3d",
+  "name": "Aether Observatory 3D",
+  "resources": "config/resources.json",
+  "sceneFormat": "gameforgejs.scene",
+  "play": "index.html",
+  "editing": "adapter",
+  "scenes": [
+    {
+      "dimension": "3d",
+      "id": "islands",
+      "label": "Floating islands",
+      "path": "config/scenario.json",
+      "format": "adapter:aether-scenario"
+    }
+  ]
+}

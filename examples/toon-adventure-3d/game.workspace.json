@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 2,
+  "kind": "GameForgeJS.Workspace",
+  "id": "toon-adventure-3d",
+  "name": "Toon Adventure 3D",
+  "resources": "config/resources.json",
+  "sceneFormat": "gameforgejs.scene",
+  "play": "index.html",
+  "editing": "code",
+  "scripts": [
+    "main.js",
+    "src"
+  ],
+  "scenes": []
+}

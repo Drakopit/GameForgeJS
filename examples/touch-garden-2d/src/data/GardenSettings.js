@@ -1,4 +1,11 @@
-export const GardenSettings = Object.freeze({
+import { SceneDocument } from 'gameforgejs/core';
+
+/**
+ * Tuning and touch-UI layout. The garden layout itself (arena, spawn,
+ * obstacles, crystals) comes from config/scenes/garden.gfscene.json through
+ * ApplyGardenScene() when the level starts.
+ */
+export const GardenSettings = {
     arena: { x: 24, y: 150, width: 432, height: 436 },
     spawn: { x: 226, y: 346 },
     playerSize: 28,
@@ -12,6 +19,24 @@ export const GardenSettings = Object.freeze({
     action: { x: 384, y: 690, radius: 47 },
     helpButton: { x: 350, y: 27, width: 42, height: 32 },
     resetButton: { x: 400, y: 27, width: 50, height: 32 },
-    obstacles: [{ x: 100, y: 264, width: 78, height: 42 }, { x: 306, y: 410, width: 70, height: 42 }],
-    crystals: [{ x: 64, y: 186 }, { x: 390, y: 190 }, { x: 230, y: 244 }, { x: 62, y: 496 }, { x: 394, y: 510 }],
-});
+    obstacles: [],
+    crystals: [],
+};
+
+/**
+ * Copies the spatial layout of a gameforgejs.scene document into GardenSettings.
+ * @param {Object} document - Parsed scene JSON from the resource manifest.
+ */
+export function ApplyGardenScene(document) {
+    const scene = new SceneDocument(document);
+    const point = node => {
+        const [x, y] = scene.WorldPosition(node);
+        return { x, y };
+    };
+    const player = scene.Node('player');
+    GardenSettings.arena = scene.Rect(scene.Node('arena'));
+    GardenSettings.spawn = point(player);
+    GardenSettings.playerSize = scene.Size(player, [GardenSettings.playerSize])[0];
+    GardenSettings.obstacles = scene.Nodes({ layer: 'obstacles' }).map(node => scene.Rect(node));
+    GardenSettings.crystals = scene.Nodes({ layer: 'crystals' }).map(point);
+}

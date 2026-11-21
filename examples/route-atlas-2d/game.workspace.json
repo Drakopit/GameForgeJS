@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 2,
+  "kind": "GameForgeJS.Workspace",
+  "id": "route-atlas-2d",
+  "name": "Route Atlas 2D",
+  "resources": "config/resources.json",
+  "sceneFormat": "gameforgejs.scene",
+  "play": "index.html",
+  "editing": "adapter",
+  "scenes": [
+    {
+      "dimension": "2d",
+      "id": "route",
+      "label": "Route map",
+      "adapter": "route-atlas",
+      "source": "config/scenario.json"
+    }
+  ]
+}

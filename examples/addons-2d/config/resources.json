@@ -11,6 +11,10 @@
   ],
   "jsons": [
     {
+      "name": "playground_scene",
+      "path": "./scenes/playground.gfscene.json"
+    },
+    {
       "name": "prompts",
       "path": "./prompts.json"
     }

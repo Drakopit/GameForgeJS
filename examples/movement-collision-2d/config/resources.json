@@ -2,6 +2,10 @@
   "schemaVersion": 1,
   "jsons": [
     {
+      "name": "tech_demo_scene",
+      "path": "./scenes/tech-demo.gfscene.json"
+    },
+    {
       "name": "prompts",
       "path": "./prompts.json"
     }

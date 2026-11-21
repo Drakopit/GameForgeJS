@@ -16,7 +16,7 @@ import { resolveModules } from "./Game.js";
  * Uses the framework's Engine, Input and AudioManager services. Levels own their screens.
  * @param {string|string[]|null} [options.configPath=null] - Config manifest paths.
  * @param {string|string[]|null} [options.manifestPath=null] - Resource manifest paths.
- * @param {Level[]} [options.levels=[]] - Levels registered before startup.
+ * @param {import("./Level/Level.js").Level[]} [options.levels=[]] - Levels registered before startup.
  * @param {(Function | import('./Module.js').Module | {id: string, setup: Function})[]} [options.modules=[]] - Root feature modules.
  * @param {Function|null} [options.beforeStart=null] - Async customization hook.
  * @returns {Promise<Object>} Loaded config, assets, manifest and levels.

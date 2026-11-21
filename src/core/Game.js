@@ -8,6 +8,19 @@ import { resolveModules } from './ModuleGraph.js';
 export { resolveModules } from './ModuleGraph.js';
 
 /**
+ * Services and data shared with levels and modules during one game session.
+ * @typedef {Object} GameContext
+ * @property {Game} game - The owning game session.
+ * @property {HTMLCanvasElement|null} canvas - Canvas passed to the constructor, if any.
+ * @property {Object} config - Defaults merged with the game configuration.
+ * @property {EventEmitter} events - Session event bus.
+ * @property {AssetManager} assets - Session asset store (images, audio, shaders, models, jsons).
+ * @property {Map<string, *>} services - Services registered by modules (e.g. "audio").
+ * @property {(cleanup: Function) => Function} onDispose - Registers a cleanup that runs on dispose().
+ * @property {(type: string, loader: Function) => Function} registerAssetLoader - Adds a custom asset loader.
+ */
+
+/**
  * An independent game session. Browser services are created by optional modules.
  * start() is idempotent, stop() pauses, and dispose() permanently releases resources.
  */
@@ -42,6 +55,7 @@ export class Game {
         this.disposing = false;
         const events = new EventEmitter();
         const assets = new AssetManager({ shared: false });
+        /** @type {GameContext} */
         this.context = {
             game: this, canvas, config: Config.DeepMerge(Config.Defaults(), config), events, assets,
             services: new Map(),

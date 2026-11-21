@@ -19,6 +19,14 @@
   ],
   "jsons": [
     {
+      "name": "stage_movement",
+      "path": "./stages/movement.gfscene.json"
+    },
+    {
+      "name": "stage_collection",
+      "path": "./stages/collection.gfscene.json"
+    },
+    {
       "name": "prompts",
       "path": "./prompts.json"
     }

@@ -1,5 +1,6 @@
 {
   "arena": {"width": 960, "height": 640, "padding": 70},
+  "anchors": {"player": {"x": 480, "y": 490}, "boss": {"x": 480, "y": 220}},
   "player": {"hp": 6, "speed": 220, "dashSpeed": 650, "dashSeconds": 0.16, "dashCooldown": 1.1, "shotCooldown": 0.24},
   "boss": {"hp": 45, "windup": 1.2, "recovery": 1.15, "projectileSpeed": 170,
     "phases": [{"threshold": 0.66, "patterns": ["fan", "fan", "ring"]}, {"threshold": 0.33, "patterns": ["fan", "charge", "ring"]}, {"threshold": 0, "patterns": ["ring", "charge", "fan", "charge"]}]},

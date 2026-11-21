@@ -4,10 +4,11 @@ import { PatrolState } from '../states/PatrolState.js';
 import { RestState } from '../states/RestState.js';
 
 export class PatrolActor extends GameObject {
-    constructor(screen) {
+    constructor(screen, spawn = { x: 300, y: 326 }, patrol = { left: 140, right: 620, speed: 100 }) {
         super();
-        this.position.x = 300;
-        this.position.y = 326;
+        this.position.x = spawn.x;
+        this.position.y = spawn.y;
+        this.patrol = patrol;
         this.direction = 1;
         this.draw = new Draw(screen);
         this.machine = new StateMachine(this);

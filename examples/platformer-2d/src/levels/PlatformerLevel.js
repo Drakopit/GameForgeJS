@@ -6,16 +6,20 @@ import { Coin } from '../entities/Coin.js';
 import { PlatformerHUD } from '../ui/PlatformerHUD.js';
 import { PlatformerControls } from '../input/PlatformerControls.js';
 import { PlatformerScenery } from '../rendering/PlatformerScenery.js';
+import { StageFromScene } from '../data/StageScene.js';
 
 export class PlatformerLevel extends Level {
     constructor(stage) {
         super();
         this.TelaId = 'platformer-lab';
         this.won = false;
-        this.stage = stage;
+        // A resource name (gameforgejs.scene JSON) or an already-built stage object.
+        this.stageSource = stage;
+        this.stage = typeof stage === 'string' ? null : stage;
     }
 
     OnStart(context = this.context) {
+        if (typeof this.stageSource === 'string') this.stage = StageFromScene(context.assets.jsons[this.stageSource]);
         const { width, height } = context.config.screen;
         this.screen = new Screen(this.TelaId, width, height, { config: context.config });
         this.draw = new Draw(this.screen);

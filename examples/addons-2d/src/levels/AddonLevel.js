@@ -1,4 +1,4 @@
-import { Level, AssetManager, ActionManager, SoundEffects } from 'gameforgejs/core';
+import { Level, AssetManager, ActionManager, SceneDocument, SoundEffects } from 'gameforgejs/core';
 import { Screen, Draw, HUDFrame, InputHelpPanel } from 'gameforgejs/2d';
 import { ParallaxLayer2D } from 'gameforgejs/addons/parallax';
 import { PatrolActor } from '../entities/PatrolActor.js';
@@ -17,11 +17,20 @@ export class AddonLevel extends Level {
         this.hud = new HUDFrame(this.draw);
         this.help = new InputHelpPanel(this.draw);
         const assets = context.assets ?? AssetManager.instance;
-        this.layers = [
-            new ParallaxLayer2D(this.screen, { sprite: 'hills', speedX: -12 }, { assets }),
-            new ParallaxLayer2D(this.screen, { sprite: 'trees', speedX: -40 }, { assets }),
-        ];
-        this.actor = new PatrolActor(this.screen);
+        // Layout: config/scenes/playground.gfscene.json (gameforgejs.scene)
+        const scene = new SceneDocument(assets.jsons.playground_scene);
+        this.layers = scene.Nodes({ layer: 'parallax' }).map(node => {
+            const [x, y] = scene.WorldPosition(node);
+            return new ParallaxLayer2D(this.screen, { x, y, ...scene.Component(node, 'Parallax') }, { assets });
+        });
+        const actor = scene.Node('patrol_actor');
+        const bounds = scene.Rect(scene.Node('patrol_bounds'));
+        const [actorX, actorY] = scene.WorldPosition(actor);
+        this.actor = new PatrolActor(this.screen, { x: actorX, y: actorY }, {
+            left: bounds.x,
+            right: bounds.x + bounds.width,
+            speed: scene.Component(actor, 'Data').speed ?? 100,
+        });
         this.sound = this.actor.AddComponent(new SoundEffects(this.context.services.get('audio')));
         this.AddEntity(this.actor);
         super.OnStart(context);

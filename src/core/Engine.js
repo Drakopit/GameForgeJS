@@ -25,7 +25,7 @@ export const LevelHandler = {
     /**
      * @doc Method
      * @description Adds a new level to the level handler.
-     * @param {Level} level - The level to add.
+     * @param {import("./Level/Level.js").Level} level - The level to add.
      * @example
      *  LevelHandler.addLevel(new Level());
      * @returns {void}

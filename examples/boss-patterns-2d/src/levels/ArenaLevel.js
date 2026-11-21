@@ -35,7 +35,7 @@ export class ArenaLevel extends Level {
         this.roomTime = 0;
         this.switches = new Set();
         this.exitOpen = false;
-        this.player.position.Set(480, 490);
+        this.player.position.Set(this.player.anchor.x, this.player.anchor.y);
         this.player.velocity.SetVelocity(0, 0);
         this.boss.active = index === rooms.length - 1;
         this.brain.enabled = this.boss.active;
@@ -54,7 +54,7 @@ export class ArenaLevel extends Level {
     Reset() {
         this.result = ''; this.message = 'Read the gold telegraph. Shoot, evade, punish.'; this.dashQueued = this.shootQueued = false;
         this.EnterRoom(0);
-        this.boss.position.Set(480, 220);
+        this.boss.position.Set(this.boss.anchor.x, this.boss.anchor.y);
         this.player.health.Reset(); this.boss.health.Reset(); this.player.motion.Reset(); this.player.velocity.SetVelocity(0, 0); this.brain.Reset();
         for (const projectile of this.projectiles.pool) projectile.Release(); this.hazards.hazards.length = 0;
     }

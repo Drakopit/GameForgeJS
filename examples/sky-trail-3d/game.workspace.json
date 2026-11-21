@@ -1,21 +1,49 @@
 {
+  "schemaVersion": 2,
+  "kind": "GameForgeJS.Workspace",
   "defaultSceneFormat": "SkyTrailCourse",
   "id": "demo_mini_game_3d",
-  "kind": "GameForgeJS.Workspace",
-  "levels2D": [],
   "name": "Sky Trail 3D",
-  "resourcePrefix": "config/",
   "resources": "config/resources.json",
-  "scenes3D": [
+  "sceneFormat": "gameforgejs.scene",
+  "play": "index.html",
+  "editing": "manifest",
+  "scenes": [
     {
+      "dimension": "3d",
       "format": "SkyTrailCourse",
       "id": "sky-trail",
       "label": "Sky Trail",
       "path": "assets/Manifests/sky-trail/course.json",
       "resourceName": "sky_trail_course",
-      "resourcePrefix": "config/",
+      "resources": "config/resources.json"
+    },
+    {
+      "dimension": "3d",
+      "format": "SkyTrailCourse",
+      "id": "high_winds",
+      "label": "Sky Trail — Ventos Altos",
+      "path": "assets/Manifests/sky-trail/high-winds.json",
+      "resourceName": "sky_trail_course_high_winds",
+      "resources": "config/resources.json"
+    },
+    {
+      "dimension": "3d",
+      "format": "SkyTrailCourse",
+      "id": "archipelago",
+      "label": "Arquipélago Celeste",
+      "path": "assets/Manifests/sky-trail/archipelago.json",
+      "resourceName": "sky_trail_course_archipelago",
+      "resources": "config/resources.json"
+    },
+    {
+      "dimension": "3d",
+      "format": "SkyTrailCourse",
+      "id": "aurora",
+      "label": "Farol da Aurora",
+      "path": "assets/Manifests/sky-trail/aurora.json",
+      "resourceName": "sky_trail_course_aurora",
       "resources": "config/resources.json"
     }
-  ],
-  "schemaVersion": 1
+  ]
 }

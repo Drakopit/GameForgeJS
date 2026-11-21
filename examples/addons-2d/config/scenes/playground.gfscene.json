@@ -1,0 +1,103 @@
+{
+  "format": "gameforgejs.scene",
+  "version": 1,
+  "dimension": "2d",
+  "id": "playground",
+  "name": "Addon playground",
+  "settings": {
+    "world": {
+      "width": 800,
+      "height": 420
+    }
+  },
+  "layers": [
+    {
+      "id": "parallax",
+      "name": "Parallax",
+      "type": "ParallaxLayer2D"
+    },
+    {
+      "id": "actors",
+      "name": "Actors",
+      "type": "Actor2D"
+    },
+    {
+      "id": "areas",
+      "name": "Patrol",
+      "type": "Node2D"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "hills",
+      "type": "ParallaxLayer2D",
+      "layer": "parallax",
+      "transform": {
+        "position": [
+          0,
+          0
+        ]
+      },
+      "components": {
+        "Parallax": {
+          "sprite": "hills",
+          "speedX": -12
+        }
+      }
+    },
+    {
+      "id": "trees",
+      "type": "ParallaxLayer2D",
+      "layer": "parallax",
+      "transform": {
+        "position": [
+          0,
+          0
+        ]
+      },
+      "components": {
+        "Parallax": {
+          "sprite": "trees",
+          "speedX": -40
+        }
+      }
+    },
+    {
+      "id": "patrol_actor",
+      "type": "Actor2D",
+      "layer": "actors",
+      "transform": {
+        "position": [
+          300,
+          326
+        ]
+      },
+      "size": [
+        32,
+        34
+      ],
+      "name": "Patrol actor",
+      "components": {
+        "Data": {
+          "speed": 100
+        }
+      }
+    },
+    {
+      "id": "patrol_bounds",
+      "type": "Node2D",
+      "layer": "areas",
+      "transform": {
+        "position": [
+          140,
+          326
+        ]
+      },
+      "size": [
+        480,
+        34
+      ],
+      "name": "Patrol range (actor x)"
+    }
+  ]
+}

@@ -5,7 +5,7 @@ import { CombatVisual } from '../components/CombatVisual.js';
 
 export class ArenaPlayer extends GameObject {
     constructor(level) {
-        super(); this.level = level; this.radius = 18; this.position.Set(480, 490);
+        super(); this.level = level; this.radius = 18; this.anchor = level.rules.anchors?.player ?? {x: 480, y: 490}; this.position.Set(this.anchor.x, this.anchor.y);
         this.health = this.AddComponent(new HealthComponent({hp: level.rules.player.hp, invulnerability: 0.8}));
         this.motion = this.AddComponent(new CombatMotion(level));
         this.velocity = this.AddComponent(new VelocityComponent({useFixedUpdate: true}));
