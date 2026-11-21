@@ -8,9 +8,9 @@
     "width": 800,
     "height": 600,
     "fullScreen": false,
-    "pixelArt": true,
+    "pixelArt": false,
     "responsive": {
-      "mode": "contain"
+      "mode": "adaptive"
     }
   },
   "physics": {
@@ -26,7 +26,8 @@
       "PUZZLE_ROTATE": [{"device":"keyboard","input":"KeyW"},{"device":"gamepad","input":"button_0"}],
       "PUZZLE_DROP": [{"device":"keyboard","input":"KeyS"},{"device":"gamepad","input":"DPAD_DOWN"}],
       "RESET": [{"device":"keyboard","input":"KeyR"},{"device":"gamepad","input":"button_3"}],
-      "HELP": [{"device":"keyboard","input":"KeyH"},{"device":"gamepad","input":"RIGHT_STICK_BUTTON"}]
+      "HELP": [{"device":"keyboard","input":"KeyH"},{"device":"gamepad","input":"RIGHT_STICK_BUTTON"}],
+      "PAUSE": [{"device":"keyboard","input":"KeyP"},{"device":"gamepad","input":"button_9"}]
     }
   }
 }

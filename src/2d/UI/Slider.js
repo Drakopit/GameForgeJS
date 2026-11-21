@@ -37,12 +37,18 @@ export class Slider {
         const mouse = input?.mouse, touch = input?.touch;
         if (!mouse || !touch || !document.hasFocus()) { this.Cancel(); return; }
         const point = mouse.getPositionRelative(this.screen.Canvas);
-        if (mouse.buttonsDown?.[0] && this.Contains(point)) this.mouseCaptured = true;
+        if (mouse.buttonsDown?.[0] && this.Contains(point)) {
+            this.mouseCaptured = true;
+            this.SetFromPoint(point.x);
+        }
         if (this.mouseCaptured && mouse.buttons?.[0]) this.SetFromPoint(point.x);
         if (!mouse.buttons?.[0]) this.mouseCaptured = false;
         for (const contact of touch.GetStartedTouches()) {
-            const position = Touch.ToScreen(contact.position, this.screen);
-            if (this.finger === null && this.Contains(position)) this.finger = contact.identifier;
+            const position = Touch.ToScreen(contact.startPosition, this.screen);
+            if (this.finger === null && this.Contains(position)) {
+                this.finger = contact.identifier;
+                this.SetFromPoint(position.x);
+            }
         }
         if (this.finger !== null) {
             const contact = touch.GetTouch(this.finger);

@@ -62,6 +62,7 @@ export class BattleLevel extends Level {
 
     OnUpdate(dt) {
         if(ControlGuideActions.IsActionDown('HELP'))this.controlsHelp?.Toggle();
+        if(this.controlsHelp.visible)return;
 
         super.OnUpdate(dt);
         this.animTime += dt;

@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "title": "Highland Tactics / controls",
+  "rows": [
+    {
+      "label": "Cursor / menu",
+      "actions": [
+        "UP",
+        "LEFT",
+        "DOWN",
+        "RIGHT"
+      ]
+    },
+    {
+      "label": "Confirm / enter",
+      "actions": [
+        "CONFIRM"
+      ]
+    },
+    {
+      "label": "Back",
+      "actions": [
+        "CANCEL"
+      ]
+    },
+    {
+      "label": "Rotate camera",
+      "actions": [
+        "ORBIT_LEFT",
+        "ORBIT_RIGHT"
+      ]
+    },
+    {
+      "label": "Help",
+      "actions": [
+        "HELP"
+      ]
+    },
+    {
+      "label": "Retry battle",
+      "actions": [
+        "RESET"
+      ]
+    },
+    {
+      "label": "Rain",
+      "actions": [
+        "WEATHER"
+      ]
+    }
+  ]
+}

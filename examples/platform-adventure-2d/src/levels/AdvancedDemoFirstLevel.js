@@ -1,3 +1,4 @@
+import { AdventureControls } from '../ui/AdventureControls.js';
 import { InputHelpPanel, Draw as ControlGuideDraw } from 'gameforgejs/2d';
 import { ActionManager as ControlGuideActions } from 'gameforgejs/core';
 import { Level } from "gameforgejs/core";
@@ -76,6 +77,7 @@ export class AdvancedDemoFirstLevel extends Level {
         this.screen = new Screen(this.TelaId, width, height, { config: this.context?.config });
         this.controlsHelp=new InputHelpPanel(new ControlGuideDraw(this.screen),{title:'Controls'});
         this.draw = new Draw(this.screen);
+        this.adventureControls = new AdventureControls(this);
 
         this.GameWorld = { ...this.levelConfig.world };
         this.camera = new Camera(new Vector2D(0, 0), new Vector2D(width, height));
@@ -92,6 +94,7 @@ export class AdvancedDemoFirstLevel extends Level {
 
     CreatePlayer() {
         this.player = new Player(this.screen, this.levelConfig.player);
+        this.player.controls = this.adventureControls;
         this.AddEntity(this.player);
 
         this.playerStatusHUD = new PlayerStatusHUD(this.screen, this.player, this.levelConfig.ui?.playerHud);
@@ -419,6 +422,8 @@ export class AdvancedDemoFirstLevel extends Level {
 
     OnUpdate(dt) {
         if(ControlGuideActions.IsActionDown('HELP'))this.controlsHelp?.Toggle();
+        this.adventureControls.Update();
+        if(this.controlsHelp.visible)return;
 
         this.progressHUD?.OnUpdate(dt);
         this.PersistProgressionIfDirty();
@@ -540,6 +545,7 @@ export class AdvancedDemoFirstLevel extends Level {
     }
 
     OnExit() {
+        this.adventureControls?.Dispose();
         this.controlsHelp?.Dispose();
 
         this.PersistProgressionIfDirty(true);
@@ -561,6 +567,7 @@ export class AdvancedDemoFirstLevel extends Level {
     }
 
     OnGUI() {super.OnGUI();
+        this.adventureControls?.Draw();
         this.controlsHelp?.OnDrawn();
 }
 }

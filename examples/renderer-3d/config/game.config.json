@@ -14,8 +14,8 @@
     "width": 640,
     "height": 480,
     "fullScreen": true,
-    "pixelArt": true,
-    "antialiasing": false,
+    "pixelArt": false,
+    "antialiasing": true,
     "orientation": "landscape",
     "responsive": {
       "mode": "contain"
@@ -23,7 +23,13 @@
   },
   "input": {
     "actionMappings": {
-      "HELP": [{"device":"keyboard","input":"KeyH"},{"device":"gamepad","input":"START"}]
+      "HELP": [{"device":"keyboard","input":"KeyH"},{"device":"gamepad","input":"START"}],
+      "WEATHER": [{"device":"keyboard","input":"KeyT"},{"device":"gamepad","input":"button_4"}],
+      "INSPECT_UP": [{"device":"keyboard","input":"ArrowUp"},{"device":"gamepad","input":"DPAD_UP"}],
+      "INSPECT_DOWN": [{"device":"keyboard","input":"ArrowDown"},{"device":"gamepad","input":"DPAD_DOWN"}],
+      "INSPECT_LEFT": [{"device":"keyboard","input":"ArrowLeft"},{"device":"gamepad","input":"DPAD_LEFT"}],
+      "INSPECT_RIGHT": [{"device":"keyboard","input":"ArrowRight"},{"device":"gamepad","input":"DPAD_RIGHT"}],
+      "INSPECT_CONFIRM": [{"device":"keyboard","input":"Enter"},{"device":"gamepad","input":"A"}]
     }
   }
 }

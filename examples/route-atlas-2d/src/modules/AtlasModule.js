@@ -9,7 +9,7 @@ import { AtlasHUD } from '../ui/AtlasHUD.js';
 
 export class AtlasModule extends Module {
     constructor() {
-        super('route-atlas-2d', { imports: [module2D()],
+        super('route-atlas-2d', { imports: [module2D({ telemetry: true })],
             declarations: [RouteNavigator, StageTrial, RouteProgress, AtlasView, AtlasLevel, AtlasHUD], exports: [AtlasLevel] });
     }
 }

@@ -3,6 +3,7 @@ import { Component } from 'gameforgejs/core';
 export class CombatVisual extends Component {
     constructor(level, kind) { super(); this.level = level; this.kind = kind; }
     OnDrawn() {
+        if (this.owner.active === false) return;
         const owner = this.owner, ctx = this.level.screen.Context;
         if (!owner.health.alive) return;
         this.level.view.Begin(); ctx.save(); ctx.translate(owner.position.x, owner.position.y);

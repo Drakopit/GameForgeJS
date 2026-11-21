@@ -13,7 +13,7 @@ import { ObservatoryHUD } from '../ui/ObservatoryHUD.js';
 
 export class ObservatoryModule extends Module {
     constructor() {
-        super('aether-observatory-3d', { imports: [module2D(), module3D()],
+        super('aether-observatory-3d', { imports: [module2D({ telemetry: true }), module3D()],
             declarations: [ExplorerMotion, MeshBinding, ObservatoryCamera, ObservatoryTour, OrbitMotion, MeshActor, ObservatoryWorld, ObservatoryLevel, ObservatoryHUD], exports: [ObservatoryLevel] });
     }
 }

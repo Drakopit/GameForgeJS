@@ -22,7 +22,7 @@ export class FoundrySettings {
         this.current = { ...data.presets[0] };
         this.presetIndex = 0;
         this.debug = false;
-        this.telemetry = true;
+        this.telemetry = false;
         this.reducedMotion = globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
     }
     /** @param {number} index */

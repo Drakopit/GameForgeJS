@@ -115,7 +115,7 @@ export class PrimitiveMesh {
                 positions.push(-halfWidth + width * u, 0, -halfDepth + depth * v);
                 normals.push(0, 1, 0);
                 uvs.push(u, v);
-                tangents.push(1, 0, 0, 1);
+                tangents.push(1, 0, 0, -1);
             }
         }
 
@@ -126,7 +126,7 @@ export class PrimitiveMesh {
                 const b = a + 1;
                 const c = a + row + 1;
                 const d = a + row;
-                indices.push(a, b, c, a, c, d);
+                indices.push(a, c, b, a, d, c);
             }
         }
 

@@ -8,7 +8,7 @@ export class FightingViewport {
         this.release = GameViewport.Bind(screen, { maxWidth: 1440 });
     }
     Layout() {
-        const reserve = Input.instance.presentation.TouchVisible ? (this.combat ? 180 : 120) : 0;
+        const reserve = Input.instance.presentation.TouchVisible ? (this.combat ? 220 : 120) : 0;
         return this.layout.Fit(this.screen.Width, this.screen.Height, { reserveBottom: Math.min(reserve, this.screen.Height * 0.45) });
     }
     Begin() { const v = this.Layout(), ctx = this.screen.Context; ctx.save(); ctx.translate(v.x, v.y); ctx.scale(v.scale, v.scale); }

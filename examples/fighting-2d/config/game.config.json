@@ -112,7 +112,8 @@
           "KeyW"
         ],
         "down": [
-          "KeyS"
+          "KeyS",
+          "ShiftLeft"
         ],
         "light": [
           "KeyJ",
@@ -173,11 +174,28 @@
           ],
           "super": [
             "SUPER"
-          ]
+          ],
+          "medium": [
+            "button_6"
+          ],
+          "crouch": {
+            "buttons": [
+              "button_13"
+            ],
+            "axes": [
+              "axis_1_positive"
+            ]
+          }
         },
         "super": [
           "KeyU",
           "KeyQ"
+        ],
+        "medium": [
+          "KeyI"
+        ],
+        "crouch": [
+          "KeyS"
         ]
       },
       "playerTwo": {
@@ -191,7 +209,8 @@
           "ArrowUp"
         ],
         "down": [
-          "ArrowDown"
+          "ArrowDown",
+          "Numpad0"
         ],
         "light": [
           "Digit1",
@@ -252,11 +271,29 @@
           ],
           "super": [
             "SUPER"
-          ]
+          ],
+          "medium": [
+            "button_6"
+          ],
+          "crouch": {
+            "buttons": [
+              "button_13"
+            ],
+            "axes": [
+              "axis_1_positive"
+            ]
+          }
         },
         "super": [
           "Digit0",
           "Numpad0"
+        ],
+        "medium": [
+          "Digit5",
+          "Numpad5"
+        ],
+        "crouch": [
+          "ArrowDown"
         ]
       },
       "system": {

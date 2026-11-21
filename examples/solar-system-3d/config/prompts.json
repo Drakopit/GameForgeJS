@@ -12,13 +12,13 @@
       ]
     },
     {
-      "label": "Attack",
+      "label": "Next body",
       "actions": [
-        "ATTACK"
+        "FOCUS_NEXT"
       ]
     },
     {
-      "label": "Cancel",
+      "label": "System overview",
       "actions": [
         "CANCEL"
       ]

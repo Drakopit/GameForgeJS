@@ -1,4 +1,5 @@
 // @ts-check
+import { PlanarReflection2D } from 'gameforgejs/2d';
 
 /** Canvas planar reflection with animated strip displacement, not SSR or fluid simulation. */
 export class WaterPass {
@@ -9,16 +10,11 @@ export class WaterPass {
         const height = w.height - floor, motion = w.settings.reducedMotion ? 0 : w.age;
         ctx.save(); ctx.fillStyle = '#06121a'; ctx.fillRect(0, floor, w.width, height);
         if (w.settings.current.reflection) {
-            ctx.globalAlpha = 0.55;
-            for (let row = 0; row < height; row += 4) {
-                const source = Math.max(0, floor - row * 1.6 - 4);
-                let shift = Math.sin(row * 0.11 + motion * 1.9) * 2.5 + Math.sin(row * 0.04 - motion) * 2;
-                for (const ring of w.water.rings) {
-                    if (!ring.active || Math.abs(floor + row - ring.y) > ring.radius * ring.stretch) continue;
-                    shift += Math.sin(row * 0.5 - ring.age * 16) * ring.power * (1 - ring.age / ring.life);
-                }
-                ctx.drawImage(w.target.Canvas, 0, source, w.width, 4, shift, floor + row, w.width, 4);
-            }
+            PlanarReflection2D.Draw(ctx,w.target.Canvas,{width:w.width,height:w.height,waterY:floor,time:motion,
+                displacement:row=>w.water.rings.reduce((shift,ring)=>{
+                    if(!ring.active||Math.abs(floor+row-ring.y)>ring.radius*ring.stretch)return shift;
+                    return shift+Math.sin(row*0.5-ring.age*16)*ring.power*(1-ring.age/ring.life);
+                },0)});
         }
         ctx.globalAlpha = 1;
         const tint = ctx.createLinearGradient(0, floor, 0, w.height);

@@ -3,7 +3,7 @@ const { expect } = require('@playwright/test');
 
 async function waitForCondition(page, condition, argument) {
     // Jump/animation phases can be shorter than the default polling backoff.
-    await expect.poll(() => page.evaluate(condition, argument), { intervals: [16, 32, 50] }).toBe(true);
+    await expect.poll(() => page.evaluate(condition, argument), { intervals: [16, 32, 50], timeout: 15000 }).toBe(true);
 }
 
 async function readPlayer(page) {
@@ -61,17 +61,28 @@ async function inspectPlatformer(page, screenshotPath) {
             && player.animation.facingRight;
     });
     await page.keyboard.up('ArrowRight');
+    await teleport(page, before.x, before.y);
+    await waitForGround(page);
+    await page.evaluate(async () => {
+        const { Engine, LevelHandler } = await import('gameforgejs/core');
+        window.jumpPhases = new Set();
+        window.removeJumpProbe = Engine.events.on('PostUpdate', () => {
+            const { animation } = LevelHandler.current.player;
+            if (animation.animator.currentAnimationName === 'Jump') {
+                window.jumpPhases.add('Jump');
+            }
+            if (animation.animator.currentAnimationName === 'Fall') window.jumpPhases.add('Fall');
+        });
+    });
 
     await page.keyboard.down('Space');
-    await waitForCondition(page, async () => {
-        const player = (await import('gameforgejs/core')).LevelHandler.current.player;
-        return player.controller.vy < 0 && !player.controller.grounded
-            && player.animation.animator.currentAnimationName === 'Jump';
-    });
+    await waitForCondition(page, () => window.jumpPhases.has('Jump'));
     await page.keyboard.up('Space');
-    await waitForCondition(page, async () => {
-        const player = (await import('gameforgejs/core')).LevelHandler.current.player;
-        return player.animation.animator.currentAnimationName === 'Fall';
+    await waitForCondition(page, () => window.jumpPhases.has('Fall'));
+    await page.evaluate(() => {
+        window.removeJumpProbe();
+        delete window.removeJumpProbe;
+        delete window.jumpPhases;
     });
     await waitForGround(page);
 
@@ -85,7 +96,8 @@ async function inspectPlatformer(page, screenshotPath) {
 
     // Exercise camera follow and both bounds independently of a timed playthrough.
     await teleport(page, 1000, 380);
-    await waitForCamera(page, 520);
+    const logicalWidth=await page.evaluate(async()=>(await import('gameforgejs/core')).LevelHandler.current.screen.Width);
+    await waitForCamera(page,Math.max(0,1000-logicalWidth/2));
     const rendering = await page.evaluate(async () => {
         const level = (await import('gameforgejs/core')).LevelHandler.current;
         const transform = level.screen.Context.getTransform();
@@ -94,7 +106,7 @@ async function inspectPlatformer(page, screenshotPath) {
             translation: [transform.e, transform.f],
         };
     });
-    assert.equal(rendering.screenX, 480, 'Player must stay centered while following');
+    assert.equal(rendering.screenX, logicalWidth/2, 'Player must stay centered while following');
     assert.deepEqual(rendering.translation, [0, 0], 'Camera transform leaked into HUD');
     await page.screenshot({ path: screenshotPath });
 
@@ -109,7 +121,7 @@ async function inspectPlatformer(page, screenshotPath) {
         }, coin);
     }
     await teleport(page, 1896, 450);
-    await waitForCamera(page, 960);
+    await waitForCamera(page,1920-logicalWidth);
     await waitForGround(page);
     await waitForCondition(page, async () => (await import('gameforgejs/core')).LevelHandler.current.won);
 

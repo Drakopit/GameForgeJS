@@ -1,4 +1,5 @@
 import { Component, Vector2D } from 'gameforgejs/core';
+import { Sprite } from 'gameforgejs/2d';
 import { FrameSize, FighterAnimations } from '../data/FighterAnimations.js';
 import { FighterSettings } from '../data/FightingSettings.js';
 
@@ -7,29 +8,55 @@ export class FighterVisual extends Component {
         super(); this.screen = screen; this.sprite = sprite;
         sprite.screen = screen; sprite.sprite = image;
         sprite.size.Set(FrameSize.width, FrameSize.height);
+        this.clipName=null;this.anchor=new Vector2D();
+        this.aura=new Sprite(screen);this.aura.sprite=image;this.aura.size.Set(FrameSize.width,FrameSize.height);
+        this.aura.frameCount=FighterAnimations.aura.count;this.aura.updatesPerFrame=60/FighterAnimations.aura.fps;
     }
 
     Play(state) {
+        this.clipName=state;
         const clip = FighterAnimations[state] ?? FighterAnimations.idle;
         this.sprite.frameCount = clip.count; this.sprite.loop = clip.loop;
         this.sprite.updatesPerFrame = 60 / clip.fps;
         this.sprite.Reset();
+        if(state==='super'||state==='intro')this.aura.Reset();
+    }
+
+    ResolveClip() {
+        const f=this.owner;
+        if(f.state==='guard')return f.command.crouch?'guardLow':'guard';
+        if(f.state==='hurt')return f.knockedDown?(f.stateTimer>0.22?'knockdown':'getUp'):f.hitReaction??'hurt';
+        if(f.state==='walk'){
+            const forward=(f.facingRight?1:-1)*f.velocity.x>=0;
+            return f.motor.dashRemaining>0?(forward?'dash':'backDash'):(forward?'walk':'walkBack');
+        }
+        if(f.state==='jump')return f.velocity.y<0?'jump':'fall';
+        if(f.landTimer>0&&f.state==='idle')return 'land';
+        return f.state;
+    }
+    OnUpdate(dt) {
+        const clip=this.ResolveClip();if(clip!==this.clipName)this.Play(clip);
+        if(this.owner.state==='super'||this.owner.state==='intro')this.aura.Update(dt);
     }
 
     OnDrawn() {
         const fighter = this.owner;
         const ctx = this.screen.Context;
-        const clip = FighterAnimations[fighter.state] ?? FighterAnimations.idle;
+        const clip = FighterAnimations[this.clipName] ?? FighterAnimations.idle;
         const width = FrameSize.width * FighterSettings.scale;
         ctx.save();
         ctx.fillStyle = 'rgba(0,0,0,0.35)';
         ctx.beginPath(); ctx.ellipse(fighter.position.x, fighter.groundY + 5, 45, 10, 0, 0, Math.PI * 2); ctx.fill();
         if (fighter.invulnerableTimer > 0) ctx.globalAlpha = 0.7;
         const index = this.sprite.index;
-        this.sprite.index = clip.column + index;
+        const cell=clip.cells[Math.min(index,clip.count-1)];
+        this.sprite.index = cell.column;
         // Sprite owns sheet clipping/flipping; the adapter supplies authored cell offsets.
-        const anchor = new Vector2D(fighter.position.x - width / 2, fighter.position.y - (clip.feetY ?? FrameSize.feetY) * FighterSettings.scale);
-        this.sprite.Animation(undefined, anchor, 'horizontal', clip.row, fighter.facingRight, FighterSettings.scale);
+        const anchor = this.anchor.Set(fighter.position.x - width / 2, fighter.position.y - (clip.feetY ?? FrameSize.feetY) * FighterSettings.scale);
+        if(fighter.state==='super'||fighter.state==='intro'){
+            this.aura.Animation(undefined,anchor,'horizontal',FighterAnimations.aura.row,fighter.facingRight,FighterSettings.scale);
+        }
+        this.sprite.Animation(undefined, anchor, 'horizontal', cell.row, fighter.facingRight, FighterSettings.scale);
         this.sprite.index = index;
         ctx.restore();
         if (fighter.state === 'guard') {

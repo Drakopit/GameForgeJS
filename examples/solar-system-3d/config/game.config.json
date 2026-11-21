@@ -28,6 +28,7 @@
       "RIGHT": [{"device":"keyboard","input":"ArrowRight"},{"device":"keyboard","input":"KeyD"},{"device":"gamepad","input":"LEFT_STICK_RIGHT"},{"device":"gamepad","input":"DPAD_RIGHT"}],
       "UP": [{"device":"keyboard","input":"ArrowUp"},{"device":"keyboard","input":"KeyW"},{"device":"gamepad","input":"LEFT_STICK_UP"},{"device":"gamepad","input":"DPAD_UP"}],
       "DOWN": [{"device":"keyboard","input":"ArrowDown"},{"device":"keyboard","input":"KeyS"},{"device":"gamepad","input":"LEFT_STICK_DOWN"},{"device":"gamepad","input":"DPAD_DOWN"}],
+      "FOCUS_NEXT": [{"device":"keyboard","input":"Enter"},{"device":"gamepad","input":"A"}],
       "ATTACK": [{"device":"keyboard","input":"Space"},{"device":"gamepad","input":"A"}],
       "CANCEL": [{"device":"keyboard","input":"Escape"},{"device":"gamepad","input":"B"}],
       "HELP": [{"device":"keyboard","input":"KeyH"},{"device":"gamepad","input":"START"}]

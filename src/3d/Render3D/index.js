@@ -25,3 +25,7 @@ export { SpotLight } from "./Light/SpotLight.js";
 export { Texture } from "./Texture/Texture.js";
 export { Shader } from "./Shader/Shader.js";
 export { WebGL3DRenderer } from "./Renderer/WebGL3DRenderer.js";
+
+export { SurfaceMaterial } from './Material/SurfaceMaterial.js';
+
+export { OrthographicCamera } from './Camera/OrthographicCamera.js';

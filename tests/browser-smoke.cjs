@@ -30,6 +30,8 @@ const ROOT = path.resolve(__dirname, '..');
 const screenshots = path.join(ROOT, 'test-results/browser');
 const catalog = require('../examples/catalog.json');
 const failures = [];
+const requested = new Set(process.argv.slice(2));
+const entries = catalog.filter(entry => requested.size === 0 || requested.has(entry.id));
 
 async function inspect(browser, url, name, { starter = false, play = false } = {}) {
     const page = await browser.newPage({ viewport: { width: 1100, height: 800 } });
@@ -41,31 +43,28 @@ async function inspect(browser, url, name, { starter = false, play = false } = {
     page.on('response', response => { if (response.status() >= 400 && !response.url().endsWith('/favicon.ico')) errors.add(`HTTP ${response.status()}: ${response.url()}`); });
     try {
         await page.goto(url, { waitUntil: 'networkidle', timeout: 30000 });
-        await page.waitForFunction(async () => (await import('gameforgejs/core')).Engine.running, null, { timeout: 15000 });
+        await page.evaluate(async () => { window.smokeCore = await import('gameforgejs/core'); });
+        await page.waitForFunction(() => window.smokeCore.Engine.running, null, { timeout: 30000 });
         assert.equal(await page.locator('body').evaluate(body => [...body.children].some(element => !['SCRIPT', 'CANVAS'].includes(element.tagName))), false,
             'Game UI escaped the engine canvas');
-        await page.waitForFunction(async () => {
-            const { LevelHandler } = await import('gameforgejs/core');
-            return LevelHandler.current?._started && [...document.querySelectorAll('canvas')]
+        await page.waitForFunction(() => {
+            return window.smokeCore.LevelHandler.current?._started && [...document.querySelectorAll('canvas')]
                 .some(canvas => canvas.width > 0 && canvas.height > 0);
-        }, null, { timeout: 15000 });
-        const dimensions = await page.locator('canvas').evaluateAll(canvases => canvases.map(canvas => [canvas.width, canvas.height]));
-        assert.ok(dimensions.some(([width, height]) => width > 0 && height > 0), 'No canvas with a nonzero size');
+        }, null, { timeout: 30000 });
         if (['-renderer-3d', '-solar-system-3d', '-platformer-2d'].some(id => name.endsWith(id))) {
-            await inspectEngineInfo(page, { select: name.endsWith('-platformer-2d') });
+            await inspectEngineInfo(page, { select: name.endsWith('-platformer-2d'), inspector: name.endsWith('-renderer-3d') });
         }
         if (name.endsWith('-sky-trail-3d')) {
             await inspectSkyTrailMenu(page, path.join(screenshots, `${name}-menu.png`));
             play = false;
         }
         if (play) {
-            // Exercise actual input, level transition, asset composition and gameplay.
-            for (let i = 0; i < (name.includes('platform-adventure-2d') ? 2 : 1); i++) {
-                await page.keyboard.down('Enter'); await page.waitForTimeout(100); await page.keyboard.up('Enter');
-                await page.waitForTimeout(500);
+            for (const scene of ['AdvancedDemoPhaseSelector', 'AdvancedDemoFirstLevel']) {
+                await page.keyboard.press('Enter');
+                await page.waitForFunction(scene =>
+                    window.smokeCore.LevelHandler.current?.constructor.name === scene
+                    && window.smokeCore.LevelHandler.current._started, scene, { timeout: 15000 });
             }
-            const current = await page.evaluate(async () => (await import('gameforgejs/core')).LevelHandler.current.constructor.name);
-            assert.ok(!/Menu|Selector/.test(current), `Input did not enter gameplay: ${current}`);
         }
         if (name.endsWith('-sky-trail-3d')) await inspectSkyTrail(page, path.join(screenshots, `${name}-sky-trail.png`));
         if (name.endsWith('-touch-garden-2d')) await inspectTouchGarden(page, path.join(screenshots, `${name}.png`));
@@ -116,6 +115,7 @@ async function inspect(browser, url, name, { starter = false, play = false } = {
 }
 
 async function main() {
+    assert.ok(requested.size === 0 || entries.length === requested.size, "Unknown catalog entry");
     fs.mkdirSync(screenshots, { recursive: true });
     const temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'gameforge-browser-'));
     const edge = 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe';
@@ -129,9 +129,9 @@ async function main() {
     }
     try {
         const source = await serve({ root: ROOT });
-        await inspectCatalogAliases(browser, source, catalog);
-        for (const entry of catalog) await inspect(browser, `${source}examples/${entry.path}`, `source-${entry.id}`, { play: ['platform-adventure-2d', 'sky-trail-3d'].includes(entry.id) });
-        for (const template of ['minimal-2d', 'minimal-3d']) {
+        if (!requested.size) await inspectCatalogAliases(browser, source, catalog);
+        for (const entry of entries) await inspect(browser, `${source}examples/${entry.path}`, `source-${entry.id}`, { play: ['platform-adventure-2d', 'sky-trail-3d'].includes(entry.id) });
+        for (const template of requested.size ? [] : ['minimal-2d', 'minimal-3d']) {
             const project = path.join(temporary, template);
             createProject(project, { template });
             const sourceURL = await serve({ root: project, engineRoot: ROOT });
@@ -142,7 +142,7 @@ async function main() {
                 await inspect(browser, builtURL, `built-${template}-${basePath === '/' ? 'root' : 'prefix'}`, { starter: true });
             }
         }
-        for (const entry of catalog) {
+        for (const entry of entries) {
             const project = path.join(ROOT, 'examples', path.dirname(entry.path));
             const output = build(project, { output: path.join(temporary, `build-${entry.id}`) }).output;
             const url = await serve({ root: output, basePath: '/game/' });

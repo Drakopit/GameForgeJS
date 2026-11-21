@@ -38,3 +38,7 @@ or assets from another demo. Build output stays in ignored dist/.
 See the [examples catalog](../README.md) for learning order, scope and architecture
 conventions. The integration suite loads both source and portable builds; complete
 human gameplay testing and device-specific performance checks remain separate.
+
+## Local expedition setup
+
+Choose a battle format, a class for each seat, and a battlefield. Local co-op alternates the allied turns before the enemy round. Player 2 uses I/J/K/L to move the cursor, F to confirm, and G to cancel, or the second connected controller. Open Controls to see both seats side-by-side.

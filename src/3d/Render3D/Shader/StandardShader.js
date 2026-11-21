@@ -1,3 +1,4 @@
+import { SURFACE_SHADER } from './SurfaceShader.js';
 import { FOG_UNIFORMS } from './FogShader.js';
 
 export const STANDARD_VERTEX_SHADER = `#version 300 es
@@ -49,6 +50,8 @@ in mat3 vTbn;
 in vec4 vShadowCoord;
 
 out vec4 outColor;
+uniform bool uReflectionClip;
+uniform float uReflectionClipHeight;
 
 uniform vec3 uCameraPosition;
 uniform vec4 uAlbedoColor;
@@ -59,6 +62,7 @@ uniform float uHeightScale;
 uniform float uRoughness;
 uniform float uMetallic;
 uniform float uToonBands;
+${SURFACE_SHADER}
 
 uniform sampler2D uAlbedoMap;
 uniform sampler2D uNormalMap;
@@ -141,7 +145,7 @@ vec3 applyLight(vec3 lightDirection, vec3 lightColor, float intensity, vec3 norm
             / (uToonBands - 1.0);
         return albedo * lightColor * diffuseAmount * intensity;
     }
-    vec3 diffuse = albedo * lightColor * diffuseAmount * intensity;
+    vec3 diffuse = albedo * (1.0 - clamp(metallic, 0.0, 1.0)) * lightColor * diffuseAmount * intensity;
 
     vec3 halfVector = normalize(lightDirection + viewDirection);
     float specularPower = mix(96.0, 12.0, clamp(roughness, 0.0, 1.0));
@@ -179,6 +183,7 @@ vec2 parallaxUv(vec2 uv, vec3 tangentViewDirection) {
 }
 
 void main() {
+    if (uReflectionClip && vWorldPosition.y < uReflectionClipHeight) discard;
     vec3 viewDirection = normalize(uCameraPosition - vWorldPosition);
     vec3 tangentViewDirection = normalize(transpose(vTbn) * viewDirection);
     vec2 surfaceUv = parallaxUv(vUv * uUvScale, tangentViewDirection);
@@ -201,6 +206,7 @@ void main() {
     }
 
     float metallic = uHasOrmMap ? orm.b : uMetallic;
+    applySurface(baseColor.rgb,normal,roughness);
     float ao = uHasAoMap ? texture(uAoMap, surfaceUv).r : (uHasOrmMap ? orm.r : 1.0);
     vec3 litColor = baseColor.rgb * uAmbientColor * uAmbientIntensity * ao;
 
@@ -262,6 +268,7 @@ void main() {
         );
     }
 
+    litColor += surfaceReflection(normal,viewDirection,baseColor.rgb,roughness,metallic);
     vec3 emissive = uEmissiveColor;
     if (uHasEmissiveMap) {
         emissive += texture(uEmissiveMap, surfaceUv).rgb;

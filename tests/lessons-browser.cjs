@@ -6,7 +6,10 @@ const { chromium } = require('@playwright/test');
 const { startServer } = require('../cli/server.cjs');
 const { build } = require('../cli/lib/build.cjs');
 const root = path.resolve(__dirname, '..');
-const ids = ['aether-observatory-3d', 'cinematic-crossing-2d', 'route-atlas-2d', 'boss-patterns-2d'];
+const available = ['aether-observatory-3d', 'cinematic-crossing-2d', 'route-atlas-2d', 'boss-patterns-2d'];
+const requested = process.argv.slice(2);
+assert(requested.every(id => available.includes(id)), 'Unknown lesson');
+const ids = requested.length ? requested : available;
 const touchSessions = new WeakMap();
 
 async function clickAction(page, label) {
@@ -21,6 +24,8 @@ async function clickAction(page, label) {
 }
 
 async function touchStick(page, active, extraAction = false) {
+    if (active) await page.waitForFunction(extra => window.level.hud.stick.origin.y > 0
+        && (!extra || window.level.hud.bar.buttons[0].button.enabled), extraAction);
     const points = await page.evaluate(extraAction => {
         const level = window.level, screen = level.ui?.Screen ?? level.screen, bounds = screen.Canvas.getBoundingClientRect();
         const origin = level.hud.stick.origin;
@@ -124,6 +129,17 @@ async function inspect(page, id, mobile) {
         await page.waitForFunction(() => window.level.player.motion.cooldown > 0);
         const checks = await page.evaluate(() => {
             const level = window.level; window.engine.Engine.Stop(); level.Reset();
+            for (const [x, y] of level.room.switches) {
+                level.player.position.Set(x, y);
+                level.OnFixedUpdate(1 / 60);
+            }
+            level.player.position.Set(480, 86); level.OnFixedUpdate(1 / 60);
+            const seals = level.roomIndex === 1 && !level.boss.active;
+            level.player.health.invulnerabilityTimer = 99;
+            for (let index = 0; index < 730; index++) level.OnFixedUpdate(1 / 60);
+            level.player.position.Set(480, 86); level.OnFixedUpdate(1 / 60);
+            const gauntlet = level.roomIndex === 2 && level.boss.active;
+            level.Reset(); level.EnterRoom(2);
             for (let index = 0; index < 145; index++) {level.OnUpdate(1 / 60); level.OnFixedUpdate(1 / 60);}
             const noEarlyShot = level.brain.state === 'windup' && level.projectiles.pool.every(p => !p.active);
             for (let index = 0; index < 45; index++) {level.OnUpdate(1 / 60); level.OnFixedUpdate(1 / 60);}
@@ -132,10 +148,10 @@ async function inspect(page, id, mobile) {
             level.boss.health.hp = 10; level.brain.Windup(); const phase3 = level.brain.phase === 2;
             const charge = level.brain.patterns.charge; charge.Prepare(); charge.Begin(); const before = level.boss.position.Clone(); charge.Update(0.25);
             const moved = before.DistanceTo(level.boss.position) > 1 && level.hazards.hazards.length > 0;
-            level.Reset(); level.boss.health.hp = 1; level.Emit(level.boss.position, {x: 0, y: 0}, 'player'); level.OnFixedUpdate(1 / 60);
-            return {noEarlyShot, attacks, phase2, phase3, moved, result: level.result, capacity: level.projectiles.pool.length};
+            level.Reset(); level.EnterRoom(2); level.boss.health.hp = 1; level.Emit(level.boss.position, {x: 0, y: 0}, 'player'); level.OnFixedUpdate(1 / 60);
+            return {seals, gauntlet, noEarlyShot, attacks, phase2, phase3, moved, result: level.result, capacity: level.projectiles.pool.length};
         });
-        assert.deepEqual(checks, {noEarlyShot: true, attacks: true, phase2: true, phase3: true, moved: true, result: 'VICTORY', capacity: 96});
+        assert.deepEqual(checks, {seals: true, gauntlet: true, noEarlyShot: true, attacks: true, phase2: true, phase3: true, moved: true, result: 'VICTORY', capacity: 96});
         await clickAction(page, 'RETRY'); assert.equal(await page.evaluate(() => window.level.result), '');
     }
     await page.evaluate(() => {window.level.OnDrawn(); window.level.OnGUI();});

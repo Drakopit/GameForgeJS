@@ -1,5 +1,5 @@
-import { Level, AssetManager } from 'gameforgejs/core';
-import { Screen } from 'gameforgejs/2d';
+import { Level, AssetManager, SoundEffects } from 'gameforgejs/core';
+import { GameObject, Screen } from 'gameforgejs/2d';
 import { Fighter2D } from '../entities/Fighter2D.js';
 import { FightingCPU } from '../ai/FightingCPU.js';
 import { FightingInputReader } from '../input/FightingInputReader.js';
@@ -21,6 +21,8 @@ export class FightingGame2DLevel extends Level {
         this.touch = new FightingTouchControls(this.screen);
         this.input = new FightingInputReader(context,this.touch);
         this.background = new FightingArena(); this.effects = new FightingEffects(); this.hud = new FightingHUD(this.screen);
+        const director = this.AddEntity(new GameObject());
+        this.sound = director.AddComponent(new SoundEffects(this.context.services.get('audio')));
         this.combat = new FightingCombat(this);
         this.CreateFighters(); this.StartRound(true);
         super.OnStart(context);
@@ -48,6 +50,7 @@ export class FightingGame2DLevel extends Level {
         this.arcadeComplete = false; this.combat.Clear(); this.effects.Reset(); this.cpu.Reset();
         this.playerOne.ResetRound(Round.playerOneX, this.arena.groundY, true);
         this.playerTwo.ResetRound(Round.playerTwoX, this.arena.groundY, false);
+        this.playerOne.ChangeState('intro');this.playerTwo.ChangeState('intro');
     }
     OnUpdate(dt) {
         const delta = Math.min(dt ?? 1 / 60, CombatSettings.maxDelta);
@@ -97,6 +100,7 @@ export class FightingGame2DLevel extends Level {
         const winner = this.playerOne.hp === this.playerTwo.hp ? null : this.playerOne.hp > this.playerTwo.hp ? this.playerOne : this.playerTwo;
         if (winner) { winner.roundWins++; winner.PlayVictory(); }
         for (const fighter of this.fighters) if (fighter !== winner) fighter.PlayDefeat();
+        this.sound.Play('success');
         this.combat.Clear(); this.roundState = 'roundOver'; this.roundStateTimer = Round.endDelay;
         if (winner?.roundWins >= Round.winsToMatch) {
             this.matchWinner = winner;

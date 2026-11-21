@@ -1,10 +1,10 @@
 const assert = require('node:assert/strict');
 const { expect } = require('@playwright/test');
-async function inspectEngineInfo(page, { select = false } = {}) {
-    const open = () => page.evaluate(async () => {
+async function inspectEngineInfo(page, { select = false, inspector = false } = {}) {
+    const open = () => page.evaluate(async inspector => {
         const level = (await import('gameforgejs/core')).LevelHandler.current;
-        return (level.hud?.help ?? level.help).visible;
-    });
+        return inspector ? level.hud.open : (level.hud?.help ?? level.help).visible;
+    }, inspector);
     const ui = page.locator('canvas').last();
     const before = await ui.screenshot();
     await page.keyboard.press('KeyH');

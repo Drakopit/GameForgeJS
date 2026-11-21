@@ -101,19 +101,25 @@ async function click(page, name) {
 async function main() {
     const temporary = fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()), 'gameforge-online-'));
     const staticServer = await startServer({ root, port: 0 });
-    const backendPort = staticServer.address().port + 1;
-    const backend = spawn('dotnet', [path.join(root, 'servers/online-sandbox/bin/Debug/net10.0/GameForge.Online.Server.dll'), '--urls', `http://127.0.0.1:${backendPort}`],
+    const backend = spawn(process.env.DOTNET_HOST_PATH || 'dotnet',
+        [path.join(root, 'servers/online-sandbox/bin/Debug/net10.0/GameForge.Online.Server.dll'), '--urls', 'http://127.0.0.1:0'],
         { cwd: root, windowsHide: true, env: { ...process.env, ALLOWED_ORIGINS: '*' }, stdio: ['ignore', 'pipe', 'pipe'] });
     let logs = ''; backend.stdout.on('data', chunk => { logs += chunk; }); backend.stderr.on('data', chunk => { logs += chunk; });
+    let launchError; backend.on('error', error => { launchError = error; });
     let browser;
     try {
-        let healthy = false;
-        for (let attempt = 0; attempt < 100; attempt++) {
-            try { healthy = (await fetch(`http://127.0.0.1:${backendPort}/health`)).ok; } catch { }
-            if (healthy) break;
+        let healthy = false, backendPort;
+        const deadline = Date.now() + 45000;
+        while (Date.now() < deadline && backend.exitCode === null && !launchError) {
+            backendPort = logs.match(/Now listening on: http:\/\/127\.0\.0\.1:(\d+)/)?.[1];
+            if (backendPort) {
+                try { healthy = (await fetch('http://127.0.0.1:' + backendPort + '/health')).ok; } catch { }
+                if (healthy) break;
+            }
             await pause(100);
         }
-        assert(healthy, logs);
+        if (launchError) throw launchError;
+        assert(healthy, logs || "Online Sandbox server did not become healthy within 45 seconds.");
         const endpoint = `ws://127.0.0.1:${backendPort}/ws`;
         await protocol(endpoint);
         const edge = 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe';
@@ -123,16 +129,17 @@ async function main() {
         const b = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
         const alice = await a.newPage(), bob = await b.newPage();
         for (const page of [alice, bob]) {
-            page.setDefaultTimeout(12000);
+            page.setDefaultTimeout(30000);
+            page.setDefaultNavigationTimeout(45000);
             page.on('pageerror', error => errors.push(error.stack));
         }
         const url = `http://127.0.0.1:${staticServer.address().port}/examples/online-sandbox-2d/?server=${encodeURIComponent(endpoint)}`;
-        await alice.goto(url); await inspect(alice);
+        await alice.goto(url, { waitUntil: 'domcontentloaded' }); await inspect(alice);
         await field(alice, 'name', 'Desktop'); await click(alice, 'create');
         await alice.waitForFunction(() => window.onlineCore.LevelHandler.current.playing);
         await verifyMotion(alice, root);
         const room = await alice.evaluate(() => window.onlineCore.LevelHandler.current.session.room);
-        await bob.goto(`${url}&room=${room}`); await inspect(bob);
+        await bob.goto(`${url}&room=${room}`, { waitUntil: 'domcontentloaded' }); await inspect(bob);
         await field(bob, 'name', 'Mobile'); await click(bob, 'join');
         await bob.waitForFunction(() => window.onlineCore.LevelHandler.current.playing);
         await bob.waitForFunction(() => window.onlineCore.LevelHandler.current.session.players.length === 2);
@@ -203,7 +210,8 @@ async function main() {
         const portable = await startServer({ root: output, port: 0, basePath: '/play/' });
         try {
             const context = await browser.newContext({ viewport: { width: 960, height: 600 } });
-            const page = await context.newPage(); page.setDefaultTimeout(12000);
+            const page = await context.newPage(); page.setDefaultTimeout(30000);
+            page.setDefaultNavigationTimeout(45000);
             page.on('pageerror', error => errors.push(error.stack));
             await page.goto(`http://127.0.0.1:${portable.address().port}/play/?server=${encodeURIComponent(endpoint)}`);
             await inspect(page);

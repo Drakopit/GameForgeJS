@@ -49,7 +49,7 @@ export class MeleeAttack {
             if (!target.health.IsAlive() || this.hitTargets.has(target) || !this.Contains(target)) continue;
             // Each living target gets one damage attempt per swing, even during invulnerability.
             this.hitTargets.add(target);
-            target.health.Damage(1, this.actor);
+            if (target.health.Damage(1, this.actor) > 0) this.onHit?.();
         }
     }
 
@@ -63,6 +63,7 @@ export class MeleeAttack {
     }
 
     Dispose() {
+        this.onHit = null;
         this.machine.Dispose();
         this.hitTargets.clear();
     }

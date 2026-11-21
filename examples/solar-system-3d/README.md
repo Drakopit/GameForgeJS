@@ -40,3 +40,7 @@ or assets from another demo. Build output stays in ignored dist/.
 See the [examples catalog](../README.md) for learning order, scope and architecture
 conventions. The integration suite loads both source and portable builds; complete
 human gameplay testing and device-specific performance checks remain separate.
+
+## Tracking celestial bodies
+
+Select a body in the viewport or use Next body to cycle through the Sun, planets, and Moon. The camera tracks the moving body and the card shows its physical data. The simulation still uses compressed scene distances and speeds. Planetary measurements are from the [NASA NSSDCA Planetary Fact Sheet](https://nssdc.gsfc.nasa.gov/planetary/factsheet/).

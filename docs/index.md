@@ -18,6 +18,8 @@ want to change. English is the canonical language for this documentation.
 - [Focused cinematics, world maps and boss patterns](./guides/cinematics-and-patterns.md)
 - [Input sprites, touch visibility and sound feedback](./guides/input-prompts-and-feedback.md)
 - [Responsive viewports and all-demo input audit](./guides/responsive-viewports.md)
+- [Native surfaces, weather and height-aware tactics](./guides/surfaces-weather-and-tactics.md)
+- [Catalog polish and fighter-sheet audit](./plans/demo-polish-audit.md)
 - [Zero to Hero readiness assessment](./plans/zero-to-hero-readiness.md)
 - [Fighting game architecture plan](./plans/fighting-game.md)
 - [Static GitHub Pages and module MIME auditing](./guides/github-pages.md)

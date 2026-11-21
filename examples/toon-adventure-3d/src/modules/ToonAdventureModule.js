@@ -9,7 +9,7 @@ import { ShallowWaterContact } from '../components/ShallowWaterContact.js';
 export class ToonAdventureModule extends Module {
     constructor() {
         super('toon-adventure', {
-            imports: [module2D(), module3D()],
+            imports: [module2D({ telemetry: true }), module3D()],
             declarations: [ToonRoomLevel, Explorer, Sentry, ShallowWaterContact],
             exports: [ToonRoomLevel],
         });

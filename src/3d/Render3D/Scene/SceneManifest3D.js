@@ -1,3 +1,4 @@
+import { SurfaceMaterial } from '../Material/SurfaceMaterial.js';
 import { PerspectiveCamera } from "../Camera/PerspectiveCamera.js";
 import { AmbientLight } from "../Light/AmbientLight.js";
 import { DirectionalLight } from "../Light/DirectionalLight.js";
@@ -159,6 +160,7 @@ export class SceneManifest3D {
      * @returns {Material} Created material.
      */
     static CreateMaterial(definition = {}) {
+        if(definition.type === 'surface') return new SurfaceMaterial(definition);
         if (definition.type === "unlit") {
             return new UnlitMaterial({
                 name: definition.name,

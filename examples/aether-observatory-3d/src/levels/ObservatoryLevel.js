@@ -38,7 +38,8 @@ export class ObservatoryLevel extends Level3D {
     }
     ResetPlayer() { this.player.mesh.transform.SetPosition(...this.rules.movement.spawn); this.player.body.velocity.fill(0); this.jumpQueued = false; }
     StartTour() { this.player.body.velocity.fill(0); this.tour.Play(); this.sound.Play('transition'); }
-    OnUpdate(dt) { this.hud.Update(dt); super.OnUpdate(dt); }
+    OnUpdate(dt) { this.hud.Update(dt); if(!this.hud.help.visible)super.OnUpdate(dt); }
+    OnFixedUpdate(dt) {if(!this.hud.help.visible)super.OnFixedUpdate(dt);}
     OnGUI() { this.hud.Draw(); }
     OnExit() {
         this.releaseViewport?.(); this.hud?.Dispose();

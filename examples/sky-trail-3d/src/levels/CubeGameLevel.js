@@ -1,8 +1,9 @@
+import { GameObject } from 'gameforgejs/2d';
 import { RunRules } from '../data/TrailSettings.js';
 import { TrailScenery } from '../rendering/TrailScenery.js';
-import { ActionManager, AssetManager, Vector3D } from 'gameforgejs/core';
+import { ActionManager, AssetManager, Vector3D, SoundEffects } from 'gameforgejs/core';
 import { AmbientLight, DirectionalLight, HemisphereLight, Level3D, PerspectiveCamera, PointLight, Skybox } from 'gameforgejs/3d';
-import { LoadSkyTrailCourse } from '../data/SkyTrailCourse.js';
+import { LoadSkyTrailCourse, ListSkyTrailCourses } from '../data/SkyTrailCourse.js';
 import { TrailPlatforms } from '../entities/TrailPlatforms.js';
 import { TrailPlayer } from '../entities/TrailPlayer.js';
 import { TrailCoins } from '../entities/TrailCoins.js';
@@ -21,11 +22,18 @@ export class CubeGameLevel extends Level3D {
 
     BuildScene() {
         this.course = LoadSkyTrailCourse();
+        this.route = ListSkyTrailCourses().map(course => course.name);
+        this.startSegment = this.route.indexOf(this.course.assetName);
+        this.segment = this.startSegment;
+        this.handoff = 0;
+        this.pendingSegment = null;
         this.hud = new SkyTrailHUD();
         this.CreateEnvironment();
         this.platforms = this.AddEntity(new TrailPlatforms(this.scene, this.physics, this.course));
         this.scenery = this.AddEntity(new TrailScenery(this.scene, this.platforms, this.course.theme));
         this.player = this.AddEntity(new TrailPlayer(this.scene, this.physics, this.course.player));
+        const director = this.AddEntity(new GameObject());
+        this.sound = director.AddComponent(new SoundEffects(this.context.services.get('audio')));
         this.coins = this.AddEntity(new TrailCoins(this.scene, this.platforms, this.course.coins));
         this.goal = this.AddEntity(new TrailGoal(this.scene, this.course.goal));
         this.checkpoints = this.platforms.platforms.filter(platform => platform.definition.checkpoint)
@@ -53,38 +61,91 @@ export class CubeGameLevel extends Level3D {
     OnUpdate(dt) {
         if (ActionManager.IsActionDown('CANCEL')) { this.Back = true; return; }
         if (ActionManager.IsActionDown('HELP')) this.hud.helpVisible = !this.hud.helpVisible;
-        if (ActionManager.IsActionDown('RESET') || (this.gameState === 'WON' && ActionManager.IsActionDown('ATTACK'))) this.ResetGame();
+        if(this.hud.helpVisible)return;
+        if (ActionManager.IsActionDown('RESET') || (this.gameState === 'WON' && ActionManager.IsActionDown('ATTACK'))) {
+            if (this.segment !== this.startSegment) this.LoadSegment(this.startSegment, false);
+            this.ResetGame();
+        }
+        this.handoff = Math.max(0, this.handoff - dt);
+        if (this.pendingSegment !== null && this.handoff === 0) {
+            this.LoadSegment(this.pendingSegment, true);
+            this.pendingSegment = null;
+        }
         super.OnUpdate(dt);
         this.followCamera.Update(dt);
     }
 
     OnFixedUpdate(dt) {
-        if (this.gameState !== 'PLAYING') return;
+        if (this.gameState !== 'PLAYING' || this.hud.helpVisible || this.pendingSegment !== null) return;
         this.time += dt;
+        const segmentTime = this.time - this.segmentStart;
         // Update moving solids and carry their passenger before the framework physics step.
-        this.platforms.Update(this.time);
+        this.platforms.Update(segmentTime);
         this.scenery.Update();
         this.platforms.Carry(this.player);
         this.player.Move(dt, this.followCamera.cameraYaw);
         super.OnFixedUpdate(dt);
         this.RecoverPlayerIfNeeded();
         for (const checkpoint of this.checkpoints) {
-            if (checkpoint.TryActivate(this.player)) this.checkpoint = checkpoint;
+            if (!checkpoint.TryActivate(this.player)) continue;
+            this.checkpoint = checkpoint;
+            this.sound.Play('transition');
         }
-        this.coins.Update(dt, this.time);
+        this.coins.Update(dt, segmentTime);
         const center = Vector3D.FromArray(this.player.model.transform.position).AddValue(this.course.player.collider.offset);
         for (const coin of this.coins.Collect(center)) {
             this.score += coin.value;
             this.collectedCoins++;
+            this.sound.Play('collect');
         }
         this.goal.SetGoalUnlocked(this.collectedCoins === this.goalCoins);
-        this.goal.Update(this.time);
+        this.goal.Update(segmentTime);
         if (this.goalUnlocked && Vector3D.FromArray(this.player.model.transform.position).DistanceTo(this.course.goal.trigger) <= this.course.goal.radius) {
-            this.gameState = 'WON';
             this.score += RunRules.finishBonus;
-            this.player.body.velocity.fill(0);
-            this.bestTimes.set(this.course.assetName, Math.min(this.time, this.bestTime ?? Infinity));
+            this.bestTimes.set(this.course.assetName, Math.min(this.time - this.segmentStart, this.bestTime ?? Infinity));
+            if (this.segment + 1 < this.route.length) {
+                this.pendingSegment = this.segment + 1;
+                this.handoff = 0.32;
+            } else {
+                this.gameState = 'WON';
+                this.sound.Play('success');
+                this.player.body.velocity.fill(0);
+            }
         }
+    }
+
+    LoadSegment(index, retainMomentum) {
+        const momentum = this.player.body.velocity.slice();
+        const facing = this.player.facing;
+        for (const entity of [...this.checkpoints, this.goal, this.coins, this.scenery, this.platforms]) this.RemoveEntity(entity);
+        this.segment = index;
+        this.course = LoadSkyTrailCourse(this.route[index]);
+        this.physics.bounds = this.course.world.bounds;
+        this.physics.gravity = this.course.world.gravity.ToArray();
+        this.player.definition = this.course.player;
+        this.platforms = this.AddEntity(new TrailPlatforms(this.scene, this.physics, this.course));
+        this.scenery = this.AddEntity(new TrailScenery(this.scene, this.platforms, this.course.theme));
+        this.coins = this.AddEntity(new TrailCoins(this.scene, this.platforms, this.course.coins));
+        this.goal = this.AddEntity(new TrailGoal(this.scene, this.course.goal));
+        this.checkpoints = this.platforms.platforms.filter(platform => platform.definition.checkpoint)
+            .map(platform => this.AddEntity(new TrailCheckpoint(this.scene, platform, this.course.player)));
+        this.followCamera.config = this.course.camera.follow;
+        const input = this.player.input;
+        this.player.Reset(this.course.player.spawn);
+        if (retainMomentum) {
+            this.player.body.velocity[0] = momentum[0];
+            this.player.body.velocity[2] = momentum[2];
+            this.player.input = input;
+            this.player.facing = facing;
+            this.player.model.transform.rotation.y = facing;
+            this.sound.Play('transition');
+        }
+        this.checkpoint = null;
+        this.collectedCoins = 0;
+        this.segmentStart = this.time;
+        this.handoff = 0.55;
+        this.followCamera.cameraReady = false;
+        this.followCamera.Update(0);
     }
 
     RecoverPlayerIfNeeded() {
@@ -97,10 +158,13 @@ export class CubeGameLevel extends Level3D {
     }
 
     ResetGame() {
+        this.pendingSegment = null;
+        this.handoff = 0;
         this.score = 0;
         this.falls = 0;
         this.collectedCoins = 0;
         this.time = 0;
+        this.segmentStart = 0;
         this.gameState = 'PLAYING';
         this.checkpoint = null;
         this.platforms.Update(0);

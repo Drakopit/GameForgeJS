@@ -95,6 +95,7 @@ export class WebGL3DRenderer {
         camera.UpdateView();
 
         const shadowState = this.#renderShadowPass(scene, camera);
+        this.#renderReflection(scene, camera, shadowState);
         this.#beginMainPass(scene.backgroundColor ?? this.clearColor);
         this.#drawSkybox(scene.skybox, camera);
 
@@ -121,6 +122,7 @@ export class WebGL3DRenderer {
         this.ownedBuffers.forEach(buffer => this.gl.deleteBuffer(buffer));
         this.ownedVertexArrays.forEach(vao => this.gl.deleteVertexArray(vao));
         this.ownedTextures.forEach(texture => this.gl.deleteTexture(texture));
+        if (this.reflectionTarget) this.gl.deleteRenderbuffer(this.reflectionTarget.depth);
         this.ownedFramebuffers.forEach(framebuffer => this.gl.deleteFramebuffer(framebuffer));
         this.usedTextures.forEach(texture => texture.Dispose(this.gl));
         this.ownedBuffers.clear(); this.ownedVertexArrays.clear();
@@ -179,6 +181,71 @@ export class WebGL3DRenderer {
         gl.colorMask(true, true, true, true);
         gl.clearColor(clearColor[0], clearColor[1], clearColor[2], clearColor[3] ?? 1);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    }
+
+    #renderReflection(scene, camera, shadows) {
+        this.activeReflection = null;
+        const elevation = scene.planarReflection?.height;
+        if (!Number.isFinite(elevation) || camera.position[1] <= elevation) return;
+
+        const gl = this.gl;
+        if (!this.reflectionTarget) {
+            const framebuffer = gl.createFramebuffer();
+            const color = gl.createTexture();
+            const depth = gl.createRenderbuffer();
+            this.ownedFramebuffers.add(framebuffer);
+            this.ownedTextures.add(color);
+            this.reflectionTarget = { framebuffer, color, depth };
+        }
+        const target = this.reflectionTarget;
+        const width = Math.max(1, this.canvas.width >> 1);
+        const height = Math.max(1, this.canvas.height >> 1);
+        gl.bindFramebuffer(gl.FRAMEBUFFER, target.framebuffer);
+        if (target.width !== width || target.height !== height) {
+            gl.bindTexture(gl.TEXTURE_2D, target.color);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+            gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, target.color, 0);
+            gl.bindRenderbuffer(gl.RENDERBUFFER, target.depth);
+            gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT24, width, height);
+            gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, target.depth);
+            gl.bindRenderbuffer(gl.RENDERBUFFER, null);
+            Object.assign(target, { width, height });
+        }
+        if (gl.checkFramebufferStatus(gl.FRAMEBUFFER) !== gl.FRAMEBUFFER_COMPLETE) return;
+
+        const mirror = Mat4.create();
+        mirror[5] = -1;
+        mirror[13] = 2 * elevation;
+        const reflected = {
+            position: [camera.position[0], 2 * elevation - camera.position[1], camera.position[2]],
+            projectionMatrix: camera.projectionMatrix,
+            viewMatrix: Mat4.multiply(Mat4.create(), camera.viewMatrix, mirror),
+        };
+        gl.viewport(0, 0, width, height);
+        gl.clearColor(...(scene.backgroundColor ?? this.clearColor));
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        gl.frontFace(gl.CW);
+        this.reflectionClip = elevation;
+        try {
+            this.#drawSkybox(scene.skybox, reflected);
+            const objects = scene.GetRenderableObjects().filter(mesh =>
+                !mesh.material?.planarReflection && mesh.reflect !== false && mesh.material?.type !== 'celestial');
+            for (const mesh of this.renderQueue.Build(objects, reflected)) {
+                this.#drawMesh(mesh, scene, reflected, shadows);
+            }
+        } finally {
+            this.reflectionClip = undefined;
+            gl.frontFace(gl.CCW);
+            gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+        }
+        this.activeReflection = {
+            texture: target.color,
+            matrix: Mat4.multiply(Mat4.create(), reflected.projectionMatrix, reflected.viewMatrix),
+        };
     }
 
     #drawSkybox(skybox, camera) {
@@ -278,6 +345,8 @@ export class WebGL3DRenderer {
         this.#setVec3(shader, 'uCameraPosition', camera.position);
         this.#set1f(shader, 'uFogNear', scene.fog?.near ?? 0);
         this.#set1f(shader, 'uFogFar', scene.fog?.far ?? 0);
+        this.#set1i(shader, 'uReflectionClip', this.reflectionClip === undefined ? 0 : 1);
+        this.#set1f(shader, 'uReflectionClipHeight', this.reflectionClip ?? 0);
         gl.depthMask(!material.transparent);
 
         if (material.transparent) {
@@ -344,6 +413,18 @@ export class WebGL3DRenderer {
         this.#set1f(shader, "uHeightScale", material.heightScale ?? 0);
         this.#set1f(shader, "uRoughness", material.roughness ?? 0.72);
         this.#set1f(shader, "uMetallic", material.metallic ?? 0);
+        this.#set1f(shader, 'uSurface', material.surface ?? 0);
+        this.#set1f(shader, 'uSurfaceTime', material.time ?? 0);
+        this.#set1f(shader, 'uSurfaceScale', material.surfaceScale ?? 1);
+        this.#set1f(shader, 'uWetness', material.wetness ?? 0);
+        this.#set1f(shader, 'uReflection', material.reflection ?? 0);
+        this.#set1f(shader, 'uWaterDepth', material.waterDepth ?? 0);
+        const planar = material.planarReflection ? this.activeReflection : null;
+        this.#set1i(shader, 'uHasPlanarReflection', planar ? 1 : 0);
+        if (planar) this.#setMatrix(shader, 'uPlanarMatrix', planar.matrix);
+        this.#bindTextureObject(shader, 8, 'uPlanarMap', planar?.texture ?? this.blackTexture);
+        this.#set1i(shader, 'uRippleCount', material.ripples?.length ?? 0);
+        if (material.rippleUniforms) this.gl.uniform4fv(shader.GetUniform('uRipples[0]'),material.rippleUniforms);
 
         this.#bindTexture(shader, 0, "uAlbedoMap", "uHasAlbedoMap", material.albedoMap, this.whiteTexture);
         this.#bindTexture(shader, 1, "uNormalMap", "uHasNormalMap", material.normalMap, this.normalTexture);

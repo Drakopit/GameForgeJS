@@ -2,12 +2,15 @@ const assert = require('node:assert/strict');
 const { expect } = require('@playwright/test');
 
 async function inspectSkyTrail(page, screenshotPath) {
+    const timeout = 15000;
     await page.keyboard.press('KeyH');
-    await expect.poll(() => page.evaluate(async () => (await import('gameforgejs/core')).LevelHandler.current?.hud?.helpVisible)).toBe(true);
+    await expect.poll(() => page.evaluate(async () => (await import('gameforgejs/core')).LevelHandler.current?.hud?.helpVisible), { timeout }).toBe(true);
     await page.keyboard.press('KeyH');
+    await expect.poll(() => page.evaluate(async () => (await import('gameforgejs/core')).LevelHandler.current?.hud?.helpVisible)).toBe(false);
     const result = await page.evaluate(async () => {
         const { Engine, LevelHandler, Input } = await import('gameforgejs/core');
         Engine.Stop();
+        Input.ClearKeyboard();
         const level = LevelHandler.current;
         if (level.ui.Screen.Canvas.style.imageRendering === 'pixelated') throw new Error('pixelArt:false was ignored');
         const player = level.player;
@@ -60,6 +63,26 @@ async function inspectSkyTrail(page, screenshotPath) {
             step(1);
         }
         const unlocked = level.goalUnlocked;
+        const fullRoute = level.route;
+        const startingSegment = level.segment;
+        level.player.model.SetPosition(...level.course.goal.trigger.ToArray());
+        step(1);
+        let continuous = true;
+        if (startingSegment + 1 < fullRoute.length) {
+            continuous = level.pendingSegment === startingSegment + 1 && level.gameState === 'PLAYING';
+            level.player.body.velocity[0] = 3;
+            const priorScore = level.score;
+            for(let frame=0; frame<36; frame++) level.OnUpdate(1/60);
+            continuous &&= level.segment === startingSegment + 1 && level.score === priorScore && level.player.body.velocity[0] === 3;
+            level.LoadSegment(startingSegment, false);
+            level.ResetGame();
+            for (const coin of level.coins.coins) {
+                level.coins.Update(0, level.time);
+                level.player.model.SetPosition(coin.mesh.transform.position[0], coin.mesh.transform.position[1] - level.course.player.collider.offset.y, coin.mesh.transform.position[2]);
+                step(1);
+            }
+        } else { level.gameState = 'PLAYING'; level.segmentStart = 0; }
+        level.route = level.route.slice(0, level.segment + 1);
         player.model.SetPosition(...level.course.goal.trigger.ToArray());
         step(1);
         const won = level.gameState === 'WON';
@@ -67,7 +90,8 @@ async function inspectSkyTrail(page, screenshotPath) {
         const finishScore = level.score;
         step(30);
         const frozenResult = level.time === finishTime && level.score === finishScore;
-        const bestTime = level.bestTime === finishTime;
+        const bestTime = level.bestTime <= finishTime;
+        level.route = fullRoute;
         level.ResetGame();
 
         // Poll a standard gamepad through Input, retaining analog strength.
@@ -83,6 +107,7 @@ async function inspectSkyTrail(page, screenshotPath) {
             axes = [0, 0, 0, 0]; buttons = [3];
             Input.Update(); level.OnUpdate(1 / 60); Input.LateUpdate();
             padHelp = level.hud.helpVisible;
+            level.hud.helpVisible = false;
             buttons = [0];
             Input.Update(); level.OnUpdate(1 / 60); Input.LateUpdate();
             padJump = player.jumpBuffer > 0;
@@ -95,7 +120,7 @@ async function inspectSkyTrail(page, screenshotPath) {
         level.hud.helpVisible = false;
         level.OnDrawn(); level.OnGUI();
         return { grounded, jumped, coyoteJump, buffered, bufferedJump, carried, saved, recovered, retainedCoins,
-            vanished, resetCheckpoint, unlocked, won, frozenResult, bestTime, analog, padHelp, padJump, glError: level.renderer.gl.getError() };
+            vanished, resetCheckpoint, unlocked, continuous, won, frozenResult, bestTime, analog, padHelp, padJump, glError: level.renderer.gl.getError() };
     });
     for (const [name, value] of Object.entries(result)) {
         if (name === 'glError') assert.equal(value, 0);

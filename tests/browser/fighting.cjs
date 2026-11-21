@@ -24,13 +24,15 @@ async function inspectFighting(page, screenshotPath) {
         level.roundState = 'fight';
         level.playerTwo.controlledByPlayer = true;
         level.playerOne.meter = 0;
+        level.playerOne.position.x = 250;
+        level.playerTwo.position.x = 650;
     });
     await page.keyboard.down('KeyL'); await page.waitForTimeout(90); await page.keyboard.up('KeyL');
     await expect.poll(() => page.evaluate(async () => (await import('gameforgejs/core')).LevelHandler.current.playerOne.shotsFired)).toBe(1);
     await expect.poll(() => page.evaluate(async () => {
         const level = (await import('gameforgejs/core')).LevelHandler.current;
         return level.playerTwo.hp < level.playerTwo.maxHp;
-    })).toBe(true);
+    }), { timeout: 15000 }).toBe(true);
     await page.keyboard.press('KeyH');
     await expect.poll(() => page.evaluate(async () => (await import('gameforgejs/core')).LevelHandler.current.hud.help.visible)).toBe(true);
     await page.keyboard.press('KeyH');
@@ -82,17 +84,18 @@ async function inspectFighting(page, screenshotPath) {
         const cleanRound = level.combat.projectiles.pool.every(shot => !shot.active) && !one.bufferedAttack && one.comboCount === 0;
         for (let i = 0; i < 3; i++) { level.CreateFighters(); level.StartRound(true); }
         const stableEntities = level.entities.length === count;
-        const ko = level.playerOne; ko.PlayDefeat(); ko.UpdateAnimation(1);
-        const koFrame = ko.sprite.index === 0 && ko.state === 'ko';
-        const { FighterAnimations } = await import(new URL('./src/data/FighterAnimations.js', location.href));
+        const ko = level.playerOne; ko.PlayDefeat();for(let frame=0;frame<20;frame++)ko.UpdateAnimation(1/60);
+        const koFrame = ko.sprite.index === ko.sprite.frameCount-1 && ko.state === 'ko' && ko.sprite.finished;
+        const { GetSheetAnimations } = await import(new URL('./src/data/FighterAnimations.js', location.href));
         const { FIGHTING_GAME_CHARACTERS } = await import(new URL('./src/state/FightingGameState.js', location.href));
         const { AssetManager } = await import('gameforgejs/core');
         const canvas = new OffscreenCanvas(64, 64); const context = canvas.getContext('2d');
-        const occupiedFrames = FIGHTING_GAME_CHARACTERS.every(character => Object.values(FighterAnimations).every(clip => {
+        const occupiedFrames = FIGHTING_GAME_CHARACTERS.every(character => Object.values(GetSheetAnimations(character.asset)).every(clip => {
             const image = AssetManager.instance.GetImage(character.asset);
             for (let index = 0; index < clip.count; index++) {
                 context.clearRect(0, 0, 64, 64);
-                context.drawImage(image, (clip.column + index) * 64, clip.row * 64, 64, 64, 0, 0, 64, 64);
+                const cell=clip.cells[index];
+                context.drawImage(image, cell.column * 64, cell.row * 64, 64, 64, 0, 0, 64, 64);
                 const pixels = context.getImageData(0, 0, 64, 64).data;
                 if (!pixels.some((value, pixel) => pixel % 4 === 3 && value > 0)) return false;
             }

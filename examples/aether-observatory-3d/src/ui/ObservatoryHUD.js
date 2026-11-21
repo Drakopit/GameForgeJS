@@ -41,9 +41,12 @@ export class ObservatoryHUD {
         this.help.layout = {...this.help.layout, x: 12, y: 90, width: Math.min(510, screen.Width - 24), lineHeight: 24};
     }
     Draw() {
-        const screen = this.level.ui.Screen, frame = this.frame, stats = this.level.renderer.stats;
+        const screen = this.level.ui.Screen, frame = this.frame;
         frame.Text('AETHER / OBSERVATORY', 20, 32, {size: 18, weight: 700, maxWidth: screen.Width - 130});
-        if (this.telemetry) frame.Text(`${this.fps.toFixed(0)} FPS · ${stats.visible} visible / ${stats.culled} culled`, 20, 64, {size: 13});
+        if (this.telemetry) {
+            const ms = this.fps ? 1000 / this.fps : 0;
+            frame.Text(`${this.fps.toFixed(0)} FPS / ${ms.toFixed(1)} ms / ${this.level.entities.length} entities`, 20, 64, { size: 13 });
+        }
         for (const [id, button] of this.buttons) {
             if (!button.enabled) continue;
             frame.Panel(button.rect); frame.Text(id === 'tour' && this.level.tour.playing ? 'SKIP' : id.toUpperCase(),

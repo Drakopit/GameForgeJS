@@ -16,13 +16,10 @@ export class FightingHUD {
         frame.Text(String(Math.ceil(level.roundTimer)).padStart(2, '0'), 480, 51, { size: 30, weight: 700, align: 'center' });
         frame.Text(`ROUND ${level.roundNumber}`, 480, 72, { size: 10, align: 'center', color: frame.theme.gold });
         frame.Text(FightingGameSession.mode.toUpperCase(), 480, 89, { size: 9, align: 'center', color: frame.theme.muted });
-        frame.Panel({ x: 16, y: 474, width: 928, height: 52 });
-        this.help.DrawRow('p1-light',30,480); this.help.DrawRow('p1-heavy',200,480); this.help.DrawRow('p1-special',380,480); this.help.DrawRow('p1-super',560,480);
-        frame.Text('READ THE TELEGRAPH · CONFIRM YOUR CHAIN',30,514,{size:11,color:frame.theme.muted});
         this.DrawRoundState(level);
     }
     DrawUtility() {
-        const rect=new Rectangle(this.screen.Width/2-26,this.screen.Height<500?this.screen.Height-48:80,52,42);
+        const rect=new Rectangle(this.screen.Width-54,8,42,36);
         this.helpButton.SetButton(rect);this.frame.Panel(rect);this.frame.Text('?',rect.x+26,rect.y+28,{align:'center',size:20});
     }
     DrawCompact(level) {

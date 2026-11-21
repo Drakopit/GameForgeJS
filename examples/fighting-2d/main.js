@@ -1,4 +1,5 @@
 import { FightingModule } from './src/modules/FightingModule.js';
+import { FightingAnimationLevel } from './src/screens/FightingAnimationLevel.js';
 import { BootstrapGame } from "gameforgejs/core";
 import { FightingCharacterSelectLevel } from "./src/screens/FightingCharacterSelectLevel.js";
 import { FightingGame2DLevel } from "./src/levels/FightingGame2DLevel.js";
@@ -12,5 +13,6 @@ BootstrapGame({
         new FightingGameMenuLevel(),
         new FightingCharacterSelectLevel(),
         new FightingGame2DLevel(),
+        new FightingAnimationLevel(),
     ],
 });

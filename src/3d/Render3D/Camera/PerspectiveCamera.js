@@ -69,4 +69,21 @@ export class PerspectiveCamera {
         Mat4.lookAt(this.viewMatrix, this.position, this.target, this.up);
         return this;
     }
+
+    /**
+     * Project a semantic world vector into logical HUD coordinates for labels or picking.
+     * @param {{x:number,y:number,z:number}} point World position.
+     * @param {number} width Logical Screen width.
+     * @param {number} height Logical Screen height.
+     * @returns {{x:number,y:number,depth:number,visible:boolean}} Screen point and clip visibility.
+     */
+    Project(point,width,height) {
+        const matrix=Mat4.multiply(Mat4.create(),this.projectionMatrix,this.viewMatrix);
+        const {x,y,z}=point;
+        const w=matrix[3]*x+matrix[7]*y+matrix[11]*z+matrix[15];
+        const px=(matrix[0]*x+matrix[4]*y+matrix[8]*z+matrix[12])/w;
+        const py=(matrix[1]*x+matrix[5]*y+matrix[9]*z+matrix[13])/w;
+        const depth=(matrix[2]*x+matrix[6]*y+matrix[10]*z+matrix[14])/w;
+        return {x:(px+1)*width/2,y:(1-py)*height/2,depth,visible:w>0&&Math.abs(px)<=1&&Math.abs(py)<=1&&Math.abs(depth)<=1};
+    }
 }

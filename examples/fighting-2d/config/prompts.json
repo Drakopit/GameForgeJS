@@ -187,6 +187,42 @@
           "fighting.controls.playerTwo.gamepad.down"
         ]
       }
+    },
+    {
+      "id": "p1-medium",
+      "label": "P1 medium",
+      "sources": {
+        "keyboard": [
+          "fighting.controls.playerOne.medium"
+        ],
+        "gamepad": [
+          "fighting.controls.playerOne.gamepad.medium"
+        ]
+      }
+    },
+    {
+      "id": "p2-medium",
+      "label": "P2 medium",
+      "sources": {
+        "keyboard": [
+          "fighting.controls.playerTwo.medium"
+        ],
+        "gamepad": [
+          "fighting.controls.playerTwo.gamepad.medium"
+        ]
+      }
+    },
+    {
+      "id": "p1-crouch",
+      "label": "P1 crouch / low attacks",
+      "sources": {
+        "keyboard": [
+          "fighting.controls.playerOne.crouch"
+        ],
+        "gamepad": [
+          "fighting.controls.playerOne.gamepad.crouch"
+        ]
+      }
     }
   ],
   "notes": [

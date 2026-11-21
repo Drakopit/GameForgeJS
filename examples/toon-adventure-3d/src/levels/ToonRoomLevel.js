@@ -1,10 +1,11 @@
+import { GameObject } from 'gameforgejs/2d';
 import { FootstepRipples } from '../rendering/FootstepRipples.js';
 import { ToonPond } from '../entities/ToonPond.js';
 import { Lakes } from '../data/Lakes.js';
 import { WarpPoints } from '../data/WarpSettings.js';
 import { WarpPoint } from '../entities/WarpPoint.js';
 import { WarpTravel } from '../components/WarpTravel.js';
-import { ActionManager, AssetManager, Vector3D } from 'gameforgejs/core';
+import { ActionManager, AssetManager, Vector3D, SoundEffects } from 'gameforgejs/core';
 import { Level3D, PerspectiveCamera, AmbientLight, DirectionalLight, Skybox } from 'gameforgejs/3d';
 import { Courtyard } from '../data/Courtyard.js';
 import { CourtyardRoom } from '../entities/CourtyardRoom.js';
@@ -51,6 +52,9 @@ export class ToonRoomLevel extends Level3D {
         this.visuals = this.actors.map(actor => this.AddEntity(new CharacterVisual(
             actor, actor === this.player ? CharacterAssets.player : CharacterAssets.enemy,
             this.scene, assets)));
+        const director = this.AddEntity(new GameObject());
+        this.sound = director.AddComponent(new SoundEffects(this.context.services.get('audio')));
+        for (const actor of this.actors) actor.attack.onHit = () => this.sound.Play('hit');
         this.player.targets = this.enemies;
         for (const enemy of this.enemies) {
             enemy.target = this.player;
@@ -74,12 +78,13 @@ export class ToonRoomLevel extends Level3D {
                 for (const mesh of visual.model.meshes) mesh.material.bands = this.bands;
             }
         }
+        if(this.hud.helpVisible)return;
         super.OnUpdate(dt);
         this.hud.OnUpdate(dt, this.areaName);
     }
 
     OnFixedUpdate(dt) {
-        if (this.result) return;
+        if (this.result || this.hud.helpVisible) return;
         super.OnFixedUpdate(dt);
         this.warpTravel.OnFixedUpdate(dt);
         if (!this.player.health.IsAlive()) this.FinishEncounter('defeat');

@@ -224,11 +224,11 @@ export class Player extends GameObject {
     }
 
     IsMovingInput() {
-        return ActionManager.IsAction("RIGHT") || ActionManager.IsAction("LEFT");
+        return (this.controls ?? ActionManager).IsAction("RIGHT") || (this.controls ?? ActionManager).IsAction("LEFT");
     }
 
     IsJumpInput() {
-        return ActionManager.IsActionDown("JUMP") && this.isGrounded;
+        return (this.controls ?? ActionManager).IsActionDown("JUMP") && this.isGrounded;
     }
 
     IsInvulnerable() {
@@ -236,11 +236,11 @@ export class Player extends GameObject {
     }
 
     ApplyMovement(dt) {
-        if (ActionManager.IsAction("RIGHT")) {
+        if ((this.controls ?? ActionManager).IsAction("RIGHT")) {
             this.position.x += this.speed * dt;
             this.facingRight = true;
         }
-        if (ActionManager.IsAction("LEFT")) {
+        if ((this.controls ?? ActionManager).IsAction("LEFT")) {
             this.position.x -= this.speed * dt;
             this.facingRight = false;
         }

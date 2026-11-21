@@ -35,7 +35,7 @@ export class FightingInputReader {
         const previous = this.held.get(id) ?? {};
         const current = {};
         const pending = this.queued.get(id) ?? {};
-        for (const name of ['up', 'light', 'heavy', 'special', 'super']) {
+        for (const name of ['up', 'light', 'medium', 'heavy', 'special', 'super']) {
             current[name] = name === 'up'
                 ? keyboardHeld(keys.up) || gamepadDirectionHeld('up', pad.index, pad.up)
                 : keyboardHeld(keys[name]) || gamepadButtonHeld(pad[name], pad.index);
@@ -53,6 +53,7 @@ export class FightingInputReader {
         const pad = keys.gamepad ?? {};
         this.CapturePlayer(fighter.id, keys);
         const input = { ...this.queued.get(fighter.id) };
+        input.crouch=keyboardHeld(keys.crouch)||gamepadDirectionHeld('down',pad.index,pad.crouch);
         this.queued.delete(fighter.id);
         for (const direction of ['left', 'right', 'down']) {
             input[direction] = keyboardHeld(keys[direction]) || gamepadDirectionHeld(direction, pad.index, pad[direction]);

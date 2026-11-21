@@ -1,24 +1,32 @@
-import { Draw, HUDFrame, InputHelpPanel } from 'gameforgejs/2d';
+import { Button, Draw, HUDFrame, InputHelpPanel } from 'gameforgejs/2d';
 import { Input, Vector2D } from 'gameforgejs/core';
 import { GardenSettings as Settings } from '../data/GardenSettings.js';
 
 export class TouchGardenHUD {
     get helpVisible() {return this.help?.visible ?? this._helpVisible ?? false;}
     set helpVisible(value) {this._helpVisible=value;if(this.help)this.help.visible=value;}
-    constructor(screen, controls) {
+    constructor(screen, controls, onReset) {
         this.screen = screen;
         this.controls = controls;
         this.frame = new HUDFrame({ screen });
         this.helpVisible = false;
-        this.help = new InputHelpPanel(new Draw(screen),{title:'Touch Garden / Controls'});
+        this.help = new InputHelpPanel(new Draw(screen), { title: 'Touch Garden / Controls' });
+        this.buttons = [
+            ['?', Settings.helpButton, () => this.help.Toggle()],
+            ['R', Settings.resetButton, onReset],
+        ].map(([label, rect, callback]) => {
+            const button = new Button(screen, { pointerInput: true });
+            button.SetButton(rect);
+            button.OnClick(callback);
+            return { label, button };
+        });
     }
 
     Draw(level) {
         const frame = this.frame;
         frame.Panel({ x: 16, y: 16, width: 448, height: 109 });
         frame.Text('TOUCH GARDEN', 30, 44, { size: 21, color: frame.theme.gold, weight: 700 });
-        frame.Text('BUILDING BLOCKS  /  GAMEFORGEJS', 30, 62, { size: 10, color: frame.theme.muted });
-        for (const [label, box] of [['?', Settings.helpButton], ['R', Settings.resetButton]]) {
+        for (const { label, button: { rect: box } } of this.buttons) {
             frame.Panel(box); frame.Text(label, box.x + box.width / 2, box.y + 22, { size: 16, align: 'center' });
         }
         frame.Text(`${level.collected} / ${level.crystals.length} crystals`, 30, 90, { size: 15, weight: 700 });
@@ -27,7 +35,7 @@ export class TouchGardenHUD {
         frame.Text(level.collected === level.crystals.length ? 'Garden cleared. Keep exploring, or tap R to replay.' : 'Collect the crystals. Dash around the stone planters.', 240, 141,
             { size: 12, color: frame.theme.text, align: 'center', maxWidth: 450 });
         if (Input.instance?.presentation?.TouchVisible) this.DrawControls(level.player.motion);
-        this.help.visible=this.helpVisible;this.help.OnDrawn();
+        this.help.OnDrawn();
     }
 
     DrawControls(motion) {
@@ -48,5 +56,8 @@ export class TouchGardenHUD {
         this.frame.Text('DASH', Settings.action.x, Settings.action.y + 5, { size: 15, color: this.frame.theme.gold, weight: 700, align: 'center' });
     }
 
-    Dispose() {this.help.Dispose();}
+    Dispose() {
+        for (const { button } of this.buttons) button.Dispose();
+        this.help.Dispose();
+    }
 }

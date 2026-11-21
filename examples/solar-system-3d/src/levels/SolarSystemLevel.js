@@ -1,5 +1,5 @@
-import { InputHelpPanel as InfoPanel } from 'gameforgejs/2d';
-import { Vector3D } from 'gameforgejs/core';
+import { Button, HUDFrame, GameObject, InputHelpPanel as InfoPanel } from 'gameforgejs/2d';
+import { Vector3D, SoundEffects, Input, Touch } from 'gameforgejs/core';
 import { ActionManager } from "gameforgejs/core";
 import { AssetManager } from "gameforgejs/core";
 import {
@@ -12,6 +12,10 @@ import {
     PrimitiveMesh,
     UnlitMaterial,
 } from "gameforgejs/3d";
+
+// NASA NSSDCA Planetary Fact Sheet, equatorial diameter (km), orbital period (days).
+const physical = [[4879, 88], [12104, 224.7], [12756, 365.2], [6792, 687],
+    [142984, 4331], [120536, 10747], [51118, 30589], [49528, 59800]];
 
 const PLANETS = Object.freeze([
     { name: "Mercurio", radius: 0.07, orbit: 4.5, speed: 1.24, rotation: 0.9, inclination: 0.12, tilt: 0, colors: [[0.58, 0.54, 0.49], [0.26, 0.24, 0.23]], seed: 2 },
@@ -40,6 +44,18 @@ export class SolarSystemLevel extends Level3D {
     }
 
     BuildScene() {
+        this.time = 0;
+        this.cameraYaw = 0;
+        this.cameraDistance = 31;
+        this.planets = [];
+        const director = this.AddEntity(new GameObject());
+        this.sound = director.AddComponent(new SoundEffects(this.context.services.get('audio')));
+        this.focus = -1;
+        this.lastTarget = null;
+        this.look = new Vector3D();
+        this.focusFrame = new HUDFrame(this.ui.Draw);
+        this.focusButton = new Button(this.ui.Screen, { pointerInput: true });
+        this.focusButton.OnClick(() => this.SelectBody((this.focus + 2) % (this.Bodies().length + 1) - 1));
         this.help = new InfoPanel(this.ui.Draw, { title: 'SOLAR SYSTEM / CONTROLS', lines: [] });
         this.camera = new PerspectiveCamera({
             fov: 58,
@@ -167,9 +183,28 @@ export class SolarSystemLevel extends Level3D {
         }
     }
 
+    Bodies() {
+        return [
+            { name: 'Sun', mesh: this.sun, radius: 5.5, facts: 'G-type star / 99.86% of system mass' },
+            ...this.planets.map((body, i) => ({ ...body, facts: physical[i][0].toLocaleString() + ' km diameter / ' + physical[i][1].toLocaleString() + ' day orbit' })),
+            ...(this.moon ? [{ name: 'Moon', mesh: this.moon.mesh, radius: 0.1, facts: '3,475 km diameter / 27.3 day Earth orbit' }] : []),
+        ];
+    }
+
+    SelectBody(index) {
+        if (index === this.focus) return;
+        this.focus = index;
+        this.lastTarget = null;
+        this.sound.Play('select');
+    }
+
     OnUpdate(dt) {
         super.OnUpdate(dt);
-        if (ActionManager.IsActionDown('HELP')) this.help.Toggle();
+        if (ActionManager.IsActionDown('HELP')) {
+            this.help.Toggle();
+            this.sound.Play('select');
+        }
+        if (this.help.visible) return;
         const delta = dt || 0.016;
         this.time += delta;
 
@@ -177,7 +212,8 @@ export class SolarSystemLevel extends Level3D {
         if (ActionManager.IsAction("RIGHT")) this.cameraYaw += delta * 0.75;
         if (ActionManager.IsAction("UP")) this.cameraDistance = Math.max(8, this.cameraDistance - delta * this.cameraDistance * 0.8);
         if (ActionManager.IsAction("DOWN")) this.cameraDistance = Math.min(320, this.cameraDistance + delta * this.cameraDistance * 0.8);
-        if (ActionManager.IsActionDown("CANCEL")) this.Back = true;
+        if (ActionManager.IsActionDown("CANCEL")) this.SelectBody(-1);
+        if (ActionManager.IsActionDown("FOCUS_NEXT")) this.SelectBody((this.focus + 2) % (this.Bodies().length + 1) - 1);
 
         this.sun.transform.rotation.y += delta * 0.2;
 
@@ -212,12 +248,36 @@ export class SolarSystemLevel extends Level3D {
         }
 
         const yaw = this.cameraYaw + this.time * 0.035;
-        this.camera.position = [
-            Math.sin(yaw) * this.cameraDistance,
-            13.5,
-            Math.cos(yaw) * this.cameraDistance,
+        const bodies = this.Bodies();
+        const body = bodies[this.focus];
+        const target = body ? Vector3D.FromArray(body.mesh.transform.position) : new Vector3D();
+        const blend = 1 - Math.exp(-delta * 5);
+        // Carry the rig with its target, then ease only the remaining framing offset.
+        const motion = this.lastTarget ? target.Subtract(this.lastTarget) : new Vector3D();
+        this.lastTarget = target;
+        this.look.Copy(Vector3D.Lerp(this.look.Add(motion), target, blend));
+        const zoom = body ? Math.max(0.65, body.radius * 4) : this.cameraDistance;
+        const desired = [
+            this.look.x + Math.sin(yaw) * zoom,
+            this.look.y + (body ? zoom * 0.35 : 13.5),
+            this.look.z + Math.cos(yaw) * zoom,
         ];
-        this.camera.LookAt([0, 0, 0]);
+        const followed = Vector3D.FromArray(this.camera.position).Add(motion).ToArray();
+        this.camera.SetPosition(...desired.map((value, i) => followed[i] + (value - followed[i]) * blend));
+        this.camera.LookAt(this.look.ToArray());
+        const mouse = Input.instance?.mouse;
+        const screen = this.ui.Screen;
+        const contact = Input.instance?.touch.GetStartedTouches()[0];
+        const point = contact ? Touch.ToScreen(contact.startPosition, screen)
+            : mouse?.buttonsDown[0] ? mouse.getPositionRelative(screen.Canvas) : null;
+        const menu = this.focusButton.rect;
+        if (point && !(point.x >= menu.x && point.x <= menu.x + menu.width && point.y >= menu.y && point.y <= menu.y + menu.height)) {
+            const hits = bodies.map((candidate, index) => {
+                const p = this.camera.Project(Vector3D.FromArray(candidate.mesh.transform.position), screen.Width, screen.Height);
+                return { index, depth: p.depth, hit: p.visible && Math.hypot(point.x - p.x, point.y - p.y) < 25 };
+            }).filter(item => item.hit).sort((a, b) => a.depth - b.depth);
+            if (hits.length) this.SelectBody(hits[0].index);
+        }
     }
 
     OnGUI() {
@@ -240,8 +300,17 @@ export class SolarSystemLevel extends Level3D {
         draw.DrawText("Sistema Solar - Render3D", 28, 46);
         draw.Color = "#DDE7FF";
         draw.FontSize = "14px";
-        draw.DrawText("WASD / stick: orbit + zoom | H / Start: help", 28, 74);
+        this.help.DrawAction('HELP',28,56);
+        const w = this.ui.Screen.Width, h = this.ui.Screen.Height;
+        const width = Math.min(290, w - 24);
+        const x = w - width - 12, y = h - 92;
+        const body = this.Bodies()[this.focus];
+        this.focusFrame.Panel({ x, y, width, height: 80 });
+        this.focusFrame.Text(body?.name ?? 'System overview', x + 12, y + 21, { size: 16, weight: 700 });
+        this.focusFrame.Text(body?.facts ?? 'Select a body in the view', x + 12, y + 41, { maxWidth: width - 24 });
+        this.focusButton.SetButton({ x, y: y + 46, width, height: 34 });
+        this.focusFrame.Text('Next body', x + 12, y + 65, { color: this.focusFrame.theme.gold });
         this.help.OnDrawn();
     }
-    OnExit() { this.help?.Dispose(); super.OnExit(); }
+    OnExit() { this.focusButton?.Dispose(); this.help?.Dispose(); super.OnExit(); }
 }

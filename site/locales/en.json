@@ -88,7 +88,7 @@
   "example.tactical-rpg-2d": "A turn-based grid game with pathfinding, movement range, and combat.",
   "example.fighting-2d": "Energy spheres, meter-powered supers, buffered combos, reactive CPU and local versus with four characters.",
   "example.puzzle-battle-2d": "An arcade puzzle game with combos and competitive block exchanges.",
-  "example.renderer-3d": "A Render3D scene exploring cameras, models, lighting, materials, and shadows.",
+  "example.renderer-3d": "A rain-soaked basin with planar reflections, wet surfaces, and interactive lighting.",
   "example.solar-system-3d": "Procedural celestial materials, sunlight, and animated planetary orbits.",
   "example.sky-trail-3d": "Four expeditions, a gamepad-ready 3D menu, moving platforms, checkpoints and collectibles.",
   "example.online-sandbox-2d": "Cooperative mining/building, dedicated server rooms, predicted movement and mobile controls; backend required.",
@@ -113,5 +113,6 @@
   "catalog.all": "All categories",
   "catalog.filter": "Choose a category",
   "catalog.notFound": "That example is unavailable. Choose a demo below.",
-  "progress.readiness": "Readiness estimate: 6.3/10 (63%). See the assessment and remaining gates."
+  "progress.readiness": "Readiness estimate: 6.3/10 (63%). See the assessment and remaining gates.",
+  "example.highland-tactics-3d": "True 3D terraced tactics: CT turns, height-aware paths, line of sight, facing bonuses and native surface/weather effects."
 }

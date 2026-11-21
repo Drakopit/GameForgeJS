@@ -55,7 +55,7 @@ export class FoundryLevel extends Level {
     OnGUI() { this.controls.Draw(); this.hud.Draw(); }
     /** @param {number} index */
     SetPreset(index) { this.model.Apply(index); this.world.Clear(); }
-    Reset() { this.controls.Cancel(); this.SetPreset(0); this.model.debug = false; this.model.telemetry = true; }
+    Reset() { this.controls.Cancel(); this.SetPreset(0); this.model.debug = false; this.model.telemetry = false; }
     OnExit() {
         this.releaseViewport(); this.resources.controls?.Cancel(); this.resources.hud?.Dispose(); this.resources.renderer?.Dispose();
         super.OnExit();

@@ -21,9 +21,9 @@ export class ArenaHUD {
     }
     Draw() {
         const level = this.level, width = level.screen.Width, frame = this.frame;
-        frame.Text('EMBER WARDEN', 18, 30, {size: 22, weight: 700});
-        frame.Meter(level.boss.health.hp / level.boss.health.maxHp, {x: 18, y: 40, width: width - 36, height: 12}, '#e6ab70');
-        frame.Text(`HP ${level.player.health.hp}/${level.player.health.maxHp} · PHASE ${level.brain.phase + 1} · ${level.brain.state}`, 18, 75, {size: 14});
+        frame.Text(level.room.name.toUpperCase(), 18, 30, {size: 22, weight: 700});
+        if (level.boss.active) frame.Meter(level.boss.health.hp / level.boss.health.maxHp, {x: 18, y: 40, width: width - 36, height: 12}, '#e6ab70');
+        frame.Text(level.boss.active ? `HP ${level.player.health.hp}/${level.player.health.maxHp} · PHASE ${level.brain.phase + 1} · ${level.brain.state}` : 'HP ' + level.player.health.hp + '/' + level.player.health.maxHp + ' / ROOM ' + (level.roomIndex + 1) + ' OF 3', 18, 75, {size: 14});
         frame.Text(level.message, 18, 96, {size: 13, color: '#e6c998', maxWidth: width - 36});
         frame.Meter(1 - level.player.motion.cooldown / level.rules.player.dashCooldown,
             {x: 22, y: level.screen.Height - 145, width: 100, height: 7}, '#85ddc5');

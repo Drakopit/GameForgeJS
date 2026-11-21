@@ -7,7 +7,7 @@ export class FightingTouchControls {
         this.stick = new VirtualStick(screen);
         this.pending = {};
         this.guard = false;
-        this.bar = new ActionBar(screen, new Draw(screen), ['light', 'heavy', 'special', 'super', 'up', 'down'].map(action => ({
+        this.bar = new ActionBar(screen, new Draw(screen), ['light', 'heavy', 'special', 'super', 'up', 'down', 'medium'].map(action => ({
             command: action,
             label: ({ special: 'POWER', up: 'JUMP', down: 'GUARD' })[action] ?? action.toUpperCase(), touchOnly: true,
             run: () => this.pending[action] = true,
@@ -32,14 +32,14 @@ export class FightingTouchControls {
                     this.pending[action.command] = true;
             }
         }
-        const guard = this.bar.buttons[5].button.rect;
+        const guard = this.bar.buttons.find(action=>action.command==='down').button.rect;
         const points = Input.instance.touch.GetActiveTouches().map(contact => contact.position);
         if (Input.instance.mouse.buttons[0])
             points.push(Input.instance.mouse.position);
         this.guard = points.map(point => Touch.ToScreen(point, this.screen)).some(p => p.x >= guard.x && p.x <= guard.x + guard.width && p.y >= guard.y && p.y <= guard.y + guard.height);
     }
     Read() {
-        const command = { ...this.pending, left: this.stick.direction.x < -0.2, right: this.stick.direction.x > 0.2, down: this.guard || this.stick.direction.y > 0.5 };
+        const command = { ...this.pending,crouch:this.stick.direction.y>0.5, left: this.stick.direction.x < -0.2, right: this.stick.direction.x > 0.2, down: this.guard || this.stick.direction.y > 0.5 };
         this.pending = {};
         return command;
     }

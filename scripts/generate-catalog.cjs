@@ -19,7 +19,7 @@ const block = `<!-- catalog:start -->
 <p id="catalog-status" role="status" hidden data-i18n="catalog.notFound">Esse exemplo não está disponível. Escolha uma demo abaixo.</p>
 <div class="catalog-groups">${groups}</div>
 <!-- catalog:end -->`;
-const file = path.join(root,'index.html'), before = fs.readFileSync(file,'utf8');
+const file = path.join(root,'index.html'), before = fs.readFileSync(file,'utf8').replace(/\r\n/g, '\n');
 if (!before.includes('<!-- catalog:start -->')) throw new Error('Missing catalog markers.');
 const after = before.replace(/<!-- catalog:start -->[\s\S]*?<!-- catalog:end -->/,block);
 if (process.argv.includes('--check')) {

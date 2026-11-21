@@ -1,5 +1,5 @@
 import { InputHelpPanel, Draw as ControlGuideDraw } from 'gameforgejs/2d';
-import { ActionManager as ControlGuideActions } from 'gameforgejs/core';
+import { ActionManager as ControlGuideActions, SoundEffects } from 'gameforgejs/core';
 import { Draw } from "gameforgejs/2d";
 import { Screen } from "gameforgejs/2d";
 import { GameObject } from "gameforgejs/2d";
@@ -49,6 +49,7 @@ export class AdventureDemoLevel extends Level {
 
         const start = RoomOrigin(this.currentRoom);
         this.player = new AdventurePlayer({ x: start.x + 84, y: start.y + 224 });
+        this.sound = this.player.AddComponent(new SoundEffects(this.context.services.get('audio')));
         this.cameraRig = new GameObject();
         this.cameraRig.name = "CameraRig";
         this.cameraRig.AddComponent(new RoomCameraComponent({
@@ -87,6 +88,7 @@ export class AdventureDemoLevel extends Level {
 
     OnUpdate(dt) {
         if(ControlGuideActions.IsActionDown('HELP'))this.controlsHelp?.Toggle();
+        if(this.controlsHelp.visible)return;
 
         super.OnUpdate(dt);
         this._updateHitSparks(dt);
@@ -139,6 +141,7 @@ export class AdventureDemoLevel extends Level {
             if (applied <= 0) continue;
 
             attackComponent.MarkHit(enemy);
+            this.sound.Play('hit');
             this._addHitSpark(bounds.GetAABB(), applied);
         }
     }
@@ -398,7 +401,8 @@ export class AdventureDemoLevel extends Level {
         this.draw.SetTextAlign("right");
         this.draw.Color = "#cbd8c2";
         this.draw.FontSize = "11px";
-        this.draw.DrawText("Setas/WASD: mover | Z/Enter/X: espada | atravesse portas iluminadas", ADVENTURE_SCREEN.width - 12, 22);
+        this.draw.DrawText('Explore · Defeat sentries · Cross the lit doors', ADVENTURE_SCREEN.width - 170, 22);
+        this.controlsHelp.DrawAction('HELP',ADVENTURE_SCREEN.width-145,2);
 
         this.controlsHelp?.OnDrawn();
 }

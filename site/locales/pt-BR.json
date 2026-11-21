@@ -88,7 +88,7 @@
   "example.tactical-rpg-2d": "Estratégia por turnos com grade, busca de caminhos, alcance e planejamento de ações.",
   "example.fighting-2d": "Esferas de energia, super com barra, combos com buffer, CPU reativa e duelo local com quatro personagens.",
   "example.puzzle-battle-2d": "Pares de peças, rotação, combos, trocas de obstáculos e adversário CPU.",
-  "example.renderer-3d": "Modelos, texturas, normal maps, iluminação e sombras carregados por manifests.",
+  "example.renderer-3d": "Uma bacia sob chuva com reflexos planares, superfícies molhadas e iluminação interativa.",
   "example.solar-system-3d": "Materiais procedurais, luz pontual, órbitas, anéis e uma lua em uma cena 3D.",
   "example.sky-trail-3d": "Quatro percursos 3D com checkpoints, plataformas móveis, moedas e câmera de acompanhamento.",
   "example.online-sandbox-2d": "Mineração e construção cooperativas, salas em servidor dedicado, previsão de movimento e controles móveis; requer backend.",
@@ -113,5 +113,6 @@
   "catalog.all": "Todas as categorias",
   "catalog.filter": "Escolha uma categoria",
   "catalog.notFound": "Esse exemplo não está disponível. Escolha uma demo abaixo.",
-  "progress.readiness": "Prontidão estimada: 6,3/10 (63%). Veja a avaliação e as metas restantes."
+  "progress.readiness": "Prontidão estimada: 6,3/10 (63%). Veja a avaliação e as metas restantes.",
+  "example.highland-tactics-3d": "Batalha tática em 3D: terreno elevado, turnos CT, linha de visão, direção das unidades e superfícies/clima nativos."
 }

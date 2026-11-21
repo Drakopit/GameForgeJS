@@ -1,6 +1,6 @@
 import { InputHelpPanel, Draw as ControlGuideDraw } from 'gameforgejs/2d';
 import { ActionManager as ControlGuideActions } from 'gameforgejs/core';
-import { Level } from "gameforgejs/core";
+import { Level, SoundEffects } from "gameforgejs/core";
 import { Player } from "../entities/Player.js";
 import { Coin } from "../entities/Coin.js";
 import { Draw } from "gameforgejs/2d";
@@ -26,6 +26,8 @@ export class TechDemoLevel extends Level {
 
         // Instancia os objetos
         this.player = new Player(this.screen);
+        this.score = 0;
+        this.sound = this.player.AddComponent(new SoundEffects(this.context.services.get('audio')));
         this.coin = new Coin(this.screen);
 
         // Adiciona na lista de entidades para a engine atualizá-los e desenhá-los automaticamente
@@ -35,12 +37,14 @@ export class TechDemoLevel extends Level {
 
     OnUpdate(dt) {
         if(ControlGuideActions.IsActionDown('HELP'))this.controlsHelp?.Toggle();
+        if(this.controlsHelp.visible)return;
 
         super.OnUpdate(dt); // Atualiza todas as entidades filhas
 
         // Checagem de Colisão (Player x Coin)
         if (Collide2D.isCollidingAABB(this.player, this.coin)) {
             this.score += 10;
+            this.sound.Play('collect');
             this.coin.Respawn(); // Muda a moeda de lugar
         }
     }
@@ -54,14 +58,13 @@ export class TechDemoLevel extends Level {
         this.draw.FontSize = "24px";
         this.draw.DrawText(`Score: ${this.score}`, 20, 40);
 
-        this.draw.FontSize = "16px";
-        this.draw.DrawText(`FPS: ${this.FPS}`, this.screen.width - 110, 30);
-
         this.draw.FontSize = "14px";
-        this.draw.DrawText(`Use W, A, S, D para mover e coletar!`, 20, this.screen.height - 20);
+        this.controlsHelp.DrawAction('HELP',20,this.screen.Height-44);
+        this.draw.DrawText('Collect the light. Keep moving.',180,this.screen.Height-20);
 
         this.controlsHelp?.OnDrawn();
 }
 
+    OnFixedUpdate(dt) {if(!this.controlsHelp.visible)super.OnFixedUpdate(dt);}
     OnExit() {this.controlsHelp?.Dispose();super.OnExit();}
 }

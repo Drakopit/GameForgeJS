@@ -1,4 +1,5 @@
-import { ActionManager } from "gameforgejs/core";
+import { expedition } from '../state/Expedition.js';
+import { ActionManager, Input } from "gameforgejs/core";
 import { MathExt } from "gameforgejs/core";
 import { BATTLE_MODES, BattleState } from "../state/BattleState.js";
 import { TACTICAL_AREA_SHAPES, TacticalArea } from "./TacticalArea.js";
@@ -18,10 +19,14 @@ const PHASE = Object.freeze({
 });
 
 export class TacticalBattleManager {
-    constructor({ level, assets }) {
+    constructor({ level, assets, sound }) {
         this.level = level;
         this.assets = assets;
+        this.sound = sound;
         this.stage = assets?.jsons?.tactical_stage ?? {};
+        if (expedition.stage?.blocked) {
+            this.stage = { ...this.stage, objects: [], tilemap: { ...this.stage.tilemap, terrainRows: null, terrain: null, blockedTiles: expedition.stage.blocked } };
+        }
         this.playerDoc = assets?.jsons?.tactical_player ?? {};
         this.enemyDoc = assets?.jsons?.tactical_enemies ?? {};
         this.grid = new TacticalGrid(this.stage);
@@ -35,7 +40,8 @@ export class TacticalBattleManager {
         this._ensureBattleState();
         this.player = BattleState.playerUnit;
         this.enemies = BattleState.enemies;
-        this.units = [this.player, ...this.enemies];
+        this.party = BattleState.party ?? [this.player];
+        this.units = [...this.party, ...this.enemies];
         this.units.forEach(unit => unit.SetRuntimeContext?.({ level, grid: this.grid, assets }));
 
         this.cursor = { col: this.player.col, row: this.player.row };
@@ -63,12 +69,27 @@ export class TacticalBattleManager {
     }
 
     _ensureBattleState() {
-        if (BattleState.initialized && BattleState.playerUnit?.SetRuntimeContext) return;
+        if (BattleState.initialized && BattleState.playerUnit?.SetRuntimeContext) {
+            // Scene exit destroys ECS components. Persist domain values, never
+            // re-enter the map with destroyed runtime entities from the arena.
+            if (BattleState.playerUnit._destroyed) {
+                const previousEnemy = BattleState.enemyUnit;
+                BattleState.playerUnit = BattleState.playerUnit.Recreate(this.grid, this.assets);
+                BattleState.party = [BattleState.playerUnit];
+                BattleState.enemies = BattleState.enemies.map(unit => unit.Recreate(this.grid, this.assets));
+                BattleState.enemyUnit = BattleState.enemies.find(unit => unit.id === previousEnemy?.id) ?? null;
+                if(BattleState.pendingReset)BattleState.ResetAll();
+            }
+            return;
+        }
 
-        const playerRoot = this.playerDoc.player ?? {};
+        const hero = this.playerDoc.player ?? {};
+        const chosen = expedition.classes[0];
+        const playerRoot = chosen ? { ...hero, ...chosen } : hero;
         const spawn = playerRoot.spawn ?? {};
         const player = this._createUnit(spawn.col ?? 1, spawn.row ?? 3, playerRoot, {
             id: "hero",
+            team: "ally",
             name: "Hero",
             color: "#4488FF",
             stats: {
@@ -102,9 +123,15 @@ export class TacticalBattleManager {
             enemy.col ?? enemyDefaults.col ?? 8,
             enemy.row ?? enemyDefaults.row ?? 3,
             enemy,
-            enemyDefaults
+            { team: "enemy", ...enemyDefaults }
         ));
 
+        BattleState.party = [player];
+        if (expedition.seats === 2) {
+            const chosen = expedition.classes[1];
+            BattleState.party.push(this._createUnit(1, 4,
+                { ...hero, ...chosen, id: 'partner' }, { team: 'ally' }));
+        }
         BattleState.playerUnit = player;
         BattleState.enemyUnit = enemies[0] ?? null;
         BattleState.enemies = enemies;
@@ -183,7 +210,7 @@ export class TacticalBattleManager {
                 id: "wait",
                 label: "Esperar",
             },
-        ];
+        ].filter(action => !this.player?.skill || ['attack', 'wait', this.player.skill].includes(action.id));
     }
 
     IsFftMode() {
@@ -192,6 +219,15 @@ export class TacticalBattleManager {
 
     BattleModeLabel() {
         return this.IsFftMode() ? "Final Fantasy Tactics" : "Fire Emblem";
+    }
+
+    Pressed(action) {
+        const keys = { UP: 'KeyI', LEFT: 'KeyJ', DOWN: 'KeyK', RIGHT: 'KeyL', ATTACK: 'KeyF', CANCEL: 'KeyG' };
+        const second = this.party.indexOf(this.player) === 1 && this.HasLivingEnemies();
+        if (!second) return ActionManager.IsActionDown(action);
+        const pad = Input.GetConnectedGamepadIndices()[1];
+        const buttons = { UP: 'DPAD_UP', LEFT: 'DPAD_LEFT', DOWN: 'DPAD_DOWN', RIGHT: 'DPAD_RIGHT', ATTACK: 'A', CANCEL: 'B' };
+        return Input.GetKeyDown(keys[action]) || (pad !== undefined && Input.GetGamepadButtonDown(pad, buttons[action]));
     }
 
     HasLivingEnemies() {
@@ -219,7 +255,13 @@ export class TacticalBattleManager {
             this.moveArea = [];
             this.actionArea = [];
             this.pathPreview = [];
-            this.message = "Vitoria! Todos os inimigos foram derrotados.";
+            this.message = "Vitoria! Confirme para jogar novamente.";
+            if (this.Pressed("CANCEL")) return { back: true };
+            if (this.Pressed("ATTACK")) {
+                BattleState.ResetAll();
+                this.player = this.party[0];
+                this._endPlayerReady("Selecione o Hero para comecar.");
+            }
             return null;
         }
 
@@ -230,12 +272,13 @@ export class TacticalBattleManager {
 
         this._readCursorInput();
 
-        if (ActionManager.IsActionDown("CANCEL")) {
+        if (this.Pressed("CANCEL")) {
+            if (this.phase === PHASE.SELECT_UNIT) return { back: true };
             this._cancelCurrentPhase();
             return null;
         }
 
-        if (!ActionManager.IsActionDown("ATTACK")) return null;
+        if (!this.Pressed("ATTACK")) return null;
 
         if (this.phase === PHASE.SELECT_UNIT) {
             if (this.player.IsAt(this.cursor.col, this.cursor.row)) this._selectPlayer();
@@ -259,9 +302,7 @@ export class TacticalBattleManager {
         this.renderer.DrawMap();
         this.renderer.DrawAreas(this.moveArea, this.actionArea, this.selectedAction?.color);
         this.renderer.DrawPath(this.pathPreview);
-        this.renderer.DrawObjects("back");
-        this.renderer.DrawUnits(this.units);
-        this.renderer.DrawObjects("front");
+        this.renderer.DrawActors(this.units);
         this.renderer.DrawFloatTexts(this.floatTexts);
         this.renderer.DrawCursor(this.cursor);
         if (this.phase === PHASE.ACTION_MENU) {
@@ -269,11 +310,11 @@ export class TacticalBattleManager {
         }
     }
 
-    DrawHud(fps) {
+    DrawHud() {
         this.renderer.DrawHud({
             message: this.message,
-            battleModeLabel: this.BattleModeLabel(),
-            fps,
+            battleModeLabel: (expedition.stage?.name ?? this.BattleModeLabel())
+                + " / P" + (this.party.indexOf(this.player) + 1) + " " + this.player.name,
         });
     }
 
@@ -281,10 +322,10 @@ export class TacticalBattleManager {
         let dc = 0;
         let dr = 0;
 
-        if (ActionManager.IsActionDown("UP")) dr = -1;
-        else if (ActionManager.IsActionDown("DOWN")) dr = 1;
-        else if (ActionManager.IsActionDown("LEFT")) dc = -1;
-        else if (ActionManager.IsActionDown("RIGHT")) dc = 1;
+        if (this.Pressed("UP")) dr = -1;
+        else if (this.Pressed("DOWN")) dr = 1;
+        else if (this.Pressed("LEFT")) dc = -1;
+        else if (this.Pressed("RIGHT")) dc = 1;
 
         if (dc === 0 && dr === 0) return;
 
@@ -341,20 +382,20 @@ export class TacticalBattleManager {
     }
 
     _updateActionMenu() {
-        if (ActionManager.IsActionDown("CANCEL")) {
+        if (this.Pressed("CANCEL")) {
             this._startEnemyTurn("Acao cancelada. Turno inimigo.");
             return;
         }
 
-        if (ActionManager.IsActionDown("UP")) {
+        if (this.Pressed("UP")) {
             this.selectedActionIndex = (this.selectedActionIndex - 1 + this.actionOptions.length) % this.actionOptions.length;
         }
 
-        if (ActionManager.IsActionDown("DOWN")) {
+        if (this.Pressed("DOWN")) {
             this.selectedActionIndex = (this.selectedActionIndex + 1) % this.actionOptions.length;
         }
 
-        if (ActionManager.IsActionDown("ATTACK")) this._confirmActionMenu();
+        if (this.Pressed("ATTACK")) this._confirmActionMenu();
     }
 
     _confirmActionMenu() {
@@ -374,7 +415,7 @@ export class TacticalBattleManager {
             shape: action.shape ?? TACTICAL_AREA_SHAPES.DIAMOND,
             pattern: action.pattern,
             grid: this.grid,
-        });
+        }).filter(tile => !this.grid.IsBlocked(tile.col, tile.row));
         this.phase = PHASE.ACTION_TARGET;
         this.message = action.id === "magic"
             ? "Area roxa em cruz: escolha alvo para magia. X volta ao menu."
@@ -397,20 +438,23 @@ export class TacticalBattleManager {
 
         if (this.IsFftMode()) {
             this._resolveMapAction(this.player, enemy, this.selectedAction ?? this.actionOptions[0], () => {
-                this._startEnemyTurn(this.message);
+                if (this.HasLivingEnemies()) this._startEnemyTurn(this.message);
+                else this._endPlayerReady('Vitoria! Todos os inimigos foram derrotados.');
             });
             return null;
         }
 
+        this.player.Face(enemy.col, enemy.row);
         if (BattleState.StartEncounter(this.player, enemy)) return { next: true };
         return null;
     }
 
     _resolveMapAction(attacker, target, action, afterAction = null) {
-        const power = action.id === "magic" || action.id === "cleave"
-            ? { attack: attacker.attack + (action.bonus ?? 0) }
-            : attacker;
-        const dmg = target.TakeDamage(power);
+        const side = target.ImpactSide(attacker);
+        const bonus = side === 'back' ? 3 : side === 'side' ? 1 : 0;
+        attacker.Face(target.col, target.row);
+        const dmg = target.TakeDamage(attacker, (action.bonus ?? 0) + bonus);
+        this.sound?.Play('hit');
 
         this._addFloatText({
             value: dmg,
@@ -420,13 +464,19 @@ export class TacticalBattleManager {
         });
 
         this.message = target.IsAlive()
-            ? `${attacker.name} ${action.verb} ${target.name}. ${dmg} de dano.`
+            ? `${attacker.name} ${action.verb} ${target.name}. ${dmg} de dano (${side}).`
             : `${target.name} derrotado por ${action.label.toLowerCase()}.`;
 
         afterAction?.();
     }
 
     _startEnemyTurn(message = "Turno inimigo.") {
+        const next = this.party.slice(this.party.indexOf(this.player) + 1).find(unit => unit.IsAlive());
+        if (next) {
+            this.player = next;
+            this._endPlayerReady("Player " + (this.party.indexOf(next) + 1) + " / confirme para mover.");
+            return;
+        }
         this.moveArea = [];
         this.actionArea = [];
         this.pathPreview = [];
@@ -450,8 +500,9 @@ export class TacticalBattleManager {
     }
 
     _runNextEnemyAi() {
-        if (!this.player.IsAlive()) {
+        if (!this.party.some(unit => unit.IsAlive())) {
             BattleState.ResetAll();
+            this.player = this.party[0];
             this.phase = PHASE.SELECT_UNIT;
             this.cursor = { col: this.player.col, row: this.player.row };
             this.message = "Derrota. As unidades foram reiniciadas.";
@@ -460,7 +511,8 @@ export class TacticalBattleManager {
 
         const enemy = this.enemyQueue.shift();
         if (!enemy) {
-            this._endPlayerReady("Turno inimigo encerrado. Selecione o Hero com Z.");
+            this.player = this.party.find(unit => unit.IsAlive());
+            this._endPlayerReady("Novo turno: " + this.player.name);
             return;
         }
 
@@ -469,6 +521,7 @@ export class TacticalBattleManager {
             return;
         }
 
+        this.player = this.party.filter(unit => unit.IsAlive()).sort((a, b) => enemy.DistanceTo(a) - enemy.DistanceTo(b))[0];
         if (enemy.DistanceTo(this.player) <= enemy.attackRange) {
             this._enemyAttack(enemy);
             return;
@@ -490,7 +543,11 @@ export class TacticalBattleManager {
     }
 
     _enemyAttack(enemy) {
-        const dmg = this.player.TakeDamage(enemy);
+        const side = this.player.ImpactSide(enemy);
+        const bonus = this.IsFftMode() ? (side === 'back' ? 3 : side === 'side' ? 1 : 0) : 0;
+        enemy.Face(this.player.col, this.player.row);
+        const dmg = this.player.TakeDamage(enemy, bonus);
+        this.sound?.Play('hit');
         this._addFloatText({
             value: dmg,
             col: this.player.col,
@@ -601,7 +658,9 @@ export class TacticalBattleManager {
             return;
         }
 
+        this.animUnit.Face(next.x, next.y);
         this.animUnit.MoveGridOnly(next.x, next.y);
+        this.sound?.Play('step');
         this.animTarget = this.grid.TileToPixel(next.x, next.y);
     }
 

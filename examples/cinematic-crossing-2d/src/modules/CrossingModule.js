@@ -12,7 +12,7 @@ import { CrossingHUD } from '../ui/CrossingHUD.js';
 
 export class CrossingModule extends Module {
     constructor() {
-        super('cinematic-crossing-2d', { imports: [module2D()],
+        super('cinematic-crossing-2d', { imports: [module2D({ telemetry: true })],
             declarations: [CourierSteps, CourierControl, CourierVisual, CrossingSequence, WaypointMotion, Courier, CrossingLandscape, CrossingLevel, CrossingHUD], exports: [CrossingLevel] });
     }
 }

@@ -1,4 +1,3 @@
-import { Draw } from "gameforgejs/2d";
 import { PuzzleConfig } from "../data/puzzleConfig.js";
 import { PuzzleGem, GemType } from "./PuzzleGem.js";
 
@@ -35,29 +34,13 @@ export class PuzzleBoard {
     lockPiece(piece) {
         if (this.gameOver) return false;
 
-        // Gem 1
-        if (piece.row1 >= 0 && piece.row1 < PuzzleConfig.ROWS) {
-            if (this.grid[piece.row1][piece.col1] !== null) {
-                this.gameOver = true;
-            } else {
-                this.grid[piece.row1][piece.col1] = piece.gem1;
-            }
-        } else {
+        if (!this.isValidPos(piece.row1, piece.col1) || !this.isValidPos(piece.row2, piece.col2)
+            || (piece.row1 === piece.row2 && piece.col1 === piece.col2)) {
             this.gameOver = true;
+            return false;
         }
-
-        // Gem 2
-        if (piece.row2 >= 0 && piece.row2 < PuzzleConfig.ROWS) {
-            if (this.grid[piece.row2][piece.col2] !== null) {
-                this.gameOver = true;
-            } else {
-                this.grid[piece.row2][piece.col2] = piece.gem2;
-            }
-        } else {
-            this.gameOver = true;
-        }
-
-        if (this.gameOver) return false;
+        this.grid[piece.row1][piece.col1] = piece.gem1;
+        this.grid[piece.row2][piece.col2] = piece.gem2;
 
         // Start processing logic (gravity -> match -> repeat)
         this.combo = 0;
@@ -65,6 +48,7 @@ export class PuzzleBoard {
         
         // Decrease garbage timers
         this.tickGarbage();
+        this.processBoard();
 
         return true;
     }
@@ -86,9 +70,8 @@ export class PuzzleBoard {
 
     receiveGarbage(amount) {
         // Drop garbage gems from the top
-        let placed = 0;
-        for (let c = 0; c < PuzzleConfig.COLS; c++) {
-            if (placed >= amount) break;
+        for (let index = 0; index < amount; index++) {
+            const c = index % PuzzleConfig.COLS;
             // Find highest empty spot
             let r = 0;
             while (r < PuzzleConfig.ROWS && this.grid[r][c] === null) {
@@ -96,8 +79,7 @@ export class PuzzleBoard {
             }
             if (r > 0) {
                 this.grid[r - 1][c] = new PuzzleGem(GemType.GARBAGE, "garbage", PuzzleConfig.GARBAGE_TIMER_TURNS);
-                placed++;
-            }
+            } else { this.gameOver=true; break; }
         }
         // Force gravity if needed
         this.applyGravity();
@@ -114,23 +96,63 @@ export class PuzzleBoard {
     }
 
     applyGravity() {
-        let moved = false;
-        for (let c = 0; c < PuzzleConfig.COLS; c++) {
-            for (let r = PuzzleConfig.ROWS - 1; r > 0; r--) {
-                if (this.grid[r][c] === null) {
-                    // Look up for a gem to pull down
-                    for (let above = r - 1; above >= 0; above--) {
-                        if (this.grid[above][c] !== null) {
-                            this.grid[r][c] = this.grid[above][c];
-                            this.grid[above][c] = null;
-                            moved = true;
-                            break;
-                        }
-                    }
-                }
+        const { blocks, used } = this.MergePowerGems();
+        const pieces = blocks.map(block => ({ ...block }));
+        for (let r = 0; r < PuzzleConfig.ROWS; r++) {
+            for (let c = 0; c < PuzzleConfig.COLS; c++) {
+                const gem = this.grid[r][c];
+                if (gem && !used.has(gem)) pieces.push({ r, c, width: 1, height: 1 });
             }
         }
+        pieces.sort((a, b) => b.r + b.height - a.r - a.height);
+        let moved = false;
+        let changed;
+        do {
+            changed = false;
+            for (const piece of pieces) {
+                const bottom = piece.r + piece.height;
+                if (bottom >= PuzzleConfig.ROWS) continue;
+                if (this.grid[bottom].slice(piece.c, piece.c + piece.width).some(Boolean)) continue;
+                for (let r = bottom; r > piece.r; r--) {
+                    for (let c = piece.c; c < piece.c + piece.width; c++) this.grid[r][c] = this.grid[r - 1][c];
+                }
+                this.grid[piece.r].fill(null, piece.c, piece.c + piece.width);
+                piece.r++;
+                moved = changed = true;
+            }
+        } while (changed);
         return moved;
+    }
+
+    MergePowerGems() {
+        const blocks = [];
+        const used = new Set();
+        for (let r = 0; r < PuzzleConfig.ROWS - 1; r++) {
+            for (let c = 0; c < PuzzleConfig.COLS - 1; c++) {
+                const gem = this.grid[r][c];
+                if (gem?.type !== GemType.NORMAL || used.has(gem)) continue;
+                let width = PuzzleConfig.COLS - c;
+                let best;
+                for (let y = r; y < PuzzleConfig.ROWS; y++) {
+                    let run = 0;
+                    while (run < width) {
+                        const cell = this.grid[y][c + run];
+                        if (cell?.type !== GemType.NORMAL || cell.color !== gem.color || used.has(cell)) break;
+                        run++;
+                    }
+                    width = run;
+                    const height = y - r + 1;
+                    if (width < 2) break;
+                    if (height > 1 && width * height > (best?.area ?? 0))
+                        best = { r, c, width, height, area: width * height, color: gem.color };
+                }
+                if (!best) continue;
+                blocks.push(best);
+                for (let y = r; y < r + best.height; y++)
+                    for (let x = c; x < c + best.width; x++) used.add(this.grid[y][x]);
+            }
+        }
+        return { blocks, used };
     }
 
     checkMatches() {
@@ -154,7 +176,9 @@ export class PuzzleBoard {
 
         if (matched) {
             this.combo++;
-            let destroyedCount = gemsToDestroy.size;
+            const destroyedCount = gemsToDestroy.size;
+            const power = this.MergePowerGems().blocks.reduce((bonus, block) =>
+                bonus + (gemsToDestroy.has([block.r, block.c].join(',')) ? Math.floor(block.area / 2) : 0), 0);
             
             gemsToDestroy.forEach(posStr => {
                 const [r, c] = posStr.split(',').map(Number);
@@ -162,16 +186,16 @@ export class PuzzleBoard {
             });
 
             // Score calculation
-            const points = destroyedCount * 10 * this.combo;
+            const points = (destroyedCount + power) * 10 * this.combo;
             this.score += points;
 
             // Garbage calculation (e.g. 1 garbage per 3 gems destroyed + bonus for combos)
-            const garbageAmt = Math.floor(destroyedCount / 3) + (this.combo > 1 ? this.combo : 0);
+            const garbageAmt = Math.floor(destroyedCount / 3) + power + (this.combo > 1 ? this.combo : 0);
             
             if (garbageAmt > 0) {
                 if (this.onSendGarbage) this.onSendGarbage(garbageAmt);
-                if (this.onCombo) this.onCombo(this.combo, garbageAmt);
             }
+            this.onCombo?.(this.combo, garbageAmt);
         }
 
         return matched;
@@ -210,9 +234,10 @@ export class PuzzleBoard {
     }
 
     draw(ctx) {
+        const cell=this.cellSize??this.board?.cellSize??PuzzleConfig.GEM_SIZE;
         // Draw board background
-        const width = PuzzleConfig.COLS * PuzzleConfig.GEM_SIZE;
-        const height = PuzzleConfig.ROWS * PuzzleConfig.GEM_SIZE;
+        const width = PuzzleConfig.COLS * cell;
+        const height = PuzzleConfig.ROWS * cell;
         
         ctx.fillStyle = "#222222";
         ctx.fillRect(this.x, this.y, width, height);
@@ -226,24 +251,39 @@ export class PuzzleBoard {
         ctx.lineWidth = 1;
         ctx.beginPath();
         for (let c = 1; c < PuzzleConfig.COLS; c++) {
-            ctx.moveTo(this.x + c * PuzzleConfig.GEM_SIZE, this.y);
-            ctx.lineTo(this.x + c * PuzzleConfig.GEM_SIZE, this.y + height);
+            ctx.moveTo(this.x + c * cell, this.y);
+            ctx.lineTo(this.x + c * cell, this.y + height);
         }
         for (let r = 1; r < PuzzleConfig.ROWS; r++) {
-            ctx.moveTo(this.x, this.y + r * PuzzleConfig.GEM_SIZE);
-            ctx.lineTo(this.x + width, this.y + r * PuzzleConfig.GEM_SIZE);
+            ctx.moveTo(this.x, this.y + r * cell);
+            ctx.lineTo(this.x + width, this.y + r * cell);
         }
         ctx.stroke();
 
+        const { blocks, used } = this.MergePowerGems();
         // Draw gems
         for (let r = 0; r < PuzzleConfig.ROWS; r++) {
             for (let c = 0; c < PuzzleConfig.COLS; c++) {
-                if (this.grid[r][c] !== null) {
-                    const gx = this.x + c * PuzzleConfig.GEM_SIZE;
-                    const gy = this.y + r * PuzzleConfig.GEM_SIZE;
-                    this.grid[r][c].render(ctx, gx, gy);
+                if (this.grid[r][c] && !used.has(this.grid[r][c])) {
+                    const gx = this.x + c * cell;
+                    const gy = this.y + r * cell;
+                    this.grid[r][c].render(ctx, gx, gy,cell);
                 }
             }
+        }
+        for (const block of blocks) {
+            const x = this.x + block.c * cell, y = this.y + block.r * cell;
+            const width = block.width * cell, height = block.height * cell;
+            const shine = ctx.createLinearGradient(x, y, x + width, y + height);
+            shine.addColorStop(0, '#fff');
+            shine.addColorStop(0.24, block.color);
+            shine.addColorStop(1, '#292139');
+            ctx.fillStyle = shine;
+            ctx.beginPath();
+            ctx.roundRect(x + 2, y + 2, width - 4, height - 4, 7);
+            ctx.fill();
+            ctx.strokeStyle = '#fff9';
+            ctx.stroke();
         }
     }
 }

@@ -33,7 +33,7 @@ export class FoundryHUD {
         }
         if (level.model.telemetry && !this.panel.open) {
             const x = screen.Width - (compact ? 150 : 244);
-            f.Text(`${level.telemetry.fps.toFixed(0)} FPS  /  ${level.telemetry.deltaMs.toFixed(1)} ms`, x, 32,
+            f.Text(`${level.telemetry.fps.toFixed(0)} FPS  /  ${level.telemetry.deltaMs.toFixed(1)} ms / ${level.entities.length} entities`, x, 32,
                 { size: compact ? 10 : 12, color: '#92d9d1' });
             if (!compact) {
                 const particles = w.rain.particles.length + w.particles.particles.length + w.splashes.particles.length;

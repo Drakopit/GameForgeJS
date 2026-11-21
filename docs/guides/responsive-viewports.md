@@ -64,27 +64,28 @@ detection and explicit menu settings; a narrow desktop window alone is not mobil
 
 ## Audit — 20 November 2026
 
-All 19 entry scenes pass automated desktop (1280×800), portrait (390×844),
+All 20 entry scenes pass automated desktop (1280×800), portrait (390×844),
 landscape (844×390), aspect-ratio, canvas bounds, 3D/UI alignment, Help invocation
-and disposal checks. These 57 view checks establish presentation behavior, not
+and disposal checks. These 60 view checks establish presentation behavior, not
 complete mobile playthroughs. Dedicated gameplay suites exercise the supported
 touch flows separately; emulated devices do not replace physical-device QA.
 
 | Demo | Presentation | Input / remaining debt |
 | --- | --- | --- |
+| Highland Tactics 3D | Adaptive | Keyboard/gamepad/touch terrain picking and action/facing menus; CT and full skirmish outcomes covered by regression tests. |
 | Aether Observatory 3D | Adaptive | Touch stick, jump, camera/tour controls; needs named-device GPU/frame-budget measurements. |
 | Cinematic Crossing 2D | Adaptive | Touch play/skip/replay; a focused cinematic, not a campaign. |
 | Route Atlas 2D | Adaptive | Touch node selection, enter/back and trial controls; campaign stages remain small demonstrations. |
 | Boss Patterns 2D | Adaptive | Touch move/fire/dash and help; needs longer balance and accessibility playtests. |
 | Storm Foundry 2D | Adaptive | Touch interactions and live controls; heavy preset still needs physical mobile performance budgets. |
 | Toon Adventure 3D | Contain | Keyboard/gamepad; needs touch traversal/combat and a HUD reflow before claiming mobile gameplay. Complete adventure/course remains unfinished. |
-| Platformer 2D | Contain | Keyboard/gamepad; needs touch movement/jump and a mobile HUD. |
+| Platformer 2D | Adaptive | Keyboard/gamepad plus native stick/jump, responsive camera/HUD and reserved touch area. |
 | Movement Collision 2D | Contain | Keyboard/gamepad; needs touch movement and responsive information density. |
 | Component Adventure 2D | Contain | Keyboard/gamepad; needs touch actions and HUD reflow. |
 | Platform Adventure 2D | Contain | Keyboard/gamepad; needs touch menus/gameplay and full authored campaign. |
 | Tactical RPG 2D | Contain | Keyboard/gamepad; needs deliberate touch tile/command selection and larger targets. |
 | Fighting 2D | Adaptive arena + HUD | Keyboard, stable two-controller seats, touch menus, movement, jump, guard and four attacks. Frame-accurate fighting expansion remains planned. |
-| Puzzle Battle 2D | Contain | Keyboard/gamepad; needs touch grid/cursor actions and menu targets. |
+| Puzzle Battle 2D | Adaptive | Keyboard/gamepad and native touch actions, pause/retry/result, responsive board/HUD layout. |
 | Renderer 3D | Contain | Keyboard/gamepad; needs touch camera controls and larger mobile HUD. |
 | Solar System 3D | Contain | Keyboard/gamepad; needs touch orbit/zoom and readable mobile labels. |
 | Sky Trail 3D | Contain | Keyboard/gamepad menu and gameplay; removed conflicting HTML aspect overrides. Needs touch menu/traversal and HUD reflow. |
