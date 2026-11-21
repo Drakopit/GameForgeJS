@@ -1,0 +1,2 @@
+html, body { margin: 0; background: #101522; overflow: hidden; }
+canvas { display: block; max-width: 100%; height: auto; }

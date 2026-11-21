@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "window": {
+    "title": "GameForgeJS — Touch Garden 2D"
+  },
+  "screen": {
+    "width": 480,
+    "height": 800,
+    "fullScreen": true,
+    "pixelArt": false,
+    "responsive": {
+      "mode": "contain"
+    }
+  },
+  "input": {
+    "actionMappings": {
+      "LEFT": [{"device":"keyboard","input":"KeyA"},{"device":"gamepad","input":"LEFT_STICK_LEFT"},{"device":"keyboard","input":"ArrowLeft"},{"device":"gamepad","input":"DPAD_LEFT"}],
+      "RIGHT": [{"device":"keyboard","input":"KeyD"},{"device":"gamepad","input":"LEFT_STICK_RIGHT"},{"device":"keyboard","input":"ArrowRight"},{"device":"gamepad","input":"DPAD_RIGHT"}],
+      "UP": [{"device":"keyboard","input":"KeyW"},{"device":"gamepad","input":"LEFT_STICK_UP"},{"device":"keyboard","input":"ArrowUp"},{"device":"gamepad","input":"DPAD_UP"}],
+      "DOWN": [{"device":"keyboard","input":"KeyS"},{"device":"gamepad","input":"LEFT_STICK_DOWN"},{"device":"keyboard","input":"ArrowDown"},{"device":"gamepad","input":"DPAD_DOWN"}],
+      "DASH": [{"device":"keyboard","input":"Space"},{"device":"gamepad","input":"button_0"}],
+      "HELP": [{"device":"keyboard","input":"KeyH"},{"device":"gamepad","input":"START"}],
+      "RESET": [{"device":"keyboard","input":"KeyR"},{"device":"gamepad","input":"button_3"}]
+    }
+  },
+  "project": {
+    "name": "Touch Garden 2D"
+  }
+}

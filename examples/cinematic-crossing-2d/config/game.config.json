@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "project": {
+    "name": "Cinematic Crossing 2D",
+    "version": "1.0.0",
+    "author": "Patrick Faustino Camello"
+  },
+  "window": {
+    "title": "Cinematic Crossing 2D",
+    "backgroundColor": "#102235"
+  },
+  "screen": {
+    "width": 960,
+    "height": 640,
+    "fullScreen": true,
+    "pixelArt": false,
+    "antialiasing": true,
+    "responsive": {
+      "mode": "adaptive"
+    }
+  },
+  "audio": {
+    "masterVolume": 0.55,
+    "cues": {
+      "select": {
+        "frequency": 480,
+        "endFrequency": 650,
+        "duration": 0.07,
+        "volume": 0.045
+      }
+    }
+  },
+  "input": {
+    "gamepadProfile": "xbox",
+    "actionMappings": {
+      "LEFT": [{"device":"keyboard","input":"KeyA"},{"device":"keyboard","input":"ArrowLeft"},{"device":"gamepad","input":"DPAD_LEFT"},{"device":"gamepad","input":"LEFT_STICK_LEFT"}],
+      "RIGHT": [{"device":"keyboard","input":"KeyD"},{"device":"keyboard","input":"ArrowRight"},{"device":"gamepad","input":"DPAD_RIGHT"},{"device":"gamepad","input":"LEFT_STICK_RIGHT"}],
+      "ACTION": [{"device":"keyboard","input":"Space"},{"device":"keyboard","input":"Enter"},{"device":"gamepad","input":"A"}],
+      "HELP": [{"device":"keyboard","input":"KeyH"},{"device":"gamepad","input":"RIGHT_STICK_BUTTON"}],
+      "SKIP": [{"device":"keyboard","input":"Escape"},{"device":"gamepad","input":"B"}]
+    }
+  }
+}

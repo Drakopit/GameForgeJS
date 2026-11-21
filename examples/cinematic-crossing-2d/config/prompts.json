@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "title": "Cinematic Crossing 2D / Controls",
+  "rows": [
+    {
+      "label": "Move",
+      "actions": [
+        "LEFT",
+        "RIGHT"
+      ]
+    },
+    {
+      "label": "Replay",
+      "actions": [
+        "ACTION"
+      ]
+    },
+    {
+      "label": "Help",
+      "actions": [
+        "HELP"
+      ]
+    },
+    {
+      "label": "Skip",
+      "actions": [
+        "SKIP"
+      ]
+    }
+  ],
+  "notes": [
+    "Parallel camera, zoom and fade tracks, waypoint movement, dialogue cues and clean skip/replay control states."
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "images": [],
+  "sprites": [],
+  "audios": [],
+  "fonts": [],
+  "schemaVersion": 1,
+  "jsons": [
+    {
+      "name": "prompts",
+      "path": "./prompts.json"
+    }
+  ]
+}

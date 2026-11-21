@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "window": {
+    "title": "GameForgeJS — Addon Building Blocks 2D"
+  },
+  "screen": {
+    "width": 800,
+    "height": 420,
+    "pixelArt": false,
+    "antialiasing": true,
+    "responsive": {
+      "mode": "contain"
+    }
+  },
+  "input": {
+    "actionMappings": {
+      "HELP": [{"device":"keyboard","input":"KeyH"},{"device":"gamepad","input":"START"}]
+    }
+  },
+  "project": {
+    "name": "Addon Building Blocks 2D"
+  }
+}

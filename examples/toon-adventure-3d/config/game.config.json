@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "window": {
+    "title": "GameForgeJS — Toon Adventure 3D"
+  },
+  "screen": {
+    "width": 960,
+    "height": 540,
+    "pixelArt": false,
+    "responsive": {
+      "mode": "contain"
+    }
+  },
+  "input": {
+    "actionMappings": {
+      "LEFT": [{"device":"keyboard","input":"KeyA"},{"device":"keyboard","input":"ArrowLeft"},{"device":"gamepad","input":"LEFT_STICK_LEFT"},{"device":"gamepad","input":"DPAD_LEFT"}],
+      "RIGHT": [{"device":"keyboard","input":"KeyD"},{"device":"keyboard","input":"ArrowRight"},{"device":"gamepad","input":"LEFT_STICK_RIGHT"},{"device":"gamepad","input":"DPAD_RIGHT"}],
+      "UP": [{"device":"keyboard","input":"KeyW"},{"device":"keyboard","input":"ArrowUp"},{"device":"gamepad","input":"LEFT_STICK_UP"},{"device":"gamepad","input":"DPAD_UP"}],
+      "DOWN": [{"device":"keyboard","input":"KeyS"},{"device":"keyboard","input":"ArrowDown"},{"device":"gamepad","input":"LEFT_STICK_DOWN"},{"device":"gamepad","input":"DPAD_DOWN"}],
+      "BANDS": [{"device":"keyboard","input":"KeyB"},{"device":"gamepad","input":"SELECT"}],
+      "HELP": [{"device":"keyboard","input":"KeyH"},{"device":"gamepad","input":"START"}],
+      "ATTACK": [{"device":"keyboard","input":"Space"},{"device":"gamepad","input":"button_2"}],
+      "RESET": [{"device":"keyboard","input":"KeyR"},{"device":"gamepad","input":"button_3"}]
+    }
+  },
+  "project": {
+    "name": "Toon Adventure 3D"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "title": "Movement & Collision 2D / Controls",
+  "rows": [
+    {
+      "label": "Move",
+      "actions": [
+        "UP",
+        "LEFT",
+        "DOWN",
+        "RIGHT"
+      ]
+    },
+    {
+      "label": "Help",
+      "actions": [
+        "HELP"
+      ]
+    }
+  ],
+  "notes": [
+    "A compact 2D example for movement, collision, and collection."
+  ]
+}

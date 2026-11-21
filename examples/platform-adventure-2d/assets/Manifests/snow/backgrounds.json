@@ -1,0 +1,10 @@
+{
+  "backgrounds": {
+    "sky": "snow_sky",
+    "mountainFar": "snow_mountain_02",
+    "mountainNear": "snow_mountain_01",
+    "snowFar": "snow_03",
+    "snowMid": "snow_02",
+    "snowNear": "snow_01"
+  }
+}

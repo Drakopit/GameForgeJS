@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "title": "Aether Observatory 3D / Controls",
+  "rows": [
+    {
+      "label": "Move",
+      "actions": [
+        "UP",
+        "LEFT",
+        "DOWN",
+        "RIGHT"
+      ]
+    },
+    {
+      "label": "Jump",
+      "actions": [
+        "ACTION"
+      ]
+    },
+    {
+      "label": "Camera mode",
+      "actions": [
+        "SECONDARY"
+      ]
+    },
+    {
+      "label": "Reset",
+      "actions": [
+        "RESET"
+      ]
+    },
+    {
+      "label": "Help",
+      "actions": [
+        "HELP"
+      ]
+    },
+    {
+      "label": "Skip cinematic",
+      "actions": [
+        "SKIP"
+      ]
+    },
+    {
+      "label": "Look left",
+      "actions": [
+        "LOOK_LEFT"
+      ]
+    },
+    {
+      "label": "Look right",
+      "actions": [
+        "LOOK_RIGHT"
+      ]
+    },
+    {
+      "label": "Look up",
+      "actions": [
+        "LOOK_UP"
+      ]
+    },
+    {
+      "label": "Look down",
+      "actions": [
+        "LOOK_DOWN"
+      ]
+    },
+    {
+      "label": "Telemetry",
+      "actions": [
+        "TELEMETRY"
+      ]
+    }
+  ],
+  "notes": [
+    "Native WebGL floating islands, shaded architecture, fog, physics traversal, orbit/chase cameras and a skippable cinematic."
+  ]
+}

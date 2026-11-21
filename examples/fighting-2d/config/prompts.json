@@ -1,0 +1,231 @@
+{
+  "schemaVersion": 1,
+  "title": "Fighting Arena 2D / Controls",
+  "rows": [
+    {
+      "label": "P1 Move",
+      "sources": {
+        "keyboard": [
+          "fighting.controls.playerOne.left",
+          "fighting.controls.playerOne.right"
+        ],
+        "gamepad": [
+          "fighting.controls.playerOne.gamepad.left",
+          "fighting.controls.playerOne.gamepad.right"
+        ]
+      },
+      "id": "p1-move"
+    },
+    {
+      "label": "P1 light",
+      "sources": {
+        "keyboard": [
+          "fighting.controls.playerOne.light"
+        ],
+        "gamepad": [
+          "fighting.controls.playerOne.gamepad.light"
+        ]
+      },
+      "id": "p1-light"
+    },
+    {
+      "label": "P1 heavy",
+      "sources": {
+        "keyboard": [
+          "fighting.controls.playerOne.heavy"
+        ],
+        "gamepad": [
+          "fighting.controls.playerOne.gamepad.heavy"
+        ]
+      },
+      "id": "p1-heavy"
+    },
+    {
+      "label": "P1 special",
+      "sources": {
+        "keyboard": [
+          "fighting.controls.playerOne.special"
+        ],
+        "gamepad": [
+          "fighting.controls.playerOne.gamepad.special"
+        ]
+      },
+      "id": "p1-special"
+    },
+    {
+      "label": "P1 super",
+      "sources": {
+        "keyboard": [
+          "fighting.controls.playerOne.super"
+        ],
+        "gamepad": [
+          "fighting.controls.playerOne.gamepad.super"
+        ]
+      },
+      "id": "p1-super"
+    },
+    {
+      "label": "P2 Move",
+      "sources": {
+        "keyboard": [
+          "fighting.controls.playerTwo.left",
+          "fighting.controls.playerTwo.right"
+        ],
+        "gamepad": [
+          "fighting.controls.playerTwo.gamepad.left",
+          "fighting.controls.playerTwo.gamepad.right"
+        ]
+      },
+      "id": "p2-move"
+    },
+    {
+      "label": "P2 light",
+      "sources": {
+        "keyboard": [
+          "fighting.controls.playerTwo.light"
+        ],
+        "gamepad": [
+          "fighting.controls.playerTwo.gamepad.light"
+        ]
+      },
+      "id": "p2-light"
+    },
+    {
+      "label": "P2 heavy",
+      "sources": {
+        "keyboard": [
+          "fighting.controls.playerTwo.heavy"
+        ],
+        "gamepad": [
+          "fighting.controls.playerTwo.gamepad.heavy"
+        ]
+      },
+      "id": "p2-heavy"
+    },
+    {
+      "label": "P2 special",
+      "sources": {
+        "keyboard": [
+          "fighting.controls.playerTwo.special"
+        ],
+        "gamepad": [
+          "fighting.controls.playerTwo.gamepad.special"
+        ]
+      },
+      "id": "p2-special"
+    },
+    {
+      "label": "P2 super",
+      "sources": {
+        "keyboard": [
+          "fighting.controls.playerTwo.super"
+        ],
+        "gamepad": [
+          "fighting.controls.playerTwo.gamepad.super"
+        ]
+      },
+      "id": "p2-super"
+    },
+    {
+      "id": "help",
+      "label": "Help",
+      "rules": [
+        {
+          "device": "keyboard",
+          "input": "KeyH"
+        },
+        {
+          "device": "gamepad",
+          "input": "START"
+        }
+      ]
+    },
+    {
+      "id": "p1-up",
+      "label": "P1 Jump",
+      "sources": {
+        "keyboard": [
+          "fighting.controls.playerOne.up"
+        ],
+        "gamepad": [
+          "fighting.controls.playerOne.gamepad.up"
+        ]
+      }
+    },
+    {
+      "id": "p1-down",
+      "label": "P1 Guard",
+      "sources": {
+        "keyboard": [
+          "fighting.controls.playerOne.down"
+        ],
+        "gamepad": [
+          "fighting.controls.playerOne.gamepad.down"
+        ]
+      }
+    },
+    {
+      "id": "p2-up",
+      "label": "P2 Jump",
+      "sources": {
+        "keyboard": [
+          "fighting.controls.playerTwo.up"
+        ],
+        "gamepad": [
+          "fighting.controls.playerTwo.gamepad.up"
+        ]
+      }
+    },
+    {
+      "id": "p2-down",
+      "label": "P2 Guard",
+      "sources": {
+        "keyboard": [
+          "fighting.controls.playerTwo.down"
+        ],
+        "gamepad": [
+          "fighting.controls.playerTwo.gamepad.down"
+        ]
+      }
+    },
+    {
+      "id": "p1-medium",
+      "label": "P1 medium",
+      "sources": {
+        "keyboard": [
+          "fighting.controls.playerOne.medium"
+        ],
+        "gamepad": [
+          "fighting.controls.playerOne.gamepad.medium"
+        ]
+      }
+    },
+    {
+      "id": "p2-medium",
+      "label": "P2 medium",
+      "sources": {
+        "keyboard": [
+          "fighting.controls.playerTwo.medium"
+        ],
+        "gamepad": [
+          "fighting.controls.playerTwo.gamepad.medium"
+        ]
+      }
+    },
+    {
+      "id": "p1-crouch",
+      "label": "P1 crouch / low attacks",
+      "sources": {
+        "keyboard": [
+          "fighting.controls.playerOne.crouch"
+        ],
+        "gamepad": [
+          "fighting.controls.playerOne.gamepad.crouch"
+        ]
+      }
+    }
+  ],
+  "notes": [
+    "Energy spheres, meter-powered supers, buffered melee chains, reactive CPU, local versus and four character profiles."
+  ]
+}

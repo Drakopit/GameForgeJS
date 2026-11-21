@@ -1,0 +1,10 @@
+{
+  "id": "snow_pack",
+  "compose": [
+    "snow_backgrounds",
+    "snow_terrain",
+    "snow_vegetation",
+    "snow_objects_catalog",
+    "snow_standards"
+  ]
+}

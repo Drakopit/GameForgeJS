@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "name": "platformer-2d",
+  "entry": "index.html",
+  "runtimeConfig": "config/game.config.json",
+  "resources": "config/resources.json",
+  "modules": [],
+  "enginePath": "../.."
+}

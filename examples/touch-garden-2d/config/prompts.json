@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "title": "Touch Garden 2D / Controls",
+  "rows": [
+    {
+      "label": "Move",
+      "actions": [
+        "UP",
+        "LEFT",
+        "DOWN",
+        "RIGHT"
+      ]
+    },
+    {
+      "label": "Dash",
+      "actions": [
+        "DASH"
+      ]
+    },
+    {
+      "label": "Help",
+      "actions": [
+        "HELP"
+      ]
+    },
+    {
+      "label": "Reset",
+      "actions": [
+        "RESET"
+      ]
+    }
+  ],
+  "notes": [
+    "Mobile building blocks: identified multi-touch, a virtual stick, a simultaneous dash action, collision and collectible entities."
+  ]
+}

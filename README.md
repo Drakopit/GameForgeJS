@@ -1,280 +1,173 @@
+<p align="center">
+  <img src="docs/assets/gameforgejs-banner.png" alt="GameForgeJS" width="100%" />
+</p>
+
 # GameForgeJS
 
-## Overview
+GameForgeJS is an experimental JavaScript framework for browser games.
+It includes a shared runtime, Canvas 2D and WebGL2 rendering, networking
+helpers, a local project CLI, and playable examples.
 
-Welcome to **GameForgeJS**, a powerful and lightweight JavaScript framework for creating browser-based games! This guide will walk you through the essentials of using our framework to develop your own games.
+The browser runtime uses native JavaScript and browser APIs. Node.js runs the
+development CLI, validation, documentation generation, and static builds.
 
-Originally built for 2D Canvas rendering, GameForgeJS has evolved into a **Hybrid 2D/3D Engine**, fully supporting WebGL for 3D environments, custom GLSL Shaders, Skyboxes, and an overlaid 2D HUD system. The framework is built strictly with pure JavaScript (ES6 Modules), ensuring high performance without heavy third-party dependencies.
+## Start here
 
-## Table of Contents
+GameForgeJS runs as native browser JavaScript. Node.js and the CLI are optional
+development tools; an ordinary static HTTP server can serve the engine and game.
 
-1. [Getting Started](https://www.google.com/search?q=%23getting-started)
-2. [Project Structure](https://www.google.com/search?q=%23project-structure)
-3. [Setup and Installation](https://www.google.com/search?q=%23setup-and-installation)
-4. [Usage & Architecture](https://www.google.com/search?q=%23usage--architecture)
-5. [Key Features](https://www.google.com/search?q=%23key-features)
-6. [Examples](https://www.google.com/search?q=%23examples)
-7. [Contributing](https://www.google.com/search?q=%23contributing)
-8. [License](https://www.google.com/search?q=%23license)
-9. [Contact](https://www.google.com/search?q=%23contact)
+## Principles
 
-## Getting Started
+- Keep the runtime independent of external dependencies and build tools.
+- Use `BootstrapGame`, `Level` / `Level3D`, and `GameObject` as the main game pattern.
+- Let `Screen` and the framework's rendering classes own canvas creation and drawing.
+- Keep screen, input, and window configuration owned by each game.
+- Describe assets and levels through manifests; evolve inheritance with components.
+- Keep authoring tools separate. Optional extensions must reuse framework services.
 
-To get started with GameForgeJS, you will need a basic understanding of JavaScript (ES6 Classes, Modules, and Promises), HTML, and CSS. This guide will walk you through the setup process, the new lifecycle hooks, and key features of the framework.
+See [Architecture and ownership](docs/architecture.md) for how these pieces fit.
 
-## Project Structure
+## Run the examples
 
-Here's an overview of the engine's modular directory structure:
+From a repository checkout:
+
+```sh
+npm ci
+npm start
+```
+
+Open the URL printed by the server and visit
+`/#jogos` for the categorized catalog. Each example also has its own `index.html`.
+Existing `Main.html?demo=advanced` links redirect to the corresponding game.
+
+See [responsive viewports and the demo input audit](docs/guides/responsive-viewports.md)
+for presentation configuration and the remaining mobile work in each example.
+
+To create a separate game from this checkout:
+
+```sh
+node cli/index.cjs create ../my-game --template minimal-2d
+node cli/index.cjs serve --root ../my-game
+```
+
+Use `minimal-3d` for a WebGL2 starter. These commands use the local engine
+checkout; they do not assume a package has been published to npm.
+See [Create a project](docs/getting-started/new-project.md) for the project
+layout and [CLI reference](docs/reference/cli.md) for all commands.
+
+## Public imports
+
+CLI-generated games follow the established `BootstrapGame`/`Level` pattern:
+
+```js
+import { BootstrapGame, Level } from "gameforgejs/core";
+import { GameObject, Screen, Draw } from "gameforgejs/2d";
+```
+
+The generated project's import map resolves these public names in the browser.
+The separate `createGame` API is also available for projects that need
+independent runtime instances. Package exports provide the same public names
+for package-aware tooling. Internal implementation files live only in `src/`;
+do not import them through deep paths or create a parallel `packages/` facade.
+
+## Repository layout
 
 ```text
-GameForgeJS/
-├── Audio/
-│   ├── processor.js
-│   └── Song.js
-├── Demo/
-│   ├── Coin.js
-│   ├── Player.js
-│   └── TechDemoLevel.js
-├── Demo3D/
-│   ├── CubeEntity.js
-│   └── TechDemo3DLevel.js
-├── DemoAdvanced/
-│   ├── Assets/
-│   │   ├── background.jpg
-│   │   ├── hero.png
-│   │   ├── Idle.png
-│   │   ├── Laser.png
-│   │   └── Run.png
-│   ├── AdvancedDemoLevel.js
-│   ├── Bullet.js
-│   ├── Enemy.js
-│   └── Player.js
-├── DemoMiniGame3D/
-│   ├── Assets/
-│   │   └── Textures/
-│   │       ├── coin.jpg
-│   │       ├── Daylight Box UV.png
-│   │       ├── floor.jpg
-│   │       ├── overview.jpg
-│   │       └── player.jpg
-│   ├── Coin3D.js
-│   ├── CubeGameLevel.js
-│   ├── Floor3D.js
-│   ├── MiniGame3DMenu.js
-│   └── Player3D.js
-├── Graphic/
-│   ├── Animator.js
-│   ├── Draw.js             # 2D Canvas Drawing API
-│   ├── Rectangle.js
-│   ├── Shape3D.js          # WebGL 3D Geometry and Shader Compilation
-│   ├── Skybox3D.js         # 360° Seamless Environment rendering
-│   └── Sprite.js
-├── Input/
-│   ├── Input.js            # Global Keyboard/Mouse state handling
-│   ├── KeyCode.js
-│   ├── Mouse.js
-│   └── Touch.js
-├── Math/
-│   ├── Collide2D.js
-│   ├── MathExt.js
-│   ├── Physic2D.js
-│   ├── Vector2D.js
-│   └── Vector3D.js
-├── Particle/
-│   ├── Particle.js
-│   └── ParticleSystem.js
-├── Pathfinding/
-│   ├── AStar.js
-│   ├── BFS.js
-│   ├── DFS.js
-│   ├── Dijkstra.js
-│   └── Structure.js
-├── Root/
-│   ├── AssetManager.js     # Async Preloader for Images, Audio, and Shaders
-│   ├── Base.js             # Base class with Next/Back state flags
-│   ├── Camera.js
-│   ├── Camera3D.js         # View and Projection Matrices for WebGL
-│   ├── Engine.js           # Core GameLoop and LevelHandler
-│   ├── GameObject.js
-│   ├── GameObject3D.js     # Base entity for 3D objects
-│   ├── Logger.js           # Centralized debugging
-│   ├── ObjectPool.js       # Memory management for repetitive entities
-│   ├── Scene.js
-│   ├── Store.js
-│   ├── UI.js
-│   └── Utils.js
-├── Shaders/                # Raw GLSL files
-│   ├── FragmentShader.glsl
-│   ├── SkyboxFragmentShader.glsl
-│   ├── SkyBoxVertexShader.glsl
-│   └── VertexShader.glsl
-├── Template/
-│   ├── DebugMap.js
-│   ├── Level.js            # Base State/Scene for 2D 
-│   ├── Level3D.js          # Base State/Scene for WebGL 3D
-│   └── Menu.js
-├── UI/
-│   ├── Button.js
-│   ├── Label.js
-│   └── TextBox.js
-├── Window/
-│   ├── Screen.js           # 2D Canvas DOM Element manager
-│   ├── Screen3D.js         # WebGL Canvas DOM Element manager
-│   └── ScreenUI.js         # Hybrid Absolute-Positioned 2D Canvas over 3D
-├── .gitignore
-├── _config.yml
-├── engrenagem.png
-├── list.txt
-├── lista.txt
-├── main.css
-├── Main.html
-├── mainAdvanced.js         # Entry point for Advanced Demo
-├── mainDemo3D.js           # Entry point for 3D Demo
-├── mainImmature.js
-├── mainMiniGame3D.js       # Application Entry Point for MiniGame 3D
-├── README.md
-├── reset.css
-└── Tarefas.todo
+src/
+  core/                 Game lifecycle, configuration, assets, input, math
+  2d/                   Canvas rendering and existing 2D game APIs
+  3d/                   WebGL2 rendering, scenes, materials, physics
+  network/              Transports and synchronization helpers
+cli/
+  templates/            Minimal executable game starters
+examples/
+  catalog.json          Metadata consumed by the showcase and this table
+  showcase/             Example browser, independent of the runtime
+  <purpose>-2d/ or <purpose>-3d/
+    index.html          Browser entry
+    main.js             Game bootstrap
+    config/             Game settings, resource manifest and tooling metadata (migrated projects)
+    src/                Levels, screens, entities, and game systems
+    assets/             Game resources
+scripts/                Repository checks and documentation generation
+tests/                  Automated regression and contract checks
+docs/                   Canonical English documentation
 ```
 
-## Setup and Installation
-
-1. **Clone the repository:**
-```sh
-git clone https://github.com/Drakopit/GameForgeJS.git
-
-```
-
-
-2. **Run a Local Web Server:**
-*Due to WebGL and `fetch` API security policies (CORS) for loading external shaders and textures, you MUST run a local server.*
-* If using VSCode: Install the **Live Server** extension and click "Go Live".
-* If using NodeJS: Run `npx http-server`.
-* If using Python: Run `python -m http.server`.
-
-
-3. **Open the project in your browser:**
-Navigate to `http://localhost:8080/main.html` (or your corresponding local port).
-
-## Usage & Architecture
-
-### Main Components
-
-1. **Engine & LevelHandler**: The core state machine. Handles the `requestAnimationFrame` loop, fixed physics updates, and scene transitions using `Next` and `Back` flags.
-2. **AssetManager**: An asynchronous singleton that queues and downloads all Textures, Sounds, and GLSL Shaders before the game starts.
-3. **Level / Level3D**: Template classes representing game scenes. They manage their own DOM elements (Canvases) during `OnStart` and clean them up during `OnExit`.
-4. **ScreenUI & Screen3D**: Handles the physical `<canvas>` tags. `ScreenUI` automatically overlaps `Screen3D` perfectly for HUD rendering (Health bars, Scores, etc) on top of WebGL scenes.
-
-### Creating a New Level (The Modern Way)
-
-GameForgeJS strictly separates memory allocation from DOM injection. **Never create `Screen` canvases in the constructor.** Always create them in `OnStart()` and destroy them in `OnExit()` to prevent "Zombie Canvases".
-
-```javascript
-import { Level3D } from "../Template/Level3D.js";
-import { ScreenUI } from "../Window/ScreenUI.js";
-
-export class MyCustomLevel extends Level3D {
-    constructor() {
-        super();
-        this.caption = "My Awesome 3D Level";
-        this.Next = false;
-        this.Back = false;
-    }
-
-    OnStart() {
-        // 1. Create Canvases ONLY when the level actually starts
-        this.screen3D = new Screen3D("gameCanvas3D", 800, 600);
-        this.ui = new ScreenUI("gameCanvasUI", 800, 600);
-        this.TelaId = "MyCustomLevel";
-
-        // 2. Setup rendering order
-        this.screen3D.Canvas.style.position = "absolute";
-        this.screen3D.Canvas.style.zIndex = "1";
-
-        super.OnStart(); // Initializes all 3D entities
-    }
-
-    OnUpdate(dt) {
-        super.OnUpdate(dt);
-        // Example of transitioning back to the main menu
-        if (Input.GetKeyDown("Escape")) {
-            this.Back = true; 
-        }
-    }
-
-    OnExit() {
-        // MUST clean up DOM elements before the engine transitions to the next level
-        if (this.screen3D && this.screen3D.Canvas) this.screen3D.Canvas.remove();
-        if (this.ui && this.ui.Screen.Canvas) this.ui.Screen.Canvas.remove();
-    }
-}
-
-```
-
-### Initializing the Engine (Async Loading)
-
-Use the `AssetManager` to ensure all your resources are loaded before adding levels to the `LevelHandler`.
-
-```javascript
-import { Engine, LevelHandler } from "./Root/Engine.js";
-import { AssetManager } from "./Root/AssetManager.js";
-import { Input } from "./Input/Input.js";
-import { MyCustomLevel } from "./Levels/MyCustomLevel.js";
-import { MainMenu } from "./Levels/MainMenu.js";
-
-try {
-    new Input(); 
-
-    const assets = new AssetManager();
-    assets.QueueImage("player_tex", "Assets/Textures/player.png");
-    assets.QueueShader("basicVert", "Shaders/Basic.vert");
-    assets.QueueShader("basicFrag", "Shaders/Basic.frag");
-
-    // Wait for all assets to download
-    assets.LoadAll().then(() => {
-        // Add levels as raw objects (no parameters to avoid premature DOM creation)
-        LevelHandler.addLevel(new MainMenu());
-        LevelHandler.addLevel(new MyCustomLevel());
-        
-        // Start the GameLoop
-        Engine.OnStart();
-    });
-
-} catch(exception) {
-    console.error(`Fatal Exception: ${exception}`);
-}
-
-```
-
-## Key Features
-
-* **Hybrid Rendering Pipeline**: Seamlessly overlay 2D Canvas APIs (`Draw.js`) on top of 3D WebGL contexts (`Screen3D.js`) for perfect UI/HUD integration.
-* **Asynchronous Asset Management**: Pre-fetch images, GLSL shaders, and audio to avoid stuttering and missing textures during gameplay.
-* **Advanced State Machine**: Built-in memory leak protection. The `LevelHandler` automatically triggers `OnExit()` allowing levels to garbage-collect themselves before transitioning.
-* **Custom Shaders & Skyboxes**: Full support for native `.glsl` file importing, `samplerCube` textures, and dynamic View/Projection matrices via `Camera3D`.
-* **Object Pooling**: Avoid garbage collection spikes by reusing instantiated objects (like bullets or particles) via `ObjectPool.js`.
+Not every example needs every optional file or source subdirectory.
+`resources.json` declares loaded assets; `game.workspace.json`, when
+present, is metadata for an external editor.
 
 ## Examples
 
-Explore the `[https://github.com/Drakopit/TechDemo]` URL to see examples of different game levels.
+The showcase is intended for exploration and integration examples. New games
+start from CLI templates, which contain only the minimum runnable behavior.
 
-* The `GravityLevel.js` demonstrates 2D physics.
-* The `CubeGameLevel.js` demonstrates WebGL matrices, 3D Euclidean collision, and Keyboard/Camera movement.
+<!-- examples:start -->
+| Example | Dimension | Purpose |
+| --- | --- | --- |
+| [Highland Tactics 3D](examples/highland-tactics-3d/index.html) | 3D | True 3D terraced tactics: CT turns, height-aware paths, line of sight, facing bonuses and native surface/weather effects. |
+| [Aether Observatory 3D](examples/aether-observatory-3d/index.html) | 3D | Native WebGL floating islands, shaded architecture, fog, physics traversal, orbit/chase cameras and a skippable cinematic. |
+| [Cinematic Crossing 2D](examples/cinematic-crossing-2d/index.html) | 2D | Parallel camera, zoom and fade tracks, waypoint movement, dialogue cues and clean skip/replay control states. |
+| [Route Atlas 2D](examples/route-atlas-2d/index.html) | 2D | A branching overworld graph, smooth node travel, playable shard trials and event-driven stage unlocks. |
+| [Boss Patterns 2D](examples/boss-patterns-2d/index.html) | 2D | A three-phase boss with aimed fans, rings, marked charges, delayed hazards, pooled projectiles and dash invulnerability. |
+| [Storm Foundry FX Lab 2D](examples/storm-foundry-2d/index.html) | 2D | Layered rain, reactive water reflections, dynamic props, bounded particle pools and an in-engine live FX playground. |
+| [Toon Adventure 3D](examples/toon-adventure-3d/index.html) | 3D | A Toon ABS sandbox with two large lakes, linked warp gates, five sentries and shallow-water interaction. |
+| [Platformer Building Blocks 2D](examples/platformer-2d/index.html) | 2D | Two compact stages demonstrating tile collision, jump buffering, coyote time, collection and level transitions. |
+| [Movement & Collision 2D](examples/movement-collision-2d/index.html) | 2D | A compact 2D example for movement, collision, and collection. |
+| [Component Adventure 2D](examples/component-adventure-2d/index.html) | 2D | Top-down movement, reusable entity components, and room camera transitions. |
+| [Platform Adventure 2D](examples/platform-adventure-2d/index.html) | 2D | Platform combat, patrol and pursuit AI, line of sight, inventory, skills and manifest-authored stages. |
+| [Tactical RPG 2D](examples/tactical-rpg-2d/index.html) | 2D | A turn-based grid game with pathfinding, movement range, and combat. |
+| [Fighting Arena 2D](examples/fighting-2d/index.html) | 2D | Energy spheres, meter-powered supers, buffered melee chains, reactive CPU, local versus and four character profiles. |
+| [Puzzle Battle 2D](examples/puzzle-battle-2d/index.html) | 2D | An arcade puzzle game with combos and competitive block exchanges. |
+| [Renderer Showcase 3D](examples/renderer-3d/index.html) | 3D | A Render3D scene exploring cameras, models, lighting, materials, and shadows. |
+| [Solar System 3D](examples/solar-system-3d/index.html) | 3D | Procedural celestial materials, sunlight, and animated planetary orbits. |
+| [Sky Trail 3D](examples/sky-trail-3d/index.html) | 3D | Four expeditions, a gamepad-ready 3D menu, moving platforms, checkpoints and collectibles. |
+| [Online Sandbox 2D](examples/online-sandbox-2d/index.html) | 2D | Cooperative mining/building, dedicated server rooms, predicted movement and mobile controls; backend required. |
+| [Addon Building Blocks 2D](examples/addons-2d/index.html) | 2D | Shared parallax layers and a patrol/rest state machine using the standard framework lifecycle. |
+| [Touch Garden 2D](examples/touch-garden-2d/index.html) | 2D | Mobile building blocks: identified multi-touch, a virtual stick, a simultaneous dash action, collision and collectible entities. |
+<!-- examples:end -->
 
-## Contributing
+## Documentation
 
-We welcome contributions! If you have suggestions, bug fixes, or improvements, please fork the repository and submit a pull request. For major changes, please open an issue first to discuss what you would like to change.
+- [Documentation index](docs/index.md)
+- [Create a project](docs/getting-started/new-project.md)
+- [Learn from 2D and 3D examples](docs/getting-started/tutorial-demos-2d-3d.md)
+- [Architecture and ownership](docs/architecture.md)
+- [Standalone runtime and repository split proposal](docs/plans/repository-split.md)
+- [Migrate existing code](docs/migrations/repository-layout.md)
+- [CLI reference](docs/reference/cli.md)
+- [Input configuration](docs/getting-started/input-config.md)
+- [Components](docs/guides/components.md)
+- [3D rendering](docs/guides/render3d.md)
+- [Networking](docs/guides/network.md)
 
-Remember to follow the existing architecture rules (SOLID and Clean Code) when creating PRs.
+English is the canonical documentation language. API reference pages are
+generated from public source JSDoc; the example list above is generated from
+`examples/catalog.json`. Edit those sources, then run `npm run docs`.
 
-## License
+## Validate changes
 
-This project is licensed under the MIT License. See the [LICENSE](https://www.google.com/search?q=LICENSE) file for details.
+```sh
+npm run check
+npm test
+npm run test:browser
+npm run docs
+npm run docs:check
+```
 
-## Contact
+Run a changed example in a browser as well. Syntax and resource checks cannot
+prove rendering, game input, or GPU behavior.
 
-For any questions or feedback, feel free to contact the author, Patrick Faustino Camello, at [patrickcamelo@yahoo.com.br](mailto:patrickcamelo@yahoo.com.br).
+## Current boundaries
 
----
+The game-instance API introduces explicit module setup and disposal.
+Existing static engine, input, screen, and asset APIs remain available for
+older examples; they must not be assumed to support several simultaneous
+games in one page. See the architecture guide for the compatibility boundary.
 
-Thank you for using GameForgeJS! We hope it empowers you to forge amazing web experiences. Happy coding!
+External authoring applications and multiplayer servers are separate
+projects. The local development server does not provide a game backend.
+
+See the [complete examples index](examples/README.md) for canonical demo names,
+controls, learning paths and the mobile Touch Garden building blocks.

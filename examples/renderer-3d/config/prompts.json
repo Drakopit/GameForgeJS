@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "title": "Renderer Showcase 3D / Controls",
+  "rows": [
+    {
+      "label": "Render controls",
+      "actions": [
+        "HELP"
+      ]
+    },
+    {
+      "label": "Rain toggle",
+      "actions": [
+        "WEATHER"
+      ]
+    }
+  ],
+  "notes": [
+    "Inspect wet stone, timber, polished metal, and the planar water reflection."
+  ]
+}

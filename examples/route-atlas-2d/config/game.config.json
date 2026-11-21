@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "project": {
+    "name": "Route Atlas 2D",
+    "version": "1.0.0",
+    "author": "Patrick Faustino Camello"
+  },
+  "window": {
+    "title": "Route Atlas 2D",
+    "backgroundColor": "#102235"
+  },
+  "screen": {
+    "width": 960,
+    "height": 640,
+    "fullScreen": true,
+    "pixelArt": false,
+    "antialiasing": true,
+    "responsive": {
+      "mode": "adaptive"
+    }
+  },
+  "audio": {
+    "masterVolume": 0.55,
+    "cues": {
+      "select": {
+        "frequency": 480,
+        "endFrequency": 650,
+        "duration": 0.07,
+        "volume": 0.045
+      }
+    }
+  },
+  "input": {
+    "gamepadProfile": "xbox",
+    "actionMappings": {
+      "LEFT": [{"device":"keyboard","input":"KeyA"},{"device":"keyboard","input":"ArrowLeft"},{"device":"gamepad","input":"DPAD_LEFT"},{"device":"gamepad","input":"LEFT_STICK_LEFT"}],
+      "RIGHT": [{"device":"keyboard","input":"KeyD"},{"device":"keyboard","input":"ArrowRight"},{"device":"gamepad","input":"DPAD_RIGHT"},{"device":"gamepad","input":"LEFT_STICK_RIGHT"}],
+      "UP": [{"device":"keyboard","input":"KeyW"},{"device":"keyboard","input":"ArrowUp"},{"device":"gamepad","input":"DPAD_UP"},{"device":"gamepad","input":"LEFT_STICK_UP"}],
+      "DOWN": [{"device":"keyboard","input":"KeyS"},{"device":"keyboard","input":"ArrowDown"},{"device":"gamepad","input":"DPAD_DOWN"},{"device":"gamepad","input":"LEFT_STICK_DOWN"}],
+      "ACTION": [{"device":"keyboard","input":"Space"},{"device":"keyboard","input":"Enter"},{"device":"gamepad","input":"A"}],
+      "RESET": [{"device":"keyboard","input":"KeyR"},{"device":"gamepad","input":"SELECT"}],
+      "HELP": [{"device":"keyboard","input":"KeyH"},{"device":"gamepad","input":"RIGHT_STICK_BUTTON"}],
+      "SKIP": [{"device":"keyboard","input":"Escape"},{"device":"gamepad","input":"B"}]
+    }
+  }
+}

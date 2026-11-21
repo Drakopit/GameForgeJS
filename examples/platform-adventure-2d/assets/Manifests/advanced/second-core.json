@@ -1,0 +1,12 @@
+{
+  "world": {
+    "width": 4000,
+    "height": 660
+  },
+  "victory": {
+    "x": 3830
+  },
+  "audio": {
+    "bgmVolume": 0.42
+  }
+}

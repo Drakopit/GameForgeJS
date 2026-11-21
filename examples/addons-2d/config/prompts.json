@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "title": "Addon Building Blocks 2D / Controls",
+  "rows": [{"label":"Controls","actions":["HELP"]}],
+  "notes": [
+    "Shared parallax layers and a patrol/rest state machine using the standard framework lifecycle."
+  ]
+}

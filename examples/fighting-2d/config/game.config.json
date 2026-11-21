@@ -1,0 +1,311 @@
+{
+  "schemaVersion": 1,
+  "project": {
+    "name": "Fighting Arena 2D",
+    "version": "1.0.0",
+    "author": "Camello"
+  },
+  "window": {
+    "title": "GameForgeJS — Fighting Arena 2D",
+    "backgroundColor": "#000000",
+    "cursor": "default"
+  },
+  "screen": {
+    "width": 960,
+    "height": 540,
+    "pixelArt": true,
+    "antialiasing": false,
+    "orientation": "landscape",
+    "responsive": {
+      "mode": "adaptive"
+    }
+  },
+  "input": {
+    "gamepadProfile": "xbox",
+    "gamepadAliases": {
+      "LIGHT_ATTACK": "button_2",
+      "HEAVY_ATTACK": "button_3",
+      "SPECIAL": "button_5",
+      "SUPER": "button_7"
+    }
+  },
+  "fighting": {
+    "controls": {
+      "menu": {
+        "left": [
+          "ArrowLeft",
+          "KeyA"
+        ],
+        "right": [
+          "ArrowRight",
+          "KeyD"
+        ],
+        "up": [
+          "ArrowUp",
+          "KeyW"
+        ],
+        "down": [
+          "ArrowDown",
+          "KeyS"
+        ],
+        "confirm": [
+          "Enter",
+          "Space",
+          "KeyJ",
+          "KeyZ"
+        ],
+        "cancel": [
+          "Escape",
+          "Backspace"
+        ],
+        "gamepad": {
+          "up": {
+            "buttons": [
+              "button_12"
+            ],
+            "axes": [
+              "axis_1_negative"
+            ]
+          },
+          "down": {
+            "buttons": [
+              "button_13"
+            ],
+            "axes": [
+              "axis_1_positive"
+            ]
+          },
+          "left": {
+            "buttons": [
+              "button_14"
+            ],
+            "axes": [
+              "axis_0_negative"
+            ]
+          },
+          "right": {
+            "buttons": [
+              "button_15"
+            ],
+            "axes": [
+              "axis_0_positive"
+            ]
+          },
+          "confirm": [
+            "button_0",
+            "button_9"
+          ],
+          "cancel": [
+            "button_1",
+            "button_8"
+          ]
+        }
+      },
+      "playerOne": {
+        "left": [
+          "KeyA"
+        ],
+        "right": [
+          "KeyD"
+        ],
+        "up": [
+          "KeyW"
+        ],
+        "down": [
+          "KeyS",
+          "ShiftLeft"
+        ],
+        "light": [
+          "KeyJ",
+          "KeyZ"
+        ],
+        "heavy": [
+          "KeyK",
+          "KeyX"
+        ],
+        "special": [
+          "KeyL",
+          "KeyC"
+        ],
+        "gamepad": {
+          "index": 0,
+          "left": {
+            "buttons": [
+              "button_14"
+            ],
+            "axes": [
+              "axis_0_negative"
+            ]
+          },
+          "right": {
+            "buttons": [
+              "button_15"
+            ],
+            "axes": [
+              "axis_0_positive"
+            ]
+          },
+          "up": {
+            "buttons": [
+              "button_12",
+              "button_0"
+            ],
+            "axes": [
+              "axis_1_negative"
+            ]
+          },
+          "down": {
+            "buttons": [
+              "button_13",
+              "button_4"
+            ],
+            "axes": [
+              "axis_1_positive"
+            ]
+          },
+          "light": [
+            "LIGHT_ATTACK"
+          ],
+          "heavy": [
+            "HEAVY_ATTACK"
+          ],
+          "special": [
+            "SPECIAL"
+          ],
+          "super": [
+            "SUPER"
+          ],
+          "medium": [
+            "button_6"
+          ],
+          "crouch": {
+            "buttons": [
+              "button_13"
+            ],
+            "axes": [
+              "axis_1_positive"
+            ]
+          }
+        },
+        "super": [
+          "KeyU",
+          "KeyQ"
+        ],
+        "medium": [
+          "KeyI"
+        ],
+        "crouch": [
+          "KeyS"
+        ]
+      },
+      "playerTwo": {
+        "left": [
+          "ArrowLeft"
+        ],
+        "right": [
+          "ArrowRight"
+        ],
+        "up": [
+          "ArrowUp"
+        ],
+        "down": [
+          "ArrowDown",
+          "Numpad0"
+        ],
+        "light": [
+          "Digit1",
+          "Numpad1"
+        ],
+        "heavy": [
+          "Digit2",
+          "Numpad2"
+        ],
+        "special": [
+          "Digit3",
+          "Numpad3"
+        ],
+        "gamepad": {
+          "index": 1,
+          "left": {
+            "buttons": [
+              "button_14"
+            ],
+            "axes": [
+              "axis_0_negative"
+            ]
+          },
+          "right": {
+            "buttons": [
+              "button_15"
+            ],
+            "axes": [
+              "axis_0_positive"
+            ]
+          },
+          "up": {
+            "buttons": [
+              "button_12",
+              "button_0"
+            ],
+            "axes": [
+              "axis_1_negative"
+            ]
+          },
+          "down": {
+            "buttons": [
+              "button_13",
+              "button_4"
+            ],
+            "axes": [
+              "axis_1_positive"
+            ]
+          },
+          "light": [
+            "LIGHT_ATTACK"
+          ],
+          "heavy": [
+            "HEAVY_ATTACK"
+          ],
+          "special": [
+            "SPECIAL"
+          ],
+          "super": [
+            "SUPER"
+          ],
+          "medium": [
+            "button_6"
+          ],
+          "crouch": {
+            "buttons": [
+              "button_13"
+            ],
+            "axes": [
+              "axis_1_positive"
+            ]
+          }
+        },
+        "super": [
+          "Digit0",
+          "Numpad0"
+        ],
+        "medium": [
+          "Digit5",
+          "Numpad5"
+        ],
+        "crouch": [
+          "ArrowDown"
+        ]
+      },
+      "system": {
+        "help": [
+          "KeyH"
+        ],
+        "gamepad": {
+          "help": [
+            "button_9"
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "title": "Tactical RPG 2D / Controls",
+  "rows": [
+    {
+      "label": "Move",
+      "actions": [
+        "UP",
+        "LEFT",
+        "DOWN",
+        "RIGHT"
+      ]
+    },
+    {
+      "label": "Attack",
+      "actions": [
+        "ATTACK"
+      ]
+    },
+    {
+      "label": "Cancel",
+      "actions": [
+        "CANCEL"
+      ]
+    },
+    {
+      "label": "Help",
+      "actions": [
+        "HELP"
+      ]
+    }
+  ],
+  "notes": [
+    "A turn-based grid game with pathfinding, movement range, and combat."
+  ]
+}

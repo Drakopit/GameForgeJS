@@ -1,0 +1,54 @@
+- Getting started
+  - [Zero to Hero learning paths](getting-started/zero-to-hero.md)
+  - [Create a project](getting-started/new-project.md)
+  - [Learn from 2D and 3D examples](getting-started/tutorial-demos-2d-3d.md)
+  - [Configure input per game](getting-started/input-config.md)
+  - [Gamepad aliases](getting-started/gamepad.md)
+
+- Guides
+  - [Addon pilot](guides/addons.md)
+  - [Platformer movement](guides/platformer.md)
+  - [Configuration layout](guides/configuration-layout.md)
+  - [Developer experience roadmap](development-roadmap.md)
+  - [Architecture and ownership](architecture.md)
+  - [Components and entity behavior](guides/components.md)
+  - [3D rendering](guides/render3d.md)
+  - [Networking](guides/network.md)
+
+- Reference
+  - [Distribution packages](reference/distribution-packages.md)
+  - [CLI commands](reference/cli.md)
+  - [Generated public API](reference/api/index.md)
+    - [Core API](reference/api/core.md)
+    - [2D API](reference/api/2d.md)
+    - [3D API](reference/api/3d.md)
+    - [Network API](reference/api/network.md)
+    - [Compatibility API](reference/api/compat.md)
+  - [Advanced stage manifests](manifests/advanced-stage-manifest.md)
+  - [2D hitbox manifests](manifests/hitbox-manifest.md)
+
+- Integration and migration
+  - [Version comparison](migrations/version-comparison.md)
+  - [Advanced demos: status and next checkpoints](migrations/advanced-demo-audit.md)
+  - [Toon room checkpoint](getting-started/toon-room-checkpoint.md)
+  - [First Toon ABS encounter](getting-started/toon-abs-checkpoint.md)
+  - [Imported animated characters](getting-started/toon-character-checkpoint.md)
+  - [Continuous forest encounters](getting-started/toon-forest-checkpoint.md)
+  - [Sky Trail platforming demo](getting-started/sky-trail.md)
+  - [First animated Toon pond](getting-started/toon-water-checkpoint.md)
+  - [Repository and project migration](migrations/repository-layout.md)
+  - [External 2D editor contract](tools/world-editor-v4.md)
+  - [External 3D editor contract](tools/scene-editor-3d.md)
+
+- [Code conventions](guides/code-conventions.md)
+- [Repository management](guides/repository-management.md)
+
+- [Game module classes](guides/game-modules.md)
+- [Site localization](guides/site-localization.md)
+
+- [Examples audit](migrations/demos-audit.md)
+- [Touch Garden walkthrough](getting-started/touch-garden.md)
+
+- [Toon lakes and warp gates](getting-started/toon-sandbox-checkpoint.md)
+- [Enemy perception and patrol](guides/enemy-ai.md)
+- [In-engine information panels](guides/in-engine-info.md)

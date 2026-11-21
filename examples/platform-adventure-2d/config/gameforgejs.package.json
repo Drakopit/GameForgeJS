@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "modules": [
+    "core",
+    "2d"
+  ],
+  "addons": [
+    "parallax",
+    "state-machine"
+  ]
+}

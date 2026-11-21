@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "project": {
+    "name": "Renderer Showcase 3D",
+    "version": "1.0.0",
+    "author": "Camello"
+  },
+  "window": {
+    "title": "GameForgeJS — Renderer Showcase 3D",
+    "backgroundColor": "#000000",
+    "cursor": "default"
+  },
+  "screen": {
+    "width": 640,
+    "height": 480,
+    "fullScreen": true,
+    "pixelArt": false,
+    "antialiasing": true,
+    "orientation": "landscape",
+    "responsive": {
+      "mode": "contain"
+    }
+  },
+  "input": {
+    "actionMappings": {
+      "HELP": [{"device":"keyboard","input":"KeyH"},{"device":"gamepad","input":"START"}],
+      "WEATHER": [{"device":"keyboard","input":"KeyT"},{"device":"gamepad","input":"button_4"}],
+      "INSPECT_UP": [{"device":"keyboard","input":"ArrowUp"},{"device":"gamepad","input":"DPAD_UP"}],
+      "INSPECT_DOWN": [{"device":"keyboard","input":"ArrowDown"},{"device":"gamepad","input":"DPAD_DOWN"}],
+      "INSPECT_LEFT": [{"device":"keyboard","input":"ArrowLeft"},{"device":"gamepad","input":"DPAD_LEFT"}],
+      "INSPECT_RIGHT": [{"device":"keyboard","input":"ArrowRight"},{"device":"gamepad","input":"DPAD_RIGHT"}],
+      "INSPECT_CONFIRM": [{"device":"keyboard","input":"Enter"},{"device":"gamepad","input":"A"}]
+    }
+  }
+}

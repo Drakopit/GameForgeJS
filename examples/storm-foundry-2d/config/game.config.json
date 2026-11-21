@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "project": {
+    "name": "Storm Foundry FX Lab",
+    "version": "1.0.0",
+    "author": "Patrick Faustino Camello"
+  },
+  "window": {
+    "title": "Storm Foundry — GameForgeJS",
+    "backgroundColor": "#050c16"
+  },
+  "screen": {
+    "width": 1280,
+    "height": 800,
+    "fullScreen": true,
+    "pixelArt": false,
+    "antialiasing": true,
+    "responsive": {
+      "mode": "adaptive"
+    }
+  },
+  "input": {
+    "gamepadProfile": "xbox",
+    "actionMappings": {
+      "LAB": [{"device":"keyboard","input":"KeyL"},{"device":"gamepad","input":"START"}],
+      "DROP": [{"device":"keyboard","input":"Space"},{"device":"gamepad","input":"A"}],
+      "BURST": [{"device":"keyboard","input":"KeyB"},{"device":"gamepad","input":"X"}],
+      "GUST": [{"device":"keyboard","input":"KeyG"},{"device":"gamepad","input":"Y"}],
+      "RESET": [{"device":"keyboard","input":"KeyR"},{"device":"gamepad","input":"B"}],
+      "DEBUG": [{"device":"keyboard","input":"KeyI"},{"device":"gamepad","input":"SELECT"}],
+      "TELEMETRY": [{"device":"keyboard","input":"KeyT"}],
+      "HELP": [{"device":"keyboard","input":"KeyH"},{"device":"gamepad","input":"RIGHT_STICK_BUTTON"}],
+      "PREVIOUS": [{"device":"keyboard","input":"BracketLeft"},{"device":"gamepad","input":"LB"}],
+      "NEXT": [{"device":"keyboard","input":"BracketRight"},{"device":"gamepad","input":"RB"}],
+      "UP": [{"device":"keyboard","input":"ArrowUp"},{"device":"gamepad","input":"DPAD_UP"}],
+      "DOWN": [{"device":"keyboard","input":"ArrowDown"},{"device":"gamepad","input":"DPAD_DOWN"}],
+      "LEFT": [{"device":"keyboard","input":"ArrowLeft"},{"device":"gamepad","input":"DPAD_LEFT"}],
+      "RIGHT": [{"device":"keyboard","input":"ArrowRight"},{"device":"gamepad","input":"DPAD_RIGHT"}],
+      "TAB_PREVIOUS": [{"device":"keyboard","input":"KeyQ"},{"device":"gamepad","input":"LT"}],
+      "TAB_NEXT": [{"device":"keyboard","input":"KeyE"},{"device":"gamepad","input":"RT"}]
+    }
+  }
+}

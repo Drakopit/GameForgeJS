@@ -1,0 +1,26 @@
+export const FighterAttacks = Object.freeze({
+    light: { damage: 7, duration: 0.28, activeStart: 0.09, activeEnd: 0.18,
+        range: 66, height: 44, yOffset: -88, knockback: 90, hitStun: 0.29,
+        hitStop: 0.04, shake: 3, meterGain: 9, lunge: 35, chainIndex: 0, chainFromFrame: 2 },
+    medium: { damage: 9, duration: 0.34, activeStart: 0.11, activeEnd: 0.22, range: 72, height: 44, yOffset: -84, knockback: 120, hitStun: 0.31, hitStop: 0.045, shake: 4, meterGain: 10, lunge: 30 },
+    crouchLight: { damage: 6, duration: 0.28, activeStart: 0.08, activeEnd: 0.18, range: 66, height: 32, yOffset: -55, knockback: 80, hitStun: 0.24, hitStop: 0.035, shake: 2, meterGain: 7 },
+    crouchHeavy: { damage: 11, duration: 0.44, activeStart: 0.14, activeEnd: 0.25, range: 90, height: 32, yOffset: -42, knockback: 190, hitStun: 0.32, hitStop: 0.06, shake: 4, meterGain: 10, level: "low", knockdown: true },
+    sweep: { damage: 8, duration: 0.36, activeStart: 0.11, activeEnd: 0.23, range: 82, height: 30, yOffset: -45, knockback: 150, hitStun: 0.28, hitStop: 0.04, shake: 3, meterGain: 8, level: "low" },
+    aerialLight: { damage: 7, duration: 0.28, activeStart: 0.07, activeEnd: 0.19, range: 65, height: 55, yOffset: -100, knockback: 100, hitStun: 0.28, hitStop: 0.04, shake: 3, meterGain: 7, level: "high" },
+    aerialHeavy: { damage: 11, duration: 0.4, activeStart: 0.12, activeEnd: 0.26, range: 78, height: 60, yOffset: -102, knockback: 180, hitStun: 0.34, hitStop: 0.055, shake: 4, meterGain: 11, level: "high" },
+    dashStrike: { damage: 12, duration: 0.4, activeStart: 0.13, activeEnd: 0.25, range: 80, height: 48, yOffset: -86, knockback: 220, hitStun: 0.35, hitStop: 0.06, shake: 5, meterGain: 11, lunge: 160 },
+    weaponSpecial: { damage: 11, duration: 0.5, activeStart: 0.2, activeEnd: 0.26, projectile: true, speed: 600, radius: 12, lifetime: 1.5, rank: 1, knockback: 180, hitStun: 0.3, hitStop: 0.045, shake: 4, meterGain: 8 },
+    heavy: { damage: 12, duration: 0.44, activeStart: 0.14, activeEnd: 0.27,
+        range: 86, height: 52, yOffset: -92, knockback: 160, hitStun: 0.37,
+        hitStop: 0.065, shake: 5, meterGain: 13, lunge: 55, chainIndex: 1, chainFromFrame: 3 },
+    special: { damage: 13, duration: 0.48, activeStart: 0.18, activeEnd: 0.24,
+        projectile: true, speed: 470, radius: 16, lifetime: 1.8, rank: 1,
+        knockback: 210, hitStun: 0.32, hitStop: 0.06, shake: 5, meterGain: 8,
+        chainIndex: 2, chainFromFrame: 3 },
+    super: { damage: 29, duration: 0.78, activeStart: 0.3, activeEnd: 0.38,
+        projectile: true, speed: 640, radius: 30, lifetime: 1.6, rank: 2,
+        knockback: 330, hitStun: 0.48, hitStop: 0.1, shake: 8, meterGain: 0, meterCost: 50 },
+});
+export const AttackChain = Object.freeze(['light', 'heavy', 'special'].map(name => ({
+    animation: name, chainFromFrame: FighterAttacks[name].chainFromFrame,
+})));

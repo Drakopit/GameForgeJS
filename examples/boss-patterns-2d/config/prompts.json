@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "title": "Boss Patterns 2D / Controls",
+  "rows": [
+    {
+      "label": "Move",
+      "actions": [
+        "UP",
+        "LEFT",
+        "DOWN",
+        "RIGHT"
+      ]
+    },
+    {
+      "label": "Fire",
+      "actions": [
+        "ACTION"
+      ]
+    },
+    {
+      "label": "Dash",
+      "actions": [
+        "SECONDARY"
+      ]
+    },
+    {
+      "label": "Reset",
+      "actions": [
+        "RESET"
+      ]
+    },
+    {
+      "label": "Help",
+      "actions": [
+        "HELP"
+      ]
+    }
+  ],
+  "notes": [
+    "A three-phase boss with aimed fans, rings, marked charges, delayed hazards, pooled projectiles and dash invulnerability."
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "atlases": {
+    "objects": {
+      "sprite": "snow_objects",
+      "sprites": {
+        "igloo": { "x": 320, "y": 24, "width": 51, "height": 40 },
+        "snowman": { "x": 380, "y": 40, "width": 23, "height": 24 },
+        "ladder": { "x": 412, "y": 16, "width": 24, "height": 48 },
+        "snow_cap_long": { "x": 16, "y": 119, "width": 57, "height": 9 }
+      }
+    }
+  }
+}

@@ -1,0 +1,160 @@
+const { inspectFighting } = require('./browser/fighting.cjs');
+const { inspectEngineInfo } = require('./browser/engine-info.cjs');
+const { inspectToonSandbox } = require('./browser/toon-sandbox.cjs');
+const { inspectPlatformAdventureAI } = require('./browser/platform-adventure-ai.cjs');
+const { inspectPuzzleInput } = require('./browser/puzzle-input.cjs');
+const { inspectCatalogAliases } = require('./browser/catalog-aliases.cjs');
+const { inspectTouchGarden } = require('./browser/touch-garden.cjs');
+const { inspectSkyTrailMenu } = require('./browser/sky-trail-menu.cjs');
+const { inspectSkyTrail } = require('./browser/sky-trail.cjs');
+const { inspectToonWater } = require('./browser/toon-water.cjs');
+const { inspectToonPolish } = require('./browser/toon-polish.cjs');
+// Optional integration suite. Install Playwright Chromium, or set GAMEFORGE_BROWSER
+// to a Chromium/Edge executable. Edge is discovered automatically on Windows.
+const fs = require('node:fs');
+const os = require('node:os');
+const path = require('node:path');
+const assert = require('node:assert/strict');
+const { chromium } = require('@playwright/test');
+const { startServer } = require('../cli/server.cjs');
+const { createProject } = require('../cli/lib/project.cjs');
+const { build } = require('../cli/lib/build.cjs');
+const { inspectPlatformer } = require('./browser/platformer.cjs');
+const { inspectPlatformerProgression } = require('./browser/platformer-progression.cjs');
+const { inspectToonRoom } = require('./browser/toon-room.cjs');
+const { inspectToonCombat } = require('./browser/toon-combat.cjs');
+const { inspectToonExploration } = require('./browser/toon-exploration.cjs');
+const { inspectToonAnimation } = require('./browser/toon-animation.cjs');
+
+const ROOT = path.resolve(__dirname, '..');
+const screenshots = path.join(ROOT, 'test-results/browser');
+const catalog = require('../examples/catalog.json');
+const failures = [];
+const requested = new Set(process.argv.slice(2));
+const entries = catalog.filter(entry => requested.size === 0 || requested.has(entry.id));
+
+async function inspect(browser, url, name, { starter = false, play = false } = {}) {
+    const page = await browser.newPage({ viewport: { width: 1100, height: 800 } });
+    const errors = new Set();
+    page.on('pageerror', error => errors.add(error.message));
+    page.on('console', message => {
+        if (message.type() === 'error' && !message.location().url?.endsWith('/favicon.ico')) errors.add(`${message.text()} (${message.location().url || 'console'})`);
+    });
+    page.on('response', response => { if (response.status() >= 400 && !response.url().endsWith('/favicon.ico')) errors.add(`HTTP ${response.status()}: ${response.url()}`); });
+    try {
+        await page.goto(url, { waitUntil: 'networkidle', timeout: 30000 });
+        await page.evaluate(async () => { window.smokeCore = await import('gameforgejs/core'); });
+        await page.waitForFunction(() => window.smokeCore.Engine.running, null, { timeout: 30000 });
+        assert.equal(await page.locator('body').evaluate(body => [...body.children].some(element => !['SCRIPT', 'CANVAS'].includes(element.tagName))), false,
+            'Game UI escaped the engine canvas');
+        await page.waitForFunction(() => {
+            return window.smokeCore.LevelHandler.current?._started && [...document.querySelectorAll('canvas')]
+                .some(canvas => canvas.width > 0 && canvas.height > 0);
+        }, null, { timeout: 30000 });
+        if (['-renderer-3d', '-solar-system-3d', '-platformer-2d'].some(id => name.endsWith(id))) {
+            await inspectEngineInfo(page, { select: name.endsWith('-platformer-2d'), inspector: name.endsWith('-renderer-3d') });
+        }
+        if (name.endsWith('-sky-trail-3d')) {
+            await inspectSkyTrailMenu(page, path.join(screenshots, `${name}-menu.png`));
+            play = false;
+        }
+        if (play) {
+            for (const scene of ['AdvancedDemoPhaseSelector', 'AdvancedDemoFirstLevel']) {
+                await page.keyboard.press('Enter');
+                await page.waitForFunction(scene =>
+                    window.smokeCore.LevelHandler.current?.constructor.name === scene
+                    && window.smokeCore.LevelHandler.current._started, scene, { timeout: 15000 });
+            }
+        }
+        if (name.endsWith('-sky-trail-3d')) await inspectSkyTrail(page, path.join(screenshots, `${name}-sky-trail.png`));
+        if (name.endsWith('-touch-garden-2d')) await inspectTouchGarden(page, path.join(screenshots, `${name}.png`));
+        if (name.endsWith('-platform-adventure-2d')) await inspectPlatformAdventureAI(page);
+        if (name.endsWith('-fighting-2d')) await inspectFighting(page, path.join(screenshots, `${name}-fight.png`));
+        if (name.endsWith('-puzzle-battle-2d')) await inspectPuzzleInput(page);
+        if (name.endsWith('-platformer-2d')) {
+            await inspectPlatformer(page, path.join(screenshots, `${name}.png`));
+            await inspectPlatformerProgression(page);
+        }
+        if (name.endsWith('-toon-adventure-3d')) {
+            await inspectToonRoom(page, path.join(screenshots, `${name}.png`));
+            await inspectToonCombat(page);
+            await inspectToonAnimation(page, path.join(screenshots, `${name}-animation.png`));
+            await inspectToonExploration(page, path.join(screenshots, `${name}-forest.png`));
+            await inspectToonPolish(page, path.join(screenshots, `${name}-polish.png`));
+            await inspectToonWater(page, path.join(screenshots, `${name}-water.png`));
+            await inspectToonSandbox(page, path.join(screenshots, `${name}-sandbox.png`));
+        }
+        if (starter && name.includes('2d')) {
+            const before = await page.locator('canvas').evaluate(canvas => canvas.toDataURL());
+            await page.locator('canvas').focus();
+            await page.keyboard.down('ArrowRight'); await page.waitForTimeout(250); await page.keyboard.up('ArrowRight');
+            const after = await page.locator('canvas').evaluate(canvas => canvas.toDataURL());
+            assert.notEqual(after, before, 'Starter does not react to movement input');
+        }
+        if (starter && name.includes('3d')) {
+            const before = await page.locator('#gameCanvas3D').screenshot();
+            await page.waitForTimeout(250);
+            const after = await page.locator('#gameCanvas3D').screenshot();
+            assert.ok(!after.equals(before), '3D starter scene does not animate');
+        }
+        if (starter || play || name === 'source-renderer-3d') await page.screenshot({ path: path.join(screenshots, `${name}.png`) });
+        assert.deepEqual([...errors], [], 'Browser errors');
+        if (!starter) {
+            await page.evaluate(async () => {
+                const { Engine } = await import('gameforgejs/core');
+                await Engine.Dispose();
+                if (Engine.running || Engine.frameId !== null) throw new Error('Legacy loop survived disposal');
+            });
+        }
+        console.log(`PASS ${name}`);
+    } catch (error) {
+        failures.push(name);
+        console.error(`FAIL ${name}: ${error.stack ?? error.message}\n${[...errors].join('\n')}`);
+        await page.screenshot({ path: path.join(screenshots, `${name}-failure.png`) }).catch(() => {});
+    } finally { await page.close(); }
+}
+
+async function main() {
+    assert.ok(requested.size === 0 || entries.length === requested.size, "Unknown catalog entry");
+    fs.mkdirSync(screenshots, { recursive: true });
+    const temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'gameforge-browser-'));
+    const edge = 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe';
+    const executablePath = process.env.GAMEFORGE_BROWSER || (fs.existsSync(edge) ? edge : undefined);
+    const browser = await chromium.launch({ headless: true, executablePath, args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
+    const servers = [];
+    async function serve(options) {
+        const server = await startServer({ ...options, port: 0 });
+        servers.push(server);
+        return `http://127.0.0.1:${server.address().port}${options.basePath || '/'}`;
+    }
+    try {
+        const source = await serve({ root: ROOT });
+        if (!requested.size) await inspectCatalogAliases(browser, source, catalog);
+        for (const entry of entries) await inspect(browser, `${source}examples/${entry.path}`, `source-${entry.id}`, { play: ['platform-adventure-2d', 'sky-trail-3d'].includes(entry.id) });
+        for (const template of requested.size ? [] : ['minimal-2d', 'minimal-3d']) {
+            const project = path.join(temporary, template);
+            createProject(project, { template });
+            const sourceURL = await serve({ root: project, engineRoot: ROOT });
+            await inspect(browser, sourceURL, `created-${template}`, { starter: true });
+            const output = build(project).output;
+            for (const basePath of ['/', '/game/']) {
+                const builtURL = await serve({ root: output, basePath });
+                await inspect(browser, builtURL, `built-${template}-${basePath === '/' ? 'root' : 'prefix'}`, { starter: true });
+            }
+        }
+        for (const entry of entries) {
+            const project = path.join(ROOT, 'examples', path.dirname(entry.path));
+            const output = build(project, { output: path.join(temporary, `build-${entry.id}`) }).output;
+            const url = await serve({ root: output, basePath: '/game/' });
+            await inspect(browser, url, `built-${entry.id}`, { play: ['platform-adventure-2d', 'sky-trail-3d'].includes(entry.id) });
+        }
+    } finally {
+        await browser.close();
+        await Promise.all(servers.map(server => new Promise(resolve => server.close(resolve))));
+        // Only remove the uniquely created temporary fixture, after verifying its boundary.
+        if (path.dirname(temporary) === fs.realpathSync(os.tmpdir()) && path.basename(temporary).startsWith('gameforge-browser-')) fs.rmSync(temporary, { recursive: true, force: true });
+    }
+    console.log(`Browser integration: ${failures.length} failed cases.`);
+    if (failures.length) process.exitCode = 1;
+}
+main().catch(error => { console.error(error); process.exitCode = 1; });

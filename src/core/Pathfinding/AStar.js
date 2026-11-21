@@ -1,0 +1,53 @@
+import { getNeighbors, key, reconstructPath } from './Structure.js';
+
+/** Calculates the Manhattan distance used by the A-star search. */
+
+function heuristic(a, b) {
+	return Math.abs(a.x - b.x) + Math.abs(a.y - b.y); // Manhattan
+}
+
+/**
+ * Finds a shortest grid path using a Manhattan-distance A-star search.
+ * @param {number[][]} grid - Grid whose zero entries can be walked.
+ * @param {Object} start - Starting `{x, y}` coordinate.
+ * @param {Object} goal - Destination `{x, y}` coordinate.
+ * @returns {Object[]|null} Ordered path or `null` when unreachable.
+ */
+export function aStar(grid, start, goal) {
+	const openSet = [start];
+	const cameFrom = {};
+	const gScore = {};
+	const fScore = {};
+
+	gScore[key(start)] = 0;
+	fScore[key(start)] = heuristic(start, goal);
+
+	while (openSet.length) {
+		openSet.sort((a, b) => fScore[key(a)] - fScore[key(b)]);
+		const current = openSet.shift();
+
+		if (current.x === goal.x && current.y === goal.y) {
+			return reconstructPath(cameFrom, current);
+		}
+
+		for (let neighbor of getNeighbors(grid, current)) {
+			const tentativeG = gScore[key(current)] + 1;
+
+			if (
+				gScore[key(neighbor)] === undefined ||
+				tentativeG < gScore[key(neighbor)]
+			) {
+				cameFrom[key(neighbor)] = current;
+				gScore[key(neighbor)] = tentativeG;
+				fScore[key(neighbor)] =
+					tentativeG + heuristic(neighbor, goal);
+
+				if (!openSet.find(n => key(n) === key(neighbor))) {
+					openSet.push(neighbor);
+				}
+			}
+		}
+	}
+
+	return null;
+}

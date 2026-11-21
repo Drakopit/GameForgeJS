@@ -1,0 +1,13 @@
+{
+  "world": {
+    "width": 2600,
+    "height": 640
+  },
+  "victory": {
+    "x": 2380,
+    "requireAllEnemies": true
+  },
+  "audio": {
+    "bgmVolume": 0.48
+  }
+}

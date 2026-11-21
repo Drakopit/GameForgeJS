@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "jsons": [
+    {
+      "name": "showcase",
+      "path": "./showcase.json"
+    },
+    {
+      "name": "prompts",
+      "path": "./prompts.json"
+    }
+  ]
+}

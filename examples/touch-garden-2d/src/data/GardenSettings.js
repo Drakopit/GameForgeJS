@@ -1,0 +1,17 @@
+export const GardenSettings = Object.freeze({
+    arena: { x: 24, y: 150, width: 432, height: 436 },
+    spawn: { x: 226, y: 346 },
+    playerSize: 28,
+    speed: 170,
+    dashMultiplier: 2.8,
+    dashSeconds: 0.16,
+    cooldownSeconds: 0.85,
+    stickRadius: 58,
+    stickDeadzone: 0.12,
+    stickOrigin: { x: 96, y: 690 },
+    action: { x: 384, y: 690, radius: 47 },
+    helpButton: { x: 350, y: 27, width: 42, height: 32 },
+    resetButton: { x: 400, y: 27, width: 50, height: 32 },
+    obstacles: [{ x: 100, y: 264, width: 78, height: 42 }, { x: 306, y: 410, width: 70, height: 42 }],
+    crystals: [{ x: 64, y: 186 }, { x: 390, y: 190 }, { x: 230, y: 244 }, { x: 62, y: 496 }, { x: 394, y: 510 }],
+});

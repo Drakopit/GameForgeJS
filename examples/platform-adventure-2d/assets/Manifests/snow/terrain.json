@@ -1,0 +1,48 @@
+{
+  "atlases": {
+    "terrain": {
+      "sprite": "snow_tileset",
+      "tileWidth": 16,
+      "tileHeight": 16,
+      "tiles": {
+        "snow_ground_top_left": { "x": 16, "y": 48, "width": 16, "height": 16 },
+        "snow_ground_top": { "x": 48, "y": 48, "width": 16, "height": 16 },
+        "snow_ground_top_right": { "x": 80, "y": 48, "width": 16, "height": 16 },
+        "snow_ground_left": { "x": 16, "y": 80, "width": 16, "height": 16 },
+        "snow_ground_fill": { "x": 48, "y": 80, "width": 16, "height": 16 },
+        "snow_ground_right": { "x": 80, "y": 80, "width": 16, "height": 16 },
+        "snow_platform_left": { "x": 16, "y": 113, "width": 16, "height": 15 },
+        "snow_platform_right": { "x": 32, "y": 113, "width": 16, "height": 15 },
+        "snow_platform_mid": { "x": 48, "y": 48, "width": 16, "height": 16 }
+      },
+      "terrainSets": {
+        "snow_ground": {
+          "tiles": {
+            "topLeft": "snow_ground_top_left",
+            "top": "snow_ground_top",
+            "topRight": "snow_ground_top_right",
+            "middleLeft": "snow_ground_left",
+            "middle": "snow_ground_fill",
+            "middleRight": "snow_ground_right",
+            "bottomLeft": "snow_ground_left",
+            "bottom": "snow_ground_fill",
+            "bottomRight": "snow_ground_right"
+          }
+        },
+        "snow_platform": {
+          "tiles": {
+            "topLeft": "snow_ground_top_left",
+            "top": "snow_ground_top",
+            "topRight": "snow_ground_top_right",
+            "middleLeft": "snow_ground_left",
+            "middle": "snow_ground_fill",
+            "middleRight": "snow_ground_right",
+            "bottomLeft": "snow_ground_left",
+            "bottom": "snow_ground_fill",
+            "bottomRight": "snow_ground_right"
+          }
+        }
+      }
+    }
+  }
+}

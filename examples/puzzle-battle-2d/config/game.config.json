@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "window": {
+    "title": "GameForgeJS â€” Puzzle Battle 2D",
+    "backgroundColor": "#1a1a1a"
+  },
+  "screen": {
+    "width": 800,
+    "height": 600,
+    "fullScreen": false,
+    "pixelArt": false,
+    "responsive": {
+      "mode": "adaptive"
+    }
+  },
+  "physics": {
+    "enabled": false
+  },
+  "project": {
+    "name": "Puzzle Battle 2D"
+  },
+  "input": {
+    "actionMappings": {
+      "PUZZLE_LEFT": [{"device":"keyboard","input":"KeyA"},{"device":"gamepad","input":"DPAD_LEFT"}],
+      "PUZZLE_RIGHT": [{"device":"keyboard","input":"KeyD"},{"device":"gamepad","input":"DPAD_RIGHT"}],
+      "PUZZLE_ROTATE": [{"device":"keyboard","input":"KeyW"},{"device":"gamepad","input":"button_0"}],
+      "PUZZLE_DROP": [{"device":"keyboard","input":"KeyS"},{"device":"gamepad","input":"DPAD_DOWN"}],
+      "RESET": [{"device":"keyboard","input":"KeyR"},{"device":"gamepad","input":"button_3"}],
+      "HELP": [{"device":"keyboard","input":"KeyH"},{"device":"gamepad","input":"RIGHT_STICK_BUTTON"}],
+      "PAUSE": [{"device":"keyboard","input":"KeyP"},{"device":"gamepad","input":"button_9"}]
+    }
+  }
+}

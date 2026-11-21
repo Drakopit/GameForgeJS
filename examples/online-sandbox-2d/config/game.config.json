@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "project": {
+    "name": "Online Sandbox 2D",
+    "version": "1.0.0",
+    "author": "Camello"
+  },
+  "window": {
+    "title": "GameForgeJS — Online Sandbox 2D",
+    "backgroundColor": "#09111f",
+    "cursor": "crosshair"
+  },
+  "screen": {
+    "width": 960,
+    "height": 600,
+    "pixelArt": true,
+    "antialiasing": false,
+    "fullScreen": true,
+    "responsive": {
+      "mode": "adaptive"
+    }
+  },
+  "network": {
+    "serverUrl": "wss://gameforgejs.onrender.com/ws"
+  },
+  "input": {
+    "gamepadProfile": "xbox",
+    "actionMappings": {
+      "LEFT": [{"device":"keyboard","input":"KeyA"},{"device":"keyboard","input":"ArrowLeft"},{"device":"gamepad","input":"LEFT_STICK_LEFT"},{"device":"gamepad","input":"DPAD_LEFT"}],
+      "RIGHT": [{"device":"keyboard","input":"KeyD"},{"device":"keyboard","input":"ArrowRight"},{"device":"gamepad","input":"LEFT_STICK_RIGHT"},{"device":"gamepad","input":"DPAD_RIGHT"}],
+      "JUMP": [{"device":"keyboard","input":"Space"},{"device":"keyboard","input":"KeyW"},{"device":"keyboard","input":"ArrowUp"},{"device":"gamepad","input":"A"}],
+      "MINE": [{"device":"keyboard","input":"KeyQ"},{"device":"gamepad","input":"X"}],
+      "PLACE": [{"device":"keyboard","input":"KeyF"},{"device":"gamepad","input":"B"}],
+      "NEXT_BLOCK": [{"device":"keyboard","input":"KeyR"},{"device":"gamepad","input":"Y"}],
+      "INTERACT": [{"device":"keyboard","input":"KeyE"},{"device":"gamepad","input":"RB"}],
+      "PAUSE": [{"device":"keyboard","input":"Escape"},{"device":"gamepad","input":"START"}],
+      "CHAT": [{"device":"keyboard","input":"Enter"},{"device":"gamepad","input":"SELECT"}],
+      "MENU_NEXT": [{"device":"keyboard","input":"ArrowDown"},{"device":"gamepad","input":"DPAD_DOWN"}],
+      "MENU_PREVIOUS": [{"device":"keyboard","input":"ArrowUp"},{"device":"gamepad","input":"DPAD_UP"}],
+      "CONFIRM": [{"device":"keyboard","input":"Enter"},{"device":"gamepad","input":"A"}],
+      "AIM_UP": [{"device":"gamepad","input":"RIGHT_STICK_UP"}],
+      "AIM_DOWN": [{"device":"gamepad","input":"RIGHT_STICK_DOWN"}],
+      "AIM_FORWARD": [{"device":"gamepad","input":"RIGHT_STICK_RIGHT"},{"device":"gamepad","input":"RIGHT_STICK_LEFT"}],
+      "HELP": [{"device":"keyboard","input":"KeyH"},{"device":"gamepad","input":"RIGHT_STICK_BUTTON"}]
+    }
+  }
+}

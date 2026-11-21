@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "tickRate": 60,
+  "snapshotRate": 20,
+  "width": 90,
+  "height": 18,
+  "tileSize": 32,
+  "groundRow": 13,
+  "playerWidth": 22,
+  "playerHeight": 42,
+  "spawnX": 128,
+  "spawnY": 300,
+  "actionReach": 96,
+  "actionCooldown": 0.2,
+  "requiredGems": 6,
+  "beacon": { "x": 2624, "y": 374 },
+  "gap": { "from": 36, "to": 41 },
+  "platforms": [
+    { "x": 8, "y": 10, "length": 6, "type": "wood" },
+    { "x": 24, "y": 9, "length": 8, "type": "dirt" },
+    { "x": 44, "y": 10, "length": 8, "type": "stone" },
+    { "x": 65, "y": 10, "length": 5, "type": "wood" }
+  ],
+  "crystals": [
+    { "id": "a", "x": 310, "y": 292 },
+    { "id": "b", "x": 430, "y": 380 },
+    { "id": "c", "x": 820, "y": 260 },
+    { "id": "d", "x": 980, "y": 380 },
+    { "id": "e", "x": 1510, "y": 292 },
+    { "id": "f", "x": 1750, "y": 380 },
+    { "id": "g", "x": 2140, "y": 292 },
+    { "id": "h", "x": 2470, "y": 380 }
+  ],
+  "movement": {
+    "speed": 220, "acceleration": 1800, "deceleration": 2200,
+    "gravity": 1080, "jumpSpeed": 480, "maxFallSpeed": 800,
+    "coyoteTime": 0.1, "jumpBufferTime": 0.12, "jumpCutRatio": 0.5
+  }
+}

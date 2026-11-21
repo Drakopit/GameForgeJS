@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "title": "Component Adventure 2D / Controls",
+  "rows": [
+    {
+      "label": "Move",
+      "actions": [
+        "UP",
+        "LEFT",
+        "DOWN",
+        "RIGHT"
+      ]
+    },
+    {
+      "label": "Attack",
+      "actions": [
+        "ATTACK"
+      ]
+    },
+    {
+      "label": "Cancel",
+      "actions": [
+        "CANCEL"
+      ]
+    },
+    {
+      "label": "Help",
+      "actions": [
+        "HELP"
+      ]
+    }
+  ],
+  "notes": [
+    "Top-down movement, reusable entity components, and room camera transitions."
+  ]
+}

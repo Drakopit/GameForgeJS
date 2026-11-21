@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "name": "solar-system-3d",
+  "entry": "index.html",
+  "runtimeConfig": "config/game.config.json",
+  "resources": "config/resources.json",
+  "modules": [
+    "2d",
+    "3d"
+  ],
+  "enginePath": "../..",
+  "toolingVersion": "1.0.0"
+}

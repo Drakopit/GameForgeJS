@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "title": "Toon Adventure 3D / Controls",
+  "rows": [
+    {
+      "label": "Move",
+      "actions": [
+        "UP",
+        "LEFT",
+        "DOWN",
+        "RIGHT"
+      ]
+    },
+    {
+      "label": "Bands",
+      "actions": [
+        "BANDS"
+      ]
+    },
+    {
+      "label": "Help",
+      "actions": [
+        "HELP"
+      ]
+    },
+    {
+      "label": "Attack",
+      "actions": [
+        "ATTACK"
+      ]
+    },
+    {
+      "label": "Reset",
+      "actions": [
+        "RESET"
+      ]
+    }
+  ],
+  "notes": [
+    "A Toon ABS sandbox with two large lakes, linked warp gates, five sentries and shallow-water interaction."
+  ]
+}

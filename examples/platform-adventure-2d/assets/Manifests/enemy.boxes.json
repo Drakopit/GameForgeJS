@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "origin": "entity-top-left",
+  "collisionboxes": {
+    "*": [
+      { "name": "body", "x": 0, "y": 0, "w": 64, "h": 64 }
+    ]
+  },
+  "hurtboxes": {
+    "*": [
+      { "name": "body", "x": 8, "y": 6, "w": 48, "h": 56 }
+    ],
+    "Hit": [
+      { "name": "stagger", "x": 10, "y": 9, "w": 44, "h": 52 }
+    ]
+  },
+  "hitboxes": {
+    "Attack": [
+      {
+        "name": "dagger_sweep",
+        "from": 2,
+        "to": 3,
+        "x": 38,
+        "y": 24,
+        "w": 76,
+        "h": 30,
+        "hitStop": 0.045,
+        "hitStun": 0.16,
+        "stagger": true,
+        "knockback": { "x": 210, "y": -230 },
+        "oncePerTarget": true
+      }
+    ]
+  }
+}
