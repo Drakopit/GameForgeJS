@@ -88,7 +88,7 @@
   "example.tactical-rpg-2d": "A turn-based grid game with pathfinding, movement range, and combat.",
   "example.fighting-2d": "Energy spheres, meter-powered supers, buffered combos, reactive CPU and local versus with four characters.",
   "example.puzzle-battle-2d": "An arcade puzzle game with combos and competitive block exchanges.",
-  "example.renderer-3d": "A Render3D scene exploring cameras, models, lighting, materials, and shadows.",
+  "example.renderer-3d": "A rain-soaked basin with planar reflections, wet surfaces, and interactive lighting.",
   "example.solar-system-3d": "Procedural celestial materials, sunlight, and animated planetary orbits.",
   "example.sky-trail-3d": "Four expeditions, a gamepad-ready 3D menu, moving platforms, checkpoints and collectibles.",
   "example.online-sandbox-2d": "Cooperative mining/building, dedicated server rooms, predicted movement and mobile controls; backend required.",

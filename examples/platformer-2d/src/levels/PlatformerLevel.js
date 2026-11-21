@@ -1,4 +1,4 @@
-import { Level, ActionManager, Vector2D, AssetManager, GameViewport, Input } from 'gameforgejs/core';
+import { Level, ActionManager, Vector2D, AssetManager, GameViewport, Input, SoundEffects } from 'gameforgejs/core';
 import { Screen, Draw, Camera } from 'gameforgejs/2d';
 import { TilePlatformerWorld } from 'gameforgejs/addons/platformer';
 import { Player } from '../entities/Player.js';
@@ -31,6 +31,7 @@ export class PlatformerLevel extends Level {
         this.controls=new PlatformerControls(this);
         this.player.controller.input=this.controls;
         this.scenery=new PlatformerScenery();
+        this.sound = this.player.AddComponent(new SoundEffects(this.context.services.get('audio')));
         this.AddEntity(this.player);
         this.coins = this.stage.coins.map(position => {
             const coin = new Coin(this.screen, position);
@@ -99,6 +100,7 @@ export class PlatformerLevel extends Level {
         for (const coin of this.coins) {
             if (coin.TryCollect(this.player)) {
                 this.collectedCount++;
+                this.sound.Play('collect');
             }
         }
     }

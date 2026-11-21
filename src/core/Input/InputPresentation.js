@@ -8,6 +8,7 @@ export class InputPresentation {
         this.profile = 'auto';
         this.touchMode = 'auto';
         this.activeProfile = 'keyboard';
+        this.telemetry = null;
     }
     get TouchVisible() {
         if (this.touchMode !== 'auto')

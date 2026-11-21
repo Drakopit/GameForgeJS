@@ -6,12 +6,12 @@ const Presets = Object.freeze({
     wood: { albedoColor: '#96683f', roughness: 0.67, metallic: 0, reflection: 0.12, surface: 4 },
 });
 /**
- * Opt-in Standard shader surface presets. Reflection is an analytic sky/ground
- * approximation, not a second scene render or screen-space reflection.
+ * Standard shader surface presets with analytic environment lighting and
+ * optional sampling of the scene horizontal planar reflection.
  * @param {Object} [options] Standard material overrides plus preset, scale and wetness.
  */
 export class SurfaceMaterial extends StandardMaterial {
-    constructor({ preset = 'stone', scale = 1, wetness = 0, reflection, ...options } = {}) {
+    constructor({ preset = 'stone', scale = 1, wetness = 0, reflection, planarReflection = false, waterDepth = 0, ...options } = {}) {
         const definition = Presets[preset];
         if (!definition)
             throw new RangeError(`Unknown surface preset: ${preset}`);
@@ -20,6 +20,9 @@ export class SurfaceMaterial extends StandardMaterial {
         this.surface = definition.surface;
         this.surfaceScale = scale;
         this.wetness = wetness;
+        this.planarReflection = Boolean(planarReflection);
+        if (!Number.isFinite(waterDepth) || waterDepth < 0) throw new RangeError('Invalid water depth.');
+        this.waterDepth = waterDepth;
         this.reflection = reflection ?? definition.reflection;
         if (!Number.isFinite(scale) || scale <= 0 || ![wetness, this.reflection].every(v => Number.isFinite(v) && v >= 0 && v <= 1))
             throw new RangeError('Invalid surface parameters.');

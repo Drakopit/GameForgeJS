@@ -50,7 +50,7 @@ export async function BootstrapGame({
         assets.audio = audio;
         Engine.cleanups.push(() => assets.Dispose());
         const context = {
-            game: { stop: () => Engine.Stop(), dispose: () => Engine.Dispose() },
+            game: { get currentLevel() { return LevelHandler.current; }, stop: () => Engine.Stop(), dispose: () => Engine.Dispose() },
             canvas: null, config, assets, events: Engine.events,
             services: new Map([["audio", audio]]),
             onDispose: cleanup => {

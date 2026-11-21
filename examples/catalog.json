@@ -178,7 +178,7 @@
   {
     "id": "renderer-3d",
     "name": "Renderer Showcase 3D",
-    "description": "A Render3D scene exploring cameras, models, lighting, materials, and shadows.",
+    "description": "A rain-soaked basin with planar reflections, wet surfaces, and interactive lighting.",
     "path": "renderer-3d/index.html",
     "dimension": "3D",
     "aliases": [

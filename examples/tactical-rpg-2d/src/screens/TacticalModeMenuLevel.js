@@ -1,128 +1,93 @@
-import { InputHelpPanel, Draw as ControlGuideDraw } from 'gameforgejs/2d';
-import { ActionManager as ControlGuideActions } from 'gameforgejs/core';
-import { Level } from "gameforgejs/core";
-import { Screen } from "gameforgejs/2d";
-import { Draw } from "gameforgejs/2d";
-import { ActionManager } from "gameforgejs/core";
-import { BATTLE_MODES, BattleState } from "../state/BattleState.js";
+import { Button, Draw, HUDFrame, InputHelpPanel, Screen } from 'gameforgejs/2d';
+import { ActionManager, Level } from 'gameforgejs/core';
+import { BattleState, BATTLE_MODES } from '../state/BattleState.js';
+import { classes, expedition, stages } from '../state/Expedition.js';
 
-const W = 640;
-const H = 480;
+const start = [
+    { name: 'Solo campaign', detail: 'Command one hero in the classic duel format' },
+    { name: 'Solo skirmish', detail: 'Command one hero in grid-based combat' },
+    { name: 'Local co-op', detail: 'Two players alternate command of their own hero' },
+];
 
 export class TacticalModeMenuLevel extends Level {
-    constructor() {
-        super();
-        this.caption = "Tactical RPG - Battle Mode";
-        this.TelaId = "TacticalModeMenu";
-        this.options = [
-            {
-                mode: BATTLE_MODES.FIRE_EMBLEM,
-                title: "Fire Emblem",
-                subtitle: "Arena curta; volta ao mapa apos a troca.",
-            },
-            {
-                mode: BATTLE_MODES.FINAL_FANTASY_TACTICS,
-                title: "Final Fantasy Tactics",
-                subtitle: "Ataque e magia acontecem direto na grade.",
-            },
-        ];
-        this.selected = 0;
-    }
-
     OnStart() {
-        this.screen = new Screen("TacticalModeMenu", W, H, { config: this.context?.config });
-        this.controlsHelp=new InputHelpPanel(new ControlGuideDraw(this.screen),{title:'Controls'});
-        this.draw = new Draw(this.screen);
-        this.selected = BattleState.battleMode === BATTLE_MODES.FINAL_FANTASY_TACTICS ? 1 : 0;
+        this.caption = "GameForgeJS - Tactical RPG";
+        this.screen = new Screen('TacticalModeMenu', 640, 480, { config: this.context.config });
+        const draw = new Draw(this.screen);
+        this.frame = new HUDFrame(draw);
+        this.controlsHelp = new InputHelpPanel(draw);
+        this.step = this.selected = 0;
+        this.buttons = start.map((_, i) => {
+            const button = new Button(this.screen, { pointerInput: true });
+            button.SetButton({ x: 64, y: 133 + i * 82, width: 512, height: 67 });
+            button.OnClick(() => this.Confirm(i));
+            return button;
+        });
         super.OnStart();
     }
 
-    OnExit() {
-        this.controlsHelp?.Dispose();
+    get Options() { return this.step === 0 ? start : this.step > expedition.seats ? stages : classes; }
 
-        super.OnExit();
+    Confirm(index) {
+        if (this.step === 0) {
+            expedition.seats = index === 2 ? 2 : 1;
+            expedition.classes = [];
+            BattleState.SetBattleMode(index === 0 ? BATTLE_MODES.FIRE_EMBLEM : BATTLE_MODES.FINAL_FANTASY_TACTICS);
+        } else if (this.step <= expedition.seats) {
+            expedition.classes[this.step - 1] = classes[index];
+        } else {
+            expedition.stage = stages[index];
+            BattleState.initialized = false;
+            this.Next = true;
+            return;
+        }
+        this.step++;
+        this.selected = 0;
     }
 
     OnUpdate(dt) {
-        if(ControlGuideActions.IsActionDown('HELP'))this.controlsHelp?.Toggle();
-        if(this.controlsHelp.visible)return;
-
         super.OnUpdate(dt);
-
-        if (ActionManager.IsActionDown("UP")) {
-            this.selected = (this.selected - 1 + this.options.length) % this.options.length;
-        }
-
-        if (ActionManager.IsActionDown("DOWN")) {
-            this.selected = (this.selected + 1) % this.options.length;
-        }
-
-        if (ActionManager.IsActionDown("ATTACK")) {
-            BattleState.SetBattleMode(this.options[this.selected].mode);
-            this.Next = true;
-        }
+        if (ActionManager.IsActionDown('HELP')) this.controlsHelp.Toggle();
+        if (this.controlsHelp.visible) return;
+        if (ActionManager.IsActionDown('UP')) this.selected = (this.selected + 2) % 3;
+        if (ActionManager.IsActionDown('DOWN')) this.selected = (this.selected + 1) % 3;
+        if (ActionManager.IsActionDown('CANCEL')) { this.step = Math.max(0, this.step - 1); this.selected = 0; }
+        else if (ActionManager.IsActionDown('ATTACK')) this.Confirm(this.selected);
     }
 
     OnDrawn() {
         this.screen.Refresh();
         const ctx = this.screen.Context;
-
-        const bg = ctx.createLinearGradient(0, 0, 0, H);
-        bg.addColorStop(0, "#101820");
-        bg.addColorStop(0.55, "#18251f");
-        bg.addColorStop(1, "#0a0d12");
-        ctx.fillStyle = bg;
-        ctx.fillRect(0, 0, W, H);
-
-        this.draw.Style = this.draw.TYPES.FILLED;
-        this.draw.Color = "#FFFFFF";
-        this.draw.Font = "monospace";
-        this.draw.SetTextAlign("center");
-        this.draw.FontSize = "26px";
-        this.draw.DrawText("TACTICAL RPG", W / 2, 72);
-
-        this.draw.FontSize = "13px";
-        this.draw.Color = "#B8C7B0";
-        this.draw.DrawText("Escolha como a batalha sera resolvida", W / 2, 100);
-
-        for (let i = 0; i < this.options.length; i++) {
-            this._drawOption(i);
-        }
-
-        this.draw.FontSize = "11px";
-        this.draw.Color = "#889688";
-        this.draw.DrawText("Setas: escolher | Z / A: confirmar", W / 2, H - 34);
+        const gradient = ctx.createLinearGradient(0, 0, 640, 480);
+        gradient.addColorStop(0, '#1f3940');
+        gradient.addColorStop(1, '#111725');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, 640, 480);
+        const f = this.frame;
+        f.Text('TACTICAL RPG', 64, 67, { size: 34, weight: 700, color: f.theme.gold });
+        const prompt = this.step === 0 ? 'Choose a battle format' : this.step <= expedition.seats
+            ? 'Player ' + this.step + ' / Choose a class' : 'Choose a battlefield';
+        f.Text(prompt, 64, 103, { size: 16, color: f.theme.muted });
+        this.Options.forEach((option, i) => {
+            const box = this.buttons[i].rect;
+            f.Panel(box);
+            const preview = option.asset && this.context.assets.GetImage(option.asset);
+            if (preview?.naturalWidth) ctx.drawImage(preview, 0, 0, option.frame.width, option.frame.height,
+                box.x + 6, box.y - 3, 72, 72);
+            const textX = box.x + (preview ? 82 : 18);
+            f.Text(option.name, textX, box.y + 28, { size: 19, weight: 700,
+                color: i === this.selected ? f.theme.gold : f.theme.text });
+            f.Text(option.detail, textX, box.y + 50, { size: 13 });
+        });
+        this.controlsHelp.DrawAction('ATTACK', 64, 404);
+        this.controlsHelp.DrawAction('HELP', 228, 404);
+        this.controlsHelp.DrawAction('CANCEL', 390, 404);
     }
 
-    _drawOption(index) {
-        const option = this.options[index];
-        const selected = index === this.selected;
-        const x = 86;
-        const y = 150 + index * 118;
-        const w = W - 172;
-        const h = 86;
-
-        this.draw.Style = this.draw.TYPES.FILLED;
-        this.draw.Color = selected ? "rgba(255, 216, 74, 0.18)" : "rgba(0, 0, 0, 0.45)";
-        this.draw.DrawRect(x, y, w, h);
-
-        this.draw.Style = this.draw.TYPES.STROKED;
-        this.draw.Color = selected ? "#FFD84A" : "#425044";
-        this.draw.DrawRect(x, y, w, h);
-
-        this.draw.Style = this.draw.TYPES.FILLED;
-        this.draw.SetTextAlign("left");
-        this.draw.Font = "monospace";
-        this.draw.FontSize = "18px";
-        this.draw.Color = selected ? "#FFD84A" : "#FFFFFF";
-        this.draw.DrawText(`${selected ? "> " : "  "}${option.title}`, x + 20, y + 32);
-
-        this.draw.FontSize = "12px";
-        this.draw.Color = "#CBD6C7";
-        this.draw.DrawText(option.subtitle, x + 20, y + 58);
+    OnGUI() { this.controlsHelp.OnDrawn(); }
+    OnExit() {
+        for (const button of this.buttons) button.Dispose();
+        this.controlsHelp.Dispose();
+        super.OnExit();
     }
-
-    OnGUI() {super.OnGUI();
-        this.controlsHelp?.OnDrawn();
-}
 }

@@ -10,7 +10,7 @@ import { TrailCoins } from '../entities/TrailCoins.js';
 export class SkyTrailModule extends Module {
     constructor() {
         super('sky-trail', {
-            imports: [module2D(), module3D()],
+            imports: [module2D({ telemetry: true }), module3D()],
             declarations: [CubeGameLevel, MiniGame3DMenu, TrailPlayer, TrailPlatforms, TrailCoins],
             exports: [MiniGame3DMenu, CubeGameLevel],
         });

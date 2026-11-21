@@ -9,7 +9,7 @@ async function inspectSkyTrailMenu(page, screenshotPath) {
             buttons: Array.from({ length: 17 }, (_, i) => ({ pressed: window.testPad.buttons.includes(i), value: window.testPad.buttons.includes(i) ? 1 : 0 })),
         }] : [] });
     });
-    const selection = () => page.evaluate(async () => (await import('gameforgejs/core')).LevelHandler.current.currentSelected);
+    const selection = () => page.evaluate(async () => (await import('gameforgejs/core')).LevelHandler.current?.currentSelected);
     await page.evaluate(() => window.testPad.buttons = [13]);
     await expect.poll(selection).toBe(1);
     await page.evaluate(() => window.testPad.buttons = []);
@@ -44,8 +44,12 @@ async function inspectSkyTrailMenu(page, screenshotPath) {
     assert.equal(previews.count, 4);
     assert.equal(previews.stable, true);
     await page.screenshot({ path: screenshotPath });
-    await page.evaluate(() => { window.testPad.connected = true; window.testPad.buttons = [0]; });
-    await expect.poll(() => page.evaluate(async () => (await import('gameforgejs/core')).LevelHandler.current.constructor.name)).toBe('CubeGameLevel');
+    await page.evaluate(() => { window.testPad.connected = true; window.testPad.buttons = []; });
+    await expect.poll(() => page.evaluate(async () =>
+        (await import('gameforgejs/core')).Input.GetConnectedGamepadIndices().includes(0)), { timeout: 15000 }).toBe(true);
+    await page.evaluate(() => { window.testPad.buttons = [0]; });
+    await expect.poll(() => page.evaluate(async () => (await import('gameforgejs/core')).LevelHandler.current?.constructor.name),
+        { timeout: 15000 }).toBe('CubeGameLevel');
     await page.evaluate(() => { delete navigator.getGamepads; delete window.testPad; });
 }
 module.exports = { inspectSkyTrailMenu };

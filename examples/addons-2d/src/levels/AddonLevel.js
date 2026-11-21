@@ -1,5 +1,5 @@
-import { Level, AssetManager } from 'gameforgejs/core';
-import { Screen, Draw, HUDFrame } from 'gameforgejs/2d';
+import { Level, AssetManager, ActionManager, SoundEffects } from 'gameforgejs/core';
+import { Screen, Draw, HUDFrame, InputHelpPanel } from 'gameforgejs/2d';
 import { ParallaxLayer2D } from 'gameforgejs/addons/parallax';
 import { PatrolActor } from '../entities/PatrolActor.js';
 
@@ -15,16 +15,23 @@ export class AddonLevel extends Level {
         this.screen = new Screen(this.TelaId, width, height, { config: context.config });
         this.draw = new Draw(this.screen);
         this.hud = new HUDFrame(this.draw);
+        this.help = new InputHelpPanel(this.draw);
         const assets = context.assets ?? AssetManager.instance;
         this.layers = [
             new ParallaxLayer2D(this.screen, { sprite: 'hills', speedX: -12 }, { assets }),
             new ParallaxLayer2D(this.screen, { sprite: 'trees', speedX: -40 }, { assets }),
         ];
         this.actor = new PatrolActor(this.screen);
+        this.sound = this.actor.AddComponent(new SoundEffects(this.context.services.get('audio')));
         this.AddEntity(this.actor);
         super.OnStart(context);
     }
     OnUpdate(dt) {
+        if (ActionManager.IsActionDown('HELP')) {
+            this.help.Toggle();
+            this.sound.Play('select');
+        }
+        if (this.help.visible) return;
         this.layers.forEach(layer => layer.OnUpdate(dt));
         super.OnUpdate(dt);
     }
@@ -40,13 +47,14 @@ export class AddonLevel extends Level {
         this.hud.Panel({ x: 12, y: 12, width: 600, height: 108 });
         this.hud.Text('ADDON BUILDING BLOCKS', 28, 40, { size: 20, color: this.hud.theme.gold, weight: 700 });
         this.hud.Text(`State: ${this.actor.label} / parallax + state machine`, 28, 66, { size: 14 });
-        this.hud.Text('No input needed. Watch patrol/rest and the different layer speeds.', 28, 88, { size: 13 });
-        this.hud.Text('Hills: 12 px/s / Trees: 40 px/s', 28, 108, { size: 11, color: this.hud.theme.muted });
+        this.help.DrawAction('HELP', 28, 88);
+        this.help.OnDrawn();
     }
 
-    OnDestroy() {
+    OnExit() {
+        this.help?.Dispose();
         this.layers.forEach(layer => layer.Dispose());
         this.layers = [];
-        super.OnDestroy();
+        super.OnExit();
     }
 }

@@ -18,12 +18,23 @@ export class RainRenderer extends Component {
             return;
         const data = this.geometry.positions;
         this.emitter.drops.forEach((drop, index) => {
-            const p = drop.position, dx = this.emitter.wind.x * 0.035, dz = this.emitter.wind.z * 0.035;
-            const offset = index * 72, hit = drop.impact, age = 1 - drop.splash / 0.2, r = drop.splash > 0 ? age * 0.22 : 0, y = hit.y + 0.04 + Math.sin(age * Math.PI) * 0.09;
-            data.set([p.x - 0.014, p.y, p.z, p.x + 0.014, p.y, p.z, p.x + dx, p.y + 0.36, p.z + dz,
-                p.x + 0.014, p.y, p.z, p.x + dx + 0.028, p.y + 0.36, p.z + dz, p.x + dx, p.y + 0.36, p.z + dz,
-                hit.x - r, y, hit.z, hit.x, y, hit.z + r, hit.x + r, y, hit.z,
-                hit.x - r, y, hit.z, hit.x + r, y, hit.z, hit.x, y, hit.z - r], offset);
+            const offset = index * 72;
+            if (index >= this.emitter.activeCount) {
+                data.fill(0, offset, offset + 72);
+                return;
+            }
+            const p = drop.position, hit = drop.impact;
+            const dx = this.emitter.wind.x * 0.035, dz = this.emitter.wind.z * 0.035;
+            const age = 1 - drop.splash / 0.2;
+            const radius = drop.splash > 0 ? age * 0.18 : 0;
+            const lift = drop.splash > 0 ? Math.sin(age * Math.PI) * 0.16 : 0;
+            const y = hit.y + 0.015;
+            data.set([
+                p.x - 0.009, p.y, p.z, p.x + 0.009, p.y, p.z, p.x - dx, p.y + 0.36, p.z - dz,
+                p.x + 0.009, p.y, p.z, p.x - dx + 0.005, p.y + 0.31, p.z - dz, p.x - dx, p.y + 0.36, p.z - dz,
+                hit.x - radius, y + lift, hit.z, hit.x, y, hit.z, hit.x - radius * 0.75, y + lift * 0.8, hit.z,
+                hit.x + radius, y + lift, hit.z + radius, hit.x + radius * 0.72, y + lift * 0.7, hit.z + radius, hit.x, y, hit.z,
+            ], offset);
             // Reverse faces keep narrow streaks visible from every orbit angle.
             for (let triangle = 0; triangle < 4; triangle++)
                 for (let vertex = 0; vertex < 3; vertex++)

@@ -53,6 +53,7 @@ async function inspectToonPolish(page, screenshotPath) {
             frame();
             const disconnectedStops = level.player.moveX === 0 && level.player.moveZ === 0;
 
+            level.hud.helpVisible = false;
             const notice = level.hud.announcement;
             level.hud.ShowArea('Courtyard');
             level.hud.OnUpdate(2.5, 'Courtyard');

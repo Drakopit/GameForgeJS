@@ -12,7 +12,7 @@ import { FightingGameMenuLevel } from '../screens/FightingGameMenuLevel.js';
 export class FightingModule extends Module {
     constructor() {
         super('fighting-2d', {
-            imports: [module2D()],
+            imports: [module2D({ telemetry: true })],
             declarations: [FightingAnimationLevel,FighterPosePreview,FightingPadSeats, FightingTouchControls, FightingViewport, FightingCharacterSelectLevel, FightingGame2DLevel, FightingGameMenuLevel],
             exports: [FightingCharacterSelectLevel, FightingGame2DLevel, FightingGameMenuLevel],
         });

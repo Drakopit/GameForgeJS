@@ -41,6 +41,18 @@ export class SkyTrailHUD {
         const device = Input.GetConnectedGamepadIndices().length ? 'GAMEPAD' : 'TECLADO';
         this.help.view?.DrawAction('HELP',level.width-170,level.height-55);
         this.help.Draw(level.ui.Draw, this.helpVisible);
+        if (level.handoff > 0) {
+            frame.context.save();
+            const fade = level.pendingSegment === null ? level.handoff / 0.55 : 1 - level.handoff / 0.32;
+            frame.context.globalAlpha = Math.min(1, fade);
+            frame.context.fillStyle = '#101c2c';
+            frame.context.fillRect(0, 0, level.ui.Screen.Width, level.ui.Screen.Height);
+            frame.context.globalAlpha = Math.min(1, level.handoff * 3);
+            frame.Panel({ x: level.width / 2 - 132, y: 112, width: 264, height: 40 });
+            frame.Text('Segment ' + (level.segment + 1) + ' / ' + level.route.length, level.width / 2, 138,
+                { align: 'center', size: 16, color: frame.theme.gold });
+            frame.context.restore();
+        }
         if (level.gameState === 'WON') this.DrawResult(level);
     }
 

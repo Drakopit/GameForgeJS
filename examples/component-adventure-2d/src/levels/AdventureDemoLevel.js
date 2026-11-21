@@ -1,5 +1,5 @@
 import { InputHelpPanel, Draw as ControlGuideDraw } from 'gameforgejs/2d';
-import { ActionManager as ControlGuideActions } from 'gameforgejs/core';
+import { ActionManager as ControlGuideActions, SoundEffects } from 'gameforgejs/core';
 import { Draw } from "gameforgejs/2d";
 import { Screen } from "gameforgejs/2d";
 import { GameObject } from "gameforgejs/2d";
@@ -49,6 +49,7 @@ export class AdventureDemoLevel extends Level {
 
         const start = RoomOrigin(this.currentRoom);
         this.player = new AdventurePlayer({ x: start.x + 84, y: start.y + 224 });
+        this.sound = this.player.AddComponent(new SoundEffects(this.context.services.get('audio')));
         this.cameraRig = new GameObject();
         this.cameraRig.name = "CameraRig";
         this.cameraRig.AddComponent(new RoomCameraComponent({
@@ -140,6 +141,7 @@ export class AdventureDemoLevel extends Level {
             if (applied <= 0) continue;
 
             attackComponent.MarkHit(enemy);
+            this.sound.Play('hit');
             this._addHitSpark(bounds.GetAABB(), applied);
         }
     }

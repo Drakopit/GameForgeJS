@@ -1,5 +1,9 @@
 {
   "images": [
+    {"name":"blue_archer_idle","path":"../assets/Tiny Swords/Units/Blue Units/Archer/Archer_Idle.png"},
+    {"name":"blue_archer_run","path":"../assets/Tiny Swords/Units/Blue Units/Archer/Archer_Run.png"},
+    {"name":"blue_monk_idle","path":"../assets/Tiny Swords/Units/Blue Units/Monk/Idle.png"},
+    {"name":"blue_monk_run","path":"../assets/Tiny Swords/Units/Blue Units/Monk/Run.png"},
     {
       "name": "tactical_tilemap_color1",
       "path": ".././assets/Tiny Swords/Terrain/Tileset/Tilemap_color1.png"

@@ -41,8 +41,8 @@ instead of stacking full diffuse lighting on top of specular reflection.
 
 | Effect | Native implementation | Deliberate limit |
 | --- | --- | --- |
-| Reflection | Fresnel-weighted analytic sky/ground/horizon approximation | Does not reflect scene objects, cubemaps or offscreen geometry. Not SSR or a planar WebGL camera pass. |
-| Water | Animated surface normals, tint variation, eight bounded world-space impact rings | No refraction, buoyancy or GPU vertex displacement. Geometry/collision still belong to the game. |
+| Reflection | Fresnel-weighted analytic environment and optional mirrored WebGL pass | One horizontal plane per scene. The pass reflects Standard, Toon and Unlit geometry and skyboxes. |
+| Water | Animated normals, authored optical depth and eight world-space impact rings | Water geometry remains flat and the game supplies collision heights. |
 | Stone | World-space mottling, roughness and small procedural normal perturbations | Not a substitute for a normal/roughness texture when authored detail matters. |
 | Wood | Warm grain, roughness and a small normal perturbation | Procedural world-space pattern, not model-specific UV craftsmanship. |
 | Metal | Native metallic/specular shading plus environment approximation | Not a calibrated physical renderer or environment capture. |
@@ -54,7 +54,7 @@ Geometry3D, uses both face directions and submits one native mesh. Scene exit
 removes the mesh; the level renderer releases its GPU buffers. No rain renderer
 owns the scene, viewport, engine clock or audio context.
 
-Renderer Showcase consumes the suite alongside its texture/normal-map examples.
+Renderer Showcase enables the pass with `scene.planarReflection = { height: 0 }` and a `SurfaceMaterial` with `planarReflection: true`. The renderer clips geometry below the plane, reuses the directional shadow map, and samples a half-resolution reflection target with wave distortion. By default, other scenes use the analytic environment.
 Highland Tactics combines it with terrain collision heights and water-only impact
 ripples. These are two consumers of the public API rather than private shader copies.
 

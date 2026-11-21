@@ -1,5 +1,7 @@
 # GameForgeJS examples
 
+Press **F2** or use **Stats** in the input help panel to toggle FPS, frame time, and entity count. Renderer Showcase exposes performance in its Render controls panel.
+
 This directory contains independent runnable projects, not a second runtime.
 Each example consumes public gameforgejs imports and follows BootstrapGame → Module
 → Level/Level3D → Screen/entities/components. `showcase/` preserves old launcher

@@ -50,6 +50,8 @@ in mat3 vTbn;
 in vec4 vShadowCoord;
 
 out vec4 outColor;
+uniform bool uReflectionClip;
+uniform float uReflectionClipHeight;
 
 uniform vec3 uCameraPosition;
 uniform vec4 uAlbedoColor;
@@ -181,6 +183,7 @@ vec2 parallaxUv(vec2 uv, vec3 tangentViewDirection) {
 }
 
 void main() {
+    if (uReflectionClip && vWorldPosition.y < uReflectionClipHeight) discard;
     vec3 viewDirection = normalize(uCameraPosition - vWorldPosition);
     vec3 tangentViewDirection = normalize(transpose(vTbn) * viewDirection);
     vec2 surfaceUv = parallaxUv(vUv * uUvScale, tangentViewDirection);

@@ -26,7 +26,7 @@ async function main() {
                 'fighting-2d': ['FightingCharacterSelectLevel', 'FightingGame2DLevel'],
                 'platform-adventure-2d': ['AdvancedDemoPhaseSelector', 'AdvancedDemoFirstLevel'],
                 'sky-trail-3d': ['CubeGameLevel'],
-                'tactical-rpg-2d': ['TacticalMapLevel'],
+                'tactical-rpg-2d': ['TacticalModeMenuLevel', 'TacticalModeMenuLevel', 'TacticalMapLevel'],
             }[entry.id];
             for (const target of flow ?? []) {
                 await page.keyboard.down('Enter'); await page.waitForTimeout(120); await page.keyboard.up('Enter');
@@ -47,6 +47,7 @@ async function main() {
                 });
             }
             if(entry.id==='highland-tactics-3d'){
+                await page.evaluate(async () => (await import('gameforgejs/core')).LevelHandler.current.ResetBattle());
                 await page.waitForFunction(async()=>(await import('gameforgejs/core')).LevelHandler.current.turn.phase==='command');
                 await page.keyboard.press('Enter');
                 await page.waitForFunction(async()=>(await import('gameforgejs/core')).LevelHandler.current.turn.phase==='move');
@@ -65,7 +66,7 @@ async function main() {
                         level.navigator.Travel('grove'); level.navigator.OnUpdate(1);
                     }
                     if (id === 'boss-patterns-2d') {
-                        level.Reset(); for (let frame = 0; frame < 145; frame++) {level.OnUpdate(1 / 60); level.OnFixedUpdate(1 / 60);}
+                        level.Reset(); level.EnterRoom(2); for (let frame = 0; frame < 145; frame++) {level.OnUpdate(1 / 60); level.OnFixedUpdate(1 / 60);}
                     }
                     level.OnDrawn(); level.OnGUI();
                 }, entry.id);

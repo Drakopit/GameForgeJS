@@ -12,5 +12,5 @@ import { TerrainView } from '../rendering/TerrainView.js';
 import { TacticalHUD } from '../ui/TacticalHUD.js';
 import { TacticalControls } from '../input/TacticalControls.js';
 export class HighlandModule extends Module {
-    constructor() { super('highland-tactics-3d', { imports: [module2D(), module3D()], declarations: [HighlandLevel, TacticalPawn, HighlandEnvironment, UnitStats, UnitTravel, UnitVisual, TurnSystem, TerrainView, TacticalHUD, TacticalControls], exports: [HighlandLevel] }); }
+    constructor() { super('highland-tactics-3d', { imports: [module2D({ telemetry: true }), module3D()], declarations: [HighlandLevel, TacticalPawn, HighlandEnvironment, UnitStats, UnitTravel, UnitVisual, TurnSystem, TerrainView, TacticalHUD, TacticalControls], exports: [HighlandLevel] }); }
 }

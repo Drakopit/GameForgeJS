@@ -7,7 +7,7 @@ export class TacticalControls {
         const l = this.level, t = l.turn;
         if (ActionManager.IsActionDown('HELP'))
             l.hud.help.Toggle();
-        if (ActionManager.IsActionDown('RESET'))
+        if (!l.exploring && ActionManager.IsActionDown('RESET'))
             l.ResetBattle();
         if (ActionManager.IsActionDown('ORBIT_LEFT'))
             l.cameraStep--;
@@ -26,7 +26,7 @@ export class TacticalControls {
                 t.command = (t.command + (index === 0 || index === 3 ? -1 : 1) + 4) % 4;
             else if (t.phase === 'face')
                 t.active.stats.facing = index;
-            else if (t.cursor) {
+            else if (['move', 'target'].includes(t.phase)) {
                 const d = Facings[index], tile = l.grid.Get(t.cursor.col + d.col, t.cursor.row + d.row);
                 if (tile)
                     t.cursor = { col: tile.col, row: tile.row };
@@ -34,8 +34,15 @@ export class TacticalControls {
             l.sound.Play('select');
         }
         this.previous = direction ?? '';
-        if (ActionManager.IsActionDown('CANCEL') && ['move', 'target', 'face'].includes(t.phase))
-            t.phase = 'command';
+        if (ActionManager.IsActionDown('CANCEL')) {
+            t.Cancel();
+            return;
+        }
+        if (t.phase === 'move' || t.phase === 'target') this.PickTile();
+        if (ActionManager.IsActionDown('CONFIRM')) this.Confirm();
+    }
+    PickTile() {
+        const l = this.level, t = l.turn;
         const points = Input.instance.touch.GetStartedTouches().map(c => c.startPosition);
         if (Input.instance.mouse.buttonsDown[0])
             points.push(Input.instance.mouse.position);
@@ -47,10 +54,9 @@ export class TacticalControls {
             if (tile) {
                 t.cursor = { col: tile.col, row: tile.row };
                 this.Confirm();
+                break;
             }
         }
-        if (ActionManager.IsActionDown('CONFIRM'))
-            this.Confirm();
     }
     Confirm() {
         const t = this.level.turn;

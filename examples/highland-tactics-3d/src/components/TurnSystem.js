@@ -45,7 +45,7 @@ export class TurnSystem extends Component {
         }
     }
     Choose(index) {
-        if (this.phase !== 'command')
+        if (this.phase !== 'command' || !Number.isInteger(index) || index < 0 || index > 3)
             return;
         this.command = index;
         if (index === 0) {
@@ -57,6 +57,7 @@ export class TurnSystem extends Component {
             this.phase = 'move';
         }
         else if (index === 3) {
+            this.previousFacing = this.active.stats.facing;
             this.phase = 'face';
             this.message = 'Choose a direction, then confirm Wait';
         }
@@ -124,6 +125,10 @@ export class TurnSystem extends Component {
         this.phase = this.active.stats.team === 'ally' ? 'command' : 'ai';
         this.delay = 0.5;
     }
+    Cancel() {
+        if (this.phase === 'face') this.active.stats.facing = this.previousFacing;
+        if (['move', 'target', 'face'].includes(this.phase)) this.phase = 'command';
+    }
     EndTurn() {
         if (!this.active || !['face', 'ai'].includes(this.phase))
             return;
@@ -144,8 +149,19 @@ export class TurnSystem extends Component {
             const range = [...this.Range().values()].filter(tile => tile.path.length);
             const distance = tile => Math.min(...foes.map(p => Math.abs(p.stats.col - tile.col) + Math.abs(p.stats.row - tile.row)));
             range.sort((a, b) => distance(a) - distance(b) || a.cost - b.cost);
-            if (range.length && this.Move(range[0]))
-                return;
+            const currentDistance = distance(this.active.stats);
+            const direct = range.find(tile => distance(tile) < currentDistance);
+            if (direct && this.Move(direct)) return;
+            // A ridge or occupied choke point can require moving away before approaching.
+            const routes = [...this.grid.Reachable(this.active.stats, {
+                move: this.grid.cols * this.grid.rows * 2, climb: 1, jump: 2,
+                occupied: this.Occupied(this.active),
+            }).values()].sort((a, b) => a.cost - b.cost);
+            const approach = routes.find(tile => tile.path.length && foes.some(foe =>
+                BattleRules.CanAttack(this.grid, { ...this.active.stats, ...tile }, foe.stats, 'strike')));
+            const next = approach?.path.findLast(tile => range.some(entry =>
+                entry.col === tile.col && entry.row === tile.row));
+            if (next && this.Move(next)) return;
         }
         const target = foes.sort((a, b) => Math.abs(a.stats.col - this.active.stats.col) + Math.abs(a.stats.row - this.active.stats.row) - Math.abs(b.stats.col - this.active.stats.col) - Math.abs(b.stats.row - this.active.stats.row))[0];
         if (target)

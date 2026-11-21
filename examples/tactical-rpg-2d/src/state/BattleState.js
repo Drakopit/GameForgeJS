@@ -52,7 +52,7 @@ export const BattleState = {
     ResetAll() {
         if(this.playerUnit?._destroyed){this.pendingReset=true;return;}
         this.pendingReset=false;
-        this.playerUnit?.Reset?.();
+        for (const unit of this.party ?? [this.playerUnit]) unit?.Reset?.();
         this.enemies.forEach(enemy => enemy.Reset?.());
         this.enemyUnit = this.enemies[0] ?? null;
         this.result = null;

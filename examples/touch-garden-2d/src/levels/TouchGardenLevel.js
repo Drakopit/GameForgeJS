@@ -1,4 +1,4 @@
-import { ActionManager, Input, Level } from 'gameforgejs/core';
+import { ActionManager, Input, Level, SoundEffects } from 'gameforgejs/core';
 import { Screen } from 'gameforgejs/2d';
 import { TouchControls } from '../input/TouchControls.js';
 import { GardenPlayer } from '../entities/GardenPlayer.js';
@@ -22,21 +22,31 @@ export class TouchGardenLevel extends Level {
         this.obstacles = Settings.obstacles.map(box => this.AddEntity(new GardenObstacle(this.screen, box)));
         this.crystals = Settings.crystals.map(position => this.AddEntity(new GardenCrystal(this.screen, position)));
         this.player = this.AddEntity(new GardenPlayer(this.screen, this.controls, this.obstacles));
-        this.hud = new TouchGardenHUD(this.screen, this.controls);
+        this.sound = this.player.AddComponent(new SoundEffects(this.context.services.get('audio')));
+        this.hud = new TouchGardenHUD(this.screen, this.controls, () => this.ResetGarden());
         this.collected = 0;
         super.OnStart(context);
     }
 
     OnUpdate(dt) {
+        if (ActionManager.IsActionDown('HELP')) this.hud.helpVisible = !this.hud.helpVisible;
+        if (this.hud.helpVisible) {
+            this.controls.Reset();
+            return;
+        }
         this.controls.Update();
-        if (this.controls.resetPressed || ActionManager.IsActionDown('RESET')) this.ResetGarden();
-        if (this.controls.helpPressed || ActionManager.IsActionDown('HELP')) this.hud.helpVisible = !this.hud.helpVisible;
+        if (ActionManager.IsActionDown('RESET')) this.ResetGarden();
         super.OnUpdate(dt);
     }
 
     OnFixedUpdate(dt) {
+        if (this.hud.helpVisible) return;
         super.OnFixedUpdate(dt);
-        for (const crystal of this.crystals) if (crystal.TryCollect(this.player)) this.collected++;
+        for (const crystal of this.crystals) {
+            if (!crystal.TryCollect(this.player)) continue;
+            this.collected++;
+            this.sound.Play('collect');
+        }
     }
 
     ResetGarden() {

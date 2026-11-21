@@ -75,8 +75,14 @@ export class TacticalUnitRendererComponent extends Component {
         const frame = animation.frame ?? {};
         const frameWidth = frame.width ?? image.naturalWidth / (frame.frames ?? 1);
         const frameHeight = frame.height ?? image.naturalHeight;
-        const sourceX = (frame.x ?? 0) + this.frameIndex * frameWidth;
+        const originX = frame.x ?? 0;
         const sourceY = frame.y ?? 0;
+        const columns = Math.floor((image.naturalWidth - originX) / frameWidth);
+        if (columns < 1 || sourceY + frameHeight > image.naturalHeight) {
+            this._drawFallback(draw, transform);
+            return;
+        }
+        const sourceX = originX + (this.frameIndex % columns) * frameWidth;
         const scale = Number(animation.scale ?? this.scale ?? 1);
         const drawWidth = frameWidth * scale;
         const drawHeight = frameHeight * scale;
@@ -90,6 +96,10 @@ export class TacticalUnitRendererComponent extends Component {
 
         ctx.save();
         if (!this.owner?.IsAlive?.()) ctx.globalAlpha = 0.45;
+        if (this.owner.mirrored) {
+            ctx.translate(transform.x * 2, 0);
+            ctx.scale(-1, 1);
+        }
         ctx.drawImage(
             image,
             sourceX,

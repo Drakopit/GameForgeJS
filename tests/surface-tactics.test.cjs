@@ -74,3 +74,22 @@ test('puzzle spawn resets orientation, detects blockage and preserves fractional
     assert.equal(one.piece.row1,two.piece.row1);assert(Math.abs(one.piece.fallTimer-two.piece.fallTimer)<1e-8);
     one.board.grid[1][2]={};one.piece.setGems({},{});assert(one.board.gameOver);
 });
+
+test('Puzzle Power Gems fall as a block and send bonus counter-gems when shattered', async () => {
+    const { PuzzleBoard } = await import('../examples/puzzle-battle-2d/src/entities/PuzzleBoard.js');
+    const { GemType, PuzzleGem } = await import('../examples/puzzle-battle-2d/src/entities/PuzzleGem.js');
+    const board = new PuzzleBoard(0, 0);
+    for (const row of [6, 7]) {
+        for (const col of [0, 1]) board.grid[row][col] = new PuzzleGem(GemType.NORMAL, 'red');
+    }
+    board.grid[11][0] = new PuzzleGem(GemType.GARBAGE, 'garbage', 3);
+    board.applyGravity();
+    const [power] = board.MergePowerGems().blocks;
+    assert.deepEqual([power.r, power.c, power.width, power.height], [9, 0, 2, 2]);
+    board.grid[10][2] = new PuzzleGem(GemType.CRASH, 'red');
+    let pressure = 0;
+    board.onSendGarbage = amount => { pressure += amount; };
+    assert.equal(board.checkMatches(), true);
+    assert.equal(pressure, 3);
+    assert.equal(board.grid.flat().filter(Boolean).length, 1);
+});

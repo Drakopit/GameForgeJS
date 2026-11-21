@@ -12,21 +12,37 @@ export class PuzzleHUD {
         for(const [index,board] of [level.board1,level.board2].entries()) {
             const x=board.x,bw=board.cellSize*PuzzleConfig.COLS,top=board.y-80;
             f.Panel({x:x-8,y:top,width:bw+16,height:74});
-            f.Text(index?'KIRA / CPU':'BLAZE / YOU',x+4,top+22,{size:bw<170?11:14,maxWidth:bw-55,weight:700,color:index?'#c2b7ff':'#7be3d4'});
-            f.Text(String(board.score).padStart(5,'0'),x+4,top+50,{size:23,weight:700,maxWidth:bw-56});
-            f.Text('NEXT',x+bw-50,top+19,{size:10,color:f.theme.muted});
-            this.next?.[index]?.forEach((gem,i)=>gem.render(ctx,x+bw-50+i*25,top+29,23));
+            const fighter = index ? level.fighter2 : level.fighter1;
+            const scale = Math.min(0.78, bw / 200);
+            const portraitWidth = 60 * scale;
+            const nextWidth = Math.min(48, bw * 0.26);
+            const textWidth = Math.max(8, bw - portraitWidth - nextWidth - 8);
+            fighter.draw(ctx, x + portraitWidth * 0.43, top + 58, scale, index ? -1 : 1);
+            f.Text(fighter.data.name, x + portraitWidth, top + 24,
+                { size: bw < 170 ? 10 : 14, maxWidth: textWidth, weight: 700, color: index ? '#c2b7ff' : '#7be3d4' });
+            f.Text(String(board.score).padStart(5,'0'),x+portraitWidth,top+48,{size:bw<170?16:23,weight:700,maxWidth:textWidth});
+            f.Text('NEXT',x+bw-nextWidth,top+19,{size:10,color:f.theme.muted});
+            this.next?.[index]?.forEach((gem,i)=>gem.render(ctx,x+bw-nextWidth+i*(nextWidth/2),top+29,nextWidth/2-1));
             const occupied=board.grid.flat().filter(Boolean).length/(PuzzleConfig.ROWS*PuzzleConfig.COLS);
             f.Meter(occupied,{x,y:board.y+board.cellSize*PuzzleConfig.ROWS+8,width:bw,height:5},occupied>0.7?'#ff8c8c':'#7be3d4');
         }
         f.Text('PRISM DUEL',center,29,{align:'center',size:20,weight:700,color:f.theme.gold});
-        f.Text('Crash cores break connected colors',center,48,{align:'center',size:11,maxWidth:270});
-        if(w>=700&&h>=550){
-        f.Panel({x:center-133,y:164,width:266,height:175});
-        f.Text('VS',center,215,{align:'center',size:34,weight:700,color:f.theme.gold});
-        f.Text('Build colors. Drop a core.',center,253,{align:'center',size:15});
-        f.Text('Chain clears send stone to your rival.',center,280,{align:'center',size:12,maxWidth:242});
-        f.Text(level.gameEnded?(level.board1.gameOver?'KIRA WINS':'BLAZE WINS'):level.paused?'PAUSED':'DUEL IN PROGRESS',center,315,{align:'center',size:12,color:'#7be3d4'});
+        f.Text('Build rectangles. Shatter Power Gems with crash cores.',center,48,{align:'center',size:11,maxWidth:270});
+        if (w >= 700 && h >= 550) {
+            const y = level.board1.y + 43;
+            f.Panel({ x: center - 132, y, width: 264, height: 205 });
+            f.Text(level.gameEnded ? (level.board1.gameOver ? 'KIRA WINS' : 'BLAZE WINS') : 'PRISM ARENA',
+                center, y + 28, { align: 'center', size: 15, weight: 700, color: f.theme.gold });
+            const floor = ctx.createLinearGradient(center - 110, 0, center + 110, 0);
+            floor.addColorStop(0, '#7be3d4');
+            floor.addColorStop(0.5, '#ead399');
+            floor.addColorStop(1, '#c2b7ff');
+            ctx.fillStyle = floor;
+            ctx.fillRect(center - 110, y + 148, 220, 3);
+            level.fighter1.draw(ctx, center - 65, y + 146, 1.25, 1);
+            level.fighter2.draw(ctx, center + 65, y + 146, 1.25, -1);
+            f.Text('VS', center, y + 108, { align: 'center', size: 18, weight: 700, color: f.theme.gold });
+            f.Text('Chains send counter-gems', center, y + 180, { align: 'center', size: 13, color: f.theme.muted });
         }
         for(const text of this.floatingTexts){ctx.save();ctx.globalAlpha=Math.min(1,text.life);f.Text(text.text,text.x,text.y,{size:19,weight:700,align:'center',color:text.color});ctx.restore();}
         if(level.gameEnded||level.paused){

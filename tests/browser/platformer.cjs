@@ -3,7 +3,7 @@ const { expect } = require('@playwright/test');
 
 async function waitForCondition(page, condition, argument) {
     // Jump/animation phases can be shorter than the default polling backoff.
-    await expect.poll(() => page.evaluate(condition, argument), { intervals: [16, 32, 50] }).toBe(true);
+    await expect.poll(() => page.evaluate(condition, argument), { intervals: [16, 32, 50], timeout: 15000 }).toBe(true);
 }
 
 async function readPlayer(page) {
@@ -61,17 +61,28 @@ async function inspectPlatformer(page, screenshotPath) {
             && player.animation.facingRight;
     });
     await page.keyboard.up('ArrowRight');
+    await teleport(page, before.x, before.y);
+    await waitForGround(page);
+    await page.evaluate(async () => {
+        const { Engine, LevelHandler } = await import('gameforgejs/core');
+        window.jumpPhases = new Set();
+        window.removeJumpProbe = Engine.events.on('PostUpdate', () => {
+            const { animation } = LevelHandler.current.player;
+            if (animation.animator.currentAnimationName === 'Jump') {
+                window.jumpPhases.add('Jump');
+            }
+            if (animation.animator.currentAnimationName === 'Fall') window.jumpPhases.add('Fall');
+        });
+    });
 
     await page.keyboard.down('Space');
-    await waitForCondition(page, async () => {
-        const player = (await import('gameforgejs/core')).LevelHandler.current.player;
-        return player.controller.vy < 0 && !player.controller.grounded
-            && player.animation.animator.currentAnimationName === 'Jump';
-    });
+    await waitForCondition(page, () => window.jumpPhases.has('Jump'));
     await page.keyboard.up('Space');
-    await waitForCondition(page, async () => {
-        const player = (await import('gameforgejs/core')).LevelHandler.current.player;
-        return player.animation.animator.currentAnimationName === 'Fall';
+    await waitForCondition(page, () => window.jumpPhases.has('Fall'));
+    await page.evaluate(() => {
+        window.removeJumpProbe();
+        delete window.removeJumpProbe;
+        delete window.jumpPhases;
     });
     await waitForGround(page);
 

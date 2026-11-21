@@ -73,17 +73,18 @@ export class TacticalMapRenderer {
         return "grass_center";
     }
 
-    DrawObjects(layer = "back") {
-        const objects = [...(this.stage.objects ?? [])]
-            .filter(object => object.visible !== false)
-            .sort((a, b) => (a.zIndex ?? 0) - (b.zIndex ?? 0));
-
-        for (const object of objects) {
-            const zIndex = object.zIndex ?? 0;
-            if (layer === "back" && zIndex >= 20) continue;
-            if (layer === "front" && zIndex < 20) continue;
-            this.DrawObject(object);
+    DrawActors(units) {
+        const objects = (this.stage.objects ?? []).filter(object => object.visible !== false);
+        const queue = objects.map(object => ({
+            depth: object.sortY ?? object.y + (object.height ?? 32),
+            order: object.zIndex ?? 0,
+            draw: () => this.DrawObject(object),
+        }));
+        for (const unit of units) {
+            if (unit?.IsAlive?.()) queue.push({ depth: unit.pixelY, order: 20, draw: () => unit.OnDrawn() });
         }
+        queue.sort((a, b) => a.depth - b.depth || a.order - b.order);
+        for (const entry of queue) entry.draw();
     }
 
     DrawObject(object) {
@@ -142,13 +143,6 @@ export class TacticalMapRenderer {
             const bounds = this.grid.TileBounds(step.x, step.y);
             draw.DrawRect(bounds.x + 18, bounds.y + 18, bounds.width - 36, bounds.height - 36);
         }
-    }
-
-    DrawUnits(units = []) {
-        units
-            .filter(unit => unit?.IsAlive?.())
-            .sort((a, b) => a.pixelY - b.pixelY)
-            .forEach(unit => unit.OnDrawn());
     }
 
     DrawCursor(cursor) {
@@ -221,7 +215,7 @@ export class TacticalMapRenderer {
         }
     }
 
-    DrawHud({ message, battleModeLabel, fps, showActionHelp = true }) {
+    DrawHud({ message, battleModeLabel, showActionHelp = true }) {
         const draw = this.level.draw;
         const world = this.grid.world;
         const barY = world.originY + world.rows * world.cell + 4;

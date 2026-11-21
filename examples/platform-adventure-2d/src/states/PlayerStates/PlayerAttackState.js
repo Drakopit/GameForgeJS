@@ -19,7 +19,7 @@ export class AttackState extends State {
 
         this.owner.combo.Update(dt);
 
-        if (ActionManager.IsActionDown("ATTACK")) {
+        if ((this.owner.controls ?? ActionManager).IsActionDown("ATTACK")) {
             this.owner.combo.QueueNext();
         }
 

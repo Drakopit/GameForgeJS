@@ -12,11 +12,11 @@ export class TouchControls {
         this.identifier = null;
         this.origin = Vector2D.FromObject(Settings.stickOrigin);
         this.direction = new Vector2D();
-        this.dashPressed = this.helpPressed = this.resetPressed = false;
+        this.dashPressed = false;
     }
 
     Update() {
-        this.dashPressed = this.helpPressed = this.resetPressed = false;
+        this.dashPressed = false;
         if (!Input.instance?.presentation?.TouchVisible) {this.identifier=null;this.direction.Set(0,0);return;}
         const cancelled = new Set(this.touch.GetEndedTouches().filter(contact => contact.cancelled).map(contact => contact.identifier));
         for (const contact of this.touch.GetStartedTouches()) {
@@ -26,8 +26,6 @@ export class TouchControls {
                 this.identifier = contact.identifier;
                 this.origin = point;
             } else if (point.DistanceTo(Vector2D.FromObject(Settings.action)) <= Settings.action.radius) this.dashPressed = true;
-            else if (this.Inside(point, Settings.helpButton)) this.helpPressed = true;
-            else if (this.Inside(point, Settings.resetButton)) this.resetPressed = true;
         }
         const contact = this.touch.GetTouch(this.identifier);
         this.direction.Set(0, 0);
@@ -38,8 +36,4 @@ export class TouchControls {
         this.direction = delta.DivideScalar(Math.max(Settings.stickRadius, length));
     }
 
-    Inside(point, rectangle) {
-        return point.x >= rectangle.x && point.x <= rectangle.x + rectangle.width
-            && point.y >= rectangle.y && point.y <= rectangle.y + rectangle.height;
-    }
 }

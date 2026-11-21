@@ -7,7 +7,7 @@ export class ProjectileContact extends Component {
         const projectile = this.owner, level = this.level;
         if (!projectile.active) return;
         const target = projectile.team === 'player' ? level.boss : level.player;
-        if (CircleHit(projectile.position, projectile.radius, target.position, target.radius)) {
+        if (target.active !== false && CircleHit(projectile.position, projectile.radius, target.position, target.radius)) {
             target.health.Damage(1, projectile); projectile.Release(); return;
         }
         const {width, height} = level.rules.arena, p = projectile.position;

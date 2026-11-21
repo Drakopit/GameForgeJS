@@ -15,7 +15,7 @@ import { PropPhysics } from '../systems/PropPhysics.js';
 
 export class FoundryModule extends Module {
     constructor() {
-        super('storm-foundry-2d', { imports: [module2D()],
+        super('storm-foundry-2d', { imports: [module2D({ telemetry: true })],
             declarations: [FoundryAudio, FoundryLevel, FoundryWorld, FoundryProp, WeatherEmitter, ParticleEmitter,
                 RippleField, WaterContact, PropForces, PropVisual, PropPhysics], exports: [FoundryLevel] });
     }

@@ -26,7 +26,9 @@ export class BattleRules {
         if (attacker.hp <= 0 || defender.hp <= 0 || attacker.team === defender.team)
             return false;
         const distance = Math.abs(attacker.col - defender.col) + Math.abs(attacker.row - defender.row);
-        const height = Math.abs(grid.Get(attacker.col, attacker.row).h - grid.Get(defender.col, defender.row).h);
+        const source = grid.Get(attacker.col, attacker.row), target = grid.Get(defender.col, defender.row);
+        if (distance === 0 || !source || !target) return false;
+        const height = Math.abs(source.h - target.h);
         return distance <= (ability === 'spark' ? 3 : 1) && height <= (ability === 'spark' ? 3 : 1)
             && (ability !== 'spark' || attacker.energy > 0) && grid.CanSee(attacker, defender);
     }

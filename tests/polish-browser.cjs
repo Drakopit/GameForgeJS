@@ -15,7 +15,7 @@ async function hudButton(page,name){
     await page.touchscreen.tap(point.x,point.y);
 }
 async function highland(page,url,mobile){
-    await ready(page,url);await page.waitForFunction(()=>window.fx.LevelHandler.current.turn.phase==='command');
+    await ready(page,url);await page.evaluate(()=>window.fx.LevelHandler.current.ResetBattle());await page.waitForFunction(()=>window.fx.LevelHandler.current.turn.phase==='command');
     if(mobile)await hudButton(page,'MOVE');else await press(page,'Enter');
     await page.waitForFunction(()=>window.fx.LevelHandler.current.turn.phase==='move');
     if(mobile){
@@ -49,11 +49,16 @@ async function highland(page,url,mobile){
     await page.evaluate(()=>window.fx.Engine.Dispose());assert.equal(await page.locator('canvas').count(),0);
 }
 async function classicTactics(page,base){
-    await ready(page,base+'examples/tactical-rpg-2d/');await press(page,'Enter');
+    await ready(page,base+'examples/tactical-rpg-2d/');
+    for(let step=1;step<=2;step++){
+        await press(page,'Enter');
+        await page.waitForFunction(step=>window.fx.LevelHandler.current.step===step,step);
+    }
+    await press(page,'Enter');
     await page.waitForFunction(()=>window.fx.LevelHandler.current?.battle);
     const result=await page.evaluate(async()=>{
         window.fx.Engine.Stop();const {LevelHandler}=window.fx;
-        const {BattleState}=await import(new URL('./src/state/BattleState.js',location.href));
+        const {BattleState,BATTLE_MODES}=await import(new URL('./src/state/BattleState.js',location.href));
         const {TacticalMapLevel}=await import(new URL('./src/levels/TacticalMapLevel.js',location.href));
         const old=LevelHandler.current,oldUnit=old.battle.player,context=old.context;
         oldUnit.hp-=3;const hp=oldUnit.hp;old.OnExit();
@@ -62,8 +67,26 @@ async function classicTactics(page,base){
         const valid=next.battle.player!==oldUnit&&next.battle.player.hp===hp&&next.battle.player.components.length>0;
         next.OnExit();BattleState.ResetAll();
         const again=new TacticalMapLevel();again.context=context;again.OnStart(context);again.OnDrawn();
-        const reset=again.battle.player.hp===again.battle.player.maxHp;again.OnExit();return{valid,reset};
-    });assert.deepEqual(result,{valid:true,reset:true});
+        const reset=again.battle.player.hp===again.battle.player.maxHp;
+        BattleState.SetBattleMode(BATTLE_MODES.FINAL_FANTASY_TACTICS);
+        const battle=again.battle, hero=battle.player, [enemy,...others]=battle.enemies;
+        hero.MoveTo(2,2); enemy.MoveTo(3,2);
+        for (const other of others) other.hp=0;
+        enemy.Face(4,2);
+        const rear=enemy.ImpactSide(hero)==='back';
+        battle._selectPlayer();
+        const move=battle.moveArea.some(tile=>tile.col===2&&tile.row===3);
+        const blocked=battle.moveArea.every(tile=>!battle.grid.IsBlocked(tile.col,tile.row));
+        battle.cursor={col:2,row:2};battle._confirmMoveTarget();battle._confirmActionMenu();
+        battle.cursor={col:3,row:2};battle._confirmActionTarget();
+        const enemyTurn=battle.phase==='ENEMY_TURN';
+        for(let tick=0;tick<240&&battle.phase!=='SELECT_UNIT';tick++)battle.Update(1/60);
+        const resumed=battle.phase==='SELECT_UNIT'&&hero.hp<hero.maxHp;
+        enemy.hp=1;
+        battle._openPostMoveAction();battle._confirmActionMenu();battle.cursor={col:3,row:2};battle._confirmActionTarget();
+        const victory=battle.phase==='SELECT_UNIT'&&!battle.HasLivingEnemies();
+        again.OnExit();return{valid,reset,rear,move,blocked,enemyTurn,resumed,victory};
+    });assert.deepEqual(result,{valid:true,reset:true,rear:true,move:true,blocked:true,enemyTurn:true,resumed:true,victory:true});
 }
 async function fighterSheets(page,base){
     await ready(page,base+'examples/fighting-2d/');
@@ -102,7 +125,7 @@ async function fighterSheets(page,base){
     assert.deepEqual(repertoire,{medium:'medium',low:'crouchHeavy',highGuard:false,lowGuard:true,down:true,recovered:true,stood:true,aerial:'aerialHeavy'});
 }
 async function highlandGamepad(page,base){
-    await ready(page,base+'examples/highland-tactics-3d/');await page.waitForFunction(()=>window.fx.LevelHandler.current.turn.phase==='command');
+    await ready(page,base+'examples/highland-tactics-3d/');await page.evaluate(()=>window.fx.LevelHandler.current.ResetBattle());await page.waitForFunction(()=>window.fx.LevelHandler.current.turn.phase==='command');
     const result=await page.evaluate(()=>{
         window.fx.Engine.Stop();const l=window.fx.LevelHandler.current,input=window.fx.Input;
         let buttons=[];Object.defineProperty(navigator,'getGamepads',{configurable:true,value:()=>[{index:0,id:'Sony DualSense',connected:true,mapping:'standard',axes:[0,0,0,0],buttons:Array.from({length:17},(_,i)=>({pressed:buttons.includes(i),value:buttons.includes(i)?1:0}))}]});
@@ -117,9 +140,16 @@ async function highlandGamepad(page,base){
 }
 async function surfaces(page,base){
     await ready(page,base+'examples/renderer-3d/');
+    await press(page,'h');
+    assert.equal(await page.evaluate(() => window.fx.LevelHandler.current.hud.open), true);
+    await press(page,'ArrowDown');
+    await press(page,'ArrowRight');
+    assert(await page.evaluate(() => window.fx.LevelHandler.current.hud.orbit.value > 0.32));
+    await press(page,'t');
+    assert.equal(await page.evaluate(() => window.fx.LevelHandler.current.gallery.rain.activeCount), 0);
     const result=await page.evaluate(async()=>{
         window.fx.Engine.Stop();const l=window.fx.LevelHandler.current;
-        const {Scene3D,Mesh,PrimitiveMesh,SurfaceMaterial,StandardMaterial,AmbientLight}=await import('gameforgejs/3d');
+        const {Scene3D,Mesh,PrimitiveMesh,SurfaceMaterial,StandardMaterial,UnlitMaterial,AmbientLight}=await import('gameforgejs/3d');
         const {PlanarReflection2D}=await import('gameforgejs/2d');
         const scene=new Scene3D();scene.Add(l.camera);scene.Add(new AmbientLight({intensity:0.8}));
         const material=new SurfaceMaterial({preset:'water'});material.AddRipple({x:0,z:0});material.Advance(0.1);
@@ -128,10 +158,32 @@ async function surfaces(page,base){
         const enabled={surface:read('uSurface'),reflection:read('uReflection'),ripples:read('uRippleCount')};
         mesh.material=new StandardMaterial();l.renderer.Render(scene,l.camera);
         const reset={surface:read('uSurface'),reflection:read('uReflection'),ripples:read('uRippleCount')};
+        scene.Remove(mesh);
+        scene.planarReflection = { height: 0 };
+        scene.backgroundColor = [0, 0, 0, 1];
+        const cube = scene.Add(new Mesh({
+            geometry: PrimitiveMesh.Cube(1), material: new UnlitMaterial({ color: [1, 0, 0, 1] }),
+        }));
+        cube.transform.SetPosition(0, 0.7, -1);
+        const below = scene.Add(new Mesh({
+            geometry: PrimitiveMesh.Cube(1), material: new UnlitMaterial({ color: [0, 1, 0, 1] }),
+        }));
+        below.transform.SetPosition(2, -0.7, -1);
+        scene.Add(new Mesh({ geometry: PrimitiveMesh.Plane(7, 7),
+            material: new SurfaceMaterial({ preset: 'water', planarReflection: true }) }));
+        l.renderer.Render(scene, l.camera);
+        const target = l.renderer.reflectionTarget;
+        const reflected = new Uint8Array(target.width * target.height * 4);
+        gl.bindFramebuffer(gl.FRAMEBUFFER, target.framebuffer);
+        gl.readPixels(0, 0, target.width, target.height, gl.RGBA, gl.UNSIGNED_BYTE, reflected);
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+        const red = reflected.some((value, index) => index % 4 === 0 && value > 240);
+        const green = reflected.some((value, index) => index % 4 === 1 && value > 240);
+        const planar = read('uHasPlanarReflection');
         const canvas=new OffscreenCanvas(16,16),ctx=canvas.getContext('2d');ctx.fillStyle='red';ctx.fillRect(0,0,16,8);ctx.globalAlpha=0.3;
         PlanarReflection2D.Draw(ctx,canvas,{width:16,height:16,waterY:8,time:0});
-        return{enabled,reset,error:gl.getError(),pixel:ctx.getImageData(8,9,1,1).data[0],alpha:ctx.globalAlpha};
-    });assert.equal(result.enabled.surface,1);assert(result.enabled.reflection>0);assert.equal(result.enabled.ripples,1);assert.deepEqual(result.reset,{surface:0,reflection:0,ripples:0});assert.equal(result.error,0);assert(result.pixel>0);assert(Math.abs(result.alpha-0.3)<0.001);
+        return{enabled,reset,red,green,planar,error:gl.getError(),pixel:ctx.getImageData(8,9,1,1).data[0],alpha:ctx.globalAlpha};
+    });assert.equal(result.enabled.surface,1);assert(result.enabled.reflection>0);assert.equal(result.enabled.ripples,1);assert.deepEqual(result.reset,{surface:0,reflection:0,ripples:0});assert.equal(result.error,0);assert.equal(result.planar,true);assert.equal(result.red,true);assert.equal(result.green,false);assert(result.pixel>0);assert(Math.abs(result.alpha-0.3)<0.001);
 }
 async function buildingBlocksTouch(page,url,id){
     await ready(page,url);

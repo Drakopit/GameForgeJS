@@ -17,6 +17,7 @@ export class TacticalHUD {
         ];
         this.commands = Commands.map((label, index) => this.Button(label, () => level.turn.Choose(index)));
         this.facings = Facings.map((direction, index) => this.Button(direction.name, () => { level.turn.active.stats.facing = index; }));
+        this.start = this.Button('START PATROL', () => level.StartPatrol());
         this.confirm = this.Button('CONFIRM WAIT', () => level.turn.EndTurn());
     }
     Button(label, run) {
@@ -36,11 +37,12 @@ export class TacticalHUD {
     }
     Draw() {
         const { level: l, screen: s, frame: f } = this, t = l.turn, w = s.Width, h = s.Height, compact = w < 650;
-        this.footerHeight = compact ? 174 : 156;
+        this.footerHeight = h < 420 ? 120 : compact ? 174 : 156;
         f.Panel({ x: 8, y: 8, width: w - 16, height: 94 });
         f.Text('HIGHLAND TACTICS', 20, 31, { size: 20, weight: 700, color: f.theme.gold });
         f.Text(t.result ?? 'A height-aware 3D skirmish · original GameForgeJS example', 20, 49, { size: 11, maxWidth: w - 40 });
-        this.tools.forEach((item, i) => this.Place(item, 20 + i * 62, 57, 55, 44));
+        this.tools.forEach((item, i) => this.Place(item, 20 + i * Math.min(62, (w - 40) / 5), 57,
+            Math.min(55, (w - 50) / 5), 44, item.label !== 'RETRY' || !l.exploring));
         const queue = t.Alive().slice().sort((a, b) => (100 - a.stats.ct) / a.stats.speed - (100 - b.stats.ct) / b.stats.speed);
         queue.slice(0, compact ? 3 : 4).forEach((pawn, i) => {
             const x = 16 + i * (compact ? 120 : 142);
@@ -72,10 +74,29 @@ export class TacticalHUD {
         else if (tile && ['move', 'target'].includes(t.phase))
             message = `Tile ${tile.col},${tile.row} · H ${tile.h} · ${message}`;
         f.Text(message, 20, y + 45, { size: 11, maxWidth: w - 40, color: f.theme.gold });
-        const columns = compact ? 2 : 4, bw = (w - 40 - (columns - 1) * 8) / columns;
-        this.commands.forEach((item, i) => this.Place(item, 20 + i % columns * (bw + 8), y + 57 + Math.floor(i / columns) * 46, bw, 44, t.phase === 'command', t.command === i));
-        this.facings.forEach((item, i) => this.Place(item, 20 + i * (w - 40) / 4, y + 57, (w - 56) / 4, 44, t.phase === 'face', a?.facing === i));
-        this.Place(this.confirm, 20, y + 101, w - 40, 44, t.phase === 'face');
+        const origin = t.active?.travel.position;
+        const projected = origin && l.camera.Project(origin, w, h);
+        const centerX = Math.max(100, Math.min(w - 100, projected?.x ?? w / 2));
+        const span = Math.max(26, Math.min(46, (y - 168) / 2));
+        const buttonHeight = h < 420 ? 27 : 36;
+        const centerY = Math.max(128 + span, Math.min(y - span - buttonHeight / 2, projected?.y ?? y / 2));
+        const positions = [[0, -span], [65, 0], [0, span], [-65, 0]];
+        if (t.phase === 'command') {
+            const ctx = s.Context;
+            ctx.save(); ctx.strokeStyle = '#dacc8866'; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.ellipse(centerX, centerY, 65, span, 0, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
+        }
+        this.commands.forEach((item, i) => {
+            const [dx, dy] = positions[i];
+            this.Place(item, centerX + dx - 45, centerY + dy - buttonHeight / 2, 90, buttonHeight, t.phase === 'command', t.command === i);
+        });
+        this.facings.forEach((item, i) => this.Place(item, 20 + i * (w - 40) / 4, y + 57, (w - 56) / 4, h < 420 ? 26 : 44, t.phase === 'face', a?.facing === i));
+        this.Place(this.confirm, 20, y + (h < 420 ? 86 : 101), w - 40, h < 420 ? 26 : 44, t.phase === 'face');
+        this.Place(this.start, w / 2 - 86, y + 65, 172, 44, l.exploring === 'title');
+        if (l.exploring === 'patrol') {
+            const flag = l.camera.Project(l.terrain.World(l.encounter), w, h);
+            if (flag.visible) f.Text('PATROL SIGNAL', flag.x, flag.y - 12, { size: 13, align: 'center', color: f.theme.gold, weight: 700 });
+        }
         this.help.OnDrawn();
     }
     Dispose() { for (const item of this.buttons)

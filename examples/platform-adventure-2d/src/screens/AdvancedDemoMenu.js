@@ -35,6 +35,7 @@ export class AdvancedDemoMenu extends Level {
 
     OnUpdate(dt) {
         if(ControlGuideActions.IsActionDown('HELP'))this.controlsHelp?.Toggle();
+        if (this.controlsHelp?.visible) return;
 
         super.OnUpdate(dt);
         if (ActionManager.IsActionDown("UP")) {

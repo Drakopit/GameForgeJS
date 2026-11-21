@@ -51,18 +51,21 @@ export class StreetFightPuzzleScene extends Level {
     }
 
     ResetMatch() {
+        for (const actor of this.fighterActors ?? []) this.RemoveEntity(actor);
+        this.fighterActors = [this.AddEntity(new GameObject()), this.AddEntity(new GameObject())];
         // P1 Setup
         this.board1 = new PuzzleBoard(PuzzleConfig.BOARD_1_POS.x, PuzzleConfig.BOARD_1_POS.y, true);
         this.piece1 = new FallingPiece(this.board1, { left: 'PUZZLE_LEFT', right: 'PUZZLE_RIGHT', rotate: 'PUZZLE_ROTATE', drop: 'PUZZLE_DROP' }, false);
-        this.fighter1 = new PuzzleFighter(PuzzleConfig.FIGHTER_1_POS.x, PuzzleConfig.FIGHTER_1_POS.y, Characters.BLAZE);
+        this.fighter1 = this.fighterActors[0].AddComponent(new PuzzleFighter(0, 0, Characters.BLAZE));
 
         // P2 Setup (CPU)
         this.board2 = new PuzzleBoard(PuzzleConfig.BOARD_2_POS.x, PuzzleConfig.BOARD_2_POS.y, false);
         this.piece2 = new FallingPiece(this.board2, null, true);
-        this.fighter2 = new PuzzleFighter(PuzzleConfig.FIGHTER_2_POS.x, PuzzleConfig.FIGHTER_2_POS.y, Characters.KIRA);
+        this.fighter2 = this.fighterActors[1].AddComponent(new PuzzleFighter(0, 0, Characters.KIRA));
         this.cpuController = new CpuPuzzleController(this.board2, this.piece2);
         for(const board of [this.board1,this.board2]){
             ['red','red','blue','blue','green','green'].forEach((color,col)=>board.grid[PuzzleConfig.ROWS-1][col]=new PuzzleGem(GemType.NORMAL,color));
+            for (const col of [2, 3]) board.grid[PuzzleConfig.ROWS - 2][col] = new PuzzleGem(GemType.NORMAL, "blue");
         }
 
         this.hud = new PuzzleHUD(this.draw);
@@ -136,15 +139,12 @@ export class StreetFightPuzzleScene extends Level {
         this.Layout();
         if (ActionManager.IsActionDown('PAUSE')) this.paused=!this.paused;
         if (ActionManager.IsActionDown('RESET')) this.ResetMatch();
-        super.OnUpdate(dt);
         if (this.controlsHelp.visible || this.paused) return;
+        super.OnUpdate(dt);
         // Fallback for dt if undefined
         const delta = Math.min(dt ?? 1/60,0.1);
 
         if (this.gameEnded) {
-            if (ActionManager.IsActionDown('RESET')) {
-                this.ResetMatch();
-            }
             return;
         }
 
@@ -163,8 +163,6 @@ export class StreetFightPuzzleScene extends Level {
             this.spawnPiece(2);
         }
 
-        this.fighter1.update(delta);
-        this.fighter2.update(delta);
         this.hud.update(delta);
 
         this.hud.p1Score = this.board1.score;

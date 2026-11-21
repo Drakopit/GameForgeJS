@@ -3,9 +3,9 @@ const assert = require('node:assert/strict');
 const { pathToFileURL } = require('node:url');
 const path = require('node:path');
 
-test('BeveledCube and Ring triangle winding agrees with their outward normals', async () => {
+test('BeveledCube, Plane and Ring triangle winding agrees with their outward normals', async () => {
     const { PrimitiveMesh } = await import(pathToFileURL(path.resolve('src/3d/Render3D/Mesh/PrimitiveMesh.js')));
-    for (const geometry of [PrimitiveMesh.BeveledCube(0.075), PrimitiveMesh.Ring(0.6, 0.72)]) {
+    for (const geometry of [PrimitiveMesh.BeveledCube(0.075), PrimitiveMesh.Plane(3, 2, { subdivisions: 2 }), PrimitiveMesh.Ring(0.6, 0.72)]) {
         for (let i = 0; i < geometry.indices.length; i += 3) {
             const [a,b,c] = Array.from(geometry.indices.slice(i, i+3), value => value * 3);
             const u = [0,1,2].map(axis=>geometry.positions[b+axis]-geometry.positions[a+axis]);

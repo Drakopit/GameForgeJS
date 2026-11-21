@@ -33,7 +33,11 @@ export class TacticalUnit extends GameObject {
         this.frame = config.frame ?? defaults.frame ?? null;
         this.runFrame = config.runFrame ?? defaults.runFrame ?? this.frame;
         this.scale = config.scale ?? defaults.scale ?? 1;
+        this.skill = config.skill ?? null;
         this.isMoving = false;
+        this.defaultFacing = this.team === 'enemy' ? { col: -1, row: 0 } : { col: 1, row: 0 };
+        this.facing = this.defaultFacing;
+        this.mirrored = this.facing.col < 0;
 
         this.AddComponent(new TransformComponent({ x: pixel.x, y: pixel.y }));
         this.AddComponent(new BoundsComponent({
@@ -111,6 +115,8 @@ export class TacticalUnit extends GameObject {
         unit.startRow = this.startRow;
         unit.hp = this.hp;
         unit.active = this.active;
+        unit.facing = this.facing;
+        unit.mirrored = this.mirrored;
         return unit;
     }
 
@@ -119,9 +125,21 @@ export class TacticalUnit extends GameObject {
         this.renderer?.Play(moving ? "run" : "idle");
     }
 
-    TakeDamage(attacker) {
+    Face(col, row) {
+        const x = col - this.col, y = row - this.row;
+        if (!x && !y) return;
+        this.facing = Math.abs(x) >= Math.abs(y) ? { col: Math.sign(x), row: 0 } : { col: 0, row: Math.sign(y) };
+        if (this.facing.col) this.mirrored = this.facing.col < 0;
+    }
+
+    ImpactSide(attacker) {
+        const dot = (attacker.col - this.col) * this.facing.col + (attacker.row - this.row) * this.facing.row;
+        return dot > 0 ? 'front' : dot < 0 ? 'back' : 'side';
+    }
+
+    TakeDamage(attacker, bonus = 0) {
         const roll = Math.floor(Math.random() * 4);
-        const dmg = Math.max(1, (attacker?.attack ?? 0) - this.defense + roll);
+        const dmg = Math.max(1, (attacker?.attack ?? 0) + bonus - this.defense + roll);
         this.health.Damage(dmg, attacker);
         return dmg;
     }
@@ -155,6 +173,8 @@ export class TacticalUnit extends GameObject {
         this.health.Reset(this.maxHp);
         this.MoveTo(this.startCol, this.startRow);
         this.SetMoving(false);
+        this.facing = this.defaultFacing;
+        this.mirrored = this.facing.col < 0;
         this.active = true;
     }
 }

@@ -11,7 +11,7 @@ import { AdvancedDemoSecondLevel } from '../levels/AdvancedDemoSecondLevel.js';
 export class PlatformAdventureModule extends Module {
     constructor() {
         super('platform-adventure-2d', {
-            imports: [module2D()],
+            imports: [module2D({ telemetry: true })],
             declarations: [AdvancedDemoBossLevel, AdvancedDemoCongratulations, AdvancedDemoFirstLevel, AdvancedDemoGameOver, AdvancedDemoMenu, AdvancedDemoPhaseSelector, AdvancedDemoSecondLevel],
             exports: [AdvancedDemoBossLevel, AdvancedDemoCongratulations, AdvancedDemoFirstLevel, AdvancedDemoGameOver, AdvancedDemoMenu, AdvancedDemoPhaseSelector, AdvancedDemoSecondLevel],
         });

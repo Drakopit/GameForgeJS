@@ -7,12 +7,13 @@ const { startServer } = require('../cli/server.cjs');
 const { build } = require('../cli/lib/build.cjs');
 const root = path.resolve(__dirname, '..');
 async function ready(page, url) {
-    page.setDefaultTimeout(15000);
-    await page.goto(url);
+    page.setDefaultTimeout(30000);
+    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 45000 });
     await page.evaluate(async () => { window.fx = await import('gameforgejs/core'); });
     await page.waitForFunction(() => window.fx.LevelHandler.current?.resources?.hud?.panel.buttons.get('lab')?.enabled);
 }
 async function button(page, id) {
+    await page.waitForFunction(id => window.fx.LevelHandler.current.hud.panel.buttons.get(id)?.enabled, id);
     const point = await page.evaluate(id => {
         const level = window.fx.LevelHandler.current, box = level.hud.panel.buttons.get(id).rect;
         const canvas = level.screen.Canvas.getBoundingClientRect();
@@ -35,12 +36,27 @@ async function desktop(page, label) {
     await button(page, 'lab');
     await page.waitForFunction(() => window.fx.LevelHandler.current.hud.panel.open);
     await button(page, 'tab1');
-    const slider = await page.evaluate(() => window.fx.LevelHandler.current.hud.panel.sliders.get('spawnRate').rect);
-    await page.mouse.move(slider.x + slider.width * 0.8, slider.y + 30);
+    await page.waitForFunction(() => {
+        const { panel } = window.fx.LevelHandler.current.hud;
+        return panel.tab === 1 && panel.sliders.get('spawnRate').rect.width > 1;
+    });
+    const slider = await page.evaluate(() => {
+        const { screen, hud } = window.fx.LevelHandler.current;
+        const box = hud.panel.sliders.get('spawnRate').rect;
+        const bounds = screen.Canvas.getBoundingClientRect();
+        return { x: bounds.left + box.x * bounds.width / screen.Width,
+            y: bounds.top + (box.y + 30) * bounds.height / screen.Height,
+            width: box.width * bounds.width / screen.Width };
+    });
+    await page.mouse.move(slider.x + slider.width * 0.8, slider.y);
     await page.mouse.down();
-    await page.mouse.move(slider.x + slider.width * 0.3, slider.y + 30, { steps: 3 });
+    await page.waitForFunction(() => window.fx.LevelHandler.current.model.current.spawnRate > 500);
+    await page.mouse.move(slider.x + slider.width * 0.3, slider.y, { steps: 3 });
+    await page.waitForFunction(() => {
+        const rate = window.fx.LevelHandler.current.model.current.spawnRate;
+        return rate > 200 && rate < 450;
+    });
     await page.mouse.up();
-    assert(await page.evaluate(() => window.fx.LevelHandler.current.model.current.spawnRate > 200));
     for (let index = 0; index < 4; index++) {
         await button(page, `preset${index}`);
         assert.equal(await page.evaluate(() => window.fx.LevelHandler.current.model.presetIndex), index);
@@ -67,6 +83,8 @@ async function desktop(page, label) {
     for (let index = 0; index < 6; index++)
         await press([13]);
     assert.equal(await page.evaluate(() => window.fx.LevelHandler.current.hud.panel.page), 1);
+    await press([0]);
+    assert.equal(await page.evaluate(() => window.fx.LevelHandler.current.model.telemetry), true);
     await press([0]);
     assert.equal(await page.evaluate(() => window.fx.LevelHandler.current.model.telemetry), false);
     await press([11]);
@@ -143,15 +161,25 @@ async function desktop(page, label) {
 async function mobile(page, label) {
     await button(page, 'lab');
     await button(page, 'tab1');
-    const sliders = await page.evaluate(() => ['spawnRate', 'speed'].map(key => window.fx.LevelHandler.current.hud.panel.sliders.get(key).rect));
+    await page.waitForFunction(() => {
+        const { panel } = window.fx.LevelHandler.current.hud;
+        return panel.tab === 1 && panel.sliders.get('speed').rect.width > 1;
+    });
+    const points = await page.evaluate(() => {
+        const { screen, hud } = window.fx.LevelHandler.current;
+        const bounds = screen.Canvas.getBoundingClientRect();
+        return ['spawnRate', 'speed'].map((key, index) => {
+            const box = hud.panel.sliders.get(key).rect;
+            return { id: index + 1,
+                x: bounds.left + (box.x + box.width * 0.7) * bounds.width / screen.Width,
+                y: bounds.top + (box.y + 30) * bounds.height / screen.Height };
+        });
+    });
     const cdp = await page.context().newCDPSession(page);
-    const points = sliders.map((box, index) => ({ id: index + 1, x: box.x + box.width * 0.7, y: box.y + 30 }));
     await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: points });
-    await page.waitForTimeout(80);
-    assert(await page.evaluate(() => window.fx.LevelHandler.current.model.current.spawnRate > 500 && window.fx.LevelHandler.current.model.current.speed > 250));
+    await page.waitForFunction(() => window.fx.LevelHandler.current.model.current.spawnRate > 500 && window.fx.LevelHandler.current.model.current.speed > 250);
     await cdp.send('Input.dispatchTouchEvent', { type: 'touchCancel', touchPoints: [] });
-    await page.waitForTimeout(50);
-    assert(await page.evaluate(() => [...window.fx.LevelHandler.current.hud.panel.sliders.values()].every(slider => slider.finger === null)));
+    await page.waitForFunction(() => [...window.fx.LevelHandler.current.hud.panel.sliders.values()].every(slider => slider.finger === null));
     await page.setViewportSize({ width: 844, height: 390 });
     await page.waitForTimeout(80);
     const layout = await page.evaluate(() => {

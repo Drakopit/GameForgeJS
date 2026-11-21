@@ -20,7 +20,7 @@ export class RunState extends State {
             return;
         }
 
-        if (ActionManager.IsActionDown("ATTACK")) {
+        if ((this.owner.controls ?? ActionManager).IsActionDown("ATTACK")) {
             this.owner.stateMachine.ChangeState(new AttackState(this.owner));
             return;
         }

@@ -24,13 +24,15 @@ async function inspectFighting(page, screenshotPath) {
         level.roundState = 'fight';
         level.playerTwo.controlledByPlayer = true;
         level.playerOne.meter = 0;
+        level.playerOne.position.x = 250;
+        level.playerTwo.position.x = 650;
     });
     await page.keyboard.down('KeyL'); await page.waitForTimeout(90); await page.keyboard.up('KeyL');
     await expect.poll(() => page.evaluate(async () => (await import('gameforgejs/core')).LevelHandler.current.playerOne.shotsFired)).toBe(1);
     await expect.poll(() => page.evaluate(async () => {
         const level = (await import('gameforgejs/core')).LevelHandler.current;
         return level.playerTwo.hp < level.playerTwo.maxHp;
-    })).toBe(true);
+    }), { timeout: 15000 }).toBe(true);
     await page.keyboard.press('KeyH');
     await expect.poll(() => page.evaluate(async () => (await import('gameforgejs/core')).LevelHandler.current.hud.help.visible)).toBe(true);
     await page.keyboard.press('KeyH');

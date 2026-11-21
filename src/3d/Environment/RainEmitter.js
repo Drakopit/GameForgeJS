@@ -19,6 +19,7 @@ export class RainEmitter extends Component {
         this.onImpact = onImpact;
         this.impacts = 0;
         this.drops = Array.from({ length: count }, () => ({ position: new Vector3D(), impact: new Vector3D(), splash: 0 }));
+        this.activeCount = count;
         for (const drop of this.drops)
             this.Spawn(drop, true);
     }
@@ -27,10 +28,21 @@ export class RainEmitter extends Component {
         const b = this.bounds;
         drop.position.Set((this.Random() - 0.5) * b.width, initial ? this.Random() * b.height : b.height, (this.Random() - 0.5) * b.depth);
     }
+    SetIntensity(intensity) {
+        if (!Number.isFinite(intensity) || intensity < 0 || intensity > 1)
+            throw new RangeError('Rain intensity must be between zero and one.');
+        const count = Math.round(this.drops.length * intensity);
+        for (let i = this.activeCount; i < count; i++) {
+            this.Spawn(this.drops[i], true);
+            this.drops[i].splash = 0;
+        }
+        this.activeCount = count;
+    }
     OnFixedUpdate(dt) {
         if (!Number.isFinite(dt) || dt < 0)
             throw new RangeError('Rain delta must be nonnegative.');
-        for (const drop of this.drops) {
+        for (let i = 0; i < this.activeCount; i++) {
+            const drop = this.drops[i];
             drop.splash = Math.max(0, drop.splash - dt);
             const p = drop.position;
             p.x += this.wind.x * dt;

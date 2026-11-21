@@ -12,6 +12,11 @@
       "mode": "contain"
     }
   },
+  "input": {
+    "actionMappings": {
+      "HELP": [{"device":"keyboard","input":"KeyH"},{"device":"gamepad","input":"START"}]
+    }
+  },
   "project": {
     "name": "Addon Building Blocks 2D"
   }

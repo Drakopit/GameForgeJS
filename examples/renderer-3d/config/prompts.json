@@ -3,7 +3,7 @@
   "title": "Renderer Showcase 3D / Controls",
   "rows": [
     {
-      "label": "Help",
+      "label": "Render controls",
       "actions": [
         "HELP"
       ]
@@ -16,6 +16,6 @@
     }
   ],
   "notes": [
-    "A Render3D scene exploring cameras, models, lighting, materials, and shadows."
+    "Inspect wet stone, timber, polished metal, and the planar water reflection."
   ]
 }

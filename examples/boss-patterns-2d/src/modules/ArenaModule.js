@@ -17,7 +17,7 @@ import { ArenaHUD } from '../ui/ArenaHUD.js';
 
 export class ArenaModule extends Module {
     constructor() {
-        super('boss-patterns-2d', { imports: [module2D()],
+        super('boss-patterns-2d', { imports: [module2D({ telemetry: true })],
             declarations: [BossDirector, ChargeAttack, CombatMotion, CombatVisual, FanAttack, HazardField, ProjectileContact, RingAttack, ArenaBoss, ArenaPlayer, ArenaProjectile, ArenaView, ArenaLevel, ArenaHUD], exports: [ArenaLevel] });
     }
 }
