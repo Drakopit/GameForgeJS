@@ -4,10 +4,10 @@ import { Draw } from "gameforgejs/2d";
 import { ActionManager } from "gameforgejs/core";
 
 export class Player extends GameObject {
-	constructor(screen) {
+	constructor(screen, spawn = { x: 400, y: 300 }) {
 		super();
 		this.name = "Player";
-		this.position = new Vector2D(400, 300);
+		this.position = new Vector2D(spawn.x, spawn.y);
 		this.size = new Vector2D(32, 32);
 		this.speed = 300; // Pixels por segundo
 		this.draw = new Draw(screen);

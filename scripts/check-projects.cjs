@@ -8,6 +8,7 @@ const { configFile } = require('../cli/lib/config-paths.cjs');
 const errors = [];
 const fail = (file, message) => errors.push(`${path.relative(ROOT, file)}: ${message}`);
 const read = file => JSON.parse(fs.readFileSync(file, 'utf8'));
+const { workspaceScenes } = require('./lib/workspace.cjs');
 const allowedRoots = new Set(['main.js', 'index.html', 'style.css', 'game.workspace.json', 'package.json', 'README.md', '.gitignore']);
 function reference(root, owner, value) {
     if (typeof value !== 'string' || /^(https?:|data:)/.test(value)) return;
@@ -56,8 +57,13 @@ async function main() {
         if (fs.existsSync(workspaceFile)) {
             const workspace = read(workspaceFile);
             reference(root, workspaceFile, workspace.resources);
-            for (const level of workspace.levels2D ?? []) for (const value of Object.values(level.documents ?? {})) reference(root, workspaceFile, value);
-            for (const scene of workspace.scenes3D ?? []) reference(root, workspaceFile, scene.path ?? scene.manifestPath);
+            const { levels2D, scenes3D } = workspaceScenes(workspace);
+            for (const level of levels2D) {
+                for (const value of Object.values(level.documents ?? {})) reference(root, workspaceFile, value);
+                if (level.source) reference(root, workspaceFile, level.source);
+            }
+            for (const scene of scenes3D) reference(root, workspaceFile, scene.path ?? scene.manifestPath);
+            if (workspace.play) reference(root, workspaceFile, workspace.play);
         }
         for (const file of walk(root, new Set(['.js']))) {
             const source = fs.readFileSync(file, 'utf8');

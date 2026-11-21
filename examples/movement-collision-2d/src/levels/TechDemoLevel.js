@@ -1,6 +1,6 @@
 import { InputHelpPanel, Draw as ControlGuideDraw } from 'gameforgejs/2d';
 import { ActionManager as ControlGuideActions } from 'gameforgejs/core';
-import { Level, SoundEffects } from "gameforgejs/core";
+import { Level, SceneDocument, SoundEffects } from "gameforgejs/core";
 import { Player } from "../entities/Player.js";
 import { Coin } from "../entities/Coin.js";
 import { Draw } from "gameforgejs/2d";
@@ -24,11 +24,12 @@ export class TechDemoLevel extends Level {
         this.controlsHelp=new InputHelpPanel(new ControlGuideDraw(this.screen),{title:'Controls'}); // Acessa a tela criada pela Engine
         this.draw = new Draw(this.screen);
 
-        // Instancia os objetos
-        this.player = new Player(this.screen);
+        // Layout: config/scenes/tech-demo.gfscene.json (gameforgejs.scene)
+        const scene = new SceneDocument(this.context.assets.jsons.tech_demo_scene);
+        this.player = new Player(this.screen, scene.Rect(scene.Node("player")));
         this.score = 0;
         this.sound = this.player.AddComponent(new SoundEffects(this.context.services.get('audio')));
-        this.coin = new Coin(this.screen);
+        this.coin = new Coin(this.screen, scene.Rect(scene.Node("coin_area")));
 
         // Adiciona na lista de entidades para a engine atualizá-los e desenhá-los automaticamente
         this.AddEntity(this.player);

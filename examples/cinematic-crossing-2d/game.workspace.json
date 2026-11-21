@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 2,
+  "kind": "GameForgeJS.Workspace",
+  "id": "cinematic-crossing-2d",
+  "name": "Cinematic Crossing 2D",
+  "resources": "config/resources.json",
+  "sceneFormat": "gameforgejs.scene",
+  "play": "index.html",
+  "editing": "adapter",
+  "scenes": [
+    {
+      "dimension": "2d",
+      "id": "crossing",
+      "label": "Cinematic route",
+      "adapter": "cinematic-scenario",
+      "source": "config/scenario.json"
+    }
+  ]
+}

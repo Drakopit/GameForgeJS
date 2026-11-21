@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 2,
+  "kind": "GameForgeJS.Workspace",
+  "id": "puzzle-battle-2d",
+  "name": "Puzzle Battle 2D",
+  "resources": "config/resources.json",
+  "sceneFormat": "gameforgejs.scene",
+  "play": "index.html",
+  "editing": "code",
+  "scripts": [
+    "main.js",
+    "src"
+  ],
+  "scenes": []
+}

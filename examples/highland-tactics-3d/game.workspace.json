@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 2,
+  "kind": "GameForgeJS.Workspace",
+  "id": "highland-tactics-3d",
+  "name": "Highland Tactics 3D",
+  "resources": "config/resources.json",
+  "sceneFormat": "gameforgejs.scene",
+  "play": "index.html",
+  "editing": "adapter",
+  "scenes": [
+    {
+      "dimension": "3d",
+      "id": "battlefield",
+      "label": "Tactics battlefield",
+      "path": "config/battle.json",
+      "format": "adapter:highland-battle"
+    }
+  ]
+}

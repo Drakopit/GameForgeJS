@@ -19,7 +19,7 @@ import {
     RoomOrigin,
     TILE,
 } from "../data/AdventureConstants.js";
-import { BuildRoomWalls, GetRoomById, ROOMS } from "../data/AdventureRooms.js";
+import { BuildRoomWalls, GetRoomById, LoadRooms, PlayerStart } from "../data/AdventureRooms.js";
 import { RoomCameraComponent } from "../components/RoomCameraComponent.js";
 import { AdventurePlayer } from "../entities/AdventurePlayer.js";
 import { Slime } from "../entities/Slime.js";
@@ -29,7 +29,7 @@ export class AdventureDemoLevel extends Level {
         super();
         this.caption = "GameForgeJS — Component Adventure 2D";
         this.TelaId = "Adventure2D";
-        this.currentRoom = GetRoomById("meadow");
+        this.currentRoom = null; // set in OnStart from config/scenes/rooms.gfscene.json
         this.pendingRoom = null;
         this.roomSolids = new Map();
         this.hitSparks = [];
@@ -39,7 +39,10 @@ export class AdventureDemoLevel extends Level {
         this.screen = new Screen("Adventure2D", ADVENTURE_SCREEN.width, ADVENTURE_SCREEN.height, { config: this.context?.config });
         this.controlsHelp=new InputHelpPanel(new ControlGuideDraw(this.screen),{title:'Controls'});
         this.draw = new Draw(this.screen);
-        this.rooms = ROOMS;
+        const roomsScene = this.context.assets.jsons.adventure_rooms;
+        this.rooms = LoadRooms(roomsScene);
+        const playerStart = PlayerStart(roomsScene);
+        this.currentRoom = GetRoomById(playerStart.roomId);
         this.rooms.forEach(room => {
             this.roomSolids.set(room.id, [
                 ...BuildRoomWalls(room),
@@ -48,7 +51,7 @@ export class AdventureDemoLevel extends Level {
         });
 
         const start = RoomOrigin(this.currentRoom);
-        this.player = new AdventurePlayer({ x: start.x + 84, y: start.y + 224 });
+        this.player = new AdventurePlayer({ x: start.x + playerStart.x, y: start.y + playerStart.y });
         this.sound = this.player.AddComponent(new SoundEffects(this.context.services.get('audio')));
         this.cameraRig = new GameObject();
         this.cameraRig.name = "CameraRig";

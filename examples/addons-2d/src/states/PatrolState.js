@@ -7,9 +7,7 @@ export class PatrolState extends State {
 
     Update(dt) {
         const actor = this.owner;
-        const leftBoundary = 140;
-        const rightBoundary = 620;
-        const speed = 100;
+        const { left: leftBoundary, right: rightBoundary, speed } = actor.patrol;
 
         actor.position.x += actor.direction * speed * dt;
 

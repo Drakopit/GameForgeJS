@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 2,
+  "kind": "GameForgeJS.Workspace",
+  "id": "fighting-2d",
+  "name": "Fighting Arena 2D",
+  "resources": "config/resources.json",
+  "sceneFormat": "gameforgejs.scene",
+  "play": "index.html",
+  "editing": "code",
+  "scripts": [
+    "main.js",
+    "src"
+  ],
+  "scenes": []
+}

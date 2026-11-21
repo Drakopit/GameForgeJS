@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 2,
+  "kind": "GameForgeJS.Workspace",
+  "id": "component-adventure-2d",
+  "name": "Component Adventure 2D",
+  "resources": "config/resources.json",
+  "sceneFormat": "gameforgejs.scene",
+  "play": "index.html",
+  "editing": "scene",
+  "scenes": [
+    {
+      "dimension": "2d",
+      "id": "rooms",
+      "label": "Adventure rooms",
+      "format": "gameforgejs.scene",
+      "source": "config/scenes/rooms.gfscene.json"
+    }
+  ]
+}

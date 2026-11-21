@@ -6,7 +6,7 @@ import { GardenObstacle } from '../entities/GardenObstacle.js';
 import { GardenCrystal } from '../entities/GardenCrystal.js';
 import { GardenBackground } from '../entities/GardenBackground.js';
 import { TouchGardenHUD } from '../ui/TouchGardenHUD.js';
-import { GardenSettings as Settings } from '../data/GardenSettings.js';
+import { ApplyGardenScene, GardenSettings as Settings } from '../data/GardenSettings.js';
 
 export class TouchGardenLevel extends Level {
     constructor() {
@@ -15,6 +15,7 @@ export class TouchGardenLevel extends Level {
     }
 
     OnStart(context = this.context) {
+        ApplyGardenScene(context.assets.jsons.garden_scene);
         const { width, height } = context.config.screen;
         this.screen = new Screen('touch-garden', width, height, { config: context.config });
         this.controls = new TouchControls(Input.instance.touch, this.screen);

@@ -46,6 +46,7 @@ export { bfs } from "./Pathfinding/BFS.js";
 export { dfs } from "./Pathfinding/DFS.js";
 export { dijkstra } from "./Pathfinding/Dijkstra.js";
 export { getNeighbors, key, reconstructPath } from "./Pathfinding/Structure.js";
+export { SceneDocument } from "./Scene/SceneDocument.js";
 export { Store } from "./Store.js";
 export { Util } from "./Utils.js";
 export { GameViewport } from "./Window/GameViewport.js";

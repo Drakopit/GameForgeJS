@@ -1,18 +1,19 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "kind": "GameForgeJS.Workspace",
   "id": "demo_3d",
   "name": "Renderer Showcase 3D",
   "resources": "config/resources.json",
-  "resourcePrefix": "config/",
-  "levels2D": [],
-  "scenes3D": [
+  "sceneFormat": "gameforgejs.scene",
+  "play": "index.html",
+  "editing": "manifest",
+  "scenes": [
     {
+      "dimension": "3d",
       "id": "render3d_showcase",
       "label": "Render3D Showcase",
       "path": "assets/Manifests/scenes/render3d-showcase.scene.json",
-      "resources": "config/resources.json",
-      "resourcePrefix": "config/"
+      "resources": "config/resources.json"
     }
   ]
 }

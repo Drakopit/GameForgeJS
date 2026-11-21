@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 2,
+  "kind": "GameForgeJS.Workspace",
+  "id": "addons-2d",
+  "name": "Addon Building Blocks 2D",
+  "resources": "config/resources.json",
+  "sceneFormat": "gameforgejs.scene",
+  "play": "index.html",
+  "editing": "scene",
+  "scenes": [
+    {
+      "dimension": "2d",
+      "id": "playground",
+      "label": "Addon playground",
+      "format": "gameforgejs.scene",
+      "source": "config/scenes/playground.gfscene.json"
+    }
+  ]
+}

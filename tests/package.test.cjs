@@ -1,4 +1,5 @@
 const test = require('node:test');
+const { workspaceScenes } = require('../scripts/lib/workspace.cjs');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const os = require('node:os');
@@ -30,12 +31,12 @@ test('advanced 3D demos publish only declared groups and retain their editor man
         assert.ok(names.includes('config/resources.json'));
         assert.equal(names.includes('resources.json'), false);
         const workspace = JSON.parse(fs.readFileSync(path.join(root, 'game.workspace.json')));
+        // Editor workspace (schema v1 or v2): every 3D scene uses the project manifest.
+        // Resource paths resolve relative to that manifest, so no resourcePrefix is needed.
         assert.equal(workspace.resources, 'config/resources.json');
-        assert.equal(workspace.resourcePrefix, 'config/');
-        for (const scene of workspace.scenes3D) {
-            assert.equal(scene.resources, workspace.resources);
-            assert.equal(scene.resourcePrefix, workspace.resourcePrefix);
-        }
+        const { scenes3D } = workspaceScenes(workspace);
+        assert.ok(scenes3D.length > 0);
+        for (const scene of scenes3D) assert.equal(scene.resources ?? workspace.resources, workspace.resources);
     }
 });
 

@@ -1,0 +1,204 @@
+{
+  "format": "gameforgejs.scene",
+  "version": 1,
+  "dimension": "2d",
+  "id": "collection",
+  "name": "2 / 2 — The raised path",
+  "settings": {
+    "tileSize": 32,
+    "columns": 48,
+    "rows": 17,
+    "last": true,
+    "world": {
+      "width": 1536,
+      "height": 544
+    }
+  },
+  "layers": [
+    {
+      "id": "terrain",
+      "name": "Terrain",
+      "type": "Platform2D",
+      "note": "Solid tiles; positions and sizes are multiples of tileSize."
+    },
+    {
+      "id": "coins",
+      "name": "Coins",
+      "type": "Prop2D"
+    },
+    {
+      "id": "markers",
+      "name": "Spawn & goal",
+      "type": "Node2D"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "terrain_1",
+      "type": "Platform2D",
+      "layer": "terrain",
+      "transform": {
+        "position": [
+          0,
+          480
+        ]
+      },
+      "size": [
+        576,
+        64
+      ]
+    },
+    {
+      "id": "terrain_2",
+      "type": "Platform2D",
+      "layer": "terrain",
+      "transform": {
+        "position": [
+          672,
+          480
+        ]
+      },
+      "size": [
+        864,
+        64
+      ]
+    },
+    {
+      "id": "terrain_3",
+      "type": "Platform2D",
+      "layer": "terrain",
+      "transform": {
+        "position": [
+          288,
+          416
+        ]
+      },
+      "size": [
+        160,
+        32
+      ]
+    },
+    {
+      "id": "terrain_4",
+      "type": "Platform2D",
+      "layer": "terrain",
+      "transform": {
+        "position": [
+          800,
+          416
+        ]
+      },
+      "size": [
+        160,
+        32
+      ]
+    },
+    {
+      "id": "terrain_5",
+      "type": "Platform2D",
+      "layer": "terrain",
+      "transform": {
+        "position": [
+          1088,
+          416
+        ]
+      },
+      "size": [
+        128,
+        32
+      ]
+    },
+    {
+      "id": "coin_1",
+      "type": "Prop2D",
+      "layer": "coins",
+      "transform": {
+        "position": [
+          160,
+          452
+        ]
+      },
+      "size": [
+        16,
+        20
+      ]
+    },
+    {
+      "id": "coin_2",
+      "type": "Prop2D",
+      "layer": "coins",
+      "transform": {
+        "position": [
+          336,
+          388
+        ]
+      },
+      "size": [
+        16,
+        20
+      ]
+    },
+    {
+      "id": "coin_3",
+      "type": "Prop2D",
+      "layer": "coins",
+      "transform": {
+        "position": [
+          848,
+          388
+        ]
+      },
+      "size": [
+        16,
+        20
+      ]
+    },
+    {
+      "id": "coin_4",
+      "type": "Prop2D",
+      "layer": "coins",
+      "transform": {
+        "position": [
+          1328,
+          452
+        ]
+      },
+      "size": [
+        16,
+        20
+      ]
+    },
+    {
+      "id": "spawn",
+      "type": "Actor2D",
+      "layer": "markers",
+      "transform": {
+        "position": [
+          64,
+          400
+        ]
+      },
+      "size": [
+        24,
+        30
+      ],
+      "name": "Player spawn"
+    },
+    {
+      "id": "goal",
+      "type": "Node2D",
+      "layer": "markers",
+      "transform": {
+        "position": [
+          1456,
+          402
+        ]
+      },
+      "size": [
+        28,
+        78
+      ],
+      "name": "Goal flag"
+    }
+  ]
+}

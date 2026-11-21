@@ -1,4 +1,5 @@
 const fs = require("fs");
+const { workspaceScenes } = require("./lib/workspace.cjs");
 const path = require("path");
 
 const ROOT_DIR = path.resolve(__dirname, "..");
@@ -241,11 +242,31 @@ function collectWorkspaceProjects(rootDir) {
     return projects;
 }
 
+function validateSceneDocument(projectDir, declaredPath) {
+    const file = projectFile(projectDir, declaredPath);
+    if (!requireFile(file, `${relative(projectDir)} scene`)) return;
+    const scene = readJson(file);
+    if (!scene) return;
+    if (scene.format !== "gameforgejs.scene") errors.push(`${relative(file)}: format must be "gameforgejs.scene"`);
+    if (!Array.isArray(scene.nodes)) errors.push(`${relative(file)}: nodes must be an array`);
+    const ids = new Set();
+    for (const node of scene.nodes ?? []) {
+        if (typeof node?.id !== "string") errors.push(`${relative(file)}: every node needs a string id`);
+        else if (ids.has(node.id)) errors.push(`${relative(file)}: duplicate node id "${node.id}"`);
+        ids.add(node?.id);
+    }
+    for (const node of scene.nodes ?? []) {
+        if (node.parent && !ids.has(node.parent)) errors.push(`${relative(file)}: node "${node.id}" has unknown parent "${node.parent}"`);
+    }
+}
+
 function auditProject(projectDir, workspace) {
     const resources = loadResources(projectDir, workspace);
     if (!resources) return;
     const catalog = collectCatalog(resources);
-    for (const level of workspace.levels2D ?? []) {
+    const { levels2D, scenes3D } = workspaceScenes(workspace);
+    for (const level of levels2D) {
+        if (level.format === "gameforgejs.scene" && level.source) validateSceneDocument(projectDir, level.source);
         const documents = level.documents ?? {};
         const stageFile = documents.stage ? projectFile(projectDir, documents.stage) : null;
         if (stageFile && requireFile(stageFile, `${relative(projectDir)} stage`)) {
@@ -270,7 +291,7 @@ function auditProject(projectDir, workspace) {
         }
     }
 
-    for (const scene of workspace.scenes3D ?? []) {
+    for (const scene of scenes3D) {
         const declaredPath = scene?.path ?? scene?.manifestPath;
         if (!declaredPath) continue;
         const sceneFile = projectFile(projectDir, declaredPath);
@@ -289,7 +310,8 @@ function auditProject(projectDir, workspace) {
 // complete projects, so only they are a blocking asset-integrity gate.
 for (const projectDir of collectWorkspaceProjects(EXAMPLES_DIR)) {
     const workspace = readJson(path.join(projectDir, "game.workspace.json"));
-    if ((workspace?.levels2D ?? []).length || (workspace?.scenes3D ?? []).length)
+    const scenes = workspaceScenes(workspace ?? {});
+    if (scenes.levels2D.length || scenes.scenes3D.length)
         auditProject(projectDir, workspace);
 }
 

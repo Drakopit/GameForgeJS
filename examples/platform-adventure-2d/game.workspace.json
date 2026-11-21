@@ -1,12 +1,15 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "kind": "GameForgeJS.Workspace",
   "id": "demo_advanced",
   "name": "Platform Adventure 2D",
   "resources": "config/resources.json",
-  "resourcePrefix": "config/",
-  "levels2D": [
+  "sceneFormat": "gameforgejs.scene",
+  "play": "index.html",
+  "editing": "manifest",
+  "scenes": [
     {
+      "dimension": "2d",
       "id": "advanced_first",
       "label": "Advanced - First",
       "documents": {
@@ -20,6 +23,7 @@
       }
     },
     {
+      "dimension": "2d",
       "id": "advanced_second",
       "label": "Advanced - Second",
       "documents": {
@@ -33,6 +37,7 @@
       }
     },
     {
+      "dimension": "2d",
       "id": "advanced_boss",
       "label": "Advanced - Boss",
       "documents": {
@@ -45,6 +50,5 @@
         "ui": "assets/Manifests/advanced/ui.json"
       }
     }
-  ],
-  "scenes3D": []
+  ]
 }
