@@ -25,10 +25,22 @@
  * nodes they need, usually as plain records with `Items(layer)`, and build their
  * own ECS entities; the format adds no runtime behaviour of its own.
  *
+ * Tools (the GameForgeJS Editor) write scenes through the same class:
+ * `AddNode`, `RemoveNode`, `SetLocalPosition`, `SetWorldPosition`, `SetTransform`,
+ * `SetSize`, `SetComponentField` / `SetComponent` (values equal to the prefab's stay
+ * inherited), `SetScripts`, `SetLinks`, then `ToJSON()`. Writes keep the order of
+ * existing keys, so saving an unchanged scene reproduces the file exactly.
+ *
  * @example
  * const scene = new SceneDocument(context.assets.jsons.level_1);
  * const platforms = scene.Items('platforms');   // [{ id, x, y, width, height, terrain, solid, ... }]
  * const spawn = scene.WorldPosition(scene.Node('spawn'));
+ *
+ * @example
+ * const doc = new SceneDocument(json, { copy: true });          // edit a copy
+ * doc.SetWorldPosition(doc.Node('crate_1'), [120, 300]);
+ * doc.SetComponentField(doc.Node('crate_1'), 'Sprite', 'asset', 'crate_red');
+ * save(doc.ToJSON());
  */
 export class SceneDocument {
     /** Current format identifier. */
@@ -40,10 +52,13 @@ export class SceneDocument {
 
     /**
      * @param {Object} document - Parsed scene JSON.
+     * @param {Object} [options]
+     * @param {boolean} [options.copy=false] - Work on a deep copy (use it before writing).
      * @throws {TypeError|RangeError} When the document is not a valid scene.
      */
-    constructor(document) {
-        this.data = SceneDocument.Validate(document);
+    constructor(document, { copy = false } = {}) {
+        const validated = SceneDocument.Validate(document);
+        this.data = copy ? clone(validated) : validated;
         this.byId = new Map(this.data.nodes.map(node => [node.id, node]));
     }
 
@@ -61,6 +76,42 @@ export class SceneDocument {
 
     /** @returns {Object<string, Object>} Prefabs nodes can inherit from. */
     get prefabs() { return this.data.prefabs ?? {}; }
+
+    /**
+     * A new, empty scene document (plain JSON, ready for `new SceneDocument(...)`).
+     * @param {Object} fields
+     * @param {"2d"|"3d"} fields.dimension
+     * @param {string} [fields.id="scene"]
+     * @param {string} [fields.name]
+     * @param {Object} [fields.settings]
+     * @param {Object[]} [fields.layers]
+     * @param {Object<string, Object>} [fields.prefabs]
+     * @param {Object[]} [fields.nodes]
+     * @returns {Object}
+     */
+    static Create({ dimension, id = 'scene', name, settings, layers, prefabs, nodes = [] }) {
+        const document = { format: SceneDocument.FORMAT, version: SceneDocument.VERSION, dimension, id, name: name ?? id };
+        if (settings) document.settings = clone(settings);
+        if (layers) document.layers = clone(layers);
+        if (prefabs) document.prefabs = clone(prefabs);
+        document.nodes = clone(nodes);
+        return SceneDocument.Validate(document);
+    }
+
+    /**
+     * Prefab components merged under own components (own values win per field).
+     * The same rule `Components(node)` applies; exposed for tools working on copies.
+     * @param {Object<string, Object>} [inherited={}] - Prefab components.
+     * @param {Object<string, Object>} [own={}] - Node components.
+     * @returns {Object<string, Object>}
+     */
+    static MergeComponents(inherited = {}, own = {}) {
+        const result = clone(inherited ?? {});
+        for (const [name, value] of Object.entries(own ?? {})) {
+            result[name] = isPlainObject(value) && isPlainObject(result[name]) ? { ...result[name], ...clone(value) } : clone(value);
+        }
+        return result;
+    }
 
     /**
      * Returns true when a value looks like a scene document (any supported format id).
@@ -199,11 +250,7 @@ export class SceneDocument {
      * @returns {Object<string, Object>}
      */
     Components(node, { inherit = true } = {}) {
-        const result = inherit ? clone(this.Prefab(node)?.components ?? {}) : {};
-        for (const [name, value] of Object.entries(node?.components ?? {})) {
-            result[name] = isPlainObject(value) && isPlainObject(result[name]) ? { ...result[name], ...clone(value) } : clone(value);
-        }
-        return result;
+        return SceneDocument.MergeComponents(inherit ? this.Prefab(node)?.components : {}, node?.components);
     }
 
     /**
@@ -302,6 +349,159 @@ export class SceneDocument {
         });
     }
 
+    /* ------------------------------------------------------------------ */
+    /* Writing                                                             */
+    /* ------------------------------------------------------------------ */
+
+    /**
+     * Adds a node (at `index`, default last) and returns it.
+     * @param {Object} node - At least `{ id, type }`.
+     * @param {Object} [options]
+     * @param {number} [options.index]
+     * @returns {Object} The stored node.
+     */
+    AddNode(node, { index } = {}) {
+        if (!node || typeof node.id !== 'string' || !node.id) throw new TypeError('A scene node needs a string id.');
+        if (this.byId.has(node.id)) throw new RangeError(`Scene node id "${node.id}" is duplicated.`);
+        const stored = clone(node);
+        const at = Number.isInteger(index) ? Math.max(0, Math.min(index, this.data.nodes.length)) : this.data.nodes.length;
+        this.data.nodes.splice(at, 0, stored);
+        this.byId.set(stored.id, stored);
+        return stored;
+    }
+
+    /**
+     * Removes a node; its children are re-parented to its parent (keeping their scene position).
+     * @param {string} id
+     * @returns {boolean} True when a node was removed.
+     */
+    RemoveNode(id) {
+        const node = this.Node(id);
+        if (!node) return false;
+        for (const child of this.data.nodes.filter(item => item.parent === id)) this.SetParent(child, node.parent ?? null);
+        this.data.nodes.splice(this.data.nodes.indexOf(node), 1);
+        this.byId.delete(id);
+        return true;
+    }
+
+    /**
+     * Sets or clears a node's parent.
+     * @param {Object} node
+     * @param {string|null} parentId
+     * @param {Object} [options]
+     * @param {boolean} [options.keepWorld=true] - Keep the node's scene position.
+     */
+    SetParent(node, parentId, { keepWorld = true } = {}) {
+        const world = keepWorld ? this.WorldPosition(node) : null;
+        if (parentId && this.Node(parentId) && parentId !== node.id) node.parent = parentId;
+        else delete node.parent;
+        if (world) this.SetWorldPosition(node, world);
+    }
+
+    /** Sets a node's position relative to its parent. */
+    SetLocalPosition(node, position) {
+        node.transform = { ...(node.transform ?? {}), position: [...position] };
+    }
+
+    /**
+     * Sets a node's scene-space position (translation only, like `WorldPosition`).
+     * Axes that only differ by floating-point rounding keep their stored value.
+     */
+    SetWorldPosition(node, position) {
+        const parent = node.parent ? this.Node(node.parent) : null;
+        const origin = parent ? this.WorldPosition(parent) : position.map(() => 0);
+        const current = node.transform?.position;
+        this.SetLocalPosition(node, position.map((value, index) => {
+            const local = value - (origin[index] ?? 0);
+            return current && Math.abs(current[index] - local) < 1e-9 ? current[index] : local;
+        }));
+    }
+
+    /**
+     * Sets transform fields (position, rotation, scale) without touching the others.
+     * @param {Object} node
+     * @param {{position?: number[], rotation?: number[]|number, scale?: number[]}} transform
+     */
+    SetTransform(node, transform) {
+        node.transform = { ...(node.transform ?? {}) };
+        for (const key of ['position', 'rotation', 'scale']) {
+            if (transform[key] !== undefined) node.transform[key] = clone(transform[key]);
+        }
+    }
+
+    /** Sets (or, with null, removes) a 2D node's size. */
+    SetSize(node, size) {
+        if (size) node.size = [...size];
+        else delete node.size;
+    }
+
+    /**
+     * Sets one component field. A value equal to the node's prefab value stays
+     * inherited (it is not written) unless the node already overrides that field.
+     * `undefined` removes the node's own value.
+     * @returns {boolean} True when the node's own data changed.
+     */
+    SetComponentField(node, component, field, value) {
+        const own = node.components?.[component];
+        const inherited = this.Prefab(node)?.components?.[component];
+        const before = JSON.stringify(own?.[field]);
+        if (value === undefined || (own?.[field] === undefined && isPlainObject(inherited) && field in inherited && sameJson(inherited[field], value))) {
+            if (own && field in own) {
+                delete own[field];
+                if (!Object.keys(own).length) this.RemoveComponent(node, component);
+            }
+        } else {
+            node.components ??= {};
+            node.components[component] ??= {};
+            node.components[component][field] = clone(value);
+        }
+        return JSON.stringify(node.components?.[component]?.[field]) !== before;
+    }
+
+    /**
+     * Replaces a component with `values`, writing only what differs from the prefab
+     * (so an instance stores its overrides). Existing key order is kept.
+     */
+    SetComponent(node, component, values) {
+        const inherited = this.Prefab(node)?.components?.[component];
+        if (!isPlainObject(values)) {
+            if (values === undefined || sameJson(values, inherited)) this.RemoveComponent(node, component);
+            else (node.components ??= {})[component] = clone(values);
+            return;
+        }
+        const own = node.components?.[component] ?? {};
+        for (const field of Object.keys(own)) if (!(field in values)) delete own[field];
+        if (node.components?.[component]) node.components[component] = own;
+        for (const [field, value] of Object.entries(values)) this.SetComponentField(node, component, field, value);
+        if (node.components?.[component] && !Object.keys(node.components[component]).length) this.RemoveComponent(node, component);
+    }
+
+    /** Removes a node's own component (prefab components stay inherited). */
+    RemoveComponent(node, component) {
+        if (!node.components) return;
+        delete node.components[component];
+        if (!Object.keys(node.components).length) delete node.components;
+    }
+
+    /** Sets the attached scripts (project-relative paths); an empty list removes the field. */
+    SetScripts(node, scripts) {
+        const list = (scripts ?? []).map(String).filter(Boolean);
+        if (list.length) node.scripts = list;
+        else delete node.scripts;
+    }
+
+    /** Sets the linked node ids (unknown ids are dropped); an empty list removes the field. */
+    SetLinks(node, links) {
+        const list = (links ?? []).map(String).filter(id => this.byId.has(id) && id !== node.id);
+        if (list.length) node.links = list;
+        else delete node.links;
+    }
+
+    /** A deep copy of the scene as plain JSON. */
+    ToJSON() {
+        return clone(this.data);
+    }
+
     /**
      * Converts a 3D scene to a SceneManifest3D document (`SceneManifest3D.Create` input):
      * `Light3D` nodes become lights; other nodes with a `Mesh` become objects
@@ -337,6 +537,10 @@ export class SceneDocument {
 
 function clone(value) {
     return value === undefined ? undefined : JSON.parse(JSON.stringify(value));
+}
+
+function sameJson(left, right) {
+    return JSON.stringify(left) === JSON.stringify(right);
 }
 
 function isPlainObject(value) {
