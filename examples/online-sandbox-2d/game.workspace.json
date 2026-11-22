@@ -13,7 +13,7 @@
       "id": "world",
       "label": "Online sandbox world",
       "format": "gameforgejs.scene",
-      "source": "config/scenes/world.gfscene.json"
+      "source": "scenes/world.gfscene.json"
     }
   ]
 }

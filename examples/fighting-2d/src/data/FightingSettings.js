@@ -1,5 +1,5 @@
 export const ScreenSettings = Object.freeze({ width: 960, height: 540 });
-// Arena bounds and start positions live in config/scenes/arena.gfscene.json.
+// Arena bounds and start positions live in scenes/arena.gfscene.json.
 export const RoundSettings = Object.freeze({ startDelay: 0.9, endDelay: 2.1, maxTime: 99, winsToMatch: 2, continueDelay: 1.2 });
 export const FighterSettings = Object.freeze({
     scale: 2.75, maxHp: 100, walkSpeed: 230, jumpStrength: -560, gravity: 1450,

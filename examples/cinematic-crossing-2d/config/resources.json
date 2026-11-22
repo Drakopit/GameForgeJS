@@ -11,7 +11,7 @@
     },
     {
       "name": "crossing",
-      "path": "./scenes/crossing.gfscene.json"
+      "path": "../scenes/crossing.gfscene.json"
     }
   ]
 }

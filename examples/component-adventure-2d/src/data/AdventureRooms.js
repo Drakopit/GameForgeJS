@@ -4,7 +4,7 @@ import { ROOM_HEIGHT, ROOM_WIDTH, TILE } from "./AdventureConstants.js";
 let rooms = [];
 
 /**
- * Loads the rooms from config/scenes/rooms.gfscene.json (gameforgejs.scene).
+ * Loads the rooms from scenes/rooms.gfscene.json (gameforgejs.scene).
  * Room nodes own their solids, decorations and slimes as children positioned
  * relative to the room's top-left corner.
  * @param {Object} document - Parsed scene JSON from the resource manifest.

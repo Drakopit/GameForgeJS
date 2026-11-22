@@ -1,7 +1,5 @@
+// Character models and scale are set on the player and sentry nodes of scenes/courtyard.gfscene.json.
 export const CharacterAssets = {
-    player: 'knight',
-    enemy: 'skeleton',
-    scale: 0.85,
     clips: {
         idle: { library: 'rig-general', clip: 'Idle_A' },
         run: { library: 'rig-movement', clip: 'Running_A' },

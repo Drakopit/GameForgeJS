@@ -1,7 +1,6 @@
 import { GameObject } from 'gameforgejs/2d';
 import { FootstepRipples } from '../rendering/FootstepRipples.js';
 import { ToonPond } from '../entities/ToonPond.js';
-import { Lakes } from '../data/Lakes.js';
 import { WarpPoint } from '../entities/WarpPoint.js';
 import { WarpTravel } from '../components/WarpTravel.js';
 import { ActionManager, AssetManager, Vector3D, SoundEffects } from 'gameforgejs/core';
@@ -13,10 +12,8 @@ import { ToonRoomHUD } from '../ui/ToonRoomHUD.js';
 import { Sentry } from '../entities/Sentry.js';
 import { AttackIndicator } from '../rendering/AttackIndicator.js';
 import { CharacterVisual } from '../rendering/CharacterVisual.js';
-import { ForestScenery } from '../data/ForestScenery.js';
 import { SceneryProp } from '../entities/SceneryProp.js';
 import { ExplorationCamera } from '../rendering/ExplorationCamera.js';
-import { CharacterAssets } from '../data/CharacterAssets.js';
 
 export class ToonRoomLevel extends Level3D {
     constructor() {
@@ -27,15 +24,15 @@ export class ToonRoomLevel extends Level3D {
     BuildScene() {
         this.bands = 3;
         this.hud = new ToonRoomHUD(this.ui);
-        // Layout, camera and lights come from config/scenes/courtyard.gfscene.json.
-        const { courtyard: Courtyard, warpPoints, lights } = CourtyardFromScene(this.context.assets.jsons.courtyard);
+        // Layout, camera and lights come from scenes/courtyard.gfscene.json.
+        const { courtyard: Courtyard, lakes, scenery, characters, warpPoints, lights } = CourtyardFromScene(this.context.assets.jsons.courtyard);
         this.courtyard = Courtyard;
         this.physics.bounds = Courtyard.bounds;
         this.camera = new PerspectiveCamera({ ...Courtyard.camera, aspect: this.width / this.height });
         this.scene.Add(this.camera);
         for (const light of lights) this.scene.Add(SceneManifest3D.CreateLight(light));
         this.room = this.AddEntity(new CourtyardRoom(this.scene, this.physics, Courtyard));
-        this.lakes = Lakes.map(definition => this.AddEntity(new ToonPond(this.scene, this.physics, definition)));
+        this.lakes = lakes.map(definition => this.AddEntity(new ToonPond(this.scene, this.physics, definition)));
         this.pond = this.lakes[0];
         this.player = this.AddEntity(new Explorer(this.physics, Courtyard.spawn, this.lakes));
         this.waterRipples = this.lakes.map(lake => this.AddEntity(new FootstepRipples(this.scene, this.player, lake)));
@@ -45,14 +42,14 @@ export class ToonRoomLevel extends Level3D {
         this.enemies = Courtyard.areas.flatMap(area => area.enemies.map(spawn =>
             this.AddEntity(new Sentry(this.physics, spawn))));
         this.actors = [this.player, ...this.enemies];
-        this.scenery = ForestScenery.map(definition =>
+        this.scenery = scenery.map(definition =>
             this.AddEntity(new SceneryProp(this.scene, this.physics, definition)));
         this.explorationCamera = new ExplorationCamera(this.camera, this.player, Courtyard.bounds);
         const assets = this.context.assets ?? AssetManager.instance;
         this.scene.Add(Skybox.FromImage(assets.GetImage('sky_cross'), { name: 'Daylight' }));
         this.visuals = this.actors.map(actor => this.AddEntity(new CharacterVisual(
-            actor, actor === this.player ? CharacterAssets.player : CharacterAssets.enemy,
-            this.scene, assets)));
+            actor, actor === this.player ? characters.player : characters.enemy,
+            this.scene, assets, characters.scale)));
         const director = this.AddEntity(new GameObject());
         this.sound = director.AddComponent(new SoundEffects(this.context.services.get('audio')));
         for (const actor of this.actors) actor.attack.onHit = () => this.sound.Play('hit');

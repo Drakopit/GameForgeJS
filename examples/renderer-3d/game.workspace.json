@@ -7,12 +7,13 @@
   "sceneFormat": "gameforgejs.scene",
   "play": "index.html",
   "editing": "scene",
+  "shaders": "shader",
   "scenes": [
     {
       "dimension": "3d",
       "id": "gallery",
       "label": "Surface Gallery",
-      "path": "assets/Scenes/gallery.gfscene.json",
+      "path": "scenes/gallery.gfscene.json",
       "format": "gameforgejs.scene",
       "resourceName": "gallery_scene"
     }

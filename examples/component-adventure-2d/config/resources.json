@@ -3,7 +3,7 @@
   "jsons": [
     {
       "name": "adventure_rooms",
-      "path": "./scenes/rooms.gfscene.json"
+      "path": "../scenes/rooms.gfscene.json"
     },
     {
       "name": "prompts",

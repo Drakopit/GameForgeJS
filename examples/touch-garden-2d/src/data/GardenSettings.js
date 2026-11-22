@@ -2,7 +2,7 @@ import { SceneDocument } from 'gameforgejs/core';
 
 /**
  * Tuning and touch-UI layout. The garden layout itself (arena, spawn,
- * obstacles, crystals) comes from config/scenes/garden.gfscene.json through
+ * obstacles, crystals) comes from scenes/garden.gfscene.json through
  * ApplyGardenScene() when the level starts.
  */
 export const GardenSettings = {

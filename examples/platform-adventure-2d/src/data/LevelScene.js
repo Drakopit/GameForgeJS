@@ -1,7 +1,7 @@
 import { SceneDocument } from 'gameforgejs/core';
 
 /**
- * Reads one level from its scene file (assets/Scenes/*.gfscene.json) into the
+ * Reads one level from its scene file (scenes/*.gfscene.json) into the
  * level config shape the game uses: world/victory/audio/materials from
  * `settings`, and parallax layers, platforms, objects and enemies from the
  * scene layers. Enemy defaults are the `enemy` prefab.

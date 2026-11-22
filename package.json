@@ -29,7 +29,7 @@
   "scripts": {
     "start": "node cli/index.cjs serve",
     "dev": "node cli/index.cjs serve",
-    "check": "node scripts/check-js.js && node scripts/check-imports.js && node scripts/check-editor-assets.js && node scripts/check-projects.cjs && node scripts/check-runtime.js && node scripts/generate-catalog.cjs --check",
+    "check": "node scripts/check-js.js && node scripts/check-imports.js && node scripts/check-editor-assets.js && node scripts/check-projects.cjs && node scripts/check-runtime.js && node scripts/generate-catalog.cjs --check && node scripts/generate-demo-index.cjs --check",
     "check:editor-assets": "node scripts/check-editor-assets.js",
     "docs": "node scripts/generate-docs.js",
     "docs:check": "node scripts/generate-docs.js --check",

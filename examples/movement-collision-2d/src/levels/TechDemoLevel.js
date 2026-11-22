@@ -24,7 +24,7 @@ export class TechDemoLevel extends Level {
         this.controlsHelp=new InputHelpPanel(new ControlGuideDraw(this.screen),{title:'Controls'}); // Acessa a tela criada pela Engine
         this.draw = new Draw(this.screen);
 
-        // Layout: config/scenes/tech-demo.gfscene.json (gameforgejs.scene)
+        // Layout: scenes/tech-demo.gfscene.json (gameforgejs.scene)
         const scene = new SceneDocument(this.context.assets.jsons.tech_demo_scene);
         this.player = new Player(this.screen, scene.Rect(scene.Node("player")));
         this.score = 0;

@@ -13,14 +13,14 @@
       "id": "movement",
       "label": "1 / 2 — Across the gaps",
       "format": "gameforgejs.scene",
-      "source": "config/stages/movement.gfscene.json"
+      "source": "scenes/movement.gfscene.json"
     },
     {
       "dimension": "2d",
       "id": "collection",
       "label": "2 / 2 — The raised path",
       "format": "gameforgejs.scene",
-      "source": "config/stages/collection.gfscene.json"
+      "source": "scenes/collection.gfscene.json"
     }
   ]
 }

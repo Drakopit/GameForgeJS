@@ -1,7 +1,7 @@
 import { SceneDocument } from 'gameforgejs/core';
 
 /**
- * Adds the world layout from config/scenes/world.gfscene.json to the simulation
+ * Adds the world layout from scenes/world.gfscene.json to the simulation
  * rules (config/world.rules.json). The .NET server applies the same mapping
  * (servers/online-sandbox/Simulation/WorldScene.cs), so both sides agree:
  * platforms snap to tiles (x, y, length = width / tileSize), crystals and the

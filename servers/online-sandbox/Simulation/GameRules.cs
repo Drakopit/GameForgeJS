@@ -27,12 +27,12 @@ public sealed class GameRules
     public double Move(string name) => Movement.GetProperty(name).GetDouble();
     /// <summary>
     /// Loads world.rules.json plus the world layout scene (by default
-    /// <c>scenes/world.gfscene.json</c> next to the rules file).
+    /// <c>../scenes/world.gfscene.json</c> relative to the rules file).
     /// </summary>
     public static GameRules Load(string path, string? scenePath = null)
     {
         var rules = JsonNode.Parse(File.ReadAllText(path))?.AsObject() ?? throw new InvalidDataException("World rules are missing.");
-        scenePath ??= Path.Combine(Path.GetDirectoryName(path) ?? ".", "scenes", "world.gfscene.json");
+        scenePath ??= Path.Combine(Path.GetDirectoryName(path) ?? ".", "..", "scenes", "world.gfscene.json");
         if (File.Exists(scenePath)) WorldScene.Apply(rules, JsonNode.Parse(File.ReadAllText(scenePath))!.AsObject());
         return rules.Deserialize<GameRules>(Wire.Json) ?? throw new InvalidDataException("World rules are missing.");
     }

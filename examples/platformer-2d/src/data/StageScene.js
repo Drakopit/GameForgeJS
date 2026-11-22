@@ -2,7 +2,7 @@ import { SceneDocument } from 'gameforgejs/core';
 
 /**
  * Builds a platformer stage from its gameforgejs.scene document
- * (config/stages/*.gfscene.json). Terrain nodes are pixel rectangles that the
+ * (scenes/*.gfscene.json). Terrain nodes are pixel rectangles that the
  * tile world consumes in tile units.
  * @param {Object} document - Parsed scene JSON from the resource manifest.
  * @returns {{title: string, last: boolean, tileSize: number, columns: number, rows: number,

@@ -190,15 +190,15 @@
     },
     {
       "name": "advanced_first_scene",
-      "path": "../assets/Scenes/first.gfscene.json"
+      "path": "../scenes/first.gfscene.json"
     },
     {
       "name": "advanced_second_scene",
-      "path": "../assets/Scenes/second.gfscene.json"
+      "path": "../scenes/second.gfscene.json"
     },
     {
       "name": "advanced_boss_scene",
-      "path": "../assets/Scenes/boss.gfscene.json"
+      "path": "../scenes/boss.gfscene.json"
     }
   ],
   "schemaVersion": 1

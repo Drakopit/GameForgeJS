@@ -50,19 +50,19 @@
   "jsons": [
     {
       "name": "sky_trail_course",
-      "path": "../assets/Scenes/sky-trail/sky-trail.gfscene.json"
+      "path": "../scenes/sky-trail.gfscene.json"
     },
     {
       "name": "sky_trail_course_high_winds",
-      "path": "../assets/Scenes/sky-trail/high-winds.gfscene.json"
+      "path": "../scenes/high-winds.gfscene.json"
     },
     {
       "name": "sky_trail_course_archipelago",
-      "path": "../assets/Scenes/sky-trail/archipelago.gfscene.json"
+      "path": "../scenes/archipelago.gfscene.json"
     },
     {
       "name": "sky_trail_course_aurora",
-      "path": "../assets/Scenes/sky-trail/aurora.gfscene.json"
+      "path": "../scenes/aurora.gfscene.json"
     },
     {
       "name": "prompts",
@@ -75,5 +75,39 @@
       "path": "../assets/Models/character.glb"
     }
   ],
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "shaders": [
+    {
+      "name": "standard_vs",
+      "path": "../shader/Standard.vs.glsl"
+    },
+    {
+      "name": "standard_fs",
+      "path": "../shader/Standard.fs.glsl"
+    },
+    {
+      "name": "shadow_vs",
+      "path": "../shader/Shadow.vs.glsl"
+    },
+    {
+      "name": "shadow_fs",
+      "path": "../shader/Shadow.fs.glsl"
+    },
+    {
+      "name": "unlit_vs",
+      "path": "../shader/Unlit.vs.glsl"
+    },
+    {
+      "name": "unlit_fs",
+      "path": "../shader/Unlit.fs.glsl"
+    },
+    {
+      "name": "skybox_vs",
+      "path": "../shader/Skybox.vs.glsl"
+    },
+    {
+      "name": "skybox_fs",
+      "path": "../shader/Skybox.fs.glsl"
+    }
+  ]
 }

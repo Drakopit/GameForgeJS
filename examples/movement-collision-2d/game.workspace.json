@@ -13,7 +13,7 @@
       "id": "tech-demo",
       "label": "Movement & Collision",
       "format": "gameforgejs.scene",
-      "source": "config/scenes/tech-demo.gfscene.json"
+      "source": "scenes/tech-demo.gfscene.json"
     }
   ]
 }

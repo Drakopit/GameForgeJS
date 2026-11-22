@@ -17,7 +17,7 @@ export class AddonLevel extends Level {
         this.hud = new HUDFrame(this.draw);
         this.help = new InputHelpPanel(this.draw);
         const assets = context.assets ?? AssetManager.instance;
-        // Layout: config/scenes/playground.gfscene.json (gameforgejs.scene)
+        // Layout: scenes/playground.gfscene.json (gameforgejs.scene)
         const scene = new SceneDocument(assets.jsons.playground_scene);
         this.layers = scene.Nodes({ layer: 'parallax' }).map(node => {
             const [x, y] = scene.WorldPosition(node);

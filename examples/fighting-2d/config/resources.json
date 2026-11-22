@@ -21,7 +21,7 @@
   "jsons": [
     {
       "name": "arena_scene",
-      "path": "../config/scenes/arena.gfscene.json"
+      "path": "../scenes/arena.gfscene.json"
     },
     {
       "name": "prompts",

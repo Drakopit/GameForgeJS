@@ -1,7 +1,7 @@
 import { SceneDocument } from 'gameforgejs/core';
 
 /**
- * Reads a Sky Trail course from its scene file (assets/Scenes/sky-trail/*.gfscene.json).
+ * Reads a Sky Trail course from its scene file (scenes/*.gfscene.json).
  *
  * Gameplay settings are plain `settings`; everything placed in the world is a node:
  * platforms, coins (children of their platform, so their position is the offset),

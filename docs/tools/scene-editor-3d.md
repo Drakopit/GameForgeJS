@@ -47,8 +47,8 @@ goals, actors, and UI.
 references consistent when moving or renaming a scene.
 
 Every 3D example keeps its scene in a `gameforgejs.scene` file (`*.gfscene.json`):
-`renderer-3d/assets/Scenes/gallery.gfscene.json` (camera, fog, lights),
-`sky-trail-3d/assets/Scenes/sky-trail/*.gfscene.json` (platforms, coins, spawn, goal, lights)
+`renderer-3d/scenes/gallery.gfscene.json` (camera, fog, lights),
+`sky-trail-3d/scenes/*.gfscene.json` (platforms, coins, spawn, goal, lights)
 and the scenes of highland-tactics, aether-observatory, solar-system and toon-adventure.
 Games read them with `SceneDocument`; `SceneManifest3D.Create` also accepts a 3D scene. Verify edits
 by reloading the corresponding game after saving.

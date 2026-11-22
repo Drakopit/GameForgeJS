@@ -12,7 +12,7 @@ export class TechDemo3DLevel extends Level3D {
 
     BuildScene() {
         this.time = 0;
-        // Camera, fog and lights come from assets/Scenes/gallery.gfscene.json (editable in the editor).
+        // Camera, fog and lights come from scenes/gallery.gfscene.json (editable in the editor).
         const gallery = new SceneDocument(this.context.assets.jsons.gallery_scene);
         const settings = gallery.settings;
         this.scene.backgroundColor = [...settings.backgroundColor];

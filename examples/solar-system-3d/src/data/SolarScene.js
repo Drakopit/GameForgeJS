@@ -1,7 +1,7 @@
 import { SceneDocument } from 'gameforgejs/core';
 
 /**
- * Reads the solar system from config/scenes/solar-system.gfscene.json.
+ * Reads the solar system from scenes/solar-system.gfscene.json.
  * Each planet starts on +X: its X position is the orbit radius, its scale the
  * planet radius and rotation Z the axial tilt. Colours, clouds, atmosphere,
  * seed and texture are its celestial Material; `Orbit` holds speed, spin,

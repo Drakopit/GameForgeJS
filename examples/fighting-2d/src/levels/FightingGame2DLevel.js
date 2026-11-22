@@ -16,7 +16,7 @@ import { FightingTouchControls } from '../input/FightingTouchControls.js';
 export class FightingGame2DLevel extends Level {
     constructor() { super(); this.caption = 'GameForgeJS — Fighting Arena 2D'; this.TelaId = 'FightingGame2D'; }
     OnStart(context = this.context) {
-        // Arena bounds, ground line and start marks come from config/scenes/arena.gfscene.json.
+        // Arena bounds, ground line and start marks come from scenes/arena.gfscene.json.
         this.layout = ArenaFromScene(context.assets.jsons.arena_scene);
         this.arena = this.layout.arena;
         this.screen = new Screen(this.TelaId, ScreenSettings.width, ScreenSettings.height, { config: context.config });

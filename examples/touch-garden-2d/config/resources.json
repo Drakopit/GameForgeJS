@@ -3,7 +3,7 @@
   "jsons": [
     {
       "name": "garden_scene",
-      "path": "./scenes/garden.gfscene.json"
+      "path": "../scenes/garden.gfscene.json"
     },
     {
       "name": "prompts",

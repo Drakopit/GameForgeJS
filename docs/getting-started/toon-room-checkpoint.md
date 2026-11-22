@@ -35,7 +35,7 @@ directly from disk does not establish the module and asset loading environment.
 | `config/game.config.json` | Screen and action bindings |
 | `config/gameforgejs.package.json` | Distribution: core, 2d and 3d |
 | `src/levels/ToonRoomLevel.js` | Scene composition, lights and band controls |
-| `config/scenes/courtyard.gfscene.json` | Camera, lights, spawn, bounds, solids, paths, sentries and warp points (read by `src/data/CourtyardScene.js`) |
+| `scenes/courtyard.gfscene.json` | Camera, lights, spawn, bounds, solids, paths, sentries and warp points (read by `src/data/CourtyardScene.js`) |
 | `src/entities/CourtyardRoom.js` | Room meshes and static physics bodies |
 | `src/entities/Explorer.js` | Placeholder player mesh, input and dynamic body |
 | `src/ui/ToonRoomHUD.js` | Framework HUD and H-key help panel |

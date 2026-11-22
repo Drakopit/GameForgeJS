@@ -35,7 +35,7 @@ Defeat every enemy for Victory; losing the allied party produces Defeat.
 
 ## Read the composition
 
-- config/scenes/battlefield.gfscene.json: tiles (height from scale Y), units, camera and lights; read by src/data/BattleScene.js.
+- scenes/battlefield.gfscene.json: tiles (height from scale Y), units, camera and lights; read by src/data/BattleScene.js.
 - HeightGrid in the native 3D API: reusable paths, climbs, gaps and terrain rays.
 - UnitStats, UnitTravel, UnitVisual: separate ECS values, motion and meshes.
 - TurnSystem: CT, action budgets, AI and finite phases; no drawing or input.

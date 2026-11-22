@@ -13,7 +13,7 @@
       "id": "crossing",
       "label": "Lantern Crossing",
       "format": "gameforgejs.scene",
-      "source": "config/scenes/crossing.gfscene.json"
+      "source": "scenes/crossing.gfscene.json"
     }
   ]
 }

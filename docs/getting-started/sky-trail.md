@@ -68,7 +68,7 @@ physics ticks. Reset clears grounded references, pending jumps and checkpoint st
 
 ## Author a variant
 
-Copy assets/Scenes/sky-trail/sky-trail.gfscene.json (or create it in the GameForgeJS
+Copy scenes/sky-trail.gfscene.json (or create it in the GameForgeJS
 Editor's 3D view) and register it in config/resources.json with a JSON asset name
 beginning with `sky_trail_course_`. The menu discovers it. Platforms, coins (children
 of their platform), the player spawn, the goal and the lights are scene nodes;

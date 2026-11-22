@@ -17,7 +17,7 @@
       "id": "arena",
       "label": "Puzzle Arena",
       "format": "gameforgejs.scene",
-      "path": "config/scenes/arena.gfscene.json"
+      "path": "scenes/arena.gfscene.json"
     }
   ]
 }

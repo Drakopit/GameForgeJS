@@ -3,7 +3,7 @@
   "jsons": [
     {
       "name": "tech_demo_scene",
-      "path": "./scenes/tech-demo.gfscene.json"
+      "path": "../scenes/tech-demo.gfscene.json"
     },
     {
       "name": "prompts",

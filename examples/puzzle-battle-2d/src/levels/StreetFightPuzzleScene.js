@@ -29,7 +29,7 @@ export class StreetFightPuzzleScene extends Level {
         this.controlsHelp=new InputHelpPanel(new ControlGuideDraw(this.screen),{title:'Controls'});
         this.draw = new Draw(this.screen);
         this.sound = new SoundEffects(this.context.services.get('audio'));
-        // Board positions come from config/scenes/arena.gfscene.json.
+        // Board positions come from scenes/arena.gfscene.json.
         const arena = new SceneDocument(this.context.assets.jsons.arena_scene);
         this.boardPositions = [arena.Rect(arena.Node('board_1')), arena.Rect(arena.Node('board_2'))];
         const director = new GameObject(); director.AddComponent(this.sound); this.AddEntity(director);
