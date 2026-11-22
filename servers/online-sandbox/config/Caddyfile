@@ -1,3 +1,0 @@
-{$GAME_DOMAIN} {
-    reverse_proxy game:8080
-}

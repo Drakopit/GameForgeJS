@@ -1,12 +1,8 @@
 import { Mat4 } from "../../../core/Math/Mat4.js";
 import { RenderQueue3D } from './RenderQueue3D.js';
 import { Texture } from "../Texture/Texture.js";
+import { BuiltinShaders } from "../Shader/BuiltinShaders.js";
 import { Shader } from "../Shader/Shader.js";
-import { STANDARD_FRAGMENT_SHADER, STANDARD_VERTEX_SHADER } from "../Shader/StandardShader.js";
-import { UNLIT_FRAGMENT_SHADER, UNLIT_VERTEX_SHADER } from "../Shader/UnlitShader.js";
-import { SHADOW_FRAGMENT_SHADER, SHADOW_VERTEX_SHADER } from "../Shader/ShadowShader.js";
-import { CELESTIAL_FRAGMENT_SHADER, CELESTIAL_VERTEX_SHADER } from "../Shader/CelestialShader.js";
-import { SKYBOX_FRAGMENT_SHADER, SKYBOX_VERTEX_SHADER } from "../Shader/SkyboxShader.js";
 import { PrimitiveMesh } from "../Mesh/PrimitiveMesh.js";
 import { AssetManager } from "../../../core/Assets/AssetManager.js";
 
@@ -63,14 +59,17 @@ export class WebGL3DRenderer {
 
         // A project replaces any built-in shader with its own GLSL files by listing them in
         // resources.json "shaders" as <name>_vs / <name>_fs (e.g. "celestial_fs": "../shader/Celestial.fs.glsl").
-        const source = (name, vertex, fragment) => [assets?.shaders?.[`${name}_vs`] || vertex, assets?.shaders?.[`${name}_fs`] || fragment];
+        const source = name => {
+            const { vertex, fragment } = BuiltinShaders[name];
+            return [assets?.shaders?.[`${name}_vs`] || vertex, assets?.shaders?.[`${name}_fs`] || fragment];
+        };
 
         try {
-        this.standardShader = new Shader(this.gl, ...source("standard", STANDARD_VERTEX_SHADER, STANDARD_FRAGMENT_SHADER), "StandardShader");
-        this.unlitShader = new Shader(this.gl, ...source("unlit", UNLIT_VERTEX_SHADER, UNLIT_FRAGMENT_SHADER), "UnlitShader");
-        this.shadowShader = new Shader(this.gl, ...source("shadow", SHADOW_VERTEX_SHADER, SHADOW_FRAGMENT_SHADER), "ShadowShader");
-        this.celestialShader = new Shader(this.gl, ...source("celestial", CELESTIAL_VERTEX_SHADER, CELESTIAL_FRAGMENT_SHADER), "CelestialShader");
-        this.skyboxShader = new Shader(this.gl, ...source("skybox", SKYBOX_VERTEX_SHADER, SKYBOX_FRAGMENT_SHADER), "SkyboxShader");
+        this.standardShader = new Shader(this.gl, ...source("standard"), "StandardShader");
+        this.unlitShader = new Shader(this.gl, ...source("unlit"), "UnlitShader");
+        this.shadowShader = new Shader(this.gl, ...source("shadow"), "ShadowShader");
+        this.celestialShader = new Shader(this.gl, ...source("celestial"), "CelestialShader");
+        this.skyboxShader = new Shader(this.gl, ...source("skybox"), "SkyboxShader");
 
         this.#configureState();
         this.#createFallbackTextures();
