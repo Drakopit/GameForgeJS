@@ -46,7 +46,7 @@ export class SolarSystemLevel extends Level3D {
         this.focusButton = new Button(this.ui.Screen, { pointerInput: true });
         this.focusButton.OnClick(() => this.SelectBody((this.focus + 2) % (this.Bodies().length + 1) - 1));
         this.help = new InfoPanel(this.ui.Draw, { title: 'SOLAR SYSTEM / CONTROLS', lines: [] });
-        // Camera, lights, sun and planets come from config/scenes/solar-system.gfscene.json.
+        // Camera, lights, sun and planets come from scenes/solar-system.gfscene.json.
         const solar = SolarFromScene(this.context.assets.jsons.solar_scene);
         this.camera = new PerspectiveCamera({ ...solar.camera, aspect: this.width / this.height });
         this.scene.Add(this.camera);

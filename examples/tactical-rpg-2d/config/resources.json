@@ -104,7 +104,7 @@
   "jsons": [
     {
       "name": "tactical_scene",
-      "path": "../assets/Scenes/tactical-map.gfscene.json"
+      "path": "../scenes/tactical-map.gfscene.json"
     },
     {
       "name": "tactical_catalog",

@@ -13,7 +13,7 @@
       "id": "rooms",
       "label": "Adventure rooms",
       "format": "gameforgejs.scene",
-      "source": "config/scenes/rooms.gfscene.json"
+      "source": "scenes/rooms.gfscene.json"
     }
   ]
 }

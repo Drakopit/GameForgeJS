@@ -7,5 +7,5 @@ export const PuzzleConfig = Object.freeze({
     LOCK_DELAY: 500, // ms before piece locks
     COLORS: ["red", "blue", "green", "yellow"],
     GARBAGE_TIMER_TURNS: 3, // Turns a garbage piece stays as garbage before turning normal
-    // Board positions live in config/scenes/arena.gfscene.json.
+    // Board positions live in scenes/arena.gfscene.json.
 });

@@ -4,13 +4,14 @@ import { ModelMeshFactory, SkeletalAnimator, ToonMaterial } from 'gameforgejs/3d
 import { CharacterAssets } from '../data/CharacterAssets.js';
 
 export class CharacterVisual {
-    constructor(actor, modelName, scene, assets) {
+    /** @param {number} scale - Character scale (the player node's scale in the courtyard scene). */
+    constructor(actor, modelName, scene, assets, scale = 1) {
         this.actor = actor;
         this.scene = scene;
         this.model = ModelMeshFactory.FromAsset(modelName, {
             materialFactory: (part, index) => new ToonMaterial(ModelMeshFactory.CreateMaterial(part, index, modelName)),
         });
-        this.model.SetScale(CharacterAssets.scale);
+        this.model.SetScale(scale);
         this.model.AddTo(scene);
         this.animator = new SkeletalAnimator(this.model);
         for (const [name, definition] of Object.entries(CharacterAssets.clips)) {

@@ -69,7 +69,7 @@ test('2D camera zoom preserves viewport dimensions and centres in visible world 
 test('world-map unlocks derive from completed outgoing routes and cannot bypass a locked node', async () => {
     const { RouteProgress } = await import(pathToFileURL(path.resolve('examples/route-atlas-2d/src/data/RouteProgress.js')));
     const { ScenarioWithAtlas } = await import(pathToFileURL(path.resolve('examples/route-atlas-2d/src/data/AtlasScene.js')));
-    const data = ScenarioWithAtlas(require('../examples/route-atlas-2d/config/scenario.json'), require('../examples/route-atlas-2d/config/scenes/atlas.gfscene.json')), graph = new RouteProgress(data);
+    const data = ScenarioWithAtlas(require('../examples/route-atlas-2d/config/scenario.json'), require('../examples/route-atlas-2d/scenes/atlas.gfscene.json')), graph = new RouteProgress(data);
     graph.Clear('summit'); assert.equal(graph.cleared.size, 0); assert.deepEqual(graph.Neighbors('harbor'), []);
     graph.Clear('harbor'); assert.deepEqual(graph.Neighbors('harbor'), ['grove']);
     graph.Clear('grove'); assert(graph.Available('ridge') && graph.Available('marsh')); assert(!graph.Available('gate'));

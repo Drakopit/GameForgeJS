@@ -22,6 +22,30 @@
     {
       "name": "celestial_fs",
       "path": "../shader/Celestial.fs.glsl"
+    },
+    {
+      "name": "standard_vs",
+      "path": "../shader/Standard.vs.glsl"
+    },
+    {
+      "name": "standard_fs",
+      "path": "../shader/Standard.fs.glsl"
+    },
+    {
+      "name": "shadow_vs",
+      "path": "../shader/Shadow.vs.glsl"
+    },
+    {
+      "name": "shadow_fs",
+      "path": "../shader/Shadow.fs.glsl"
+    },
+    {
+      "name": "unlit_vs",
+      "path": "../shader/Unlit.vs.glsl"
+    },
+    {
+      "name": "unlit_fs",
+      "path": "../shader/Unlit.fs.glsl"
     }
   ],
   "models": [],
@@ -29,7 +53,7 @@
   "jsons": [
     {
       "name": "solar_scene",
-      "path": "../config/scenes/solar-system.gfscene.json"
+      "path": "../scenes/solar-system.gfscene.json"
     },
     {
       "name": "prompts",

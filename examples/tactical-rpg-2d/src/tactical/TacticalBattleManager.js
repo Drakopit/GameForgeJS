@@ -24,7 +24,7 @@ export class TacticalBattleManager {
         this.level = level;
         this.assets = assets;
         this.sound = sound;
-        // assets/Scenes/tactical-map.gfscene.json holds the map, the player and the enemies.
+        // scenes/tactical-map.gfscene.json holds the map, the player and the enemies.
         const documents = TacticalFromScene(assets.jsons.tactical_scene);
         this.stage = documents.stage;
         if (expedition.stage?.blocked) {

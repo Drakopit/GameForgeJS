@@ -20,11 +20,11 @@
   "jsons": [
     {
       "name": "stage_movement",
-      "path": "./stages/movement.gfscene.json"
+      "path": "../scenes/movement.gfscene.json"
     },
     {
       "name": "stage_collection",
-      "path": "./stages/collection.gfscene.json"
+      "path": "../scenes/collection.gfscene.json"
     },
     {
       "name": "prompts",

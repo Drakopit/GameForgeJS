@@ -110,7 +110,7 @@ does not alter movement or introduce another state machine.
 
 ### Build a scrolling stage
 
-1. Edit `config/stages/movement.gfscene.json` (or open it in the editor's 2D view).
+1. Edit `scenes/movement.gfscene.json` (or open it in the editor's 2D view).
    Terrain nodes are pixel rectangles on the tile grid; `spawn` and `goal` are nodes.
    `src/data/StageScene.js` reads it.
 2. The level supplies the same terrain to drawing and `TilePlatformerWorld`.
@@ -143,7 +143,7 @@ All four tooling/runtime files live in the demo's `config/` directory:
   and `addons: ["platformer"]`.
 
 The project metadata points to the runtime files; it does not duplicate their
-settings. Stage data lives in `config/stages/*.gfscene.json`; the level owns rules
+settings. Stage data lives in `scenes/*.gfscene.json`; the level owns rules
 and the player owns respawn behavior.
 
 ## Next increments

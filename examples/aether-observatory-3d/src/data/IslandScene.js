@@ -1,7 +1,7 @@
 import { SceneDocument } from 'gameforgejs/core';
 
 /**
- * Adds the spatial layout from config/scenes/islands.gfscene.json to the
+ * Adds the spatial layout from scenes/islands.gfscene.json to the
  * scenario rules: each island node is a 1.2-thick slab centred at y = -0.6
  * (X/Z position and scale give x, z, width and depth) and the `player_spawn`
  * node is movement.spawn.

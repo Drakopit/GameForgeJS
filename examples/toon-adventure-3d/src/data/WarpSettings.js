@@ -5,4 +5,4 @@ export const WarpSettings = Object.freeze({
     noticeSeconds: 3,
 });
 
-// Warp pads (paired, on dry ground) are placed in config/scenes/courtyard.gfscene.json.
+// Warp pads (paired, on dry ground) are placed in scenes/courtyard.gfscene.json.

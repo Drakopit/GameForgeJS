@@ -11,7 +11,7 @@
     },
     {
       "name": "atlas",
-      "path": "./scenes/atlas.gfscene.json"
+      "path": "../scenes/atlas.gfscene.json"
     }
   ]
 }

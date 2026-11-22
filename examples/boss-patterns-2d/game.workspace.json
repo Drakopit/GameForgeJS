@@ -13,7 +13,7 @@
       "id": "arena",
       "label": "Boss arena",
       "format": "gameforgejs.scene",
-      "source": "config/scenes/arena.gfscene.json"
+      "source": "scenes/arena.gfscene.json"
     }
   ]
 }

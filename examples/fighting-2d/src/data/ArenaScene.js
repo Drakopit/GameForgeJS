@@ -1,7 +1,7 @@
 import { SceneDocument } from 'gameforgejs/core';
 
 /**
- * Reads the arena from config/scenes/arena.gfscene.json: the `arena` node is the
+ * Reads the arena from scenes/arena.gfscene.json: the `arena` node is the
  * floor (its edges bound the fighters, its top is the ground line) and each start
  * mark's centre X is where that fighter starts a round.
  * @param {Object} document - Parsed scene JSON.

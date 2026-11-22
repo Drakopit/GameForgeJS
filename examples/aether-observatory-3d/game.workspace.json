@@ -7,12 +7,13 @@
   "sceneFormat": "gameforgejs.scene",
   "play": "index.html",
   "editing": "scene",
+  "shaders": "shader",
   "scenes": [
     {
       "dimension": "3d",
       "id": "islands",
       "label": "Floating islands",
-      "path": "config/scenes/islands.gfscene.json",
+      "path": "scenes/islands.gfscene.json",
       "format": "gameforgejs.scene"
     }
   ]

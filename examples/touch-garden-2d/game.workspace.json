@@ -13,7 +13,7 @@
       "id": "garden",
       "label": "Touch Garden",
       "format": "gameforgejs.scene",
-      "source": "config/scenes/garden.gfscene.json"
+      "source": "scenes/garden.gfscene.json"
     }
   ]
 }

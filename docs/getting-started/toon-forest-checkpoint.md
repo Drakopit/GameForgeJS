@@ -23,7 +23,7 @@ and attack only within reach. Defeated bodies no longer collide; their death vis
 
 ## 2. Add another encounter
 
-Open `examples/toon-adventure-3d/config/scenes/courtyard.gfscene.json` (or the
+Open `examples/toon-adventure-3d/scenes/courtyard.gfscene.json` (or the
 Courtyard scene in the editor's 3D view). Each entry of `settings.areas` has a name and
 a minimum Z boundary; areas are ordered from south to north (decreasing Z). Sentries are
 nodes in the `enemies` layer whose `Enemy.area` names their area. Duplicate a sentry,

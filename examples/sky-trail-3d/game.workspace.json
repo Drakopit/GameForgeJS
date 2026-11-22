@@ -7,12 +7,13 @@
   "sceneFormat": "gameforgejs.scene",
   "play": "index.html",
   "editing": "scene",
+  "shaders": "shader",
   "scenes": [
     {
       "dimension": "3d",
       "id": "sky-trail",
       "label": "Sky Trail",
-      "path": "assets/Scenes/sky-trail/sky-trail.gfscene.json",
+      "path": "scenes/sky-trail.gfscene.json",
       "format": "gameforgejs.scene",
       "resourceName": "sky_trail_course"
     },
@@ -20,7 +21,7 @@
       "dimension": "3d",
       "id": "high-winds",
       "label": "Sky Trail — Ventos Altos",
-      "path": "assets/Scenes/sky-trail/high-winds.gfscene.json",
+      "path": "scenes/high-winds.gfscene.json",
       "format": "gameforgejs.scene",
       "resourceName": "sky_trail_course_high_winds"
     },
@@ -28,7 +29,7 @@
       "dimension": "3d",
       "id": "archipelago",
       "label": "Arquipélago Celeste",
-      "path": "assets/Scenes/sky-trail/archipelago.gfscene.json",
+      "path": "scenes/archipelago.gfscene.json",
       "format": "gameforgejs.scene",
       "resourceName": "sky_trail_course_archipelago"
     },
@@ -36,7 +37,7 @@
       "dimension": "3d",
       "id": "aurora",
       "label": "Farol da Aurora",
-      "path": "assets/Scenes/sky-trail/aurora.gfscene.json",
+      "path": "scenes/aurora.gfscene.json",
       "format": "gameforgejs.scene",
       "resourceName": "sky_trail_course_aurora"
     }

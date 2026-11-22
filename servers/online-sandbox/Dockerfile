@@ -4,7 +4,7 @@ COPY servers/online-sandbox/GameForge.Online.Server.csproj servers/online-sandbo
 RUN dotnet restore servers/online-sandbox/GameForge.Online.Server.csproj
 COPY servers/online-sandbox/ servers/online-sandbox/
 COPY examples/online-sandbox-2d/config/world.rules.json examples/online-sandbox-2d/config/world.rules.json
-COPY examples/online-sandbox-2d/config/scenes/world.gfscene.json examples/online-sandbox-2d/config/scenes/world.gfscene.json
+COPY examples/online-sandbox-2d/scenes/world.gfscene.json examples/online-sandbox-2d/scenes/world.gfscene.json
 RUN dotnet publish servers/online-sandbox/GameForge.Online.Server.csproj -c Release -o /app --no-restore
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0

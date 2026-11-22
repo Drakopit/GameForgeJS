@@ -3,7 +3,7 @@ import { MapScale } from './BattleRules.js';
 
 /**
  * Reads the battlefield from its gameforgejs.scene document
- * (config/scenes/battlefield.gfscene.json) into `{ heights, units }`.
+ * (scenes/battlefield.gfscene.json) into `{ heights, units }`.
  * Tiles: column/row come from the X/Z position, height from scale Y
  * (`base + h * elevation`). Units: tile from position, facing from rotation Y
  * (`-facing * 90deg`), colour from their Material.

@@ -12,7 +12,7 @@
   "jsons": [
     {
       "name": "playground_scene",
-      "path": "./scenes/playground.gfscene.json"
+      "path": "../scenes/playground.gfscene.json"
     },
     {
       "name": "prompts",

@@ -1,7 +1,7 @@
 import { SceneDocument } from 'gameforgejs/core';
 
 /**
- * Adds the overworld from config/scenes/atlas.gfscene.json to the scenario
+ * Adds the overworld from scenes/atlas.gfscene.json to the scenario
  * rules: each location is the centre of its marker and each `links` entry is
  * a route (edge) from that location.
  * @param {Object} scenario - config/scenario.json (travel and trial settings).

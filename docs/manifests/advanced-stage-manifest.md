@@ -35,7 +35,7 @@ An index composes the shared documents and names the level's scene file:
 ```
 
 Each level's layout (world, victory line, parallax layers, platforms, objects and
-enemies) is one `gameforgejs.scene` file in `assets/Scenes/` (`first`, `second`,
+enemies) is one `gameforgejs.scene` file in `scenes/` (`first`, `second`,
 `boss`). Enemy defaults are the scene's `enemy` prefab. `src/data/LevelScene.js`
 reads it with `SceneDocument.Items(layer)` and merges it over the composed documents.
 

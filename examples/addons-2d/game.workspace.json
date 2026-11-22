@@ -13,7 +13,7 @@
       "id": "playground",
       "label": "Addon playground",
       "format": "gameforgejs.scene",
-      "source": "config/scenes/playground.gfscene.json"
+      "source": "scenes/playground.gfscene.json"
     }
   ]
 }

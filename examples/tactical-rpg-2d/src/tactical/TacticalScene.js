@@ -1,7 +1,7 @@
 import { SceneDocument } from 'gameforgejs/core';
 
 /**
- * Reads the tactical map from assets/Scenes/tactical-map.gfscene.json into the
+ * Reads the tactical map from scenes/tactical-map.gfscene.json into the
  * stage, player and enemy documents the battle uses. The `tilemap` node holds
  * the TileMap component; the `player` node's position is its spawn.
  * @param {Object} document - Parsed scene JSON.

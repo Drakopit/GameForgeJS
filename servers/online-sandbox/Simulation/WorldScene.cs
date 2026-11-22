@@ -3,7 +3,7 @@ using System.Text.Json.Nodes;
 namespace GameForge.Online;
 
 /// <summary>
-/// Applies the world layout from <c>config/scenes/world.gfscene.json</c> (a
+/// Applies the world layout from <c>scenes/world.gfscene.json</c> (a
 /// gameforgejs.scene document edited in the GameForgeJS Editor) to the rules.
 /// Mirrors <c>examples/online-sandbox-2d/src/data/WorldScene.js</c>: platforms snap
 /// to tiles, crystals and the beacon are their marker centres, and the spawn is

@@ -17,7 +17,7 @@
       "dimension": "3d",
       "id": "solar-system",
       "label": "Sistema Solar",
-      "path": "config/scenes/solar-system.gfscene.json",
+      "path": "scenes/solar-system.gfscene.json",
       "format": "gameforgejs.scene",
       "resourceName": "solar_scene"
     }

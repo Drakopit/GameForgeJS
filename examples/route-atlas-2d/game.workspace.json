@@ -13,7 +13,7 @@
       "id": "atlas",
       "label": "Route Atlas",
       "format": "gameforgejs.scene",
-      "source": "config/scenes/atlas.gfscene.json"
+      "source": "scenes/atlas.gfscene.json"
     }
   ]
 }

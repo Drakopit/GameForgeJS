@@ -29,7 +29,7 @@ export class AdventureDemoLevel extends Level {
         super();
         this.caption = "GameForgeJS — Component Adventure 2D";
         this.TelaId = "Adventure2D";
-        this.currentRoom = null; // set in OnStart from config/scenes/rooms.gfscene.json
+        this.currentRoom = null; // set in OnStart from scenes/rooms.gfscene.json
         this.pendingRoom = null;
         this.roomSolids = new Map();
         this.hitSparks = [];

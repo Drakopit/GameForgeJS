@@ -13,7 +13,7 @@
       "id": "tactical_map",
       "label": "Tactical Map",
       "format": "gameforgejs.scene",
-      "path": "assets/Scenes/tactical-map.gfscene.json"
+      "path": "scenes/tactical-map.gfscene.json"
     }
   ]
 }
