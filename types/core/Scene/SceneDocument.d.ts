@@ -25,10 +25,22 @@
  * nodes they need, usually as plain records with `Items(layer)`, and build their
  * own ECS entities; the format adds no runtime behaviour of its own.
  *
+ * Tools (the GameForgeJS Editor) write scenes through the same class:
+ * `AddNode`, `RemoveNode`, `SetLocalPosition`, `SetWorldPosition`, `SetTransform`,
+ * `SetSize`, `SetComponentField` / `SetComponent` (values equal to the prefab's stay
+ * inherited), `SetScripts`, `SetLinks`, then `ToJSON()`. Writes keep the order of
+ * existing keys, so saving an unchanged scene reproduces the file exactly.
+ *
  * @example
  * const scene = new SceneDocument(context.assets.jsons.level_1);
  * const platforms = scene.Items('platforms');   // [{ id, x, y, width, height, terrain, solid, ... }]
  * const spawn = scene.WorldPosition(scene.Node('spawn'));
+ *
+ * @example
+ * const doc = new SceneDocument(json, { copy: true });          // edit a copy
+ * doc.SetWorldPosition(doc.Node('crate_1'), [120, 300]);
+ * doc.SetComponentField(doc.Node('crate_1'), 'Sprite', 'asset', 'crate_red');
+ * save(doc.ToJSON());
  */
 export class SceneDocument {
     /** Current format identifier. */
@@ -37,6 +49,43 @@ export class SceneDocument {
     static LEGACY_FORMATS: readonly string[];
     /** Highest format version this runtime understands. */
     static VERSION: number;
+    /**
+     * A new, empty scene document (plain JSON, ready for `new SceneDocument(...)`).
+     * @param {Object} fields
+     * @param {"2d"|"3d"} fields.dimension
+     * @param {string} [fields.id="scene"]
+     * @param {string} [fields.name]
+     * @param {Object} [fields.settings]
+     * @param {Object[]} [fields.layers]
+     * @param {Object<string, Object>} [fields.prefabs]
+     * @param {Object[]} [fields.nodes]
+     * @returns {Object}
+     */
+    static Create({ dimension, id, name, settings, layers, prefabs, nodes }: {
+        dimension: "2d" | "3d";
+        id?: string;
+        name?: string;
+        settings?: any;
+        layers?: any[];
+        prefabs?: {
+            [x: string]: any;
+        };
+        nodes?: any[];
+    }): any;
+    /**
+     * Prefab components merged under own components (own values win per field).
+     * The same rule `Components(node)` applies; exposed for tools working on copies.
+     * @param {Object<string, Object>} [inherited={}] - Prefab components.
+     * @param {Object<string, Object>} [own={}] - Node components.
+     * @returns {Object<string, Object>}
+     */
+    static MergeComponents(inherited?: {
+        [x: string]: any;
+    }, own?: {
+        [x: string]: any;
+    }): {
+        [x: string]: any;
+    };
     /**
      * Returns true when a value looks like a scene document (any supported format id).
      * @param {*} value - Candidate JSON value.
@@ -51,9 +100,13 @@ export class SceneDocument {
     static Validate(document: any): any;
     /**
      * @param {Object} document - Parsed scene JSON.
+     * @param {Object} [options]
+     * @param {boolean} [options.copy=false] - Work on a deep copy (use it before writing).
      * @throws {TypeError|RangeError} When the document is not a valid scene.
      */
-    constructor(document: any);
+    constructor(document: any, { copy }?: {
+        copy?: boolean;
+    });
     data: any;
     byId: Map<any, any>;
     /** @returns {string} Scene display name. */
@@ -191,6 +244,71 @@ export class SceneDocument {
      * @returns {Object[]}
      */
     Lights(): any[];
+    /**
+     * Adds a node (at `index`, default last) and returns it.
+     * @param {Object} node - At least `{ id, type }`.
+     * @param {Object} [options]
+     * @param {number} [options.index]
+     * @returns {Object} The stored node.
+     */
+    AddNode(node: any, { index }?: {
+        index?: number;
+    }): any;
+    /**
+     * Removes a node; its children are re-parented to its parent (keeping their scene position).
+     * @param {string} id
+     * @returns {boolean} True when a node was removed.
+     */
+    RemoveNode(id: string): boolean;
+    /**
+     * Sets or clears a node's parent.
+     * @param {Object} node
+     * @param {string|null} parentId
+     * @param {Object} [options]
+     * @param {boolean} [options.keepWorld=true] - Keep the node's scene position.
+     */
+    SetParent(node: any, parentId: string | null, { keepWorld }?: {
+        keepWorld?: boolean;
+    }): void;
+    /** Sets a node's position relative to its parent. */
+    SetLocalPosition(node: any, position: any): void;
+    /**
+     * Sets a node's scene-space position (translation only, like `WorldPosition`).
+     * Axes that only differ by floating-point rounding keep their stored value.
+     */
+    SetWorldPosition(node: any, position: any): void;
+    /**
+     * Sets transform fields (position, rotation, scale) without touching the others.
+     * @param {Object} node
+     * @param {{position?: number[], rotation?: number[]|number, scale?: number[]}} transform
+     */
+    SetTransform(node: any, transform: {
+        position?: number[];
+        rotation?: number[] | number;
+        scale?: number[];
+    }): void;
+    /** Sets (or, with null, removes) a 2D node's size. */
+    SetSize(node: any, size: any): void;
+    /**
+     * Sets one component field. A value equal to the node's prefab value stays
+     * inherited (it is not written) unless the node already overrides that field.
+     * `undefined` removes the node's own value.
+     * @returns {boolean} True when the node's own data changed.
+     */
+    SetComponentField(node: any, component: any, field: any, value: any): boolean;
+    /**
+     * Replaces a component with `values`, writing only what differs from the prefab
+     * (so an instance stores its overrides). Existing key order is kept.
+     */
+    SetComponent(node: any, component: any, values: any): void;
+    /** Removes a node's own component (prefab components stay inherited). */
+    RemoveComponent(node: any, component: any): void;
+    /** Sets the attached scripts (project-relative paths); an empty list removes the field. */
+    SetScripts(node: any, scripts: any): void;
+    /** Sets the linked node ids (unknown ids are dropped); an empty list removes the field. */
+    SetLinks(node: any, links: any): void;
+    /** A deep copy of the scene as plain JSON. */
+    ToJSON(): any;
     /**
      * Converts a 3D scene to a SceneManifest3D document (`SceneManifest3D.Create` input):
      * `Light3D` nodes become lights; other nodes with a `Mesh` become objects
