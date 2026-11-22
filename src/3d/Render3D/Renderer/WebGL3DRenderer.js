@@ -61,15 +61,16 @@ export class WebGL3DRenderer {
         this.lightViewProjection = Mat4.create();
         this.skyboxGeometry = PrimitiveMesh.Cube(2);
 
-        const customCelestialVs = assets?.shaders?.["celestial_vs"];
-        const customCelestialFs = assets?.shaders?.["celestial_fs"];
+        // A project replaces any built-in shader with its own GLSL files by listing them in
+        // resources.json "shaders" as <name>_vs / <name>_fs (e.g. "celestial_fs": "../shader/Celestial.fs.glsl").
+        const source = (name, vertex, fragment) => [assets?.shaders?.[`${name}_vs`] || vertex, assets?.shaders?.[`${name}_fs`] || fragment];
 
         try {
-        this.standardShader = new Shader(this.gl, STANDARD_VERTEX_SHADER, STANDARD_FRAGMENT_SHADER, "StandardShader");
-        this.unlitShader = new Shader(this.gl, UNLIT_VERTEX_SHADER, UNLIT_FRAGMENT_SHADER, "UnlitShader");
-        this.shadowShader = new Shader(this.gl, SHADOW_VERTEX_SHADER, SHADOW_FRAGMENT_SHADER, "ShadowShader");
-        this.celestialShader = new Shader(this.gl, customCelestialVs || CELESTIAL_VERTEX_SHADER, customCelestialFs || CELESTIAL_FRAGMENT_SHADER, "CelestialShader");
-        this.skyboxShader = new Shader(this.gl, SKYBOX_VERTEX_SHADER, SKYBOX_FRAGMENT_SHADER, "SkyboxShader");
+        this.standardShader = new Shader(this.gl, ...source("standard", STANDARD_VERTEX_SHADER, STANDARD_FRAGMENT_SHADER), "StandardShader");
+        this.unlitShader = new Shader(this.gl, ...source("unlit", UNLIT_VERTEX_SHADER, UNLIT_FRAGMENT_SHADER), "UnlitShader");
+        this.shadowShader = new Shader(this.gl, ...source("shadow", SHADOW_VERTEX_SHADER, SHADOW_FRAGMENT_SHADER), "ShadowShader");
+        this.celestialShader = new Shader(this.gl, ...source("celestial", CELESTIAL_VERTEX_SHADER, CELESTIAL_FRAGMENT_SHADER), "CelestialShader");
+        this.skyboxShader = new Shader(this.gl, ...source("skybox", SKYBOX_VERTEX_SHADER, SKYBOX_FRAGMENT_SHADER), "SkyboxShader");
 
         this.#configureState();
         this.#createFallbackTextures();

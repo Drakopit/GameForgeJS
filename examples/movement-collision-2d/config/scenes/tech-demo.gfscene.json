@@ -28,37 +28,27 @@
       "type": "Actor2D",
       "layer": "actors",
       "transform": {
-        "position": [
-          400,
-          300
-        ]
+        "position": [400, 300]
       },
-      "size": [
-        32,
-        32
-      ],
-      "name": "Player"
+      "size": [32, 32],
+      "name": "Player",
+      "scripts": ["src/entities/Player.js"]
     },
     {
       "id": "coin_area",
       "type": "Node2D",
       "layer": "areas",
       "transform": {
-        "position": [
-          20,
-          20
-        ]
+        "position": [20, 20]
       },
-      "size": [
-        600,
-        440
-      ],
+      "size": [600, 440],
       "name": "Coin spawn area",
       "components": {
         "Data": {
           "coinSize": 20
         }
-      }
+      },
+      "scripts": ["src/entities/Coin.js"]
     }
   ]
 }

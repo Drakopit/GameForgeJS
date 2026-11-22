@@ -28,6 +28,10 @@
   "schemaVersion": 1,
   "jsons": [
     {
+      "name": "solar_scene",
+      "path": "../config/scenes/solar-system.gfscene.json"
+    },
+    {
       "name": "prompts",
       "path": "./prompts.json"
     }

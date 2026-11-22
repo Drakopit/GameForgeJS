@@ -20,7 +20,7 @@
       "base": 0.45,
       "elevation": 0.55
     },
-    "note": "Tiles: column/row come from the X/Z position, height h from scale Y = base + h × elevation. Units: tile from position, facing from rotation Y (−facing × 90°), colour from Material."
+    "note": "Tiles: column/row come from the X/Z position, height h from scale Y = base + h × elevation. Units: tile from position, facing from rotation Y (−facing × 90°), colour from Material. The game reads the camera position/target and creates its lights from this scene."
   },
   "layers": [
     {
@@ -41,6 +41,7 @@
   ],
   "prefabs": {
     "terrace_h0": {
+      "note": "Editor preview of the terrace TerrainView builds in code.",
       "type": "MeshInstance3D",
       "components": {
         "Mesh": {
@@ -89,6 +90,7 @@
       }
     },
     "terrace_h1": {
+      "note": "Editor preview of the terrace TerrainView builds in code.",
       "type": "MeshInstance3D",
       "components": {
         "Mesh": {
@@ -137,6 +139,7 @@
       }
     },
     "terrace_h2": {
+      "note": "Editor preview of the terrace TerrainView builds in code.",
       "type": "MeshInstance3D",
       "components": {
         "Mesh": {
@@ -312,7 +315,6 @@
       "components": {
         "Light": {
           "type": "ambient",
-          "color": [1, 1, 1],
           "intensity": 0.18
         }
       }

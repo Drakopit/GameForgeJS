@@ -69,8 +69,9 @@ field visible while the software keyboard is open.
 - config/game.config.json owns window, input and game settings.
 - config/resources.json owns resource loading relative to that file.
 - config/gameforge.project.json owns CLI/editor metadata.
-- config/world.rules.json is shared with the server, so physics and map tuning have
-  one source. Rebuild both client and server when changing it.
+- config/world.rules.json (physics and rules) and config/scenes/world.gfscene.json
+  (platforms, crystals, spawn, beacon) are shared with the server, so both have one
+  source. Rebuild both client and server when changing them.
 - config/gameforgejs.package.json selects runtime groups: core, 2d, network; addon: platformer.
 
 Keep assets and their license/provenance files with this project. Model, texture and

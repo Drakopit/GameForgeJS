@@ -13,7 +13,7 @@
       "position": [26, 22, 34],
       "target": [0, 0, 0]
     },
-    "note": "Islands are 1.2-thick slabs centred at y = -0.6: X/Z position and scale X/Z give x, z, width and depth. The spawn node's position is movement.spawn."
+    "note": "Islands are 1.2-thick slabs centred at y = -0.6: X/Z position and scale X/Z give x, z, width and depth. The spawn node is movement.spawn. The game creates its lights from the Light3D nodes; the island prefab's parts preview what ObservatoryWorld draws in code."
   },
   "layers": [
     {
@@ -500,7 +500,8 @@
             }
           ]
         }
-      }
+      },
+      "note": "Editor preview of the island ObservatoryWorld builds in code (grass slab, rock base, trees, waterfall, ivory path)."
     }
   },
   "nodes": [
@@ -515,7 +516,6 @@
       "components": {
         "Light": {
           "type": "ambient",
-          "color": [1, 1, 1],
           "intensity": 0.22
         }
       }
@@ -552,8 +552,8 @@
           "color": [1, 0.83, 0.6],
           "intensity": 1.7,
           "castShadow": true,
-          "shadowMapSize": 1024,
-          "shadowDistance": 60
+          "shadowDistance": 45,
+          "shadowMapSize": 1024
         }
       }
     },
@@ -567,7 +567,8 @@
         "position": [0, -0.6, 0],
         "rotation": [0, 0, 0],
         "scale": [24, 1.2, 22]
-      }
+      },
+      "scripts": ["src/entities/ObservatoryWorld.js"]
     },
     {
       "id": "island_2",
@@ -579,7 +580,8 @@
         "position": [30, -0.6, 0],
         "rotation": [0, 0, 0],
         "scale": [20, 1.2, 20]
-      }
+      },
+      "scripts": ["src/entities/ObservatoryWorld.js"]
     },
     {
       "id": "island_3",
@@ -591,14 +593,15 @@
         "position": [-30, -0.6, -16],
         "rotation": [0, 0, 0],
         "scale": [20, 1.2, 20]
-      }
+      },
+      "scripts": ["src/entities/ObservatoryWorld.js"]
     },
     {
       "id": "player_spawn",
       "name": "Player spawn",
       "type": "MeshInstance3D",
       "layer": "markers",
-      "scripts": ["src/components/ExplorerMotion.js"],
+      "scripts": ["src/entities/MeshActor.js", "src/components/ExplorerMotion.js"],
       "transform": {
         "position": [0, 2, 7],
         "rotation": [0, 0, 0],

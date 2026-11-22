@@ -2,9 +2,9 @@
   "id": "advanced_boss_snow_demo",
   "compose": [
     "advanced_stage_default",
-    "advanced_boss_scene",
     "advanced_player",
     "advanced_effects",
     "advanced_ui"
-  ]
+  ],
+  "scene": "advanced_boss_scene"
 }

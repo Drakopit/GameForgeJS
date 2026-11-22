@@ -35,7 +35,7 @@ directly from disk does not establish the module and asset loading environment.
 | `config/game.config.json` | Screen and action bindings |
 | `config/gameforgejs.package.json` | Distribution: core, 2d and 3d |
 | `src/levels/ToonRoomLevel.js` | Scene composition, lights and band controls |
-| `src/data/Courtyard.js` | Camera, spawn, bounds, obstacles and palette |
+| `config/scenes/courtyard.gfscene.json` | Camera, lights, spawn, bounds, solids, paths, sentries and warp points (read by `src/data/CourtyardScene.js`) |
 | `src/entities/CourtyardRoom.js` | Room meshes and static physics bodies |
 | `src/entities/Explorer.js` | Placeholder player mesh, input and dynamic body |
 | `src/ui/ToonRoomHUD.js` | Framework HUD and H-key help panel |
@@ -75,7 +75,7 @@ hemisphere lighting, distance attenuation and filtered shadows remain continuous
 It is not a promise that the final image contains exactly three RGB colors.
 StandardMaterial keeps its existing smooth lighting behavior.
 
-Exercise: change a block's color in `Courtyard.js`, reload, and compare the tree
+Exercise: change a solid's `Material.albedoColor` in `courtyard.gfscene.json`, reload, and compare the tree
 crowns with two versus four bands. Replace a ToonMaterial with StandardMaterial
 to use ordinary lighting without changing the level or physics.
 

@@ -1,0 +1,61 @@
+{
+  "format": "gameforgejs.scene",
+  "version": 1,
+  "dimension": "2d",
+  "id": "arena",
+  "name": "Fighting Arena",
+  "settings": {
+    "world": {
+      "width": 960,
+      "height": 540
+    },
+    "note": "The arena node is the floor: its left/right edges bound the fighters and its top is the ground line. Each start mark's centre X is where that fighter starts a round."
+  },
+  "layers": [
+    {
+      "id": "arena",
+      "name": "Arena",
+      "type": "Area2D"
+    },
+    {
+      "id": "starts",
+      "name": "Start marks",
+      "type": "Actor2D"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "arena",
+      "name": "Arena floor",
+      "type": "Area2D",
+      "layer": "arena",
+      "scripts": ["src/presentation/FightingArena.js", "src/combat/FightingCombat.js"],
+      "transform": {
+        "position": [58, 426]
+      },
+      "size": [844, 114]
+    },
+    {
+      "id": "player_one",
+      "name": "Player 1 start",
+      "type": "Actor2D",
+      "layer": "starts",
+      "scripts": ["src/entities/Fighter2D.js"],
+      "transform": {
+        "position": [227, 310]
+      },
+      "size": [90, 116]
+    },
+    {
+      "id": "player_two",
+      "name": "Player 2 start",
+      "type": "Actor2D",
+      "layer": "starts",
+      "scripts": ["src/entities/Fighter2D.js", "src/ai/FightingCPU.js"],
+      "transform": {
+        "position": [643, 310]
+      },
+      "size": [90, 116]
+    }
+  ]
+}

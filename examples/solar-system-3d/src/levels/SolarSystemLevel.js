@@ -3,30 +3,19 @@ import { Vector3D, SoundEffects, Input, Touch } from 'gameforgejs/core';
 import { ActionManager } from "gameforgejs/core";
 import { AssetManager } from "gameforgejs/core";
 import {
-    AmbientLight,
     CelestialBodyMaterial,
     Level3D,
     Mesh,
     PerspectiveCamera,
-    PointLight,
     PrimitiveMesh,
+    SceneManifest3D,
     UnlitMaterial,
 } from "gameforgejs/3d";
+import { SolarFromScene } from "../data/SolarScene.js";
 
 // NASA NSSDCA Planetary Fact Sheet, equatorial diameter (km), orbital period (days).
 const physical = [[4879, 88], [12104, 224.7], [12756, 365.2], [6792, 687],
     [142984, 4331], [120536, 10747], [51118, 30589], [49528, 59800]];
-
-const PLANETS = Object.freeze([
-    { name: "Mercurio", radius: 0.07, orbit: 4.5, speed: 1.24, rotation: 0.9, inclination: 0.12, tilt: 0, colors: [[0.58, 0.54, 0.49], [0.26, 0.24, 0.23]], seed: 2 },
-    { name: "Venus", radius: 0.19, orbit: 8.0, speed: 0.48, rotation: 0.55, inclination: 0.06, tilt: 3.08, colors: [[0.92, 0.68, 0.35], [0.55, 0.36, 0.18]], seed: 7 },
-    { name: "Terra", radius: 0.20, orbit: 12.0, speed: 0.3, rotation: 1.6, inclination: 0, tilt: 0.41, colors: [[0.16, 0.38, 0.78], [0.18, 0.58, 0.28]], atmosphere: [0.35, 0.64, 1.0], cloud: 0.46, seed: 11, textureMap: "earth_diffuse" },
-    { name: "Marte", radius: 0.11, orbit: 18.0, speed: 0.16, rotation: 1.25, inclination: 0.03, tilt: 0.43, colors: [[0.74, 0.28, 0.16], [0.38, 0.15, 0.09]], atmosphere: [0.95, 0.35, 0.2], seed: 17 },
-    { name: "Jupiter", radius: 2.2, orbit: 42.0, speed: 0.025, rotation: 2.1, inclination: 0.02, tilt: 0.05, colors: [[0.76, 0.55, 0.34], [0.96, 0.84, 0.62]], cloud: 0.2, seed: 23 },
-    { name: "Saturno", radius: 1.8, orbit: 75.0, speed: 0.010, rotation: 1.85, inclination: 0.04, tilt: 0.46, colors: [[0.86, 0.72, 0.46], [0.54, 0.42, 0.25]], ring: true, seed: 29 },
-    { name: "Urano", radius: 0.8, orbit: 130.0, speed: 0.003, rotation: 1.1, inclination: 0.01, tilt: 1.70, colors: [[0.46, 0.85, 0.88], [0.2, 0.48, 0.58]], atmosphere: [0.48, 0.95, 1.0], seed: 31 },
-    { name: "Netuno", radius: 0.77, orbit: 190.0, speed: 0.0015, rotation: 1.0, inclination: 0.03, tilt: 0.49, colors: [[0.18, 0.28, 0.88], [0.08, 0.12, 0.38]], atmosphere: [0.22, 0.46, 1.0], seed: 37 },
-]);
 
 export class SolarSystemLevel extends Level3D {
     constructor() {
@@ -57,46 +46,24 @@ export class SolarSystemLevel extends Level3D {
         this.focusButton = new Button(this.ui.Screen, { pointerInput: true });
         this.focusButton.OnClick(() => this.SelectBody((this.focus + 2) % (this.Bodies().length + 1) - 1));
         this.help = new InfoPanel(this.ui.Draw, { title: 'SOLAR SYSTEM / CONTROLS', lines: [] });
-        this.camera = new PerspectiveCamera({
-            fov: 58,
-            aspect: this.width / this.height,
-            near: 0.1,
-            far: 1000,
-            position: [0, 16, 31],
-            target: [0, 0, 0],
-        });
+        // Camera, lights, sun and planets come from config/scenes/solar-system.gfscene.json.
+        const solar = SolarFromScene(this.context.assets.jsons.solar_scene);
+        this.camera = new PerspectiveCamera({ ...solar.camera, aspect: this.width / this.height });
         this.scene.Add(this.camera);
+        for (const light of solar.lights) this.scene.Add(SceneManifest3D.CreateLight(light));
 
-        this.scene.Add(new AmbientLight({ color: [0.2, 0.22, 0.35], intensity: 0.08 }));
-        this.scene.Add(new PointLight({
-            position: [0, 0, 0],
-            color: [1.0, 0.78, 0.46],
-            intensity: 9.0,
-            range: 80,
-        }));
-
-        this.CreateSun();
-        PLANETS.forEach((planet, index) => this.CreatePlanet(planet, index));
+        this.CreateSun(solar.sun);
+        solar.planets.forEach((planet, index) => this.CreatePlanet(planet, index));
         this.CreateStarfield();
     }
 
-    CreateSun() {
+    CreateSun({ scale, material }) {
         this.sun = Mesh.FromGeometry(
             PrimitiveMesh.Sphere(1, { widthSegments: 48, heightSegments: 24 }),
-            new CelestialBodyMaterial({
-                name: "SunShader",
-                baseColor: [1.0, 0.58, 0.12],
-                secondaryColor: [1.0, 0.95, 0.28],
-                atmosphereColor: [1.0, 0.52, 0.08],
-                emissiveColor: [1.0, 0.46, 0.08],
-                emissiveStrength: 1.8,
-                cloudStrength: 0.18,
-                atmosphereStrength: 1.2,
-                seed: 99,
-            }),
+            new CelestialBodyMaterial({ name: "SunShader", ...material }),
             { name: "Sun", castShadow: false, receiveShadow: false },
         );
-        this.sun.transform.SetScale(5.5);
+        this.sun.transform.SetScale(scale);
         this.scene.Add(this.sun);
     }
 

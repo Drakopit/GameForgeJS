@@ -38,196 +38,130 @@
       "type": "Platform2D",
       "layer": "terrain",
       "transform": {
-        "position": [
-          0,
-          480
-        ]
+        "position": [0, 480]
       },
-      "size": [
-        416,
-        64
-      ]
+      "size": [416, 64],
+      "scripts": ["src/rendering/PlatformerScenery.js"]
     },
     {
       "id": "terrain_2",
       "type": "Platform2D",
       "layer": "terrain",
       "transform": {
-        "position": [
-          512,
-          480
-        ]
+        "position": [512, 480]
       },
-      "size": [
-        704,
-        64
-      ]
+      "size": [704, 64],
+      "scripts": ["src/rendering/PlatformerScenery.js"]
     },
     {
       "id": "terrain_3",
       "type": "Platform2D",
       "layer": "terrain",
       "transform": {
-        "position": [
-          1312,
-          480
-        ]
+        "position": [1312, 480]
       },
-      "size": [
-        608,
-        64
-      ]
+      "size": [608, 64],
+      "scripts": ["src/rendering/PlatformerScenery.js"]
     },
     {
       "id": "terrain_4",
       "type": "Platform2D",
       "layer": "terrain",
       "transform": {
-        "position": [
-          192,
-          416
-        ]
+        "position": [192, 416]
       },
-      "size": [
-        128,
-        32
-      ]
+      "size": [128, 32],
+      "scripts": ["src/rendering/PlatformerScenery.js"]
     },
     {
       "id": "terrain_5",
       "type": "Platform2D",
       "layer": "terrain",
       "transform": {
-        "position": [
-          608,
-          416
-        ]
+        "position": [608, 416]
       },
-      "size": [
-        128,
-        32
-      ]
+      "size": [128, 32],
+      "scripts": ["src/rendering/PlatformerScenery.js"]
     },
     {
       "id": "terrain_6",
       "type": "Platform2D",
       "layer": "terrain",
       "transform": {
-        "position": [
-          928,
-          416
-        ]
+        "position": [928, 416]
       },
-      "size": [
-        128,
-        32
-      ]
+      "size": [128, 32],
+      "scripts": ["src/rendering/PlatformerScenery.js"]
     },
     {
       "id": "terrain_7",
       "type": "Platform2D",
       "layer": "terrain",
       "transform": {
-        "position": [
-          1472,
-          416
-        ]
+        "position": [1472, 416]
       },
-      "size": [
-        128,
-        32
-      ]
+      "size": [128, 32],
+      "scripts": ["src/rendering/PlatformerScenery.js"]
     },
     {
       "id": "coin_1",
       "type": "Prop2D",
       "layer": "coins",
       "transform": {
-        "position": [
-          160,
-          452
-        ]
+        "position": [160, 452]
       },
-      "size": [
-        16,
-        20
-      ]
+      "size": [16, 20],
+      "scripts": ["src/entities/Coin.js"]
     },
     {
       "id": "coin_2",
       "type": "Prop2D",
       "layer": "coins",
       "transform": {
-        "position": [
-          688,
-          388
-        ]
+        "position": [688, 388]
       },
-      "size": [
-        16,
-        20
-      ]
+      "size": [16, 20],
+      "scripts": ["src/entities/Coin.js"]
     },
     {
       "id": "coin_3",
       "type": "Prop2D",
       "layer": "coins",
       "transform": {
-        "position": [
-          1008,
-          388
-        ]
+        "position": [1008, 388]
       },
-      "size": [
-        16,
-        20
-      ]
+      "size": [16, 20],
+      "scripts": ["src/entities/Coin.js"]
     },
     {
       "id": "coin_4",
       "type": "Prop2D",
       "layer": "coins",
       "transform": {
-        "position": [
-          1712,
-          452
-        ]
+        "position": [1712, 452]
       },
-      "size": [
-        16,
-        20
-      ]
+      "size": [16, 20],
+      "scripts": ["src/entities/Coin.js"]
     },
     {
       "id": "spawn",
       "type": "Actor2D",
       "layer": "markers",
       "transform": {
-        "position": [
-          64,
-          400
-        ]
+        "position": [64, 400]
       },
-      "size": [
-        24,
-        30
-      ],
-      "name": "Player spawn"
+      "size": [24, 30],
+      "name": "Player spawn",
+      "scripts": ["src/entities/Player.js", "src/components/PlayerAnimation.js"]
     },
     {
       "id": "goal",
       "type": "Node2D",
       "layer": "markers",
       "transform": {
-        "position": [
-          1840,
-          402
-        ]
+        "position": [1840, 402]
       },
-      "size": [
-        28,
-        78
-      ],
+      "size": [28, 78],
       "name": "Goal flag"
     }
   ]

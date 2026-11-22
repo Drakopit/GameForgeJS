@@ -1,6 +1,6 @@
 import { InputHelpPanel, Draw as ControlGuideDraw } from 'gameforgejs/2d';
 import { ActionManager as ControlGuideActions } from 'gameforgejs/core';
-import { Level } from "gameforgejs/core";
+import { Level, SceneDocument } from "gameforgejs/core";
 import { Screen, ActionBar, GameObject } from "gameforgejs/2d";
 import { SoundEffects } from 'gameforgejs/core';
 import { GameViewport,Input } from 'gameforgejs/core';
@@ -29,6 +29,9 @@ export class StreetFightPuzzleScene extends Level {
         this.controlsHelp=new InputHelpPanel(new ControlGuideDraw(this.screen),{title:'Controls'});
         this.draw = new Draw(this.screen);
         this.sound = new SoundEffects(this.context.services.get('audio'));
+        // Board positions come from config/scenes/arena.gfscene.json.
+        const arena = new SceneDocument(this.context.assets.jsons.arena_scene);
+        this.boardPositions = [arena.Rect(arena.Node('board_1')), arena.Rect(arena.Node('board_2'))];
         const director = new GameObject(); director.AddComponent(this.sound); this.AddEntity(director);
         this.bar = new ActionBar(this.screen,this.draw,[
             {label:'LEFT',touchOnly:true,run:()=>this.PlayInput('aiMoveLeft')},
@@ -54,12 +57,12 @@ export class StreetFightPuzzleScene extends Level {
         for (const actor of this.fighterActors ?? []) this.RemoveEntity(actor);
         this.fighterActors = [this.AddEntity(new GameObject()), this.AddEntity(new GameObject())];
         // P1 Setup
-        this.board1 = new PuzzleBoard(PuzzleConfig.BOARD_1_POS.x, PuzzleConfig.BOARD_1_POS.y, true);
+        this.board1 = new PuzzleBoard(this.boardPositions[0].x, this.boardPositions[0].y, true);
         this.piece1 = new FallingPiece(this.board1, { left: 'PUZZLE_LEFT', right: 'PUZZLE_RIGHT', rotate: 'PUZZLE_ROTATE', drop: 'PUZZLE_DROP' }, false);
         this.fighter1 = this.fighterActors[0].AddComponent(new PuzzleFighter(0, 0, Characters.BLAZE));
 
         // P2 Setup (CPU)
-        this.board2 = new PuzzleBoard(PuzzleConfig.BOARD_2_POS.x, PuzzleConfig.BOARD_2_POS.y, false);
+        this.board2 = new PuzzleBoard(this.boardPositions[1].x, this.boardPositions[1].y, false);
         this.piece2 = new FallingPiece(this.board2, null, true);
         this.fighter2 = this.fighterActors[1].AddComponent(new PuzzleFighter(0, 0, Characters.KIRA));
         this.cpuController = new CpuPuzzleController(this.board2, this.piece2);

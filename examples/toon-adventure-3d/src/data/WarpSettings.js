@@ -5,10 +5,4 @@ export const WarpSettings = Object.freeze({
     noticeSeconds: 3,
 });
 
-// Paired pads are on dry ground. Arrival is locked until the player leaves the pad.
-export const WarpPoints = [
-    { id: 'courtyard', name: 'Courtyard gate', position: [-4.5, 0, 3.5], destination: 'azure', color: '#63f5e6' },
-    { id: 'azure', name: 'Azure Lake', position: [-6, 0, -12], destination: 'courtyard', color: '#63f5e6' },
-    { id: 'forest', name: 'Forest gate', position: [4, 0, -10], destination: 'moonwater', color: '#c7a1ff' },
-    { id: 'moonwater', name: 'Moonwater Lake', position: [6, 0, -31], destination: 'forest', color: '#c7a1ff' },
-];
+// Warp pads (paired, on dry ground) are placed in config/scenes/courtyard.gfscene.json.

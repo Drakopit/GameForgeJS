@@ -24,6 +24,7 @@ export { SpotLight } from "./Light/SpotLight.js";
 
 export { Texture } from "./Texture/Texture.js";
 export { Shader } from "./Shader/Shader.js";
+export { BuiltinShaders } from "./Shader/BuiltinShaders.js";
 export { WebGL3DRenderer } from "./Renderer/WebGL3DRenderer.js";
 
 export { SurfaceMaterial } from './Material/SurfaceMaterial.js';

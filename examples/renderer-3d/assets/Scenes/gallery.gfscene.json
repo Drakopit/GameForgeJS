@@ -1,0 +1,52 @@
+{
+  "format": "gameforgejs.scene",
+  "version": 1,
+  "dimension": "3d",
+  "id": "gallery",
+  "name": "Surface Gallery",
+  "settings": {
+    "backgroundColor": [0.17, 0.23, 0.29, 1],
+    "fog": { "near": 12, "far": 36 },
+    "planarReflection": { "height": 0 },
+    "camera": { "fov": 43, "near": 0.15, "far": 80, "position": [5, 4.2, 10], "target": [0, 0.6, -0.6] },
+    "note": "The level reads its camera, fog and lights from this scene. The surface samples themselves are built in code (SurfaceGallery); the HUD orbits the camera and turns the light named key."
+  },
+  "layers": [
+    { "id": "lights", "name": "Lights", "type": "Light3D" }
+  ],
+  "nodes": [
+    {
+      "id": "sky",
+      "name": "Sky Light",
+      "type": "Light3D",
+      "layer": "lights",
+      "transform": { "position": [0, 0, 0] },
+      "components": { "Light": { "type": "hemisphere", "skyColor": [0.56, 0.73, 0.96], "groundColor": [0.24, 0.18, 0.15], "intensity": 0.72 } }
+    },
+    {
+      "id": "key",
+      "name": "Key Light",
+      "type": "Light3D",
+      "layer": "lights",
+      "scripts": ["src/levels/TechDemo3DLevel.js"],
+      "transform": { "position": [0, 0, 0] },
+      "components": { "Light": { "type": "directional", "color": [0.77, 0.87, 1], "intensity": 1.65, "castShadow": true, "shadowDistance": 14 } }
+    },
+    {
+      "id": "lamp_left",
+      "name": "Lamp Left",
+      "type": "Light3D",
+      "layer": "lights",
+      "transform": { "position": [-4.8, 2.95, -4.3] },
+      "components": { "Light": { "type": "point", "color": [1, 0.58, 0.26], "intensity": 4, "range": 9 } }
+    },
+    {
+      "id": "lamp_right",
+      "name": "Lamp Right",
+      "type": "Light3D",
+      "layer": "lights",
+      "transform": { "position": [4.8, 2.95, -4.3] },
+      "components": { "Light": { "type": "point", "color": [1, 0.58, 0.26], "intensity": 4, "range": 9 } }
+    }
+  ]
+}

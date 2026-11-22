@@ -10,11 +10,11 @@
   "scenes": [
     {
       "dimension": "3d",
-      "id": "render3d_showcase",
-      "label": "Render3D Showcase",
-      "path": "assets/Scenes/render3d-showcase.gfscene.json",
+      "id": "gallery",
+      "label": "Surface Gallery",
+      "path": "assets/Scenes/gallery.gfscene.json",
       "format": "gameforgejs.scene",
-      "resourceName": "render3d_showcase_scene"
+      "resourceName": "gallery_scene"
     }
   ]
 }

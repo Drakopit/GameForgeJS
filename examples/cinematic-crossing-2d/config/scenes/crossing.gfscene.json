@@ -29,7 +29,7 @@
       },
       "size": [24, 24],
       "links": ["waypoint_2"],
-      "scripts": ["src/components/WaypointMotion.js"]
+      "scripts": ["src/entities/Courier.js", "src/components/WaypointMotion.js"]
     },
     {
       "id": "waypoint_2",

@@ -1,6 +1,6 @@
-import { GameViewport, SoundEffects } from 'gameforgejs/core';
+import { GameViewport, SoundEffects, SceneDocument } from 'gameforgejs/core';
 import { GameObject } from 'gameforgejs/2d';
-import { Level3D, AmbientLight, HemisphereLight, DirectionalLight, Mesh, PrimitiveMesh, StandardMaterial,
+import { Level3D, SceneManifest3D, Mesh, PrimitiveMesh, StandardMaterial,
     Transform3D, Rigidbody3D, SphereCollider3D } from 'gameforgejs/3d';
 import { ScenarioWithIslands } from '../data/IslandScene.js';
 import { ObservatoryWorld } from '../entities/ObservatoryWorld.js';
@@ -16,10 +16,7 @@ export class ObservatoryLevel extends Level3D {
         this.rules = ScenarioWithIslands(this.context.assets.jsons.scenario, this.context.assets.jsons.islands); this.subtitle = ''; this.jumpQueued = false;
         this.sound = new SoundEffects(this.context.services.get('audio'),this.context.config.audio?.cues);
         this.scene.fog = this.rules.environment.fog;
-        this.scene.Add(new AmbientLight({intensity: 0.22}));
-        this.scene.Add(new HemisphereLight({skyColor: [0.6, 0.85, 1], groundColor: [0.3, 0.25, 0.35], intensity: 0.5}));
-        this.scene.Add(new DirectionalLight({direction: [-0.7, -1, -0.3], color: [1, 0.83, 0.6], intensity: 1.7,
-            castShadow: true, shadowDistance: 45, shadowMapSize: 1024}));
+        for (const light of new SceneDocument(this.context.assets.jsons.islands).Lights()) this.scene.Add(SceneManifest3D.CreateLight(light));
         this.world = this.AddEntity(new ObservatoryWorld(this));
         const mesh = new Mesh({geometry: PrimitiveMesh.Sphere(0.65, {widthSegments: 12, heightSegments: 8}),
             material: new StandardMaterial({albedoColor: '#ecae64', metallic: 0.45, roughness: 0.3}), transform: new Transform3D()});

@@ -38,15 +38,9 @@
       "type": "Area2D",
       "layer": "arena",
       "transform": {
-        "position": [
-          24,
-          150
-        ]
+        "position": [24, 150]
       },
-      "size": [
-        432,
-        436
-      ],
+      "size": [432, 436],
       "name": "Play area"
     },
     {
@@ -54,121 +48,81 @@
       "type": "Platform2D",
       "layer": "obstacles",
       "transform": {
-        "position": [
-          100,
-          264
-        ]
+        "position": [100, 264]
       },
-      "size": [
-        78,
-        42
-      ]
+      "size": [78, 42],
+      "scripts": ["src/entities/GardenObstacle.js"]
     },
     {
       "id": "obstacle_2",
       "type": "Platform2D",
       "layer": "obstacles",
       "transform": {
-        "position": [
-          306,
-          410
-        ]
+        "position": [306, 410]
       },
-      "size": [
-        70,
-        42
-      ]
+      "size": [70, 42],
+      "scripts": ["src/entities/GardenObstacle.js"]
     },
     {
       "id": "crystal_1",
       "type": "Prop2D",
       "layer": "crystals",
       "transform": {
-        "position": [
-          64,
-          186
-        ]
+        "position": [64, 186]
       },
-      "size": [
-        20,
-        26
-      ]
+      "size": [20, 26],
+      "scripts": ["src/entities/GardenCrystal.js"]
     },
     {
       "id": "crystal_2",
       "type": "Prop2D",
       "layer": "crystals",
       "transform": {
-        "position": [
-          390,
-          190
-        ]
+        "position": [390, 190]
       },
-      "size": [
-        20,
-        26
-      ]
+      "size": [20, 26],
+      "scripts": ["src/entities/GardenCrystal.js"]
     },
     {
       "id": "crystal_3",
       "type": "Prop2D",
       "layer": "crystals",
       "transform": {
-        "position": [
-          230,
-          244
-        ]
+        "position": [230, 244]
       },
-      "size": [
-        20,
-        26
-      ]
+      "size": [20, 26],
+      "scripts": ["src/entities/GardenCrystal.js"]
     },
     {
       "id": "crystal_4",
       "type": "Prop2D",
       "layer": "crystals",
       "transform": {
-        "position": [
-          62,
-          496
-        ]
+        "position": [62, 496]
       },
-      "size": [
-        20,
-        26
-      ]
+      "size": [20, 26],
+      "scripts": ["src/entities/GardenCrystal.js"]
     },
     {
       "id": "crystal_5",
       "type": "Prop2D",
       "layer": "crystals",
       "transform": {
-        "position": [
-          394,
-          510
-        ]
+        "position": [394, 510]
       },
-      "size": [
-        20,
-        26
-      ]
+      "size": [20, 26],
+      "scripts": ["src/entities/GardenCrystal.js"]
     },
     {
       "id": "player",
       "type": "Actor2D",
       "layer": "actors",
       "transform": {
-        "position": [
-          226,
-          346
-        ]
+        "position": [226, 346]
       },
-      "size": [
-        28,
-        28
-      ],
-      "name": "Player spawn"
+      "size": [28, 28],
+      "name": "Player spawn",
+      "scripts": ["src/entities/GardenPlayer.js", "src/components/GardenMotion.js"]
     }
   ]
 }

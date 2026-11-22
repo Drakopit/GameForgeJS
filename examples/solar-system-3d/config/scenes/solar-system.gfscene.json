@@ -1,0 +1,354 @@
+{
+  "format": "gameforgejs.scene",
+  "version": 1,
+  "dimension": "3d",
+  "id": "solar-system",
+  "name": "Sistema Solar",
+  "settings": {
+    "backgroundColor": [0.005, 0.007, 0.018, 1],
+    "camera": {
+      "fov": 58,
+      "near": 0.1,
+      "far": 1000,
+      "position": [0, 16, 31],
+      "target": [0, 0, 0]
+    },
+    "note": "Each planet starts on +X: its X position is the orbit radius, scale is its radius and rotation Z its axial tilt. Colours, clouds and atmosphere are the celestial Material (shader/Celestial.*.glsl). Orbit holds speed, spin and inclination. Orbit rings and stars are drawn in code."
+  },
+  "layers": [
+    {
+      "id": "lights",
+      "name": "Lights",
+      "type": "Light3D"
+    },
+    {
+      "id": "bodies",
+      "name": "Sun",
+      "type": "MeshInstance3D"
+    },
+    {
+      "id": "planets",
+      "name": "Planets",
+      "type": "MeshInstance3D"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "ambient",
+      "name": "Ambient Light",
+      "type": "Light3D",
+      "layer": "lights",
+      "transform": {
+        "position": [0, 0, 0]
+      },
+      "components": {
+        "Light": {
+          "type": "ambient",
+          "color": [0.2, 0.22, 0.35],
+          "intensity": 0.08
+        }
+      }
+    },
+    {
+      "id": "sunlight",
+      "name": "Sunlight",
+      "type": "Light3D",
+      "layer": "lights",
+      "parent": "sun",
+      "transform": {
+        "position": [0, 0, 0]
+      },
+      "components": {
+        "Light": {
+          "type": "point",
+          "color": [1, 0.78, 0.46],
+          "intensity": 9,
+          "range": 80
+        }
+      }
+    },
+    {
+      "id": "sun",
+      "name": "Sun",
+      "type": "MeshInstance3D",
+      "layer": "bodies",
+      "scripts": ["src/levels/SolarSystemLevel.js"],
+      "transform": {
+        "position": [0, 0, 0],
+        "rotation": [0, 0, 0],
+        "scale": [5.5, 5.5, 5.5]
+      },
+      "components": {
+        "Mesh": {
+          "type": "sphere",
+          "radius": 1,
+          "widthSegments": 48,
+          "heightSegments": 24
+        },
+        "Material": {
+          "type": "celestial",
+          "baseColor": [1, 0.58, 0.12],
+          "secondaryColor": [1, 0.95, 0.28],
+          "atmosphereColor": [1, 0.52, 0.08],
+          "emissiveColor": [1, 0.46, 0.08],
+          "emissiveStrength": 1.8,
+          "cloudStrength": 0.18,
+          "atmosphereStrength": 1.2,
+          "seed": 99
+        },
+        "Data": {
+          "castShadow": false,
+          "receiveShadow": false
+        }
+      }
+    },
+    {
+      "id": "mercurio",
+      "name": "Mercurio",
+      "type": "MeshInstance3D",
+      "layer": "planets",
+      "transform": {
+        "position": [4.5, 0, 0],
+        "rotation": [0, 0, 0],
+        "scale": [0.07, 0.07, 0.07]
+      },
+      "components": {
+        "Mesh": {
+          "type": "sphere",
+          "radius": 1,
+          "widthSegments": 40,
+          "heightSegments": 20
+        },
+        "Material": {
+          "type": "celestial",
+          "baseColor": [0.58, 0.54, 0.49],
+          "secondaryColor": [0.26, 0.24, 0.23],
+          "seed": 2
+        },
+        "Orbit": {
+          "speed": 1.24,
+          "rotation": 0.9,
+          "inclination": 0.12
+        }
+      }
+    },
+    {
+      "id": "venus",
+      "name": "Venus",
+      "type": "MeshInstance3D",
+      "layer": "planets",
+      "transform": {
+        "position": [8, 0, 0],
+        "rotation": [0, 0, 3.08],
+        "scale": [0.19, 0.19, 0.19]
+      },
+      "components": {
+        "Mesh": {
+          "type": "sphere",
+          "radius": 1,
+          "widthSegments": 40,
+          "heightSegments": 20
+        },
+        "Material": {
+          "type": "celestial",
+          "baseColor": [0.92, 0.68, 0.35],
+          "secondaryColor": [0.55, 0.36, 0.18],
+          "seed": 7
+        },
+        "Orbit": {
+          "speed": 0.48,
+          "rotation": 0.55,
+          "inclination": 0.06
+        }
+      }
+    },
+    {
+      "id": "terra",
+      "name": "Terra",
+      "type": "MeshInstance3D",
+      "layer": "planets",
+      "transform": {
+        "position": [12, 0, 0],
+        "rotation": [0, 0, 0.41],
+        "scale": [0.2, 0.2, 0.2]
+      },
+      "components": {
+        "Mesh": {
+          "type": "sphere",
+          "radius": 1,
+          "widthSegments": 40,
+          "heightSegments": 20
+        },
+        "Material": {
+          "type": "celestial",
+          "baseColor": [0.16, 0.38, 0.78],
+          "secondaryColor": [0.18, 0.58, 0.28],
+          "atmosphereColor": [0.35, 0.64, 1],
+          "cloudStrength": 0.46,
+          "seed": 11,
+          "albedoMap": "earth_diffuse"
+        },
+        "Orbit": {
+          "speed": 0.3,
+          "rotation": 1.6,
+          "inclination": 0
+        }
+      }
+    },
+    {
+      "id": "marte",
+      "name": "Marte",
+      "type": "MeshInstance3D",
+      "layer": "planets",
+      "transform": {
+        "position": [18, 0, 0],
+        "rotation": [0, 0, 0.43],
+        "scale": [0.11, 0.11, 0.11]
+      },
+      "components": {
+        "Mesh": {
+          "type": "sphere",
+          "radius": 1,
+          "widthSegments": 40,
+          "heightSegments": 20
+        },
+        "Material": {
+          "type": "celestial",
+          "baseColor": [0.74, 0.28, 0.16],
+          "secondaryColor": [0.38, 0.15, 0.09],
+          "atmosphereColor": [0.95, 0.35, 0.2],
+          "seed": 17
+        },
+        "Orbit": {
+          "speed": 0.16,
+          "rotation": 1.25,
+          "inclination": 0.03
+        }
+      }
+    },
+    {
+      "id": "jupiter",
+      "name": "Jupiter",
+      "type": "MeshInstance3D",
+      "layer": "planets",
+      "transform": {
+        "position": [42, 0, 0],
+        "rotation": [0, 0, 0.05],
+        "scale": [2.2, 2.2, 2.2]
+      },
+      "components": {
+        "Mesh": {
+          "type": "sphere",
+          "radius": 1,
+          "widthSegments": 40,
+          "heightSegments": 20
+        },
+        "Material": {
+          "type": "celestial",
+          "baseColor": [0.76, 0.55, 0.34],
+          "secondaryColor": [0.96, 0.84, 0.62],
+          "cloudStrength": 0.2,
+          "seed": 23
+        },
+        "Orbit": {
+          "speed": 0.025,
+          "rotation": 2.1,
+          "inclination": 0.02
+        }
+      }
+    },
+    {
+      "id": "saturno",
+      "name": "Saturno",
+      "type": "MeshInstance3D",
+      "layer": "planets",
+      "transform": {
+        "position": [75, 0, 0],
+        "rotation": [0, 0, 0.46],
+        "scale": [1.8, 1.8, 1.8]
+      },
+      "components": {
+        "Mesh": {
+          "type": "sphere",
+          "radius": 1,
+          "widthSegments": 40,
+          "heightSegments": 20
+        },
+        "Material": {
+          "type": "celestial",
+          "baseColor": [0.86, 0.72, 0.46],
+          "secondaryColor": [0.54, 0.42, 0.25],
+          "seed": 29
+        },
+        "Orbit": {
+          "speed": 0.01,
+          "rotation": 1.85,
+          "inclination": 0.04,
+          "ring": true
+        }
+      }
+    },
+    {
+      "id": "urano",
+      "name": "Urano",
+      "type": "MeshInstance3D",
+      "layer": "planets",
+      "transform": {
+        "position": [130, 0, 0],
+        "rotation": [0, 0, 1.7],
+        "scale": [0.8, 0.8, 0.8]
+      },
+      "components": {
+        "Mesh": {
+          "type": "sphere",
+          "radius": 1,
+          "widthSegments": 40,
+          "heightSegments": 20
+        },
+        "Material": {
+          "type": "celestial",
+          "baseColor": [0.46, 0.85, 0.88],
+          "secondaryColor": [0.2, 0.48, 0.58],
+          "atmosphereColor": [0.48, 0.95, 1],
+          "seed": 31
+        },
+        "Orbit": {
+          "speed": 0.003,
+          "rotation": 1.1,
+          "inclination": 0.01
+        }
+      }
+    },
+    {
+      "id": "netuno",
+      "name": "Netuno",
+      "type": "MeshInstance3D",
+      "layer": "planets",
+      "transform": {
+        "position": [190, 0, 0],
+        "rotation": [0, 0, 0.49],
+        "scale": [0.77, 0.77, 0.77]
+      },
+      "components": {
+        "Mesh": {
+          "type": "sphere",
+          "radius": 1,
+          "widthSegments": 40,
+          "heightSegments": 20
+        },
+        "Material": {
+          "type": "celestial",
+          "baseColor": [0.18, 0.28, 0.88],
+          "secondaryColor": [0.08, 0.12, 0.38],
+          "atmosphereColor": [0.22, 0.46, 1],
+          "seed": 37
+        },
+        "Orbit": {
+          "speed": 0.0015,
+          "rotation": 1,
+          "inclination": 0.03
+        }
+      }
+    }
+  ]
+}

@@ -46,14 +46,11 @@ goals, actors, and UI.
 `resources.json` declares the resources loaded by the game. Keep both
 references consistent when moving or renaming a scene.
 
-The 3D renderer example contains a scene document under
-`examples/renderer-3d/assets/Manifests/scenes/`. Sky Trail has a different,
-game-specific contract under
-`examples/sky-trail-3d/assets/Manifests/sky-trail/course.json`, describing
-platforms, coins, player spawn, and a goal.
-
-Do not treat a Sky Trail course as a generic `SceneManifest3D` scene.
-The game implements that schema and the editor must preserve it. Verify edits
+Every 3D example keeps its scene in a `gameforgejs.scene` file (`*.gfscene.json`):
+`renderer-3d/assets/Scenes/gallery.gfscene.json` (camera, fog, lights),
+`sky-trail-3d/assets/Scenes/sky-trail/*.gfscene.json` (platforms, coins, spawn, goal, lights)
+and the scenes of highland-tactics, aether-observatory, solar-system and toon-adventure.
+Games read them with `SceneDocument`; `SceneManifest3D.Create` also accepts a 3D scene. Verify edits
 by reloading the corresponding game after saving.
 
 See [2D editor integration](./world-editor-v4.md) for workspace ownership and

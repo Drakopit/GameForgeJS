@@ -6,10 +6,19 @@
   "resources": "config/resources.json",
   "sceneFormat": "gameforgejs.scene",
   "play": "index.html",
-  "editing": "code",
+  "editing": "scene",
   "scripts": [
     "main.js",
     "src"
   ],
-  "scenes": []
+  "scenes": [
+    {
+      "dimension": "3d",
+      "id": "courtyard",
+      "label": "Courtyard",
+      "path": "config/scenes/courtyard.gfscene.json",
+      "format": "gameforgejs.scene",
+      "resourceName": "courtyard"
+    }
+  ]
 }
