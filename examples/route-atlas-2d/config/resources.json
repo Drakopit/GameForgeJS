@@ -8,6 +8,10 @@
     {
       "name": "prompts",
       "path": "./prompts.json"
+    },
+    {
+      "name": "atlas",
+      "path": "./scenes/atlas.gfscene.json"
     }
   ]
 }

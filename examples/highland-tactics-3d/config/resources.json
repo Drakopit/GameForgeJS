@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "jsons": [
     {
-      "name": "battle",
-      "path": "./battle.json"
+      "name": "battlefield",
+      "path": "./scenes/battlefield.gfscene.json"
     },
     {
       "name": "prompts",

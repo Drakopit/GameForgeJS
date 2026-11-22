@@ -7,5 +7,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="../../examples/online-sandbox-2d/config/world.rules.json" Link="config/world.rules.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="../../examples/online-sandbox-2d/config/scenes/world.gfscene.json" Link="config/scenes/world.gfscene.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

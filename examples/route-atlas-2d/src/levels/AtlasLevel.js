@@ -1,5 +1,6 @@
 import { Level, EventEmitter, GameViewport, SoundEffects } from 'gameforgejs/core';
 import { Screen, GameObject } from 'gameforgejs/2d';
+import { ScenarioWithAtlas } from '../data/AtlasScene.js';
 import { RouteProgress } from '../data/RouteProgress.js';
 import { RouteNavigator } from '../components/RouteNavigator.js';
 import { StageTrial } from '../components/StageTrial.js';
@@ -8,7 +9,7 @@ import { AtlasHUD } from '../ui/AtlasHUD.js';
 
 export class AtlasLevel extends Level {
     OnStart(context = this.context) {
-        this.caption = 'Route Atlas / Interactive World Map'; this.rules = context.assets.jsons.scenario;
+        this.caption = 'Route Atlas / Interactive World Map'; this.rules = ScenarioWithAtlas(context.assets.jsons.scenario, context.assets.jsons.atlas);
         this.screen = new Screen('atlas', 960, 640, {config: context.config});
         this.progress = new RouteProgress(this.rules); this.events = new EventEmitter(); this.mode = 'map'; this.message = 'Enter Tide Harbor to open the first route.';
         this.navigator = new RouteNavigator(this); this.trial = new StageTrial(this);

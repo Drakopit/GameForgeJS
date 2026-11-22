@@ -1,0 +1,109 @@
+{
+  "format": "gameforgejs.scene",
+  "version": 1,
+  "dimension": "2d",
+  "id": "atlas",
+  "name": "Route Atlas",
+  "settings": {
+    "world": {
+      "width": 960,
+      "height": 640
+    },
+    "note": "Each location is the centre of its marker; links are the routes between locations."
+  },
+  "layers": [
+    {
+      "id": "locations",
+      "name": "Locations",
+      "type": "Node2D"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "harbor",
+      "name": "Tide Harbor",
+      "type": "Node2D",
+      "layer": "locations",
+      "transform": {
+        "position": [104, 414]
+      },
+      "size": [32, 32],
+      "links": ["grove"]
+    },
+    {
+      "id": "grove",
+      "name": "Moss Grove",
+      "type": "Node2D",
+      "layer": "locations",
+      "transform": {
+        "position": [284, 364]
+      },
+      "size": [32, 32],
+      "links": ["ridge", "marsh"]
+    },
+    {
+      "id": "ridge",
+      "name": "Amber Ridge",
+      "type": "Node2D",
+      "layer": "locations",
+      "transform": {
+        "position": [434, 204]
+      },
+      "size": [32, 32],
+      "links": ["gate"]
+    },
+    {
+      "id": "marsh",
+      "name": "Moon Marsh",
+      "type": "Node2D",
+      "layer": "locations",
+      "transform": {
+        "position": [454, 464]
+      },
+      "size": [32, 32],
+      "links": ["gate"]
+    },
+    {
+      "id": "gate",
+      "name": "Twin Gate",
+      "type": "Node2D",
+      "layer": "locations",
+      "transform": {
+        "position": [624, 324]
+      },
+      "size": [32, 32],
+      "links": ["spire", "cove"]
+    },
+    {
+      "id": "spire",
+      "name": "Wind Spire",
+      "type": "Node2D",
+      "layer": "locations",
+      "transform": {
+        "position": [734, 154]
+      },
+      "size": [32, 32],
+      "links": ["summit"]
+    },
+    {
+      "id": "summit",
+      "name": "Star Summit",
+      "type": "Node2D",
+      "layer": "locations",
+      "transform": {
+        "position": [844, 244]
+      },
+      "size": [32, 32]
+    },
+    {
+      "id": "cove",
+      "name": "Secret Cove",
+      "type": "Node2D",
+      "layer": "locations",
+      "transform": {
+        "position": [794, 484]
+      },
+      "size": [32, 32]
+    }
+  ]
+}

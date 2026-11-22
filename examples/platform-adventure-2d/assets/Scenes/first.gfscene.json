@@ -1,0 +1,986 @@
+{
+  "format": "gameforgejs.scene",
+  "version": 1,
+  "dimension": "2d",
+  "id": "advanced_first",
+  "name": "Snow Pass",
+  "settings": {
+    "screen": null,
+    "world": {
+      "width": 3300,
+      "height": 640
+    },
+    "grid": null
+  },
+  "layers": [
+    {
+      "id": "stage.parallax.layers",
+      "name": "Parallax",
+      "type": "ParallaxLayer2D",
+      "zIndex": -100,
+      "source": {
+        "document": "stage",
+        "path": "parallax.layers"
+      }
+    },
+    {
+      "id": "stage.platforms",
+      "name": "Platforms",
+      "type": "Platform2D",
+      "zIndex": 20,
+      "source": {
+        "document": "stage",
+        "path": "platforms"
+      }
+    },
+    {
+      "id": "stage.objects",
+      "name": "Objects",
+      "type": "Prop2D",
+      "zIndex": 30,
+      "source": {
+        "document": "stage",
+        "path": "objects"
+      }
+    },
+    {
+      "id": "enemies.enemies",
+      "name": "Enemies",
+      "type": "Actor2D",
+      "zIndex": 50,
+      "source": {
+        "document": "enemies",
+        "path": "enemies"
+      }
+    }
+  ],
+  "nodes": [
+    {
+      "id": "stage.parallax.layers#0",
+      "name": "sky",
+      "type": "ParallaxLayer2D",
+      "layer": "stage.parallax.layers",
+      "transform": {
+        "position": [0, 0],
+        "rotation": 0,
+        "scale": [1, 1]
+      },
+      "components": {
+        "Sprite": {
+          "sprite": "snow_sky"
+        },
+        "Parallax": {
+          "scrollRatioX": 0,
+          "scrollRatioY": 0,
+          "repeatX": true
+        }
+      },
+      "source": {
+        "document": "stage",
+        "path": "parallax.layers",
+        "index": 0,
+        "keys": ["id", "sprite", "x", "y", "width", "height", "scrollRatioX", "scrollRatioY", "repeatX"]
+      },
+      "size": [640, 480],
+      "sourceId": "sky"
+    },
+    {
+      "id": "stage.parallax.layers#1",
+      "name": "mountain_far",
+      "type": "ParallaxLayer2D",
+      "layer": "stage.parallax.layers",
+      "transform": {
+        "position": [0, 92],
+        "rotation": 0,
+        "scale": [1, 1]
+      },
+      "components": {
+        "Sprite": {
+          "sprite": "snow_mountain_02"
+        },
+        "Parallax": {
+          "scrollRatioX": 0.06,
+          "scrollRatioY": 0.015,
+          "repeatX": true
+        }
+      },
+      "source": {
+        "document": "stage",
+        "path": "parallax.layers",
+        "index": 1,
+        "keys": ["id", "sprite", "x", "y", "width", "height", "scrollRatioX", "scrollRatioY", "repeatX"]
+      },
+      "size": [374, 158],
+      "sourceId": "mountain_far"
+    },
+    {
+      "id": "stage.parallax.layers#2",
+      "name": "mountain_near",
+      "type": "ParallaxLayer2D",
+      "layer": "stage.parallax.layers",
+      "transform": {
+        "position": [0, 150],
+        "rotation": 0,
+        "scale": [1, 1]
+      },
+      "components": {
+        "Sprite": {
+          "sprite": "snow_mountain_01"
+        },
+        "Parallax": {
+          "scrollRatioX": 0.16,
+          "scrollRatioY": 0.035,
+          "repeatX": true
+        }
+      },
+      "source": {
+        "document": "stage",
+        "path": "parallax.layers",
+        "index": 2,
+        "keys": ["id", "sprite", "x", "y", "width", "height", "scrollRatioX", "scrollRatioY", "repeatX"]
+      },
+      "size": [638, 176],
+      "sourceId": "mountain_near"
+    },
+    {
+      "id": "stage.parallax.layers#3",
+      "name": "snow_far",
+      "type": "ParallaxLayer2D",
+      "layer": "stage.parallax.layers",
+      "transform": {
+        "position": [0, 300],
+        "rotation": 0,
+        "scale": [1, 1]
+      },
+      "components": {
+        "Sprite": {
+          "sprite": "snow_03"
+        },
+        "Parallax": {
+          "scrollRatioX": 0.3,
+          "scrollRatioY": 0.055,
+          "repeatX": true
+        }
+      },
+      "source": {
+        "document": "stage",
+        "path": "parallax.layers",
+        "index": 3,
+        "keys": ["id", "sprite", "x", "y", "width", "height", "scrollRatioX", "scrollRatioY", "repeatX"]
+      },
+      "size": [640, 88],
+      "sourceId": "snow_far"
+    },
+    {
+      "id": "stage.parallax.layers#4",
+      "name": "snow_mid",
+      "type": "ParallaxLayer2D",
+      "layer": "stage.parallax.layers",
+      "transform": {
+        "position": [0, 352],
+        "rotation": 0,
+        "scale": [1, 1]
+      },
+      "components": {
+        "Sprite": {
+          "sprite": "snow_02"
+        },
+        "Parallax": {
+          "scrollRatioX": 0.45,
+          "scrollRatioY": 0.075,
+          "repeatX": true
+        }
+      },
+      "source": {
+        "document": "stage",
+        "path": "parallax.layers",
+        "index": 4,
+        "keys": ["id", "sprite", "x", "y", "width", "height", "scrollRatioX", "scrollRatioY", "repeatX"]
+      },
+      "size": [640, 92],
+      "sourceId": "snow_mid"
+    },
+    {
+      "id": "stage.parallax.layers#5",
+      "name": "snow_near",
+      "type": "ParallaxLayer2D",
+      "layer": "stage.parallax.layers",
+      "transform": {
+        "position": [0, 414],
+        "rotation": 0,
+        "scale": [1, 1]
+      },
+      "components": {
+        "Sprite": {
+          "sprite": "snow_01"
+        },
+        "Parallax": {
+          "scrollRatioX": 0.68,
+          "scrollRatioY": 0.1,
+          "repeatX": true
+        }
+      },
+      "source": {
+        "document": "stage",
+        "path": "parallax.layers",
+        "index": 5,
+        "keys": ["id", "sprite", "x", "y", "width", "height", "scrollRatioX", "scrollRatioY", "repeatX"]
+      },
+      "size": [640, 78],
+      "sourceId": "snow_near"
+    },
+    {
+      "id": "stage.platforms#0",
+      "name": "ground_start",
+      "type": "Platform2D",
+      "layer": "stage.platforms",
+      "transform": {
+        "position": [0, 500],
+        "rotation": 0,
+        "scale": [1, 1]
+      },
+      "components": {
+        "Collider": {
+          "solid": true,
+          "material": "ground"
+        },
+        "Terrain": {
+          "terrain": "snow_ground"
+        }
+      },
+      "source": {
+        "document": "stage",
+        "path": "platforms",
+        "index": 0,
+        "keys": ["id", "x", "y", "width", "height", "solid", "visible", "material", "terrain"]
+      },
+      "size": [720, 140],
+      "visible": true,
+      "sourceId": "ground_start"
+    },
+    {
+      "id": "stage.platforms#1",
+      "name": "ground_valley",
+      "type": "Platform2D",
+      "layer": "stage.platforms",
+      "transform": {
+        "position": [880, 520],
+        "rotation": 0,
+        "scale": [1, 1]
+      },
+      "components": {
+        "Collider": {
+          "solid": true,
+          "material": "ground"
+        },
+        "Terrain": {
+          "terrain": "snow_ground"
+        }
+      },
+      "source": {
+        "document": "stage",
+        "path": "platforms",
+        "index": 1,
+        "keys": ["id", "x", "y", "width", "height", "solid", "visible", "material", "terrain"]
+      },
+      "size": [540, 120],
+      "visible": true,
+      "sourceId": "ground_valley"
+    },
+    {
+      "id": "stage.platforms#2",
+      "name": "ground_pass",
+      "type": "Platform2D",
+      "layer": "stage.platforms",
+      "transform": {
+        "position": [1560, 500],
+        "rotation": 0,
+        "scale": [1, 1]
+      },
+      "components": {
+        "Collider": {
+          "solid": true,
+          "material": "ground"
+        },
+        "Terrain": {
+          "terrain": "snow_ground"
+        }
+      },
+      "source": {
+        "document": "stage",
+        "path": "platforms",
+        "index": 2,
+        "keys": ["id", "x", "y", "width", "height", "solid", "visible", "material", "terrain"]
+      },
+      "size": [610, 140],
+      "visible": true,
+      "sourceId": "ground_pass"
+    },
+    {
+      "id": "stage.platforms#3",
+      "name": "ground_ridge",
+      "type": "Platform2D",
+      "layer": "stage.platforms",
+      "transform": {
+        "position": [2320, 485],
+        "rotation": 0,
+        "scale": [1, 1]
+      },
+      "components": {
+        "Collider": {
+          "solid": true,
+          "material": "ground"
+        },
+        "Terrain": {
+          "terrain": "snow_ground"
+        }
+      },
+      "source": {
+        "document": "stage",
+        "path": "platforms",
+        "index": 3,
+        "keys": ["id", "x", "y", "width", "height", "solid", "visible", "material", "terrain"]
+      },
+      "size": [490, 155],
+      "visible": true,
+      "sourceId": "ground_ridge"
+    },
+    {
+      "id": "stage.platforms#4",
+      "name": "ground_goal",
+      "type": "Platform2D",
+      "layer": "stage.platforms",
+      "transform": {
+        "position": [2960, 500],
+        "rotation": 0,
+        "scale": [1, 1]
+      },
+      "components": {
+        "Collider": {
+          "solid": true,
+          "material": "ground"
+        },
+        "Terrain": {
+          "terrain": "snow_ground"
+        }
+      },
+      "source": {
+        "document": "stage",
+        "path": "platforms",
+        "index": 4,
+        "keys": ["id", "x", "y", "width", "height", "solid", "visible", "material", "terrain"]
+      },
+      "size": [340, 140],
+      "visible": true,
+      "sourceId": "ground_goal"
+    },
+    {
+      "id": "stage.platforms#5",
+      "name": "floating_intro",
+      "type": "Platform2D",
+      "layer": "stage.platforms",
+      "transform": {
+        "position": [530, 405],
+        "rotation": 0,
+        "scale": [1, 1]
+      },
+      "components": {
+        "Collider": {
+          "solid": true,
+          "material": "ice"
+        },
+        "Terrain": {
+          "terrain": "snow_platform"
+        }
+      },
+      "source": {
+        "document": "stage",
+        "path": "platforms",
+        "index": 5,
+        "keys": ["id", "x", "y", "width", "height", "solid", "visible", "material", "terrain"]
+      },
+      "size": [150, 20],
+      "visible": true,
+      "sourceId": "floating_intro"
+    },
+    {
+      "id": "stage.platforms#6",
+      "name": "floating_valley",
+      "type": "Platform2D",
+      "layer": "stage.platforms",
+      "transform": {
+        "position": [1225, 392],
+        "rotation": 0,
+        "scale": [1, 1]
+      },
+      "components": {
+        "Collider": {
+          "solid": true,
+          "material": "ice"
+        },
+        "Terrain": {
+          "terrain": "snow_platform"
+        }
+      },
+      "source": {
+        "document": "stage",
+        "path": "platforms",
+        "index": 6,
+        "keys": ["id", "x", "y", "width", "height", "solid", "visible", "material", "terrain"]
+      },
+      "size": [160, 20],
+      "visible": true,
+      "sourceId": "floating_valley"
+    },
+    {
+      "id": "stage.platforms#7",
+      "name": "floating_pass",
+      "type": "Platform2D",
+      "layer": "stage.platforms",
+      "transform": {
+        "position": [1985, 382],
+        "rotation": 0,
+        "scale": [1, 1]
+      },
+      "components": {
+        "Collider": {
+          "solid": true,
+          "material": "ice"
+        },
+        "Terrain": {
+          "terrain": "snow_platform"
+        }
+      },
+      "source": {
+        "document": "stage",
+        "path": "platforms",
+        "index": 7,
+        "keys": ["id", "x", "y", "width", "height", "solid", "visible", "material", "terrain"]
+      },
+      "size": [160, 20],
+      "visible": true,
+      "sourceId": "floating_pass"
+    },
+    {
+      "id": "stage.platforms#8",
+      "name": "floating_ridge",
+      "type": "Platform2D",
+      "layer": "stage.platforms",
+      "transform": {
+        "position": [2650, 397],
+        "rotation": 0,
+        "scale": [1, 1]
+      },
+      "components": {
+        "Collider": {
+          "solid": true,
+          "material": "ice"
+        },
+        "Terrain": {
+          "terrain": "snow_platform"
+        }
+      },
+      "source": {
+        "document": "stage",
+        "path": "platforms",
+        "index": 8,
+        "keys": ["id", "x", "y", "width", "height", "solid", "visible", "material", "terrain"]
+      },
+      "size": [145, 20],
+      "visible": true,
+      "sourceId": "floating_ridge"
+    },
+    {
+      "id": "stage.objects#0",
+      "name": "pine_large_01",
+      "type": "Prop2D",
+      "layer": "stage.objects",
+      "transform": {
+        "position": [210, 392],
+        "rotation": 0,
+        "scale": [1, 1]
+      },
+      "components": {
+        "Sprite": {
+          "spriteRef": "pine_large"
+        },
+        "Collider": {
+          "solid": false
+        }
+      },
+      "source": {
+        "document": "stage",
+        "path": "objects",
+        "index": 0,
+        "keys": ["id", "spriteRef", "x", "y", "width", "height", "visible", "solid", "zIndex"]
+      },
+      "size": [88, 108],
+      "zIndex": 25,
+      "visible": true,
+      "sourceId": "pine_large_01"
+    },
+    {
+      "id": "stage.objects#1",
+      "name": "pine_medium_01",
+      "type": "Prop2D",
+      "layer": "stage.objects",
+      "transform": {
+        "position": [435, 415],
+        "rotation": 0,
+        "scale": [1, 1]
+      },
+      "components": {
+        "Sprite": {
+          "spriteRef": "pine_medium"
+        },
+        "Collider": {
+          "solid": false
+        }
+      },
+      "source": {
+        "document": "stage",
+        "path": "objects",
+        "index": 1,
+        "keys": ["id", "spriteRef", "x", "y", "width", "height", "visible", "solid", "zIndex"]
+      },
+      "size": [68, 84],
+      "zIndex": 25,
+      "visible": true,
+      "sourceId": "pine_medium_01"
+    },
+    {
+      "id": "stage.objects#2",
+      "name": "snow_bush_01",
+      "type": "Prop2D",
+      "layer": "stage.objects",
+      "transform": {
+        "position": [1040, 496],
+        "rotation": 0,
+        "scale": [1, 1]
+      },
+      "components": {
+        "Sprite": {
+          "spriteRef": "snow_bush"
+        },
+        "Collider": {
+          "solid": false
+        }
+      },
+      "source": {
+        "document": "stage",
+        "path": "objects",
+        "index": 2,
+        "keys": ["id", "spriteRef", "x", "y", "width", "height", "visible", "solid", "zIndex"]
+      },
+      "size": [88, 24],
+      "zIndex": 25,
+      "visible": true,
+      "sourceId": "snow_bush_01"
+    },
+    {
+      "id": "stage.objects#3",
+      "name": "snowman_01",
+      "type": "Prop2D",
+      "layer": "stage.objects",
+      "transform": {
+        "position": [1320, 472],
+        "rotation": 0,
+        "scale": [1, 1]
+      },
+      "components": {
+        "Sprite": {
+          "spriteRef": "snowman"
+        },
+        "Collider": {
+          "solid": false
+        }
+      },
+      "source": {
+        "document": "stage",
+        "path": "objects",
+        "index": 3,
+        "keys": ["id", "spriteRef", "x", "y", "width", "height", "visible", "solid", "zIndex"]
+      },
+      "size": [46, 48],
+      "zIndex": 25,
+      "visible": true,
+      "sourceId": "snowman_01"
+    },
+    {
+      "id": "stage.objects#4",
+      "name": "igloo_01",
+      "type": "Prop2D",
+      "layer": "stage.objects",
+      "transform": {
+        "position": [1650, 420],
+        "rotation": 0,
+        "scale": [1, 1]
+      },
+      "components": {
+        "Sprite": {
+          "spriteRef": "igloo"
+        },
+        "Collider": {
+          "solid": false
+        }
+      },
+      "source": {
+        "document": "stage",
+        "path": "objects",
+        "index": 4,
+        "keys": ["id", "spriteRef", "x", "y", "width", "height", "visible", "solid", "zIndex"]
+      },
+      "size": [102, 80],
+      "zIndex": 25,
+      "visible": true,
+      "sourceId": "igloo_01"
+    },
+    {
+      "id": "stage.objects#5",
+      "name": "pine_large_02",
+      "type": "Prop2D",
+      "layer": "stage.objects",
+      "transform": {
+        "position": [2030, 375],
+        "rotation": 0,
+        "scale": [1, 1]
+      },
+      "components": {
+        "Sprite": {
+          "spriteRef": "pine_large"
+        },
+        "Collider": {
+          "solid": false
+        }
+      },
+      "source": {
+        "document": "stage",
+        "path": "objects",
+        "index": 5,
+        "keys": ["id", "spriteRef", "x", "y", "width", "height", "visible", "solid", "zIndex"]
+      },
+      "size": [100, 123],
+      "zIndex": 24,
+      "visible": true,
+      "sourceId": "pine_large_02"
+    },
+    {
+      "id": "stage.objects#6",
+      "name": "snow_bush_02",
+      "type": "Prop2D",
+      "layer": "stage.objects",
+      "transform": {
+        "position": [2480, 461],
+        "rotation": 0,
+        "scale": [1, 1]
+      },
+      "components": {
+        "Sprite": {
+          "spriteRef": "snow_bush"
+        },
+        "Collider": {
+          "solid": false
+        }
+      },
+      "source": {
+        "document": "stage",
+        "path": "objects",
+        "index": 6,
+        "keys": ["id", "spriteRef", "x", "y", "width", "height", "visible", "solid", "zIndex"]
+      },
+      "size": [88, 24],
+      "zIndex": 25,
+      "visible": true,
+      "sourceId": "snow_bush_02"
+    },
+    {
+      "id": "stage.objects#7",
+      "name": "pine_medium_02",
+      "type": "Prop2D",
+      "layer": "stage.objects",
+      "transform": {
+        "position": [3000, 416],
+        "rotation": 0,
+        "scale": [1, 1]
+      },
+      "components": {
+        "Sprite": {
+          "spriteRef": "pine_medium"
+        },
+        "Collider": {
+          "solid": false
+        }
+      },
+      "source": {
+        "document": "stage",
+        "path": "objects",
+        "index": 7,
+        "keys": ["id", "spriteRef", "x", "y", "width", "height", "visible", "solid", "zIndex"]
+      },
+      "size": [68, 84],
+      "zIndex": 25,
+      "visible": true,
+      "sourceId": "pine_medium_02"
+    },
+    {
+      "id": "stage.objects#8",
+      "name": "blue_flag_01",
+      "type": "Prop2D",
+      "layer": "stage.objects",
+      "transform": {
+        "position": [3165, 436],
+        "rotation": 0,
+        "scale": [1, 1]
+      },
+      "components": {
+        "Sprite": {
+          "animationRef": "blue_flag"
+        },
+        "Collider": {
+          "solid": false
+        }
+      },
+      "source": {
+        "document": "stage",
+        "path": "objects",
+        "index": 8,
+        "keys": ["id", "animationRef", "x", "y", "width", "height", "visible", "solid", "zIndex"]
+      },
+      "size": [44, 64],
+      "zIndex": 35,
+      "visible": true,
+      "sourceId": "blue_flag_01"
+    },
+    {
+      "id": "stage.objects#9",
+      "name": "blue_flag_10",
+      "type": "Prop2D",
+      "layer": "stage.objects",
+      "transform": {
+        "position": [1175, 440],
+        "rotation": 0,
+        "scale": [1, 1]
+      },
+      "components": {
+        "Collider": {
+          "solid": false
+        },
+        "Sprite": {
+          "spriteRef": "igloo"
+        }
+      },
+      "source": {
+        "document": "stage",
+        "path": "objects",
+        "index": 9,
+        "keys": ["id", "x", "y", "width", "height", "visible", "solid", "zIndex", "spriteRef"]
+      },
+      "size": [102, 80],
+      "zIndex": 25,
+      "visible": true,
+      "sourceId": "blue_flag_10"
+    },
+    {
+      "id": "enemies.enemies#0",
+      "name": "kobold_01",
+      "type": "Actor2D",
+      "layer": "enemies.enemies",
+      "transform": {
+        "position": [555, 335],
+        "rotation": 0,
+        "scale": [1, 1]
+      },
+      "components": {},
+      "source": {
+        "document": "enemies",
+        "path": "enemies",
+        "index": 0,
+        "keys": ["id", "x", "y"]
+      },
+      "prefab": "enemies.enemyDefaults",
+      "sourceId": "kobold_01"
+    },
+    {
+      "id": "enemies.enemies#1",
+      "name": "kobold_02",
+      "type": "Actor2D",
+      "layer": "enemies.enemies",
+      "transform": {
+        "position": [1260, 325],
+        "rotation": 0,
+        "scale": [1, 1]
+      },
+      "components": {},
+      "source": {
+        "document": "enemies",
+        "path": "enemies",
+        "index": 1,
+        "keys": ["id", "x", "y"]
+      },
+      "prefab": "enemies.enemyDefaults",
+      "sourceId": "kobold_02"
+    },
+    {
+      "id": "enemies.enemies#2",
+      "name": "kobold_03",
+      "type": "Actor2D",
+      "layer": "enemies.enemies",
+      "transform": {
+        "position": [1865, 435],
+        "rotation": 0,
+        "scale": [1, 1]
+      },
+      "components": {},
+      "source": {
+        "document": "enemies",
+        "path": "enemies",
+        "index": 2,
+        "keys": ["id", "x", "y"]
+      },
+      "prefab": "enemies.enemyDefaults",
+      "sourceId": "kobold_03"
+    },
+    {
+      "id": "enemies.enemies#3",
+      "name": "kobold_04",
+      "type": "Actor2D",
+      "layer": "enemies.enemies",
+      "transform": {
+        "position": [2685, 330],
+        "rotation": 0,
+        "scale": [1, 1]
+      },
+      "components": {},
+      "source": {
+        "document": "enemies",
+        "path": "enemies",
+        "index": 3,
+        "keys": ["id", "x", "y"]
+      },
+      "prefab": "enemies.enemyDefaults",
+      "sourceId": "kobold_04"
+    },
+    {
+      "id": "enemies.enemies#4",
+      "name": "kobold_05",
+      "type": "Actor2D",
+      "layer": "enemies.enemies",
+      "transform": {
+        "position": [3210, 430],
+        "rotation": 0,
+        "scale": [1, 1]
+      },
+      "components": {},
+      "source": {
+        "document": "enemies",
+        "path": "enemies",
+        "index": 4,
+        "keys": ["id", "x", "y"]
+      },
+      "prefab": "enemies.enemyDefaults",
+      "sourceId": "kobold_05"
+    }
+  ],
+  "prefabs": {
+    "enemies.enemyDefaults": {
+      "asset": "enemy_idle",
+      "runAsset": "enemy_run",
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "width": 148,
+        "height": 96,
+        "frames": 6
+      },
+      "runFrame": {
+        "x": 0,
+        "y": 0,
+        "width": 148,
+        "height": 96,
+        "frames": 8
+      },
+      "scale": 1,
+      "bodySize": {
+        "width": 64,
+        "height": 64
+      },
+      "movement": {
+        "speed": 76,
+        "gravity": 900
+      },
+      "ai": {
+        "aggroRange": 155,
+        "stopDistance": 62,
+        "attackRange": 84,
+        "attackVerticalRange": 52,
+        "attackCooldown": 1.25
+      },
+      "stats": {
+        "hp": 24,
+        "attack": 7,
+        "defense": 0
+      },
+      "combat": {
+        "attack": {
+          "enabled": true,
+          "hitStop": 0.045,
+          "hitStun": 0.16,
+          "knockback": {
+            "x": 210,
+            "y": -230
+          }
+        },
+        "hitStunFallback": 0.18,
+        "knockbackDrag": 0.9,
+        "staggerKnockback": {
+          "x": 340,
+          "y": -320
+        }
+      },
+      "render": {
+        "drawOffsetX": 22
+      },
+      "healthBar": {
+        "width": 40,
+        "height": 6,
+        "offsetY": -15
+      }
+    }
+  },
+  "extras": {
+    "core": {
+      "world": {
+        "width": 3300,
+        "height": 640
+      },
+      "victory": {
+        "x": 3150
+      },
+      "audio": {
+        "bgmVolume": 0.4
+      }
+    },
+    "stage": {
+      "parallax": {
+        "layers": []
+      },
+      "materials": [
+        {
+          "ground": 1
+        },
+        {
+          "steel": 2
+        },
+        {
+          "ice": 3
+        }
+      ],
+      "platforms": [],
+      "objects": []
+    },
+    "enemies": {
+      "enemyDefaults": "$prefab",
+      "enemies": []
+    }
+  }
+}

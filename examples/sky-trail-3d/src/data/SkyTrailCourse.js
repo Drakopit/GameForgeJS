@@ -1,12 +1,14 @@
 import { MovementDefaults } from './TrailSettings.js';
 import { AssetManager } from "gameforgejs/core";
-import { Vector3D } from "gameforgejs/core";
+import { Vector3D, SceneDocument } from "gameforgejs/core";
+import { CourseDocumentFromScene } from './CourseScene.js';
 
 const COURSE_ASSET_NAME = "sky_trail_course";
 let selectedCourseAssetName = COURSE_ASSET_NAME;
 
 export function ListSkyTrailCourses() {
     return Object.entries(AssetManager.instance.jsons ?? {})
+        .map(([name, document]) => [name, courseDocument(name, document)])
         .filter(([name, document]) => isCourseAsset(name, document))
         .map(([name, document]) => ({
             name,
@@ -29,7 +31,7 @@ export function SelectSkyTrailCourse(assetName = COURSE_ASSET_NAME) {
 }
 
 export function LoadSkyTrailCourse(assetName = selectedCourseAssetName) {
-    const document = AssetManager.instance.GetJson(assetName);
+    const document = courseDocument(assetName, AssetManager.instance.GetJson(assetName));
     if (!document) {
         throw new Error(`SkyTrailCourse: manifest '${assetName}' nao foi carregado.`);
     }
@@ -99,6 +101,12 @@ export function LoadSkyTrailCourse(assetName = selectedCourseAssetName) {
             },
         },
     };
+}
+
+/** Course scenes (gameforgejs.scene) are converted; legacy course JSON is used as is. */
+function courseDocument(name, document) {
+    const isCourseName = name === COURSE_ASSET_NAME || name.startsWith(`${COURSE_ASSET_NAME}_`);
+    return isCourseName && SceneDocument.IsScene(document) ? CourseDocumentFromScene(document) : document;
 }
 
 function isCourseAsset(name, document) {

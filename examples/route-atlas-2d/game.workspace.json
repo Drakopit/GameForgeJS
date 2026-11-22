@@ -6,14 +6,14 @@
   "resources": "config/resources.json",
   "sceneFormat": "gameforgejs.scene",
   "play": "index.html",
-  "editing": "adapter",
+  "editing": "scene",
   "scenes": [
     {
       "dimension": "2d",
-      "id": "route",
-      "label": "Route map",
-      "adapter": "route-atlas",
-      "source": "config/scenario.json"
+      "id": "atlas",
+      "label": "Route Atlas",
+      "format": "gameforgejs.scene",
+      "source": "config/scenes/atlas.gfscene.json"
     }
   ]
 }

@@ -6,14 +6,14 @@
   "resources": "config/resources.json",
   "sceneFormat": "gameforgejs.scene",
   "play": "index.html",
-  "editing": "adapter",
+  "editing": "scene",
   "scenes": [
     {
       "dimension": "3d",
       "id": "battlefield",
-      "label": "Tactics battlefield",
-      "path": "config/battle.json",
-      "format": "adapter:highland-battle"
+      "label": "Highland battlefield",
+      "path": "config/scenes/battlefield.gfscene.json",
+      "format": "gameforgejs.scene"
     }
   ]
 }

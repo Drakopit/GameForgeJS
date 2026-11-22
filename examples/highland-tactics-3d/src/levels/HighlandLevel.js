@@ -1,6 +1,7 @@
 import { ActionManager, Input, Touch, GameViewport, MathExt, SoundEffects } from 'gameforgejs/core';
 import { GameObject } from 'gameforgejs/2d';
 import { Level3D, OrthographicCamera, HeightGrid, AmbientLight, HemisphereLight, DirectionalLight } from 'gameforgejs/3d';
+import { BattleFromScene } from '../data/BattleScene.js';
 import { TacticalPawn } from '../entities/TacticalPawn.js';
 import { HighlandEnvironment } from '../entities/HighlandEnvironment.js';
 import { TerrainView } from '../rendering/TerrainView.js';
@@ -11,7 +12,7 @@ import { TacticalHUD } from '../ui/TacticalHUD.js';
 export class HighlandLevel extends Level3D {
     constructor() { super({ width: 1100, height: 760, usePhysics: false, clearColor: [0.09, 0.16, 0.2, 1] }); this.caption = 'Highland Tactics 3D'; }
     BuildScene() {
-        const data = this.context.assets.jsons.battle;
+        const data = BattleFromScene(this.context.assets.jsons.battlefield);
         this.grid = new HeightGrid(data.heights);
         this.scene.fog = { color: [0.13, 0.23, 0.26], near: 25, far: 65 };
         this.camera = new OrthographicCamera({ position: [16, 14, 16], target: [0, 0.7, 0], viewHeight: 13, far: 100 });

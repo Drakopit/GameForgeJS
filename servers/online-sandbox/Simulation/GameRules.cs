@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace GameForge.Online;
 
@@ -24,6 +25,15 @@ public sealed class GameRules
     public JsonElement Platforms { get; init; }
     public JsonElement Crystals { get; init; }
     public double Move(string name) => Movement.GetProperty(name).GetDouble();
-    public static GameRules Load(string path) => JsonSerializer.Deserialize<GameRules>(File.ReadAllText(path), Wire.Json)
-        ?? throw new InvalidDataException("World rules are missing.");
+    /// <summary>
+    /// Loads world.rules.json plus the world layout scene (by default
+    /// <c>scenes/world.gfscene.json</c> next to the rules file).
+    /// </summary>
+    public static GameRules Load(string path, string? scenePath = null)
+    {
+        var rules = JsonNode.Parse(File.ReadAllText(path))?.AsObject() ?? throw new InvalidDataException("World rules are missing.");
+        scenePath ??= Path.Combine(Path.GetDirectoryName(path) ?? ".", "scenes", "world.gfscene.json");
+        if (File.Exists(scenePath)) WorldScene.Apply(rules, JsonNode.Parse(File.ReadAllText(scenePath))!.AsObject());
+        return rules.Deserialize<GameRules>(Wire.Json) ?? throw new InvalidDataException("World rules are missing.");
+    }
 }

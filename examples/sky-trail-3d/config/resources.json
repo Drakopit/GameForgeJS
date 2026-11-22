@@ -50,19 +50,19 @@
   "jsons": [
     {
       "name": "sky_trail_course",
-      "path": "../assets/Manifests/sky-trail/course.json"
+      "path": "../assets/Scenes/sky-trail/sky-trail.gfscene.json"
     },
     {
       "name": "sky_trail_course_high_winds",
-      "path": "../assets/Manifests/sky-trail/high-winds.json"
+      "path": "../assets/Scenes/sky-trail/high-winds.gfscene.json"
     },
     {
       "name": "sky_trail_course_archipelago",
-      "path": "../assets/Manifests/sky-trail/archipelago.json"
+      "path": "../assets/Scenes/sky-trail/archipelago.gfscene.json"
     },
     {
       "name": "sky_trail_course_aurora",
-      "path": "../assets/Manifests/sky-trail/aurora.json"
+      "path": "../assets/Scenes/sky-trail/aurora.gfscene.json"
     },
     {
       "name": "prompts",

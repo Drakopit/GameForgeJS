@@ -1,4 +1,4 @@
-// Presentation palette only. Simulation rules live in config/world.rules.json.
+// Presentation palette only. Simulation rules live in config/world.rules.json; the layout in config/scenes/world.gfscene.json.
 export const BLOCK_COLORS = Object.freeze({
     grass: { top: '#72b979', base: '#77533b', edge: '#365e48' },
     dirt: { top: '#9b7651', base: '#765139', edge: '#533b32' },
