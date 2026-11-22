@@ -28,7 +28,8 @@
         "position": [104, 414]
       },
       "size": [32, 32],
-      "links": ["grove"]
+      "links": ["grove"],
+      "scripts": ["src/components/StageTrial.js"]
     },
     {
       "id": "grove",
@@ -39,7 +40,8 @@
         "position": [284, 364]
       },
       "size": [32, 32],
-      "links": ["ridge", "marsh"]
+      "links": ["ridge", "marsh"],
+      "scripts": ["src/components/StageTrial.js"]
     },
     {
       "id": "ridge",
@@ -50,7 +52,8 @@
         "position": [434, 204]
       },
       "size": [32, 32],
-      "links": ["gate"]
+      "links": ["gate"],
+      "scripts": ["src/components/StageTrial.js"]
     },
     {
       "id": "marsh",
@@ -61,7 +64,8 @@
         "position": [454, 464]
       },
       "size": [32, 32],
-      "links": ["gate"]
+      "links": ["gate"],
+      "scripts": ["src/components/StageTrial.js"]
     },
     {
       "id": "gate",
@@ -72,7 +76,8 @@
         "position": [624, 324]
       },
       "size": [32, 32],
-      "links": ["spire", "cove"]
+      "links": ["spire", "cove"],
+      "scripts": ["src/components/StageTrial.js"]
     },
     {
       "id": "spire",
@@ -83,7 +88,8 @@
         "position": [734, 154]
       },
       "size": [32, 32],
-      "links": ["summit"]
+      "links": ["summit"],
+      "scripts": ["src/components/StageTrial.js"]
     },
     {
       "id": "summit",
@@ -93,7 +99,8 @@
       "transform": {
         "position": [844, 244]
       },
-      "size": [32, 32]
+      "size": [32, 32],
+      "scripts": ["src/components/StageTrial.js"]
     },
     {
       "id": "cove",
@@ -103,7 +110,8 @@
       "transform": {
         "position": [794, 484]
       },
-      "size": [32, 32]
+      "size": [32, 32],
+      "scripts": ["src/components/StageTrial.js"]
     }
   ]
 }

@@ -15,6 +15,7 @@ import { Player } from "../entities/Player.js";
 import { AudioManager } from "gameforgejs/core";
 import { JsonManifestComposer } from "gameforgejs/core";
 import { LevelBuilder } from "./LevelBuilder.js";
+import { LevelFromScene } from "../data/LevelScene.js";
 import { PlayerStatusHUD } from "../ui/PlayerStatusHUD.js";
 import { CombatResolver2D } from "gameforgejs/2d";
 import { FloatingText } from "gameforgejs/2d";
@@ -65,6 +66,9 @@ export class AdvancedDemoFirstLevel extends Level {
         this.parallaxLayers = [];
         this.rewardedEnemies = new Set();
         this.levelConfig = JsonManifestComposer.Compose(this.manifestName);
+        // The level's own layout (platforms, objects, enemies, parallax) lives in its scene file.
+        const scene = this.levelConfig?.scene ? AssetManager.instance.GetJson(this.levelConfig.scene) : null;
+        if (scene) JsonManifestComposer.DeepMerge(this.levelConfig, LevelFromScene(scene));
 
         if (!this.levelConfig) {
             throw new Error(`AdvancedDemoFirstLevel: manifest '${this.manifestName}' nao foi carregado.`);

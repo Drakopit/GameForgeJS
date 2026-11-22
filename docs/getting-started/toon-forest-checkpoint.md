@@ -23,10 +23,12 @@ and attack only within reach. Defeated bodies no longer collide; their death vis
 
 ## 2. Add another encounter
 
-Open `examples/toon-adventure-3d/src/data/Courtyard.js`. Each `areas` entry has a name,
-a minimum Z boundary and a list of enemy spawn positions. Areas are ordered from
-south to north (decreasing Z). Add `[0, 0.55, -18]` to the old grove's enemy list,
-reload and verify that the HUD total becomes six. Keep spawns outside solid scenery.
+Open `examples/toon-adventure-3d/config/scenes/courtyard.gfscene.json` (or the
+Courtyard scene in the editor's 3D view). Each entry of `settings.areas` has a name and
+a minimum Z boundary; areas are ordered from south to north (decreasing Z). Sentries are
+nodes in the `enemies` layer whose `Enemy.area` names their area. Duplicate a sentry,
+move it to `[0, 0.55, -18]` in the old grove, reload and verify that the HUD total
+becomes six. Keep spawns outside solid scenery.
 
 `ToonRoomLevel` registers each Sentry through AddEntity, assigns its player target
 and creates its CharacterVisual and AttackIndicator. The player receives the whole

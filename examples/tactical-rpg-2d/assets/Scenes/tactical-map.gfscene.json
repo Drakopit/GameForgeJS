@@ -2,95 +2,289 @@
   "format": "gameforgejs.scene",
   "version": 1,
   "dimension": "2d",
-  "id": "tactical_map",
-  "name": "Tactical Map",
+  "id": "tiny_swords_skirmish",
+  "name": "Tiny Swords Skirmish",
   "settings": {
-    "screen": null,
     "world": {
-      "width": 600,
-      "height": 420
-    },
-    "grid": {
       "cols": 10,
       "rows": 7,
       "cell": 60,
       "originX": 20,
       "originY": 10
-    }
+    },
+    "materials": [
+      {
+        "id": "grass",
+        "color": "#4f8a3d"
+      },
+      {
+        "id": "stone",
+        "color": "#617070"
+      }
+    ],
+    "parallax": {}
   },
   "layers": [
     {
-      "id": "stage.platforms",
-      "name": "Platforms",
-      "type": "Platform2D",
-      "zIndex": 20,
-      "source": {
-        "document": "stage",
-        "path": "platforms"
-      }
-    },
-    {
-      "id": "stage.objects",
-      "name": "Objects",
-      "type": "Prop2D",
-      "zIndex": 30,
-      "source": {
-        "document": "stage",
-        "path": "objects"
-      }
-    },
-    {
-      "id": "stage.parallax.layers",
-      "name": "Parallax",
-      "type": "ParallaxLayer2D",
-      "zIndex": -100,
-      "source": {
-        "document": "stage",
-        "path": "parallax.layers"
-      }
-    },
-    {
-      "id": "enemies.enemies",
-      "name": "Enemies",
-      "type": "Actor2D",
-      "zIndex": 50,
-      "source": {
-        "document": "enemies",
-        "path": "enemies"
-      }
-    },
-    {
-      "id": "player.player.spawn",
-      "name": "Player",
-      "type": "Actor2D",
-      "zIndex": 50,
-      "source": {
-        "document": "player",
-        "path": "player"
-      }
-    },
-    {
-      "id": "stage.tilemap",
+      "id": "tilemap",
       "name": "TileMap",
-      "type": "TileMap2D",
-      "zIndex": -50,
-      "source": {
-        "document": "stage",
-        "path": "tilemap"
-      }
+      "type": "TileMap2D"
+    },
+    {
+      "id": "parallax",
+      "name": "Parallax",
+      "type": "ParallaxLayer2D"
+    },
+    {
+      "id": "platforms",
+      "name": "Platforms",
+      "type": "Platform2D"
+    },
+    {
+      "id": "objects",
+      "name": "Objects",
+      "type": "Prop2D"
+    },
+    {
+      "id": "player",
+      "name": "Player",
+      "type": "Actor2D"
+    },
+    {
+      "id": "enemies",
+      "name": "Enemies",
+      "type": "Actor2D"
     }
   ],
+  "prefabs": {
+    "enemy": {
+      "type": "Actor2D",
+      "components": {
+        "Sprite": {
+          "asset": "red_warrior_idle",
+          "runAsset": "red_warrior_run",
+          "color": "#f35b52",
+          "scale": 0.35,
+          "frame": {
+            "x": 0,
+            "y": 0,
+            "width": 192,
+            "height": 192,
+            "frames": 8
+          },
+          "runFrame": {
+            "x": 0,
+            "y": 0,
+            "width": 192,
+            "height": 192,
+            "frames": 6
+          }
+        },
+        "Collider": {
+          "bodySize": {
+            "width": 48,
+            "height": 56
+          }
+        },
+        "Data": {
+          "stats": {
+            "hp": 22,
+            "attack": 7,
+            "defense": 2,
+            "moveRange": 2,
+            "attackRange": 1
+          }
+        }
+      }
+    }
+  },
   "nodes": [
     {
-      "id": "stage.objects#0",
-      "name": "blue_house_01",
-      "type": "Prop2D",
-      "layer": "stage.objects",
+      "id": "tilemap",
+      "name": "TileMap",
+      "type": "TileMap2D",
+      "layer": "tilemap",
       "transform": {
-        "position": [54, 28],
-        "rotation": 0,
-        "scale": [1, 1]
+        "position": [0, 0]
       },
+      "components": {
+        "TileMap": {
+          "sprite": "tactical_tilemap_color1",
+          "tileWidth": 64,
+          "tileHeight": 64,
+          "tiles": {
+            "grass_top_left": {
+              "x": 0,
+              "y": 0,
+              "width": 64,
+              "height": 64
+            },
+            "grass_top": {
+              "x": 64,
+              "y": 0,
+              "width": 64,
+              "height": 64
+            },
+            "grass_top_right": {
+              "x": 128,
+              "y": 0,
+              "width": 64,
+              "height": 64
+            },
+            "grass_left": {
+              "x": 0,
+              "y": 64,
+              "width": 64,
+              "height": 64
+            },
+            "grass_center": {
+              "x": 64,
+              "y": 64,
+              "width": 64,
+              "height": 64
+            },
+            "grass_right": {
+              "x": 128,
+              "y": 64,
+              "width": 64,
+              "height": 64
+            },
+            "grass_bottom_left": {
+              "x": 0,
+              "y": 128,
+              "width": 64,
+              "height": 64
+            },
+            "grass_bottom": {
+              "x": 64,
+              "y": 128,
+              "width": 64,
+              "height": 64
+            },
+            "grass_bottom_right": {
+              "x": 128,
+              "y": 128,
+              "width": 64,
+              "height": 64
+            },
+            "cliff_top": {
+              "x": 320,
+              "y": 192,
+              "width": 64,
+              "height": 64
+            },
+            "cliff_mid": {
+              "x": 320,
+              "y": 256,
+              "width": 64,
+              "height": 64
+            },
+            "cliff_bottom": {
+              "x": 320,
+              "y": 320,
+              "width": 64,
+              "height": 64
+            }
+          },
+          "terrainRows": [
+            [
+              "grass_top_left",
+              "grass_top",
+              "grass_top",
+              "grass_top",
+              "grass_top",
+              "grass_top",
+              "grass_top",
+              "grass_top",
+              "grass_top",
+              "grass_top_right"
+            ],
+            [
+              "grass_left",
+              "grass_center",
+              "grass_center",
+              "grass_center",
+              "grass_center",
+              "grass_center",
+              "grass_center",
+              "cliff_top",
+              "grass_center",
+              "grass_right"
+            ],
+            [
+              "grass_left",
+              "grass_center",
+              "grass_center",
+              "grass_center",
+              "cliff_mid",
+              "grass_center",
+              "grass_center",
+              "grass_center",
+              "grass_center",
+              "grass_right"
+            ],
+            [
+              "grass_left",
+              "grass_center",
+              "grass_center",
+              "grass_center",
+              "cliff_mid",
+              "grass_center",
+              "grass_center",
+              "grass_center",
+              "grass_center",
+              "grass_right"
+            ],
+            [
+              "grass_left",
+              "grass_center",
+              "grass_center",
+              "grass_center",
+              "cliff_bottom",
+              "cliff_mid",
+              "grass_center",
+              "grass_center",
+              "grass_center",
+              "grass_right"
+            ],
+            [
+              "grass_left",
+              "grass_center",
+              "grass_center",
+              "grass_center",
+              "grass_center",
+              "grass_center",
+              "grass_center",
+              "grass_center",
+              "grass_center",
+              "grass_right"
+            ],
+            [
+              "grass_bottom_left",
+              "grass_bottom",
+              "grass_bottom",
+              "grass_bottom",
+              "grass_bottom",
+              "grass_bottom",
+              "grass_bottom",
+              "grass_bottom",
+              "grass_bottom",
+              "grass_bottom_right"
+            ]
+          ],
+          "blockedTileId": "cliff_mid",
+          "blockedTiles": ["4,2", "4,3", "4,4", "5,4", "7,1"]
+        }
+      }
+    },
+    {
+      "id": "blue_house_01",
+      "type": "Prop2D",
+      "layer": "objects",
+      "transform": {
+        "position": [54, 28]
+      },
+      "size": [96, 120],
       "components": {
         "Sprite": {
           "spriteRef": "blue_house_01",
@@ -98,29 +292,21 @@
         },
         "Collider": {
           "solid": false
+        },
+        "Data": {
+          "visible": true,
+          "zIndex": 5
         }
-      },
-      "source": {
-        "document": "stage",
-        "path": "objects",
-        "index": 0,
-        "keys": ["id", "spriteRef", "asset", "x", "y", "width", "height", "solid", "visible", "zIndex"]
-      },
-      "size": [96, 120],
-      "zIndex": 5,
-      "visible": true,
-      "sourceId": "blue_house_01"
+      }
     },
     {
-      "id": "stage.objects#1",
-      "name": "blue_tower_01",
+      "id": "blue_tower_01",
       "type": "Prop2D",
-      "layer": "stage.objects",
+      "layer": "objects",
       "transform": {
-        "position": [492, 16],
-        "rotation": 0,
-        "scale": [1, 1]
+        "position": [492, 16]
       },
+      "size": [86, 138],
       "components": {
         "Sprite": {
           "spriteRef": "blue_tower_01",
@@ -128,29 +314,21 @@
         },
         "Collider": {
           "solid": true
+        },
+        "Data": {
+          "visible": true,
+          "zIndex": 8
         }
-      },
-      "source": {
-        "document": "stage",
-        "path": "objects",
-        "index": 1,
-        "keys": ["id", "spriteRef", "asset", "x", "y", "width", "height", "solid", "visible", "zIndex"]
-      },
-      "size": [86, 138],
-      "zIndex": 8,
-      "visible": true,
-      "sourceId": "blue_tower_01"
+      }
     },
     {
-      "id": "stage.objects#2",
-      "name": "tree_cluster_01",
+      "id": "tree_cluster_01",
       "type": "Prop2D",
-      "layer": "stage.objects",
+      "layer": "objects",
       "transform": {
-        "position": [240, 96],
-        "rotation": 0,
-        "scale": [1, 1]
+        "position": [240, 96]
       },
+      "size": [90, 90],
       "components": {
         "Sprite": {
           "spriteRef": "tree_01",
@@ -164,29 +342,21 @@
         },
         "Collider": {
           "solid": true
+        },
+        "Data": {
+          "visible": true,
+          "zIndex": 18
         }
-      },
-      "source": {
-        "document": "stage",
-        "path": "objects",
-        "index": 2,
-        "keys": ["id", "spriteRef", "asset", "frame", "x", "y", "width", "height", "solid", "visible", "zIndex"]
-      },
-      "size": [90, 90],
-      "zIndex": 18,
-      "visible": true,
-      "sourceId": "tree_cluster_01"
+      }
     },
     {
-      "id": "stage.objects#3",
-      "name": "tree_cluster_02",
+      "id": "tree_cluster_02",
       "type": "Prop2D",
-      "layer": "stage.objects",
+      "layer": "objects",
       "transform": {
-        "position": [300, 214],
-        "rotation": 0,
-        "scale": [1, 1]
+        "position": [300, 214]
       },
+      "size": [86, 86],
       "components": {
         "Sprite": {
           "spriteRef": "tree_02",
@@ -200,29 +370,21 @@
         },
         "Collider": {
           "solid": true
+        },
+        "Data": {
+          "visible": true,
+          "zIndex": 18
         }
-      },
-      "source": {
-        "document": "stage",
-        "path": "objects",
-        "index": 3,
-        "keys": ["id", "spriteRef", "asset", "frame", "x", "y", "width", "height", "solid", "visible", "zIndex"]
-      },
-      "size": [86, 86],
-      "zIndex": 18,
-      "visible": true,
-      "sourceId": "tree_cluster_02"
+      }
     },
     {
-      "id": "stage.objects#4",
-      "name": "bush_line_01",
+      "id": "bush_line_01",
       "type": "Prop2D",
-      "layer": "stage.objects",
+      "layer": "objects",
       "transform": {
-        "position": [132, 320],
-        "rotation": 0,
-        "scale": [1, 1]
+        "position": [132, 320]
       },
+      "size": [58, 58],
       "components": {
         "Sprite": {
           "spriteRef": "bush_01",
@@ -236,29 +398,21 @@
         },
         "Collider": {
           "solid": false
+        },
+        "Data": {
+          "visible": true,
+          "zIndex": 12
         }
-      },
-      "source": {
-        "document": "stage",
-        "path": "objects",
-        "index": 4,
-        "keys": ["id", "spriteRef", "asset", "frame", "x", "y", "width", "height", "solid", "visible", "zIndex"]
-      },
-      "size": [58, 58],
-      "zIndex": 12,
-      "visible": true,
-      "sourceId": "bush_line_01"
+      }
     },
     {
-      "id": "stage.objects#5",
-      "name": "gold_cache_01",
+      "id": "gold_cache_01",
       "type": "Prop2D",
-      "layer": "stage.objects",
+      "layer": "objects",
       "transform": {
-        "position": [438, 314],
-        "rotation": 0,
-        "scale": [1, 1]
+        "position": [438, 314]
       },
+      "size": [42, 42],
       "components": {
         "Sprite": {
           "spriteRef": "gold_resource",
@@ -272,29 +426,21 @@
         },
         "Collider": {
           "solid": false
+        },
+        "Data": {
+          "visible": true,
+          "zIndex": 14
         }
-      },
-      "source": {
-        "document": "stage",
-        "path": "objects",
-        "index": 5,
-        "keys": ["id", "spriteRef", "asset", "frame", "x", "y", "width", "height", "solid", "visible", "zIndex"]
-      },
-      "size": [42, 42],
-      "zIndex": 14,
-      "visible": true,
-      "sourceId": "gold_cache_01"
+      }
     },
     {
-      "id": "stage.objects#6",
-      "name": "rock_cover_01",
+      "id": "rock_cover_01",
       "type": "Prop2D",
-      "layer": "stage.objects",
+      "layer": "objects",
       "transform": {
-        "position": [386, 252],
-        "rotation": 0,
-        "scale": [1, 1]
+        "position": [386, 252]
       },
+      "size": [44, 44],
       "components": {
         "Sprite": {
           "spriteRef": "rock_01",
@@ -308,182 +454,27 @@
         },
         "Collider": {
           "solid": true
+        },
+        "Data": {
+          "visible": true,
+          "zIndex": 15
         }
-      },
-      "source": {
-        "document": "stage",
-        "path": "objects",
-        "index": 6,
-        "keys": ["id", "spriteRef", "asset", "frame", "x", "y", "width", "height", "solid", "visible", "zIndex"]
-      },
-      "size": [44, 44],
-      "zIndex": 15,
-      "visible": true,
-      "sourceId": "rock_cover_01"
+      }
     },
     {
-      "id": "enemies.enemies#0",
-      "name": "red_warrior_01",
+      "id": "player",
+      "name": "Blue Warrior",
       "type": "Actor2D",
-      "layer": "enemies.enemies",
+      "layer": "player",
+      "scripts": ["src/tactical/TacticalUnit.js", "src/tactical/TacticalUnitRendererComponent.js"],
       "transform": {
-        "position": [506, 192],
-        "rotation": 0,
-        "scale": [1, 1]
+        "position": [88, 194]
       },
       "components": {
-        "Data": {
-          "name": "Red Warrior"
-        },
-        "Sprite": {
-          "asset": "red_warrior_idle"
-        },
-        "Grid": {
-          "col": 8,
-          "row": 3
-        }
-      },
-      "source": {
-        "document": "enemies",
-        "path": "enemies",
-        "index": 0,
-        "keys": ["id", "name", "asset", "col", "row", "x", "y"]
-      },
-      "prefab": "enemies.enemyDefaults",
-      "sourceId": "red_warrior_01"
-    },
-    {
-      "id": "enemies.enemies#1",
-      "name": "red_lancer_01",
-      "type": "Actor2D",
-      "layer": "enemies.enemies",
-      "transform": {
-        "position": [446, 312],
-        "rotation": 0,
-        "scale": [1, 1]
-      },
-      "components": {
-        "Data": {
-          "name": "Red Lancer",
-          "stats": {
-            "hp": 24,
-            "attack": 8,
-            "defense": 3,
-            "moveRange": 2,
-            "attackRange": 1
-          }
-        },
-        "Sprite": {
-          "asset": "red_lancer_idle",
-          "runAsset": "red_lancer_run",
-          "frame": {
-            "x": 0,
-            "y": 0,
-            "width": 320,
-            "height": 320,
-            "frames": 12
-          },
-          "runFrame": {
-            "x": 0,
-            "y": 0,
-            "width": 320,
-            "height": 320,
-            "frames": 6
-          },
-          "scale": 0.24
-        },
-        "Grid": {
-          "col": 7,
-          "row": 5
-        }
-      },
-      "source": {
-        "document": "enemies",
-        "path": "enemies",
-        "index": 1,
-        "keys": ["id", "name", "asset", "runAsset", "frame", "runFrame", "scale", "stats", "col", "row", "x", "y"]
-      },
-      "prefab": "enemies.enemyDefaults",
-      "sourceId": "red_lancer_01"
-    },
-    {
-      "id": "enemies.enemies#2",
-      "name": "red_archer_01",
-      "type": "Actor2D",
-      "layer": "enemies.enemies",
-      "transform": {
-        "position": [506, 72],
-        "rotation": 0,
-        "scale": [1, 1]
-      },
-      "components": {
-        "Data": {
-          "name": "Red Archer",
-          "stats": {
-            "hp": 18,
-            "attack": 6,
-            "defense": 1,
-            "moveRange": 2,
-            "attackRange": 3
-          }
-        },
-        "Sprite": {
-          "asset": "red_archer_idle",
-          "runAsset": "red_archer_run",
-          "frame": {
-            "x": 0,
-            "y": 0,
-            "width": 192,
-            "height": 192,
-            "frames": 6
-          },
-          "runFrame": {
-            "x": 0,
-            "y": 0,
-            "width": 192,
-            "height": 192,
-            "frames": 4
-          }
-        },
-        "Grid": {
-          "col": 8,
-          "row": 1
-        }
-      },
-      "source": {
-        "document": "enemies",
-        "path": "enemies",
-        "index": 2,
-        "keys": ["id", "name", "asset", "runAsset", "frame", "runFrame", "stats", "col", "row", "x", "y"]
-      },
-      "prefab": "enemies.enemyDefaults",
-      "sourceId": "red_archer_01"
-    },
-    {
-      "id": "player.player.spawn#0",
-      "name": "Player",
-      "type": "Actor2D",
-      "layer": "player.player.spawn",
-      "transform": {
-        "position": [88, 194],
-        "rotation": 0,
-        "scale": [1, 1]
-      },
-      "components": {
-        "Data": {
-          "name": "Blue Warrior",
-          "color": "#4f8dff",
-          "stats": {
-            "hp": 34,
-            "attack": 10,
-            "defense": 3,
-            "moveRange": 3,
-            "attackRange": 1
-          }
-        },
         "Sprite": {
           "asset": "blue_warrior_idle",
           "runAsset": "blue_warrior_run",
+          "color": "#4f8dff",
           "scale": 0.36,
           "frame": {
             "x": 0,
@@ -506,255 +497,129 @@
             "height": 52
           }
         },
-        "Spawn": {
+        "Data": {
+          "stats": {
+            "hp": 34,
+            "attack": 10,
+            "defense": 3,
+            "moveRange": 3,
+            "attackRange": 1
+          }
+        },
+        "Grid": {
           "col": 1,
           "row": 3
         }
-      },
-      "source": {
-        "document": "player",
-        "path": "player",
-        "index": 0,
-        "keys": ["name", "asset", "runAsset", "color", "scale", "frame", "runFrame", "bodySize", "stats"],
-        "spawnKeys": ["col", "row", "x", "y"],
-        "playerKeys": ["name", "asset", "runAsset", "color", "scale", "frame", "runFrame", "spawn", "bodySize", "stats"]
-      },
-      "role": "player"
-    }
-  ],
-  "prefabs": {
-    "enemies.enemyDefaults": {
-      "asset": "red_warrior_idle",
-      "runAsset": "red_warrior_run",
-      "color": "#f35b52",
-      "scale": 0.35,
-      "frame": {
-        "x": 0,
-        "y": 0,
-        "width": 192,
-        "height": 192,
-        "frames": 8
-      },
-      "runFrame": {
-        "x": 0,
-        "y": 0,
-        "width": 192,
-        "height": 192,
-        "frames": 6
-      },
-      "bodySize": {
-        "width": 48,
-        "height": 56
-      },
-      "stats": {
-        "hp": 22,
-        "attack": 7,
-        "defense": 2,
-        "moveRange": 2,
-        "attackRange": 1
       }
-    }
-  },
-  "extras": {
-    "stage": {
-      "id": "tiny_swords_skirmish",
-      "name": "Tiny Swords Skirmish",
-      "world": {
-        "cols": 10,
-        "rows": 7,
-        "cell": 60,
-        "originX": 20,
-        "originY": 10
+    },
+    {
+      "id": "red_warrior_01",
+      "name": "Red Warrior",
+      "type": "Actor2D",
+      "layer": "enemies",
+      "prefab": "enemy",
+      "scripts": ["src/tactical/TacticalUnit.js"],
+      "transform": {
+        "position": [506, 192]
       },
-      "tilemap": {
-        "sprite": "tactical_tilemap_color1",
-        "tileWidth": 64,
-        "tileHeight": 64,
-        "tiles": {
-          "grass_top_left": {
+      "components": {
+        "Sprite": {
+          "asset": "red_warrior_idle"
+        },
+        "Grid": {
+          "col": 8,
+          "row": 3
+        }
+      }
+    },
+    {
+      "id": "red_lancer_01",
+      "name": "Red Lancer",
+      "type": "Actor2D",
+      "layer": "enemies",
+      "prefab": "enemy",
+      "scripts": ["src/tactical/TacticalUnit.js"],
+      "transform": {
+        "position": [446, 312]
+      },
+      "components": {
+        "Sprite": {
+          "asset": "red_lancer_idle",
+          "runAsset": "red_lancer_run",
+          "frame": {
             "x": 0,
             "y": 0,
-            "width": 64,
-            "height": 64
+            "width": 320,
+            "height": 320,
+            "frames": 12
           },
-          "grass_top": {
-            "x": 64,
-            "y": 0,
-            "width": 64,
-            "height": 64
-          },
-          "grass_top_right": {
-            "x": 128,
-            "y": 0,
-            "width": 64,
-            "height": 64
-          },
-          "grass_left": {
+          "runFrame": {
             "x": 0,
-            "y": 64,
-            "width": 64,
-            "height": 64
+            "y": 0,
+            "width": 320,
+            "height": 320,
+            "frames": 6
           },
-          "grass_center": {
-            "x": 64,
-            "y": 64,
-            "width": 64,
-            "height": 64
-          },
-          "grass_right": {
-            "x": 128,
-            "y": 64,
-            "width": 64,
-            "height": 64
-          },
-          "grass_bottom_left": {
-            "x": 0,
-            "y": 128,
-            "width": 64,
-            "height": 64
-          },
-          "grass_bottom": {
-            "x": 64,
-            "y": 128,
-            "width": 64,
-            "height": 64
-          },
-          "grass_bottom_right": {
-            "x": 128,
-            "y": 128,
-            "width": 64,
-            "height": 64
-          },
-          "cliff_top": {
-            "x": 320,
-            "y": 192,
-            "width": 64,
-            "height": 64
-          },
-          "cliff_mid": {
-            "x": 320,
-            "y": 256,
-            "width": 64,
-            "height": 64
-          },
-          "cliff_bottom": {
-            "x": 320,
-            "y": 320,
-            "width": 64,
-            "height": 64
+          "scale": 0.24
+        },
+        "Data": {
+          "stats": {
+            "hp": 24,
+            "attack": 8,
+            "defense": 3,
+            "moveRange": 2,
+            "attackRange": 1
           }
         },
-        "terrainRows": [
-          [
-            "grass_top_left",
-            "grass_top",
-            "grass_top",
-            "grass_top",
-            "grass_top",
-            "grass_top",
-            "grass_top",
-            "grass_top",
-            "grass_top",
-            "grass_top_right"
-          ],
-          [
-            "grass_left",
-            "grass_center",
-            "grass_center",
-            "grass_center",
-            "grass_center",
-            "grass_center",
-            "grass_center",
-            "cliff_top",
-            "grass_center",
-            "grass_right"
-          ],
-          [
-            "grass_left",
-            "grass_center",
-            "grass_center",
-            "grass_center",
-            "cliff_mid",
-            "grass_center",
-            "grass_center",
-            "grass_center",
-            "grass_center",
-            "grass_right"
-          ],
-          [
-            "grass_left",
-            "grass_center",
-            "grass_center",
-            "grass_center",
-            "cliff_mid",
-            "grass_center",
-            "grass_center",
-            "grass_center",
-            "grass_center",
-            "grass_right"
-          ],
-          [
-            "grass_left",
-            "grass_center",
-            "grass_center",
-            "grass_center",
-            "cliff_bottom",
-            "cliff_mid",
-            "grass_center",
-            "grass_center",
-            "grass_center",
-            "grass_right"
-          ],
-          [
-            "grass_left",
-            "grass_center",
-            "grass_center",
-            "grass_center",
-            "grass_center",
-            "grass_center",
-            "grass_center",
-            "grass_center",
-            "grass_center",
-            "grass_right"
-          ],
-          [
-            "grass_bottom_left",
-            "grass_bottom",
-            "grass_bottom",
-            "grass_bottom",
-            "grass_bottom",
-            "grass_bottom",
-            "grass_bottom",
-            "grass_bottom",
-            "grass_bottom",
-            "grass_bottom_right"
-          ]
-        ],
-        "blockedTileId": "cliff_mid",
-        "blockedTiles": ["4,2", "4,3", "4,4", "5,4", "7,1"]
-      },
-      "platforms": [],
-      "objects": [],
-      "parallax": {
-        "layers": []
-      },
-      "materials": [
-        {
-          "id": "grass",
-          "color": "#4f8a3d"
-        },
-        {
-          "id": "stone",
-          "color": "#617070"
+        "Grid": {
+          "col": 7,
+          "row": 5
         }
-      ]
+      }
     },
-    "player": {
-      "player": "$player"
-    },
-    "enemies": {
-      "enemyDefaults": "$prefab",
-      "enemies": []
+    {
+      "id": "red_archer_01",
+      "name": "Red Archer",
+      "type": "Actor2D",
+      "layer": "enemies",
+      "prefab": "enemy",
+      "scripts": ["src/tactical/TacticalUnit.js"],
+      "transform": {
+        "position": [506, 72]
+      },
+      "components": {
+        "Sprite": {
+          "asset": "red_archer_idle",
+          "runAsset": "red_archer_run",
+          "frame": {
+            "x": 0,
+            "y": 0,
+            "width": 192,
+            "height": 192,
+            "frames": 6
+          },
+          "runFrame": {
+            "x": 0,
+            "y": 0,
+            "width": 192,
+            "height": 192,
+            "frames": 4
+          }
+        },
+        "Data": {
+          "stats": {
+            "hp": 18,
+            "attack": 6,
+            "defense": 1,
+            "moveRange": 2,
+            "attackRange": 3
+          }
+        },
+        "Grid": {
+          "col": 8,
+          "row": 1
+        }
+      }
     }
-  }
+  ]
 }

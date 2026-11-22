@@ -1,0 +1,628 @@
+{
+  "format": "gameforgejs.scene",
+  "version": 1,
+  "dimension": "3d",
+  "id": "courtyard",
+  "name": "Courtyard",
+  "settings": {
+    "camera": {
+      "position": [0, 13, 14],
+      "target": [0, 0, 0],
+      "fov": 48
+    },
+    "bounds": {
+      "minX": -24,
+      "maxX": 24,
+      "minZ": -44,
+      "maxZ": 6
+    },
+    "areas": [
+      {
+        "name": "Courtyard",
+        "minZ": -5
+      },
+      {
+        "name": "Forest trail",
+        "minZ": -16
+      },
+      {
+        "name": "Old grove",
+        "minZ": -44
+      }
+    ],
+    "note": "Solids are boxes with colliders (scale = size); paths are walkable strips. Enemy sentries belong to the area named in their Enemy component; warp points pair through Warp.destination. Lakes and forest props are still built in code."
+  },
+  "layers": [
+    {
+      "id": "lights",
+      "name": "Lights",
+      "type": "Light3D"
+    },
+    {
+      "id": "solids",
+      "name": "Solids",
+      "type": "MeshInstance3D"
+    },
+    {
+      "id": "paths",
+      "name": "Paths",
+      "type": "MeshInstance3D"
+    },
+    {
+      "id": "actors",
+      "name": "Player",
+      "type": "MeshInstance3D"
+    },
+    {
+      "id": "enemies",
+      "name": "Sentries",
+      "type": "MeshInstance3D"
+    },
+    {
+      "id": "warps",
+      "name": "Warp points",
+      "type": "MeshInstance3D"
+    }
+  ],
+  "prefabs": {
+    "path": {
+      "type": "MeshInstance3D",
+      "components": {
+        "Mesh": {
+          "type": "cube",
+          "size": 1
+        },
+        "Material": {
+          "type": "toon",
+          "albedoColor": "#b4aa80"
+        },
+        "Data": {
+          "castShadow": false
+        }
+      }
+    }
+  },
+  "nodes": [
+    {
+      "id": "ambient",
+      "name": "Ambient Light",
+      "type": "Light3D",
+      "layer": "lights",
+      "transform": {
+        "position": [0, 0, 0]
+      },
+      "components": {
+        "Light": {
+          "type": "ambient",
+          "intensity": 0.3
+        }
+      }
+    },
+    {
+      "id": "sun",
+      "name": "Sun",
+      "type": "Light3D",
+      "layer": "lights",
+      "transform": {
+        "position": [0, 0, 0]
+      },
+      "components": {
+        "Light": {
+          "type": "directional",
+          "direction": [-0.7, -1, -0.4],
+          "intensity": 0.9,
+          "castShadow": true
+        }
+      }
+    },
+    {
+      "id": "solid_1",
+      "name": "Solid 1",
+      "type": "MeshInstance3D",
+      "layer": "solids",
+      "scripts": ["src/entities/CourtyardRoom.js"],
+      "transform": {
+        "position": [0, -0.3, -19],
+        "rotation": [0, 0, 0],
+        "scale": [48, 0.6, 50]
+      },
+      "components": {
+        "Mesh": {
+          "type": "cube",
+          "size": 1
+        },
+        "Material": {
+          "type": "toon",
+          "albedoColor": "#799a74"
+        },
+        "Data": {
+          "castShadow": true
+        }
+      }
+    },
+    {
+      "id": "solid_2",
+      "name": "Solid 2",
+      "type": "MeshInstance3D",
+      "layer": "solids",
+      "scripts": ["src/entities/CourtyardRoom.js"],
+      "transform": {
+        "position": [-24, 0.5, -19],
+        "rotation": [0, 0, 0],
+        "scale": [0.5, 1, 50]
+      },
+      "components": {
+        "Mesh": {
+          "type": "cube",
+          "size": 1
+        },
+        "Material": {
+          "type": "toon",
+          "albedoColor": "#8babb1"
+        },
+        "Data": {
+          "castShadow": true
+        }
+      }
+    },
+    {
+      "id": "solid_3",
+      "name": "Solid 3",
+      "type": "MeshInstance3D",
+      "layer": "solids",
+      "scripts": ["src/entities/CourtyardRoom.js"],
+      "transform": {
+        "position": [24, 0.5, -19],
+        "rotation": [0, 0, 0],
+        "scale": [0.5, 1, 50]
+      },
+      "components": {
+        "Mesh": {
+          "type": "cube",
+          "size": 1
+        },
+        "Material": {
+          "type": "toon",
+          "albedoColor": "#8babb1"
+        },
+        "Data": {
+          "castShadow": true
+        }
+      }
+    },
+    {
+      "id": "solid_4",
+      "name": "Solid 4",
+      "type": "MeshInstance3D",
+      "layer": "solids",
+      "scripts": ["src/entities/CourtyardRoom.js"],
+      "transform": {
+        "position": [0, 0.5, -44],
+        "rotation": [0, 0, 0],
+        "scale": [48, 1, 0.5]
+      },
+      "components": {
+        "Mesh": {
+          "type": "cube",
+          "size": 1
+        },
+        "Material": {
+          "type": "toon",
+          "albedoColor": "#8babb1"
+        },
+        "Data": {
+          "castShadow": true
+        }
+      }
+    },
+    {
+      "id": "solid_5",
+      "name": "Solid 5",
+      "type": "MeshInstance3D",
+      "layer": "solids",
+      "scripts": ["src/entities/CourtyardRoom.js"],
+      "transform": {
+        "position": [-2.5, 0.7, 0],
+        "rotation": [0, 0, 0],
+        "scale": [2, 1.4, 2]
+      },
+      "components": {
+        "Mesh": {
+          "type": "cube",
+          "size": 1
+        },
+        "Material": {
+          "type": "toon",
+          "albedoColor": "#ae9bb1"
+        },
+        "Data": {
+          "castShadow": true
+        }
+      }
+    },
+    {
+      "id": "solid_6",
+      "name": "Solid 6",
+      "type": "MeshInstance3D",
+      "layer": "solids",
+      "scripts": ["src/entities/CourtyardRoom.js"],
+      "transform": {
+        "position": [2.5, 0.7, -1],
+        "rotation": [0, 0, 0],
+        "scale": [2, 1.4, 2]
+      },
+      "components": {
+        "Mesh": {
+          "type": "cube",
+          "size": 1
+        },
+        "Material": {
+          "type": "toon",
+          "albedoColor": "#ae9bb1"
+        },
+        "Data": {
+          "castShadow": true
+        }
+      }
+    },
+    {
+      "id": "path_1",
+      "name": "Path 1",
+      "type": "MeshInstance3D",
+      "layer": "paths",
+      "prefab": "path",
+      "transform": {
+        "position": [-4, 0.015, 2.5],
+        "rotation": [0, 0, 0],
+        "scale": [7, 0.02, 2]
+      }
+    },
+    {
+      "id": "path_2",
+      "name": "Path 2",
+      "type": "MeshInstance3D",
+      "layer": "paths",
+      "prefab": "path",
+      "transform": {
+        "position": [-4, 0.015, -12],
+        "rotation": [0, 0, 0],
+        "scale": [7, 0.02, 2]
+      }
+    },
+    {
+      "id": "path_3",
+      "name": "Path 3",
+      "type": "MeshInstance3D",
+      "layer": "paths",
+      "prefab": "path",
+      "transform": {
+        "position": [4, 0.015, -31],
+        "rotation": [0, 0, 0],
+        "scale": [7, 0.02, 2]
+      }
+    },
+    {
+      "id": "path_4",
+      "name": "Path 4",
+      "type": "MeshInstance3D",
+      "layer": "paths",
+      "prefab": "path",
+      "transform": {
+        "position": [0, 0.015, -34],
+        "rotation": [0, 0, 0],
+        "scale": [4, 0.02, 20]
+      }
+    },
+    {
+      "id": "path_5",
+      "name": "Path 5",
+      "type": "MeshInstance3D",
+      "layer": "paths",
+      "prefab": "path",
+      "transform": {
+        "position": [0, 0.015, -2],
+        "rotation": [0, 0, 0],
+        "scale": [3, 0.02, 14]
+      }
+    },
+    {
+      "id": "path_6",
+      "name": "Path 6",
+      "type": "MeshInstance3D",
+      "layer": "paths",
+      "prefab": "path",
+      "transform": {
+        "position": [0, 0.015, -14],
+        "rotation": [0, 0, 0],
+        "scale": [5, 0.02, 10]
+      }
+    },
+    {
+      "id": "path_7",
+      "name": "Path 7",
+      "type": "MeshInstance3D",
+      "layer": "paths",
+      "prefab": "path",
+      "transform": {
+        "position": [0, 0.015, -22],
+        "rotation": [0, 0, 0],
+        "scale": [8, 0.02, 7]
+      }
+    },
+    {
+      "id": "player",
+      "name": "Player spawn",
+      "type": "MeshInstance3D",
+      "layer": "actors",
+      "scripts": ["src/entities/Explorer.js", "src/rendering/CharacterVisual.js"],
+      "transform": {
+        "position": [0, 0.55, 3.5],
+        "rotation": [0, 0, 0],
+        "scale": [1, 1, 1]
+      },
+      "components": {
+        "Mesh": {
+          "type": "sphere",
+          "radius": 0.4,
+          "widthSegments": 16,
+          "heightSegments": 8
+        },
+        "Material": {
+          "type": "toon",
+          "albedoColor": "#5aa9e6"
+        }
+      }
+    },
+    {
+      "id": "courtyard_sentry_1",
+      "name": "Courtyard sentry 1",
+      "type": "MeshInstance3D",
+      "layer": "enemies",
+      "scripts": ["src/entities/Sentry.js"],
+      "transform": {
+        "position": [0, 0.55, -1.5],
+        "rotation": [0, 0, 0],
+        "scale": [1, 1, 1]
+      },
+      "components": {
+        "Mesh": {
+          "type": "sphere",
+          "radius": 0.4,
+          "widthSegments": 16,
+          "heightSegments": 8
+        },
+        "Material": {
+          "type": "toon",
+          "albedoColor": "#e65a5a"
+        },
+        "Enemy": {
+          "area": "Courtyard"
+        }
+      }
+    },
+    {
+      "id": "forest_trail_sentry_1",
+      "name": "Forest trail sentry 1",
+      "type": "MeshInstance3D",
+      "layer": "enemies",
+      "scripts": ["src/entities/Sentry.js"],
+      "transform": {
+        "position": [-1.5, 0.55, -9],
+        "rotation": [0, 0, 0],
+        "scale": [1, 1, 1]
+      },
+      "components": {
+        "Mesh": {
+          "type": "sphere",
+          "radius": 0.4,
+          "widthSegments": 16,
+          "heightSegments": 8
+        },
+        "Material": {
+          "type": "toon",
+          "albedoColor": "#e65a5a"
+        },
+        "Enemy": {
+          "area": "Forest trail"
+        }
+      }
+    },
+    {
+      "id": "forest_trail_sentry_2",
+      "name": "Forest trail sentry 2",
+      "type": "MeshInstance3D",
+      "layer": "enemies",
+      "scripts": ["src/entities/Sentry.js"],
+      "transform": {
+        "position": [2, 0.55, -13],
+        "rotation": [0, 0, 0],
+        "scale": [1, 1, 1]
+      },
+      "components": {
+        "Mesh": {
+          "type": "sphere",
+          "radius": 0.4,
+          "widthSegments": 16,
+          "heightSegments": 8
+        },
+        "Material": {
+          "type": "toon",
+          "albedoColor": "#e65a5a"
+        },
+        "Enemy": {
+          "area": "Forest trail"
+        }
+      }
+    },
+    {
+      "id": "old_grove_sentry_1",
+      "name": "Old grove sentry 1",
+      "type": "MeshInstance3D",
+      "layer": "enemies",
+      "scripts": ["src/entities/Sentry.js"],
+      "transform": {
+        "position": [-2, 0.55, -21],
+        "rotation": [0, 0, 0],
+        "scale": [1, 1, 1]
+      },
+      "components": {
+        "Mesh": {
+          "type": "sphere",
+          "radius": 0.4,
+          "widthSegments": 16,
+          "heightSegments": 8
+        },
+        "Material": {
+          "type": "toon",
+          "albedoColor": "#e65a5a"
+        },
+        "Enemy": {
+          "area": "Old grove"
+        }
+      }
+    },
+    {
+      "id": "old_grove_sentry_2",
+      "name": "Old grove sentry 2",
+      "type": "MeshInstance3D",
+      "layer": "enemies",
+      "scripts": ["src/entities/Sentry.js"],
+      "transform": {
+        "position": [2, 0.55, -23],
+        "rotation": [0, 0, 0],
+        "scale": [1, 1, 1]
+      },
+      "components": {
+        "Mesh": {
+          "type": "sphere",
+          "radius": 0.4,
+          "widthSegments": 16,
+          "heightSegments": 8
+        },
+        "Material": {
+          "type": "toon",
+          "albedoColor": "#e65a5a"
+        },
+        "Enemy": {
+          "area": "Old grove"
+        }
+      }
+    },
+    {
+      "id": "warp_courtyard",
+      "name": "Courtyard gate",
+      "type": "MeshInstance3D",
+      "layer": "warps",
+      "scripts": ["src/entities/WarpPoint.js"],
+      "transform": {
+        "position": [-4.5, 0, 3.5],
+        "rotation": [0, 0, 0],
+        "scale": [1, 1, 1]
+      },
+      "components": {
+        "Mesh": {
+          "type": "ring",
+          "innerRadius": 1.03,
+          "outerRadius": 1.27,
+          "segments": 48
+        },
+        "Material": {
+          "type": "unlit",
+          "color": "#63f5e6"
+        },
+        "Warp": {
+          "id": "courtyard",
+          "destination": "azure",
+          "color": "#63f5e6"
+        }
+      }
+    },
+    {
+      "id": "warp_azure",
+      "name": "Azure Lake",
+      "type": "MeshInstance3D",
+      "layer": "warps",
+      "scripts": ["src/entities/WarpPoint.js"],
+      "transform": {
+        "position": [-6, 0, -12],
+        "rotation": [0, 0, 0],
+        "scale": [1, 1, 1]
+      },
+      "components": {
+        "Mesh": {
+          "type": "ring",
+          "innerRadius": 1.03,
+          "outerRadius": 1.27,
+          "segments": 48
+        },
+        "Material": {
+          "type": "unlit",
+          "color": "#63f5e6"
+        },
+        "Warp": {
+          "id": "azure",
+          "destination": "courtyard",
+          "color": "#63f5e6"
+        }
+      }
+    },
+    {
+      "id": "warp_forest",
+      "name": "Forest gate",
+      "type": "MeshInstance3D",
+      "layer": "warps",
+      "scripts": ["src/entities/WarpPoint.js"],
+      "transform": {
+        "position": [4, 0, -10],
+        "rotation": [0, 0, 0],
+        "scale": [1, 1, 1]
+      },
+      "components": {
+        "Mesh": {
+          "type": "ring",
+          "innerRadius": 1.03,
+          "outerRadius": 1.27,
+          "segments": 48
+        },
+        "Material": {
+          "type": "unlit",
+          "color": "#c7a1ff"
+        },
+        "Warp": {
+          "id": "forest",
+          "destination": "moonwater",
+          "color": "#c7a1ff"
+        }
+      }
+    },
+    {
+      "id": "warp_moonwater",
+      "name": "Moonwater Lake",
+      "type": "MeshInstance3D",
+      "layer": "warps",
+      "scripts": ["src/entities/WarpPoint.js"],
+      "transform": {
+        "position": [6, 0, -31],
+        "rotation": [0, 0, 0],
+        "scale": [1, 1, 1]
+      },
+      "components": {
+        "Mesh": {
+          "type": "ring",
+          "innerRadius": 1.03,
+          "outerRadius": 1.27,
+          "segments": 48
+        },
+        "Material": {
+          "type": "unlit",
+          "color": "#c7a1ff"
+        },
+        "Warp": {
+          "id": "moonwater",
+          "destination": "forest",
+          "color": "#c7a1ff"
+        }
+      }
+    }
+  ]
+}

@@ -6,11 +6,20 @@
   "resources": "config/resources.json",
   "sceneFormat": "gameforgejs.scene",
   "play": "index.html",
-  "editing": "code",
+  "editing": "scene",
   "scripts": [
     "main.js",
     "src"
   ],
   "shaders": "shader",
-  "scenes": []
+  "scenes": [
+    {
+      "dimension": "3d",
+      "id": "solar-system",
+      "label": "Sistema Solar",
+      "path": "config/scenes/solar-system.gfscene.json",
+      "format": "gameforgejs.scene",
+      "resourceName": "solar_scene"
+    }
+  ]
 }

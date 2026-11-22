@@ -6,10 +6,18 @@
   "resources": "config/resources.json",
   "sceneFormat": "gameforgejs.scene",
   "play": "index.html",
-  "editing": "code",
+  "editing": "scene",
   "scripts": [
     "main.js",
     "src"
   ],
-  "scenes": []
+  "scenes": [
+    {
+      "dimension": "2d",
+      "id": "arena",
+      "label": "Fighting Arena",
+      "format": "gameforgejs.scene",
+      "path": "config/scenes/arena.gfscene.json"
+    }
+  ]
 }

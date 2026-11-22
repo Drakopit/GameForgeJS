@@ -68,9 +68,11 @@ physics ticks. Reset clears grounded references, pending jumps and checkpoint st
 
 ## Author a variant
 
-Copy assets/Manifests/sky-trail/course.json and register it in config/resources.json
-with a JSON asset name beginning with `sky_trail_course_`. The menu discovers it.
-Keep unique platform IDs, and make coin platformId references match those IDs.
+Copy assets/Scenes/sky-trail/sky-trail.gfscene.json (or create it in the GameForgeJS
+Editor's 3D view) and register it in config/resources.json with a JSON asset name
+beginning with `sky_trail_course_`. The menu discovers it. Platforms, coins (children
+of their platform), the player spawn, the goal and the lights are scene nodes;
+gameplay tuning is the scene's `settings`. Keep unique platform node IDs.
 A platform with `checkpoint: true` must be stationary and permanent: a moving or
 blinking checkpoint is rejected. Its respawn point is computed from the top surface
 and the player's collider, not a second hard-coded spawn coordinate.

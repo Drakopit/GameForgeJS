@@ -110,8 +110,9 @@ does not alter movement or introduce another state machine.
 
 ### Build a scrolling stage
 
-1. Edit `src/data/MovementStage.js`. `columns`, `rows`, and terrain rectangles
-   use tile units. `spawn` and `goal` use pixels.
+1. Edit `config/stages/movement.gfscene.json` (or open it in the editor's 2D view).
+   Terrain nodes are pixel rectangles on the tile grid; `spawn` and `goal` are nodes.
+   `src/data/StageScene.js` reads it.
 2. The level supplies the same terrain to drawing and `TilePlatformerWorld`.
    Extending the map does not require changing the movement addon.
 3. Construct the framework's `Camera` with the screen size and call `Init(screen,
@@ -142,7 +143,7 @@ All four tooling/runtime files live in the demo's `config/` directory:
   and `addons: ["platformer"]`.
 
 The project metadata points to the runtime files; it does not duplicate their
-settings. Stage data lives in `src/data/MovementStage.js`; the level owns rules
+settings. Stage data lives in `config/stages/*.gfscene.json`; the level owns rules
 and the player owns respawn behavior.
 
 ## Next increments

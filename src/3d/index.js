@@ -21,6 +21,7 @@ export {
     SpotLight,
     Material,
     Shader,
+    BuiltinShaders,
     StandardMaterial,
     ToonMaterial,
     Texture,

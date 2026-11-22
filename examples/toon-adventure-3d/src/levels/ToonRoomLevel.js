@@ -2,12 +2,11 @@ import { GameObject } from 'gameforgejs/2d';
 import { FootstepRipples } from '../rendering/FootstepRipples.js';
 import { ToonPond } from '../entities/ToonPond.js';
 import { Lakes } from '../data/Lakes.js';
-import { WarpPoints } from '../data/WarpSettings.js';
 import { WarpPoint } from '../entities/WarpPoint.js';
 import { WarpTravel } from '../components/WarpTravel.js';
 import { ActionManager, AssetManager, Vector3D, SoundEffects } from 'gameforgejs/core';
-import { Level3D, PerspectiveCamera, AmbientLight, DirectionalLight, Skybox } from 'gameforgejs/3d';
-import { Courtyard } from '../data/Courtyard.js';
+import { Level3D, PerspectiveCamera, SceneManifest3D, Skybox } from 'gameforgejs/3d';
+import { CourtyardFromScene } from '../data/CourtyardScene.js';
 import { CourtyardRoom } from '../entities/CourtyardRoom.js';
 import { Explorer } from '../entities/Explorer.js';
 import { ToonRoomHUD } from '../ui/ToonRoomHUD.js';
@@ -28,18 +27,20 @@ export class ToonRoomLevel extends Level3D {
     BuildScene() {
         this.bands = 3;
         this.hud = new ToonRoomHUD(this.ui);
+        // Layout, camera and lights come from config/scenes/courtyard.gfscene.json.
+        const { courtyard: Courtyard, warpPoints, lights } = CourtyardFromScene(this.context.assets.jsons.courtyard);
+        this.courtyard = Courtyard;
         this.physics.bounds = Courtyard.bounds;
         this.camera = new PerspectiveCamera({ ...Courtyard.camera, aspect: this.width / this.height });
         this.scene.Add(this.camera);
-        this.scene.Add(new AmbientLight({ intensity: 0.3 }));
-        this.scene.Add(new DirectionalLight({ ...Courtyard.sunlight, castShadow: true }));
+        for (const light of lights) this.scene.Add(SceneManifest3D.CreateLight(light));
         this.room = this.AddEntity(new CourtyardRoom(this.scene, this.physics, Courtyard));
         this.lakes = Lakes.map(definition => this.AddEntity(new ToonPond(this.scene, this.physics, definition)));
         this.pond = this.lakes[0];
         this.player = this.AddEntity(new Explorer(this.physics, Courtyard.spawn, this.lakes));
         this.waterRipples = this.lakes.map(lake => this.AddEntity(new FootstepRipples(this.scene, this.player, lake)));
         this.footstepRipples = this.waterRipples[0];
-        this.warpPoints = WarpPoints.map(definition => this.AddEntity(new WarpPoint(this.scene, definition)));
+        this.warpPoints = warpPoints.map(definition => this.AddEntity(new WarpPoint(this.scene, definition)));
         this.warpTravel = new WarpTravel(this.warpPoints, name => this.hud.ShowTravel(name)).Attach(this.player);
         this.enemies = Courtyard.areas.flatMap(area => area.enemies.map(spawn =>
             this.AddEntity(new Sentry(this.physics, spawn))));
@@ -123,7 +124,7 @@ export class ToonRoomLevel extends Level3D {
         });
         if (lakeside) return lakeside.definition.name;
         const z = position.z;
-        return Courtyard.areas.find(area => z >= area.minZ)?.name ?? 'Old grove';
+        return this.courtyard.areas.find(area => z >= area.minZ)?.name ?? 'Old grove';
     }
 
     OnDrawn() {

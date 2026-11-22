@@ -1,7 +1,6 @@
 export const ScreenSettings = Object.freeze({ width: 960, height: 540 });
-export const ArenaSettings = Object.freeze({ left: 58, right: 902, groundY: 426, floorTop: 426, floorHeight: 114 });
-export const RoundSettings = Object.freeze({ startDelay: 0.9, endDelay: 2.1, maxTime: 99, winsToMatch: 2,
-    playerOneX: 272, playerTwoX: 688, continueDelay: 1.2 });
+// Arena bounds and start positions live in config/scenes/arena.gfscene.json.
+export const RoundSettings = Object.freeze({ startDelay: 0.9, endDelay: 2.1, maxTime: 99, winsToMatch: 2, continueDelay: 1.2 });
 export const FighterSettings = Object.freeze({
     scale: 2.75, maxHp: 100, walkSpeed: 230, jumpStrength: -560, gravity: 1450,
     airControl: 0.78, friction: 0.72, pushRadius: 35, hurtWidth: 45, hurtHeight: 116,

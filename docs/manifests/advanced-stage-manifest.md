@@ -19,22 +19,25 @@ names registered in the game's `resources.json`.
 The second and boss levels use `advanced.second.level.json` and
 `advanced.boss.level.json`, with their own `second-*` and `boss-*` documents.
 
-An index composes registered resource names in order:
+An index composes the shared documents and names the level's scene file:
 
 ```json
 {
   "id": "advanced_snow_demo",
   "compose": [
     "advanced_stage_default",
-    "advanced_core",
-    "advanced_stage",
     "advanced_player",
-    "advanced_enemies",
     "advanced_effects",
     "advanced_ui"
-  ]
+  ],
+  "scene": "advanced_first_scene"
 }
 ```
+
+Each level's layout (world, victory line, parallax layers, platforms, objects and
+enemies) is one `gameforgejs.scene` file in `assets/Scenes/` (`first`, `second`,
+`boss`). Enemy defaults are the scene's `enemy` prefab. `src/data/LevelScene.js`
+reads it with `SceneDocument.Items(layer)` and merges it over the composed documents.
 
 This convention is implemented by the Advanced game. A JSON document does not
 automatically become an engine feature: a game's loader must interpret it.

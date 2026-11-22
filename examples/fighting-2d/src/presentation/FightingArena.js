@@ -1,7 +1,9 @@
-import { ScreenSettings as SCREEN, ArenaSettings as ARENA } from '../data/FightingSettings.js';
+import { ScreenSettings as SCREEN } from '../data/FightingSettings.js';
 
 export class FightingArena {
-    DrawArena(ctx) {
+    /** @param {{floorTop: number, floorHeight: number}} arena - The level's arena (from its scene). */
+    DrawArena(ctx, arena) {
+        const ARENA = arena;
         const sky = ctx.createLinearGradient(0, 0, 0, SCREEN.height);
         sky.addColorStop(0, "#17203A");
         sky.addColorStop(0.48, "#253A5C");

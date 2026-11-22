@@ -7,14 +7,18 @@ import { FightingCombat } from '../combat/FightingCombat.js';
 import { FightingArena } from '../presentation/FightingArena.js';
 import { FightingEffects } from '../presentation/FightingEffects.js';
 import { FightingHUD } from '../ui/FightingHUD.js';
-import { ArenaSettings, ScreenSettings, RoundSettings as Round, CombatSettings } from '../data/FightingSettings.js';
+import { ScreenSettings, RoundSettings as Round, CombatSettings } from '../data/FightingSettings.js';
+import { ArenaFromScene } from '../data/ArenaScene.js';
 import { FIGHTING_GAME_FLOW, FightingGameSession, GoToFightingLevel } from '../state/FightingGameState.js';
 import { FightingViewport } from '../presentation/FightingViewport.js';
 import { FightingTouchControls } from '../input/FightingTouchControls.js';
 
 export class FightingGame2DLevel extends Level {
-    constructor() { super(); this.caption = 'GameForgeJS — Fighting Arena 2D'; this.TelaId = 'FightingGame2D'; this.arena = ArenaSettings; }
+    constructor() { super(); this.caption = 'GameForgeJS — Fighting Arena 2D'; this.TelaId = 'FightingGame2D'; }
     OnStart(context = this.context) {
+        // Arena bounds, ground line and start marks come from config/scenes/arena.gfscene.json.
+        this.layout = ArenaFromScene(context.assets.jsons.arena_scene);
+        this.arena = this.layout.arena;
         this.screen = new Screen(this.TelaId, ScreenSettings.width, ScreenSettings.height, { config: context.config });
         this.screen.Canvas.focus();
         this.viewport = new FightingViewport(this.screen,{combat:true});
@@ -33,8 +37,8 @@ export class FightingGame2DLevel extends Level {
             id, name: character.name, image: AssetManager.instance.GetImage(character.asset), screen: this.screen,
             tint: character.tint, stats: character.stats, x, groundY: this.arena.groundY, facingRight, input, controlledByPlayer,
         }));
-        this.playerOne = create('p1', FightingGameSession.GetP1(), Round.playerOneX, true, this.input.controls.playerOne, true);
-        this.playerTwo = create('p2', FightingGameSession.GetP2(), Round.playerTwoX, false, this.input.controls.playerTwo, FightingGameSession.mode === 'versus');
+        this.playerOne = create('p1', FightingGameSession.GetP1(), this.layout.playerOneX, true, this.input.controls.playerOne, true);
+        this.playerTwo = create('p2', FightingGameSession.GetP2(), this.layout.playerTwoX, false, this.input.controls.playerTwo, FightingGameSession.mode === 'versus');
         this.fighters = [this.playerOne, this.playerTwo];
         this.playerOne.opponent = this.playerTwo; this.playerTwo.opponent = this.playerOne;
         this.cpu = new FightingCPU();
@@ -48,8 +52,8 @@ export class FightingGame2DLevel extends Level {
         this.roundState = 'intro'; this.roundStateTimer = Round.startDelay; this.roundTimer = Round.maxTime;
         this.input.ClearQueued();
         this.arcadeComplete = false; this.combat.Clear(); this.effects.Reset(); this.cpu.Reset();
-        this.playerOne.ResetRound(Round.playerOneX, this.arena.groundY, true);
-        this.playerTwo.ResetRound(Round.playerTwoX, this.arena.groundY, false);
+        this.playerOne.ResetRound(this.layout.playerOneX, this.arena.groundY, true);
+        this.playerTwo.ResetRound(this.layout.playerTwoX, this.arena.groundY, false);
         this.playerOne.ChangeState('intro');this.playerTwo.ChangeState('intro');
     }
     OnUpdate(dt) {
@@ -113,7 +117,7 @@ export class FightingGame2DLevel extends Level {
         this.viewport.Begin();
         const ctx = this.screen.Context; const shake = this.effects.Offset();
         ctx.save(); ctx.translate(shake.x, shake.y);
-        this.background.DrawArena(ctx);
+        this.background.DrawArena(ctx, this.arena);
         // The level owns its background pass; each registered entity owns its drawing.
         for (const entity of [...this.entities].sort((a, b) => a.position.y - b.position.y)) entity.OnDrawn();
         this.effects.Draw(ctx); ctx.restore();this.viewport.End();

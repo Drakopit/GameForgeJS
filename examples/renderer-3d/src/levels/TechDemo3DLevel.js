@@ -1,5 +1,5 @@
-import { ActionManager, GameViewport } from 'gameforgejs/core';
-import { Level3D, PerspectiveCamera, DirectionalLight, HemisphereLight, PointLight } from 'gameforgejs/3d';
+import { ActionManager, GameViewport, SceneDocument } from 'gameforgejs/core';
+import { Level3D, PerspectiveCamera, SceneManifest3D } from 'gameforgejs/3d';
 import { RendererHUD } from '../ui/RendererHUD.js';
 import { SurfaceGallery } from '../entities/SurfaceGallery.js';
 
@@ -12,22 +12,18 @@ export class TechDemo3DLevel extends Level3D {
 
     BuildScene() {
         this.time = 0;
-        this.scene.backgroundColor = [0.17, 0.23, 0.29, 1];
-        this.scene.fog = { color: this.scene.backgroundColor.slice(0, 3), near: 12, far: 36 };
-        this.scene.planarReflection = { height: 0 };
-        this.camera = this.scene.Add(new PerspectiveCamera({
-            fov: 43, near: 0.15, far: 80, position: [5, 4.2, 10], target: [0, 0.6, -0.6],
-        }));
-        this.scene.Add(new HemisphereLight({
-            skyColor: [0.56, 0.73, 0.96], groundColor: [0.24, 0.18, 0.15], intensity: 0.72,
-        }));
-        this.key = this.scene.Add(new DirectionalLight({
-            color: [0.77, 0.87, 1], intensity: 1.65, castShadow: true, shadowDistance: 14,
-        }));
-        for (const x of [-4.8, 4.8]) {
-            this.scene.Add(new PointLight({ position: [x, 2.95, -4.3], color: [1, 0.58, 0.26],
-                intensity: 4, range: 9 }));
-        }
+        // Camera, fog and lights come from assets/Scenes/gallery.gfscene.json (editable in the editor).
+        const gallery = new SceneDocument(this.context.assets.jsons.gallery_scene);
+        const settings = gallery.settings;
+        this.scene.backgroundColor = [...settings.backgroundColor];
+        this.scene.fog = { color: this.scene.backgroundColor.slice(0, 3), ...settings.fog };
+        this.scene.planarReflection = { ...settings.planarReflection };
+        this.camera = this.scene.Add(new PerspectiveCamera({ ...settings.camera }));
+        const lights = gallery.Lights();
+        gallery.Nodes({ type: 'Light3D' }).forEach((node, index) => {
+            const light = this.scene.Add(SceneManifest3D.CreateLight(lights[index]));
+            if (node.id === 'key') this.key = light;
+        });
         this.gallery = this.AddEntity(new SurfaceGallery(this.scene, this.context.services.get('audio')));
         this.hud = new RendererHUD(this);
         this.releaseViewport = GameViewport.Bind(this.ui.Screen, { maxWidth: 1440,

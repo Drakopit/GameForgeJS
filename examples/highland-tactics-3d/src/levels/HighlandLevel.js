@@ -1,6 +1,6 @@
-import { ActionManager, Input, Touch, GameViewport, MathExt, SoundEffects } from 'gameforgejs/core';
+import { ActionManager, Input, Touch, GameViewport, MathExt, SoundEffects, SceneDocument } from 'gameforgejs/core';
 import { GameObject } from 'gameforgejs/2d';
-import { Level3D, OrthographicCamera, HeightGrid, AmbientLight, HemisphereLight, DirectionalLight } from 'gameforgejs/3d';
+import { Level3D, OrthographicCamera, HeightGrid, SceneManifest3D } from 'gameforgejs/3d';
 import { BattleFromScene } from '../data/BattleScene.js';
 import { TacticalPawn } from '../entities/TacticalPawn.js';
 import { HighlandEnvironment } from '../entities/HighlandEnvironment.js';
@@ -12,14 +12,15 @@ import { TacticalHUD } from '../ui/TacticalHUD.js';
 export class HighlandLevel extends Level3D {
     constructor() { super({ width: 1100, height: 760, usePhysics: false, clearColor: [0.09, 0.16, 0.2, 1] }); this.caption = 'Highland Tactics 3D'; }
     BuildScene() {
-        const data = BattleFromScene(this.context.assets.jsons.battlefield);
+        const document = this.context.assets.jsons.battlefield;
+        const scene = new SceneDocument(document);
+        const data = BattleFromScene(document);
         this.grid = new HeightGrid(data.heights);
         this.scene.fog = { color: [0.13, 0.23, 0.26], near: 25, far: 65 };
-        this.camera = new OrthographicCamera({ position: [16, 14, 16], target: [0, 0.7, 0], viewHeight: 13, far: 100 });
+        const { position, target } = scene.settings.camera;
+        this.camera = new OrthographicCamera({ position, target, viewHeight: 13, far: 100 });
         this.scene.Add(this.camera);
-        this.scene.Add(new AmbientLight({ intensity: 0.18 }));
-        this.scene.Add(new HemisphereLight({ skyColor: [0.8, 0.9, 1], groundColor: [0.3, 0.23, 0.15], intensity: 0.28 }));
-        this.scene.Add(new DirectionalLight({ direction: [-0.5, -1, -0.3], color: [1, 0.9, 0.72], intensity: 0.65, castShadow: true, shadowMapSize: 1024, shadowDistance: 20 }));
+        for (const light of scene.Lights()) this.scene.Add(SceneManifest3D.CreateLight(light));
         this.terrain = this.AddEntity(new TerrainView(this.scene, this.grid));
         this.environment = this.AddEntity(new HighlandEnvironment(this.scene, this.grid, this.terrain.stone));
         this.pawns = data.units.map(unit => this.AddEntity(new TacticalPawn(this.grid, this.scene, unit)));

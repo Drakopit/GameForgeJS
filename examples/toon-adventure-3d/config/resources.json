@@ -41,6 +41,10 @@
   ],
   "jsons": [
     {
+      "name": "courtyard",
+      "path": "../config/scenes/courtyard.gfscene.json"
+    },
+    {
       "name": "prompts",
       "path": "./prompts.json"
     }

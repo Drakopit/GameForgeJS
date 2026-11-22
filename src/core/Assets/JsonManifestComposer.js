@@ -1,12 +1,7 @@
 import { AssetManager } from "./AssetManager.js";
-import { SceneDocument } from "../Scene/SceneDocument.js";
 
 /**
  * Combines JSON game manifests referenced through their `compose` entries.
- *
- * A compose entry may name a 2D `gameforgejs.scene` document: its level
- * documents (`SceneDocument.ToLevelDocuments()`, e.g. stage, enemies) are merged
- * in scene order, so a level can keep its spatial data in one scene file.
  */
 export class JsonManifestComposer {
     /**
@@ -35,7 +30,7 @@ export class JsonManifestComposer {
             throw new Error(`JsonManifestComposer: dependency cycle ${[...ancestors, name].join(" -> ")}.`);
         }
         if (resolved.has(name)) return this.Clone(resolved.get(name));
-        const manifest = this.FromScene(assets.GetJson(name));
+        const manifest = assets.GetJson(name);
         if (manifest == null) {
             throw new Error(`JsonManifestComposer: JSON '${name}' is not loaded (dependency path: ${[...ancestors, name].join(" -> ")}). Await its loading before composing.`);
         }
@@ -63,10 +58,10 @@ export class JsonManifestComposer {
         }
         if (resolved.has(name)) return this.Clone(resolved.get(name));
 
-        let manifest = this.FromScene(assets.GetJson?.(name));
+        let manifest = assets.GetJson?.(name);
         if (manifest == null && typeof assets.GetJsonAsync === "function") {
             try {
-                manifest = this.FromScene(await assets.GetJsonAsync(name));
+                manifest = await assets.GetJsonAsync(name);
             } catch (error) {
                 throw new Error(
                     `JsonManifestComposer: JSON '${name}' could not be loaded (dependency path: ${[...ancestors, name].join(" -> ")}).`,
@@ -89,19 +84,6 @@ export class JsonManifestComposer {
         }
 
         resolved.set(name, this.Clone(result));
-        return result;
-    }
-
-    /**
-     * Flattens a 2D scene document into one manifest (its level documents merged in order).
-     * Other values are returned unchanged.
-     * @param {*} manifest - Loaded JSON value.
-     * @returns {*}
-     */
-    static FromScene(manifest) {
-        if (!SceneDocument.IsScene(manifest) || manifest.dimension !== "2d") return manifest;
-        const result = {};
-        for (const document of Object.values(new SceneDocument(manifest).ToLevelDocuments())) this.DeepMerge(result, document);
         return result;
     }
 

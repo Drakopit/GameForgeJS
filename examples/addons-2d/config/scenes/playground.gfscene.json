@@ -33,10 +33,7 @@
       "type": "ParallaxLayer2D",
       "layer": "parallax",
       "transform": {
-        "position": [
-          0,
-          0
-        ]
+        "position": [0, 0]
       },
       "components": {
         "Parallax": {
@@ -50,10 +47,7 @@
       "type": "ParallaxLayer2D",
       "layer": "parallax",
       "transform": {
-        "position": [
-          0,
-          0
-        ]
+        "position": [0, 0]
       },
       "components": {
         "Parallax": {
@@ -67,36 +61,25 @@
       "type": "Actor2D",
       "layer": "actors",
       "transform": {
-        "position": [
-          300,
-          326
-        ]
+        "position": [300, 326]
       },
-      "size": [
-        32,
-        34
-      ],
+      "size": [32, 34],
       "name": "Patrol actor",
       "components": {
         "Data": {
           "speed": 100
         }
-      }
+      },
+      "scripts": ["src/entities/PatrolActor.js", "src/states/PatrolState.js", "src/states/RestState.js"]
     },
     {
       "id": "patrol_bounds",
       "type": "Node2D",
       "layer": "areas",
       "transform": {
-        "position": [
-          140,
-          326
-        ]
+        "position": [140, 326]
       },
-      "size": [
-        480,
-        34
-      ],
+      "size": [480, 34],
       "name": "Patrol range (actor x)"
     }
   ]

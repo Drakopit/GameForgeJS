@@ -1,0 +1,45 @@
+{
+  "format": "gameforgejs.scene",
+  "version": 1,
+  "dimension": "2d",
+  "id": "arena",
+  "name": "Puzzle Arena",
+  "settings": {
+    "world": {
+      "width": 800,
+      "height": 600
+    },
+    "note": "Each board node's position is the board's top-left corner (6 x 12 gems of 32 px). board_1 is the player, board_2 the CPU."
+  },
+  "layers": [
+    {
+      "id": "boards",
+      "name": "Boards",
+      "type": "Area2D"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "board_1",
+      "name": "Player board",
+      "type": "Area2D",
+      "layer": "boards",
+      "scripts": ["src/entities/PuzzleBoard.js", "src/entities/FallingPiece.js"],
+      "transform": {
+        "position": [50, 100]
+      },
+      "size": [192, 384]
+    },
+    {
+      "id": "board_2",
+      "name": "CPU board",
+      "type": "Area2D",
+      "layer": "boards",
+      "scripts": ["src/entities/PuzzleBoard.js"],
+      "transform": {
+        "position": [550, 100]
+      },
+      "size": [192, 384]
+    }
+  ]
+}

@@ -42,7 +42,8 @@
         "Platform": {
           "type": "wood"
         }
-      }
+      },
+      "scripts": ["src/world/OnlineWorldView.js"]
     },
     {
       "id": "platform_2",
@@ -56,7 +57,8 @@
         "Platform": {
           "type": "dirt"
         }
-      }
+      },
+      "scripts": ["src/world/OnlineWorldView.js"]
     },
     {
       "id": "platform_3",
@@ -70,7 +72,8 @@
         "Platform": {
           "type": "stone"
         }
-      }
+      },
+      "scripts": ["src/world/OnlineWorldView.js"]
     },
     {
       "id": "platform_4",
@@ -84,7 +87,8 @@
         "Platform": {
           "type": "wood"
         }
-      }
+      },
+      "scripts": ["src/world/OnlineWorldView.js"]
     },
     {
       "id": "crystal_a",
