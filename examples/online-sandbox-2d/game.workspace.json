@@ -6,14 +6,14 @@
   "resources": "config/resources.json",
   "sceneFormat": "gameforgejs.scene",
   "play": "index.html",
-  "editing": "adapter",
+  "editing": "scene",
   "scenes": [
     {
       "dimension": "2d",
       "id": "world",
-      "label": "Sandbox world",
-      "adapter": "online-sandbox-rules",
-      "source": "config/world.rules.json"
+      "label": "Online sandbox world",
+      "format": "gameforgejs.scene",
+      "source": "config/scenes/world.gfscene.json"
     }
   ]
 }

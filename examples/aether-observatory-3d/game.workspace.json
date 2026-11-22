@@ -6,14 +6,14 @@
   "resources": "config/resources.json",
   "sceneFormat": "gameforgejs.scene",
   "play": "index.html",
-  "editing": "adapter",
+  "editing": "scene",
   "scenes": [
     {
       "dimension": "3d",
       "id": "islands",
       "label": "Floating islands",
-      "path": "config/scenario.json",
-      "format": "adapter:aether-scenario"
+      "path": "config/scenes/islands.gfscene.json",
+      "format": "gameforgejs.scene"
     }
   ]
 }

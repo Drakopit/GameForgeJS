@@ -8,12 +8,13 @@ import { OnlineControls } from '../input/OnlineControls.js';
 import { OnlineInterface } from '../ui/OnlineInterface.js';
 import { OnlineWorldView } from '../world/OnlineWorldView.js';
 import { OnlineAudio } from '../audio/OnlineAudio.js';
+import { RulesWithWorld } from '../data/WorldScene.js';
 
 /** Scene orchestration; transport, movement, input and presentation have separate owners. */
 export class OnlineMMOLevel extends Level {
     constructor() { super(); this.caption = 'GameForgeJS — Skybound Together'; this.TelaId = 'online-sandbox'; }
     OnStart(context = this.context) {
-        this.rules = context.assets.jsons['world-rules'];
+        this.rules = RulesWithWorld(context.assets.jsons['world-rules'], context.assets.jsons['world-scene']);
         this.screen = new Screen(this.TelaId, 960, 600, { config: context.config });
         this.releaseViewport = GameViewport.Bind(this.screen, {
             onResize: () => { this.controls?.touch.CancelAll(); this.controls?.Layout(); },

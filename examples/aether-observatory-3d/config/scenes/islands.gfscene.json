@@ -1,0 +1,625 @@
+{
+  "format": "gameforgejs.scene",
+  "version": 1,
+  "dimension": "3d",
+  "id": "islands",
+  "name": "Aether Observatory",
+  "settings": {
+    "backgroundColor": [0.17, 0.28, 0.38, 1],
+    "camera": {
+      "fov": 55,
+      "near": 0.1,
+      "far": 260,
+      "position": [26, 22, 34],
+      "target": [0, 0, 0]
+    },
+    "note": "Islands are 1.2-thick slabs centred at y = -0.6: X/Z position and scale X/Z give x, z, width and depth. The spawn node's position is movement.spawn."
+  },
+  "layers": [
+    {
+      "id": "lights",
+      "name": "Lights",
+      "type": "Light3D"
+    },
+    {
+      "id": "islands",
+      "name": "Islands",
+      "type": "MeshInstance3D"
+    },
+    {
+      "id": "markers",
+      "name": "Markers",
+      "type": "MeshInstance3D"
+    }
+  ],
+  "prefabs": {
+    "island": {
+      "type": "MeshInstance3D",
+      "components": {
+        "Mesh": {
+          "type": "cube",
+          "size": 1
+        },
+        "Material": {
+          "albedoColor": "#4a8e83",
+          "roughness": 0.94
+        },
+        "Data": {
+          "castShadow": true,
+          "parts": [
+            {
+              "primitive": {
+                "type": "cube",
+                "size": 1
+              },
+              "transform": {
+                "position": [0, 0, 0],
+                "scale": [1, 1, 1]
+              }
+            },
+            {
+              "primitive": {
+                "type": "sphere",
+                "radius": 1,
+                "widthSegments": 7,
+                "heightSegments": 4
+              },
+              "transform": {
+                "position": [0, -2.833333, 0],
+                "scale": [0.52, 4.166667, 0.5]
+              },
+              "material": {
+                "albedoColor": "#344b63",
+                "roughness": 0.8
+              }
+            },
+            {
+              "primitive": {
+                "type": "sphere",
+                "radius": 1,
+                "widthSegments": 7,
+                "heightSegments": 4
+              },
+              "transform": {
+                "position": [0.25, -5.333333, 0],
+                "scale": [0.225, 5, 0.225]
+              },
+              "material": {
+                "albedoColor": "#344b63",
+                "roughness": 0.8
+              }
+            },
+            {
+              "primitive": {
+                "type": "sphere",
+                "radius": 1,
+                "widthSegments": 7,
+                "heightSegments": 4
+              },
+              "transform": {
+                "position": [0.077254, -7, 0.237764],
+                "scale": [0.225, 5.833333, 0.225]
+              },
+              "material": {
+                "albedoColor": "#344b63",
+                "roughness": 0.8
+              }
+            },
+            {
+              "primitive": {
+                "type": "sphere",
+                "radius": 1,
+                "widthSegments": 7,
+                "heightSegments": 4
+              },
+              "transform": {
+                "position": [-0.202254, -5.333333, 0.146946],
+                "scale": [0.225, 6.666667, 0.225]
+              },
+              "material": {
+                "albedoColor": "#344b63",
+                "roughness": 0.8
+              }
+            },
+            {
+              "primitive": {
+                "type": "sphere",
+                "radius": 1,
+                "widthSegments": 7,
+                "heightSegments": 4
+              },
+              "transform": {
+                "position": [-0.202254, -7, -0.146946],
+                "scale": [0.225, 5, 0.225]
+              },
+              "material": {
+                "albedoColor": "#344b63",
+                "roughness": 0.8
+              }
+            },
+            {
+              "primitive": {
+                "type": "sphere",
+                "radius": 1,
+                "widthSegments": 7,
+                "heightSegments": 4
+              },
+              "transform": {
+                "position": [0.077254, -5.333333, -0.237764],
+                "scale": [0.225, 5.833333, 0.225]
+              },
+              "material": {
+                "albedoColor": "#344b63",
+                "roughness": 0.8
+              }
+            },
+            {
+              "primitive": {
+                "type": "cube",
+                "size": 1
+              },
+              "transform": {
+                "position": [0.38, 1.75, 0],
+                "scale": [0.02, 2.5, 0.02]
+              },
+              "material": {
+                "albedoColor": "#c89350",
+                "metallic": 0.65,
+                "roughness": 0.35
+              }
+            },
+            {
+              "primitive": {
+                "type": "sphere",
+                "radius": 1,
+                "widthSegments": 7,
+                "heightSegments": 4
+              },
+              "transform": {
+                "position": [0.38, 3.833333, 0],
+                "scale": [0.08, 1.666667, 0.08]
+              },
+              "material": {
+                "albedoColor": "#437b74",
+                "roughness": 1
+              }
+            },
+            {
+              "primitive": {
+                "type": "cube",
+                "size": 1
+              },
+              "transform": {
+                "position": [0.236926, 1.75, 0.297096],
+                "scale": [0.02, 2.5, 0.02]
+              },
+              "material": {
+                "albedoColor": "#c89350",
+                "metallic": 0.65,
+                "roughness": 0.35
+              }
+            },
+            {
+              "primitive": {
+                "type": "sphere",
+                "radius": 1,
+                "widthSegments": 7,
+                "heightSegments": 4
+              },
+              "transform": {
+                "position": [0.236926, 3.833333, 0.297096],
+                "scale": [0.08, 1.666667, 0.08]
+              },
+              "material": {
+                "albedoColor": "#437b74",
+                "roughness": 1
+              }
+            },
+            {
+              "primitive": {
+                "type": "cube",
+                "size": 1
+              },
+              "transform": {
+                "position": [-0.084558, 1.75, 0.370473],
+                "scale": [0.02, 2.5, 0.02]
+              },
+              "material": {
+                "albedoColor": "#c89350",
+                "metallic": 0.65,
+                "roughness": 0.35
+              }
+            },
+            {
+              "primitive": {
+                "type": "sphere",
+                "radius": 1,
+                "widthSegments": 7,
+                "heightSegments": 4
+              },
+              "transform": {
+                "position": [-0.084558, 3.833333, 0.370473],
+                "scale": [0.08, 1.666667, 0.08]
+              },
+              "material": {
+                "albedoColor": "#437b74",
+                "roughness": 1
+              }
+            },
+            {
+              "primitive": {
+                "type": "cube",
+                "size": 1
+              },
+              "transform": {
+                "position": [-0.342368, 1.75, 0.164876],
+                "scale": [0.02, 2.5, 0.02]
+              },
+              "material": {
+                "albedoColor": "#c89350",
+                "metallic": 0.65,
+                "roughness": 0.35
+              }
+            },
+            {
+              "primitive": {
+                "type": "sphere",
+                "radius": 1,
+                "widthSegments": 7,
+                "heightSegments": 4
+              },
+              "transform": {
+                "position": [-0.342368, 3.833333, 0.164876],
+                "scale": [0.08, 1.666667, 0.08]
+              },
+              "material": {
+                "albedoColor": "#437b74",
+                "roughness": 1
+              }
+            },
+            {
+              "primitive": {
+                "type": "cube",
+                "size": 1
+              },
+              "transform": {
+                "position": [-0.342368, 1.75, -0.164876],
+                "scale": [0.02, 2.5, 0.02]
+              },
+              "material": {
+                "albedoColor": "#c89350",
+                "metallic": 0.65,
+                "roughness": 0.35
+              }
+            },
+            {
+              "primitive": {
+                "type": "sphere",
+                "radius": 1,
+                "widthSegments": 7,
+                "heightSegments": 4
+              },
+              "transform": {
+                "position": [-0.342368, 3.833333, -0.164876],
+                "scale": [0.08, 1.666667, 0.08]
+              },
+              "material": {
+                "albedoColor": "#437b74",
+                "roughness": 1
+              }
+            },
+            {
+              "primitive": {
+                "type": "cube",
+                "size": 1
+              },
+              "transform": {
+                "position": [-0.084558, 1.75, -0.370473],
+                "scale": [0.02, 2.5, 0.02]
+              },
+              "material": {
+                "albedoColor": "#c89350",
+                "metallic": 0.65,
+                "roughness": 0.35
+              }
+            },
+            {
+              "primitive": {
+                "type": "sphere",
+                "radius": 1,
+                "widthSegments": 7,
+                "heightSegments": 4
+              },
+              "transform": {
+                "position": [-0.084558, 3.833333, -0.370473],
+                "scale": [0.08, 1.666667, 0.08]
+              },
+              "material": {
+                "albedoColor": "#437b74",
+                "roughness": 1
+              }
+            },
+            {
+              "primitive": {
+                "type": "cube",
+                "size": 1
+              },
+              "transform": {
+                "position": [0.236926, 1.75, -0.297096],
+                "scale": [0.02, 2.5, 0.02]
+              },
+              "material": {
+                "albedoColor": "#c89350",
+                "metallic": 0.65,
+                "roughness": 0.35
+              }
+            },
+            {
+              "primitive": {
+                "type": "sphere",
+                "radius": 1,
+                "widthSegments": 7,
+                "heightSegments": 4
+              },
+              "transform": {
+                "position": [0.236926, 3.833333, -0.297096],
+                "scale": [0.08, 1.666667, 0.08]
+              },
+              "material": {
+                "albedoColor": "#437b74",
+                "roughness": 1
+              }
+            },
+            {
+              "primitive": {
+                "type": "cube",
+                "size": 1
+              },
+              "transform": {
+                "position": [0.35, -4.5, -0.1],
+                "scale": [0.06, 10, 0.01]
+              },
+              "material": {
+                "type": "unlit",
+                "color": [0.25, 0.8, 0.88, 0.3],
+                "transparent": true
+              },
+              "castShadow": false
+            },
+            {
+              "primitive": {
+                "type": "cube",
+                "size": 1
+              },
+              "transform": {
+                "position": [0, 0.533333, -0.35],
+                "scale": [0.125, 0.066667, 0.06]
+              },
+              "material": {
+                "albedoColor": "#e4d9b5",
+                "roughness": 0.55
+              }
+            },
+            {
+              "primitive": {
+                "type": "cube",
+                "size": 1
+              },
+              "transform": {
+                "position": [0, 0.533333, -0.25],
+                "scale": [0.125, 0.066667, 0.06]
+              },
+              "material": {
+                "albedoColor": "#e4d9b5",
+                "roughness": 0.55
+              }
+            },
+            {
+              "primitive": {
+                "type": "cube",
+                "size": 1
+              },
+              "transform": {
+                "position": [0, 0.533333, -0.15],
+                "scale": [0.125, 0.066667, 0.06]
+              },
+              "material": {
+                "albedoColor": "#e4d9b5",
+                "roughness": 0.55
+              }
+            },
+            {
+              "primitive": {
+                "type": "cube",
+                "size": 1
+              },
+              "transform": {
+                "position": [0, 0.533333, -0.05],
+                "scale": [0.125, 0.066667, 0.06]
+              },
+              "material": {
+                "albedoColor": "#e4d9b5",
+                "roughness": 0.55
+              }
+            },
+            {
+              "primitive": {
+                "type": "cube",
+                "size": 1
+              },
+              "transform": {
+                "position": [0, 0.533333, 0.05],
+                "scale": [0.125, 0.066667, 0.06]
+              },
+              "material": {
+                "albedoColor": "#e4d9b5",
+                "roughness": 0.55
+              }
+            },
+            {
+              "primitive": {
+                "type": "cube",
+                "size": 1
+              },
+              "transform": {
+                "position": [0, 0.533333, 0.15],
+                "scale": [0.125, 0.066667, 0.06]
+              },
+              "material": {
+                "albedoColor": "#e4d9b5",
+                "roughness": 0.55
+              }
+            },
+            {
+              "primitive": {
+                "type": "cube",
+                "size": 1
+              },
+              "transform": {
+                "position": [0, 0.533333, 0.25],
+                "scale": [0.125, 0.066667, 0.06]
+              },
+              "material": {
+                "albedoColor": "#e4d9b5",
+                "roughness": 0.55
+              }
+            },
+            {
+              "primitive": {
+                "type": "cube",
+                "size": 1
+              },
+              "transform": {
+                "position": [0, 0.533333, 0.35],
+                "scale": [0.125, 0.066667, 0.06]
+              },
+              "material": {
+                "albedoColor": "#e4d9b5",
+                "roughness": 0.55
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "nodes": [
+    {
+      "id": "light_ambient",
+      "name": "Ambient Light",
+      "type": "Light3D",
+      "layer": "lights",
+      "transform": {
+        "position": [0, 0, 0]
+      },
+      "components": {
+        "Light": {
+          "type": "ambient",
+          "color": [1, 1, 1],
+          "intensity": 0.22
+        }
+      }
+    },
+    {
+      "id": "light_sky",
+      "name": "Hemisphere Light",
+      "type": "Light3D",
+      "layer": "lights",
+      "transform": {
+        "position": [0, 0, 0]
+      },
+      "components": {
+        "Light": {
+          "type": "hemisphere",
+          "skyColor": [0.6, 0.85, 1],
+          "groundColor": [0.3, 0.25, 0.35],
+          "intensity": 0.5
+        }
+      }
+    },
+    {
+      "id": "light_sun",
+      "name": "Sun",
+      "type": "Light3D",
+      "layer": "lights",
+      "transform": {
+        "position": [0, 0, 0]
+      },
+      "components": {
+        "Light": {
+          "type": "directional",
+          "direction": [-0.7, -1, -0.3],
+          "color": [1, 0.83, 0.6],
+          "intensity": 1.7,
+          "castShadow": true,
+          "shadowMapSize": 1024,
+          "shadowDistance": 60
+        }
+      }
+    },
+    {
+      "id": "island_1",
+      "name": "Island 1",
+      "type": "MeshInstance3D",
+      "layer": "islands",
+      "prefab": "island",
+      "transform": {
+        "position": [0, -0.6, 0],
+        "rotation": [0, 0, 0],
+        "scale": [24, 1.2, 22]
+      }
+    },
+    {
+      "id": "island_2",
+      "name": "Island 2",
+      "type": "MeshInstance3D",
+      "layer": "islands",
+      "prefab": "island",
+      "transform": {
+        "position": [30, -0.6, 0],
+        "rotation": [0, 0, 0],
+        "scale": [20, 1.2, 20]
+      }
+    },
+    {
+      "id": "island_3",
+      "name": "Island 3",
+      "type": "MeshInstance3D",
+      "layer": "islands",
+      "prefab": "island",
+      "transform": {
+        "position": [-30, -0.6, -16],
+        "rotation": [0, 0, 0],
+        "scale": [20, 1.2, 20]
+      }
+    },
+    {
+      "id": "player_spawn",
+      "name": "Player spawn",
+      "type": "MeshInstance3D",
+      "layer": "markers",
+      "scripts": ["src/components/ExplorerMotion.js"],
+      "transform": {
+        "position": [0, 2, 7],
+        "rotation": [0, 0, 0],
+        "scale": [0.8, 0.8, 0.8]
+      },
+      "components": {
+        "Mesh": {
+          "type": "sphere",
+          "radius": 0.5,
+          "widthSegments": 20,
+          "heightSegments": 10
+        },
+        "Material": {
+          "albedoColor": [0.95, 0.75, 0.3, 1],
+          "roughness": 0.35,
+          "metallic": 0.2
+        },
+        "Data": {
+          "castShadow": true
+        }
+      }
+    }
+  ]
+}

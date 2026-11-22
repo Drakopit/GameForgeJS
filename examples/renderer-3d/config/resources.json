@@ -16,7 +16,7 @@
   "jsons": [
     {
       "name": "render3d_showcase_scene",
-      "path": "../assets/Manifests/scenes/render3d-showcase.scene.json"
+      "path": "../assets/Scenes/render3d-showcase.gfscene.json"
     },
     {
       "name": "prompts",

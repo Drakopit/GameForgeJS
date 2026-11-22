@@ -1,0 +1,67 @@
+{
+  "format": "gameforgejs.scene",
+  "version": 1,
+  "dimension": "2d",
+  "id": "crossing",
+  "name": "Lantern Crossing",
+  "settings": {
+    "world": {
+      "width": 1800,
+      "height": 620
+    },
+    "note": "The courier walks the waypoints in order; each waypoint is the centre of its marker."
+  },
+  "layers": [
+    {
+      "id": "waypoints",
+      "name": "Waypoints",
+      "type": "Node2D"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "waypoint_1",
+      "name": "Waypoint 1",
+      "type": "Node2D",
+      "layer": "waypoints",
+      "transform": {
+        "position": [228, 408]
+      },
+      "size": [24, 24],
+      "links": ["waypoint_2"],
+      "scripts": ["src/components/WaypointMotion.js"]
+    },
+    {
+      "id": "waypoint_2",
+      "name": "Waypoint 2",
+      "type": "Node2D",
+      "layer": "waypoints",
+      "transform": {
+        "position": [608, 408]
+      },
+      "size": [24, 24],
+      "links": ["waypoint_3"]
+    },
+    {
+      "id": "waypoint_3",
+      "name": "Waypoint 3",
+      "type": "Node2D",
+      "layer": "waypoints",
+      "transform": {
+        "position": [1128, 408]
+      },
+      "size": [24, 24],
+      "links": ["waypoint_4"]
+    },
+    {
+      "id": "waypoint_4",
+      "name": "Waypoint 4",
+      "type": "Node2D",
+      "layer": "waypoints",
+      "transform": {
+        "position": [1488, 408]
+      },
+      "size": [24, 24]
+    }
+  ]
+}

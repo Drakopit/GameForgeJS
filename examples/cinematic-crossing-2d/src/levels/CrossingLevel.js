@@ -1,5 +1,6 @@
 import { Level, GameViewport, Vector2D, MathExt, SoundEffects } from 'gameforgejs/core';
 import { Screen, Camera, GameObject } from 'gameforgejs/2d';
+import { ScenarioWithRoute } from '../data/CrossingScene.js';
 import { Courier } from '../entities/Courier.js';
 import { CrossingLandscape } from '../entities/CrossingLandscape.js';
 import { CrossingSequence } from '../components/CrossingSequence.js';
@@ -7,7 +8,7 @@ import { CrossingHUD } from '../ui/CrossingHUD.js';
 
 export class CrossingLevel extends Level {
     OnStart(context = this.context) {
-        this.rules = context.assets.jsons.scenario; this.caption = 'Lantern Crossing / Camera + Timeline';
+        this.rules = ScenarioWithRoute(context.assets.jsons.scenario, context.assets.jsons.crossing); this.caption = 'Lantern Crossing / Camera + Timeline';
         this.screen = new Screen('crossing', 960, 640, {config: context.config});
         this.camera = new Camera(new Vector2D(), new Vector2D(960, 640)); this.camera.Init(this.screen, this.rules.world);
         this.focus = new Vector2D(240, 360); this.magnification = 1; this.fade = 0; this.dialogue = '';

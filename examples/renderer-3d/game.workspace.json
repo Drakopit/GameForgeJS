@@ -6,14 +6,15 @@
   "resources": "config/resources.json",
   "sceneFormat": "gameforgejs.scene",
   "play": "index.html",
-  "editing": "manifest",
+  "editing": "scene",
   "scenes": [
     {
       "dimension": "3d",
       "id": "render3d_showcase",
       "label": "Render3D Showcase",
-      "path": "assets/Manifests/scenes/render3d-showcase.scene.json",
-      "resources": "config/resources.json"
+      "path": "assets/Scenes/render3d-showcase.gfscene.json",
+      "format": "gameforgejs.scene",
+      "resourceName": "render3d_showcase_scene"
     }
   ]
 }

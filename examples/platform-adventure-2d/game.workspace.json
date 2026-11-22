@@ -6,18 +6,17 @@
   "resources": "config/resources.json",
   "sceneFormat": "gameforgejs.scene",
   "play": "index.html",
-  "editing": "manifest",
+  "editing": "scene",
   "scenes": [
     {
       "dimension": "2d",
       "id": "advanced_first",
-      "label": "Advanced - First",
+      "label": "Advanced - Snow Pass",
+      "format": "gameforgejs.scene",
+      "path": "assets/Scenes/first.gfscene.json",
       "documents": {
         "stageDefault": "assets/Manifests/advanced/stage-default.json",
-        "core": "assets/Manifests/advanced/core.json",
-        "stage": "assets/Manifests/advanced/stage.json",
         "player": "assets/Manifests/advanced/player.json",
-        "enemies": "assets/Manifests/advanced/enemies.json",
         "effects": "assets/Manifests/advanced/effects.json",
         "ui": "assets/Manifests/advanced/ui.json"
       }
@@ -25,13 +24,12 @@
     {
       "dimension": "2d",
       "id": "advanced_second",
-      "label": "Advanced - Second",
+      "label": "Advanced - Frozen Ridge",
+      "format": "gameforgejs.scene",
+      "path": "assets/Scenes/second.gfscene.json",
       "documents": {
         "stageDefault": "assets/Manifests/advanced/stage-default.json",
-        "core": "assets/Manifests/advanced/second-core.json",
-        "stage": "assets/Manifests/advanced/second-stage.json",
         "player": "assets/Manifests/advanced/player.json",
-        "enemies": "assets/Manifests/advanced/second-enemies.json",
         "effects": "assets/Manifests/advanced/effects.json",
         "ui": "assets/Manifests/advanced/ui.json"
       }
@@ -39,13 +37,12 @@
     {
       "dimension": "2d",
       "id": "advanced_boss",
-      "label": "Advanced - Boss",
+      "label": "Advanced - Kobold Den",
+      "format": "gameforgejs.scene",
+      "path": "assets/Scenes/boss.gfscene.json",
       "documents": {
         "stageDefault": "assets/Manifests/advanced/stage-default.json",
-        "core": "assets/Manifests/advanced/boss-core.json",
-        "stage": "assets/Manifests/advanced/boss-stage.json",
         "player": "assets/Manifests/advanced/player.json",
-        "enemies": "assets/Manifests/advanced/boss-enemies.json",
         "effects": "assets/Manifests/advanced/effects.json",
         "ui": "assets/Manifests/advanced/ui.json"
       }

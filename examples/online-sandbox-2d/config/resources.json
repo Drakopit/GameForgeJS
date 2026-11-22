@@ -8,6 +8,10 @@
     {
       "name": "prompts",
       "path": "./prompts.json"
+    },
+    {
+      "name": "world-scene",
+      "path": "./scenes/world.gfscene.json"
     }
   ],
   "images": [

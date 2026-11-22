@@ -17,11 +17,11 @@
   "shaders": [
     {
       "name": "celestial_vs",
-      "path": ".././assets/Shaders/Celestial.vs.glsl"
+      "path": "../shader/Celestial.vs.glsl"
     },
     {
       "name": "celestial_fs",
-      "path": ".././assets/Shaders/Celestial.fs.glsl"
+      "path": "../shader/Celestial.fs.glsl"
     }
   ],
   "models": [],

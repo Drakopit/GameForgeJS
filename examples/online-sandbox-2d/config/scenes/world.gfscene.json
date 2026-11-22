@@ -1,0 +1,231 @@
+{
+  "format": "gameforgejs.scene",
+  "version": 1,
+  "dimension": "2d",
+  "id": "world",
+  "name": "Online sandbox world",
+  "settings": {
+    "world": {
+      "width": 2880,
+      "height": 576
+    },
+    "tileSize": 32,
+    "note": "Read by the client and the .NET server. Platforms snap to tiles (x, y, length = width / tileSize). Crystal and beacon positions are their marker centres; the spawn is the player's top-left corner. Ground rows and the chasm stay in world.rules.json."
+  },
+  "layers": [
+    {
+      "id": "platforms",
+      "name": "Platforms",
+      "type": "Platform2D"
+    },
+    {
+      "id": "crystals",
+      "name": "Crystals",
+      "type": "Prop2D"
+    },
+    {
+      "id": "markers",
+      "name": "Spawn & beacon",
+      "type": "Node2D"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "platform_1",
+      "type": "Platform2D",
+      "layer": "platforms",
+      "transform": {
+        "position": [256, 320]
+      },
+      "size": [192, 32],
+      "components": {
+        "Platform": {
+          "type": "wood"
+        }
+      }
+    },
+    {
+      "id": "platform_2",
+      "type": "Platform2D",
+      "layer": "platforms",
+      "transform": {
+        "position": [768, 288]
+      },
+      "size": [256, 32],
+      "components": {
+        "Platform": {
+          "type": "dirt"
+        }
+      }
+    },
+    {
+      "id": "platform_3",
+      "type": "Platform2D",
+      "layer": "platforms",
+      "transform": {
+        "position": [1408, 320]
+      },
+      "size": [256, 32],
+      "components": {
+        "Platform": {
+          "type": "stone"
+        }
+      }
+    },
+    {
+      "id": "platform_4",
+      "type": "Platform2D",
+      "layer": "platforms",
+      "transform": {
+        "position": [2080, 320]
+      },
+      "size": [160, 32],
+      "components": {
+        "Platform": {
+          "type": "wood"
+        }
+      }
+    },
+    {
+      "id": "crystal_a",
+      "name": "Crystal a",
+      "type": "Prop2D",
+      "layer": "crystals",
+      "transform": {
+        "position": [302, 280]
+      },
+      "size": [16, 24],
+      "components": {
+        "Crystal": {
+          "id": "a"
+        }
+      }
+    },
+    {
+      "id": "crystal_b",
+      "name": "Crystal b",
+      "type": "Prop2D",
+      "layer": "crystals",
+      "transform": {
+        "position": [422, 368]
+      },
+      "size": [16, 24],
+      "components": {
+        "Crystal": {
+          "id": "b"
+        }
+      }
+    },
+    {
+      "id": "crystal_c",
+      "name": "Crystal c",
+      "type": "Prop2D",
+      "layer": "crystals",
+      "transform": {
+        "position": [812, 248]
+      },
+      "size": [16, 24],
+      "components": {
+        "Crystal": {
+          "id": "c"
+        }
+      }
+    },
+    {
+      "id": "crystal_d",
+      "name": "Crystal d",
+      "type": "Prop2D",
+      "layer": "crystals",
+      "transform": {
+        "position": [972, 368]
+      },
+      "size": [16, 24],
+      "components": {
+        "Crystal": {
+          "id": "d"
+        }
+      }
+    },
+    {
+      "id": "crystal_e",
+      "name": "Crystal e",
+      "type": "Prop2D",
+      "layer": "crystals",
+      "transform": {
+        "position": [1502, 280]
+      },
+      "size": [16, 24],
+      "components": {
+        "Crystal": {
+          "id": "e"
+        }
+      }
+    },
+    {
+      "id": "crystal_f",
+      "name": "Crystal f",
+      "type": "Prop2D",
+      "layer": "crystals",
+      "transform": {
+        "position": [1742, 368]
+      },
+      "size": [16, 24],
+      "components": {
+        "Crystal": {
+          "id": "f"
+        }
+      }
+    },
+    {
+      "id": "crystal_g",
+      "name": "Crystal g",
+      "type": "Prop2D",
+      "layer": "crystals",
+      "transform": {
+        "position": [2132, 280]
+      },
+      "size": [16, 24],
+      "components": {
+        "Crystal": {
+          "id": "g"
+        }
+      }
+    },
+    {
+      "id": "crystal_h",
+      "name": "Crystal h",
+      "type": "Prop2D",
+      "layer": "crystals",
+      "transform": {
+        "position": [2462, 368]
+      },
+      "size": [16, 24],
+      "components": {
+        "Crystal": {
+          "id": "h"
+        }
+      }
+    },
+    {
+      "id": "spawn",
+      "name": "Player spawn",
+      "type": "Actor2D",
+      "layer": "markers",
+      "scripts": ["src/entities/PredictedPlayer.js"],
+      "transform": {
+        "position": [128, 300]
+      },
+      "size": [22, 42]
+    },
+    {
+      "id": "beacon",
+      "name": "Beacon",
+      "type": "Prop2D",
+      "layer": "markers",
+      "transform": {
+        "position": [2606, 336]
+      },
+      "size": [36, 76]
+    }
+  ]
+}

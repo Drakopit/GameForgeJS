@@ -1,6 +1,6 @@
 import { expedition } from '../state/Expedition.js';
 import { ActionManager, Input } from "gameforgejs/core";
-import { MathExt } from "gameforgejs/core";
+import { MathExt, SceneDocument } from "gameforgejs/core";
 import { BATTLE_MODES, BattleState } from "../state/BattleState.js";
 import { TACTICAL_AREA_SHAPES, TacticalArea } from "./TacticalArea.js";
 import { TacticalGrid } from "./TacticalGrid.js";
@@ -23,12 +23,15 @@ export class TacticalBattleManager {
         this.level = level;
         this.assets = assets;
         this.sound = sound;
-        this.stage = assets?.jsons?.tactical_stage ?? {};
+        // config/resources.json -> assets/Scenes/tactical-map.gfscene.json (stage, player and enemies documents).
+        const scene = assets?.jsons?.tactical_scene;
+        const documents = SceneDocument.IsScene(scene) ? new SceneDocument(scene).ToLevelDocuments() : {};
+        this.stage = documents.stage ?? assets?.jsons?.tactical_stage ?? {};
         if (expedition.stage?.blocked) {
             this.stage = { ...this.stage, objects: [], tilemap: { ...this.stage.tilemap, terrainRows: null, terrain: null, blockedTiles: expedition.stage.blocked } };
         }
-        this.playerDoc = assets?.jsons?.tactical_player ?? {};
-        this.enemyDoc = assets?.jsons?.tactical_enemies ?? {};
+        this.playerDoc = documents.player ?? assets?.jsons?.tactical_player ?? {};
+        this.enemyDoc = documents.enemies ?? assets?.jsons?.tactical_enemies ?? {};
         this.grid = new TacticalGrid(this.stage);
         this.renderer = new TacticalMapRenderer({
             level,

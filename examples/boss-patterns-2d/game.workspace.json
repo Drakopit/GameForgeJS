@@ -6,14 +6,14 @@
   "resources": "config/resources.json",
   "sceneFormat": "gameforgejs.scene",
   "play": "index.html",
-  "editing": "adapter",
+  "editing": "scene",
   "scenes": [
     {
       "dimension": "2d",
       "id": "arena",
       "label": "Boss arena",
-      "adapter": "boss-arena",
-      "source": "config/scenario.json"
+      "format": "gameforgejs.scene",
+      "source": "config/scenes/arena.gfscene.json"
     }
   ]
 }

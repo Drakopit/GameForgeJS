@@ -1,5 +1,6 @@
 import { Level, EventEmitter, ObjectPool, GameViewport, SoundEffects } from 'gameforgejs/core';
 import { Screen, GameObject } from 'gameforgejs/2d';
+import { ScenarioWithArena } from '../data/ArenaScene.js';
 import { ArenaView } from '../entities/ArenaView.js';
 import { ArenaPlayer } from '../entities/ArenaPlayer.js';
 import { ArenaBoss } from '../entities/ArenaBoss.js';
@@ -12,7 +13,7 @@ import { RoomProgress, rooms } from '../components/RoomProgress.js';
 
 export class ArenaLevel extends Level {
     OnStart(context = this.context) {
-        this.caption = 'Ember Warden / Boss Patterns'; this.rules = context.assets.jsons.scenario;
+        this.caption = 'Ember Warden / Boss Patterns'; this.rules = ScenarioWithArena(context.assets.jsons.scenario, context.assets.jsons.arena);
         this.screen = new Screen('boss-arena', 960, 640, {config: context.config});
         this.events = new EventEmitter(); this.result = ''; this.message = 'Read the gold telegraph. Shoot, evade, punish.';
         this.sound = new SoundEffects(context.services.get('audio'),context.config.audio?.cues);

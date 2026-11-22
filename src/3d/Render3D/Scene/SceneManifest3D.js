@@ -10,12 +10,15 @@ import { UnlitMaterial } from "../Material/UnlitMaterial.js";
 import { Mesh } from "../Mesh/Mesh.js";
 import { PrimitiveMesh } from "../Mesh/PrimitiveMesh.js";
 import { Scene3D } from "./Scene3D.js";
+import { SceneDocument } from "../../../core/Scene/SceneDocument.js";
 
 /**
  * Creates simple Render3D scenes from JSON-compatible game manifests.
  *
  * A game or an authoring tool owns the manifest data; this factory converts
  * its camera, lights, primitives and basic materials into runtime objects.
+ * A 3D `gameforgejs.scene` document is accepted too: it is converted with
+ * `SceneDocument.ToManifest3D()` first (prefabs resolved).
  *
  * @example
  * const { scene, camera } = SceneManifest3D.Create(levelManifest, {
@@ -31,6 +34,7 @@ export class SceneManifest3D {
      * @returns {Object} Object containing `scene`, `camera`, `lights` and `objects`.
      */
     static Create(manifest = {}, { aspect = 1 } = {}) {
+        manifest = this.Normalize(manifest);
         const scene = new Scene3D({
             backgroundColor: manifest.backgroundColor ?? [0.03, 0.04, 0.07, 1],
         });
@@ -38,6 +42,15 @@ export class SceneManifest3D {
         scene.Add(camera);
         const content = this.Populate(scene, manifest);
         return { scene, camera, ...content };
+    }
+
+    /**
+     * Returns a SceneManifest3D document: scene documents are converted, manifests pass through.
+     * @param {Object} manifest - SceneManifest3D or 3D gameforgejs.scene document.
+     * @returns {Object}
+     */
+    static Normalize(manifest = {}) {
+        return SceneDocument.IsScene(manifest) && manifest.dimension === "3d" ? new SceneDocument(manifest).ToManifest3D() : manifest;
     }
 
     /**
@@ -62,6 +75,7 @@ export class SceneManifest3D {
      * @returns {Object} Added `lights` and `objects`.
      */
     static Populate(scene, manifest = {}) {
+        manifest = this.Normalize(manifest);
         const lights = (manifest.lights ?? []).map(definition => {
             const light = this.CreateLight(definition);
             scene.Add(light);

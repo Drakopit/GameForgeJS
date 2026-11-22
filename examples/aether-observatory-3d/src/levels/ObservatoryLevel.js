@@ -2,6 +2,7 @@ import { GameViewport, SoundEffects } from 'gameforgejs/core';
 import { GameObject } from 'gameforgejs/2d';
 import { Level3D, AmbientLight, HemisphereLight, DirectionalLight, Mesh, PrimitiveMesh, StandardMaterial,
     Transform3D, Rigidbody3D, SphereCollider3D } from 'gameforgejs/3d';
+import { ScenarioWithIslands } from '../data/IslandScene.js';
 import { ObservatoryWorld } from '../entities/ObservatoryWorld.js';
 import { MeshActor } from '../entities/MeshActor.js';
 import { ExplorerMotion } from '../components/ExplorerMotion.js';
@@ -12,7 +13,7 @@ import { ObservatoryHUD } from '../ui/ObservatoryHUD.js';
 export class ObservatoryLevel extends Level3D {
     constructor() { super({width: 960, height: 640, clearColor: [0.17, 0.28, 0.38, 1]}); this.caption = 'Aether Observatory'; }
     BuildScene() {
-        this.rules = this.context.assets.jsons.scenario; this.subtitle = ''; this.jumpQueued = false;
+        this.rules = ScenarioWithIslands(this.context.assets.jsons.scenario, this.context.assets.jsons.islands); this.subtitle = ''; this.jumpQueued = false;
         this.sound = new SoundEffects(this.context.services.get('audio'),this.context.config.audio?.cues);
         this.scene.fog = this.rules.environment.fog;
         this.scene.Add(new AmbientLight({intensity: 0.22}));

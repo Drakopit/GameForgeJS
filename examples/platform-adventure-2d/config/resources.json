@@ -137,20 +137,8 @@
       "path": "../assets/Manifests/advanced/stage-default.json"
     },
     {
-      "name": "advanced_core",
-      "path": "../assets/Manifests/advanced/core.json"
-    },
-    {
-      "name": "advanced_stage",
-      "path": "../assets/Manifests/advanced/stage.json"
-    },
-    {
       "name": "advanced_player",
       "path": "../assets/Manifests/advanced/player.json"
-    },
-    {
-      "name": "advanced_enemies",
-      "path": "../assets/Manifests/advanced/enemies.json"
     },
     {
       "name": "advanced_effects",
@@ -159,30 +147,6 @@
     {
       "name": "advanced_ui",
       "path": "../assets/Manifests/advanced/ui.json"
-    },
-    {
-      "name": "advanced_second_core",
-      "path": "../assets/Manifests/advanced/second-core.json"
-    },
-    {
-      "name": "advanced_second_stage",
-      "path": "../assets/Manifests/advanced/second-stage.json"
-    },
-    {
-      "name": "advanced_second_enemies",
-      "path": "../assets/Manifests/advanced/second-enemies.json"
-    },
-    {
-      "name": "advanced_boss_core",
-      "path": "../assets/Manifests/advanced/boss-core.json"
-    },
-    {
-      "name": "advanced_boss_stage",
-      "path": "../assets/Manifests/advanced/boss-stage.json"
-    },
-    {
-      "name": "advanced_boss_enemies",
-      "path": "../assets/Manifests/advanced/boss-enemies.json"
     },
     {
       "name": "advanced_actors_catalog",
@@ -223,6 +187,18 @@
     {
       "name": "prompts",
       "path": "./prompts.json"
+    },
+    {
+      "name": "advanced_first_scene",
+      "path": "../assets/Scenes/first.gfscene.json"
+    },
+    {
+      "name": "advanced_second_scene",
+      "path": "../assets/Scenes/second.gfscene.json"
+    },
+    {
+      "name": "advanced_boss_scene",
+      "path": "../assets/Scenes/boss.gfscene.json"
     }
   ],
   "schemaVersion": 1

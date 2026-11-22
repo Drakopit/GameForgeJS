@@ -6,18 +6,14 @@
   "resources": "config/resources.json",
   "sceneFormat": "gameforgejs.scene",
   "play": "index.html",
-  "editing": "manifest",
+  "editing": "scene",
   "scenes": [
     {
       "dimension": "2d",
       "id": "tactical_map",
       "label": "Tactical Map",
-      "resources": "config/resources.json",
-      "documents": {
-        "stage": "assets/Manifests/tactical/stage.json",
-        "player": "assets/Manifests/tactical/player.json",
-        "enemies": "assets/Manifests/tactical/enemies.json"
-      }
+      "format": "gameforgejs.scene",
+      "path": "assets/Scenes/tactical-map.gfscene.json"
     }
   ]
 }

@@ -1,0 +1,45 @@
+{
+  "format": "gameforgejs.scene",
+  "version": 1,
+  "dimension": "2d",
+  "id": "arena",
+  "name": "Ember Warden arena",
+  "settings": {
+    "world": {
+      "width": 960,
+      "height": 640
+    },
+    "note": "The world size is the arena; each start anchor is the centre of its marker."
+  },
+  "layers": [
+    {
+      "id": "anchors",
+      "name": "Start anchors",
+      "type": "Actor2D"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "player",
+      "name": "Player start",
+      "type": "Actor2D",
+      "layer": "anchors",
+      "scripts": ["src/entities/ArenaPlayer.js"],
+      "transform": {
+        "position": [462, 472]
+      },
+      "size": [36, 36]
+    },
+    {
+      "id": "boss",
+      "name": "Boss start",
+      "type": "Actor2D",
+      "layer": "anchors",
+      "scripts": ["src/entities/ArenaBoss.js", "src/components/BossDirector.js"],
+      "transform": {
+        "position": [442, 182]
+      },
+      "size": [76, 76]
+    }
+  ]
+}

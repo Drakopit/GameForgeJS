@@ -1,3 +1,5 @@
+import { sceneToLevelDocuments, sceneToManifest3D } from './SceneConverters.js';
+
 /**
  * Reader for `gameforgejs.scene` documents: the engine's standard, versioned
  * scene description shared with the GameForgeJS Editor.
@@ -6,6 +8,13 @@
  * `layer` and `parent`, a `transform` (position relative to its parent) and named
  * `components` holding game data. Games read the nodes they care about and build
  * their own entities, so the format adds no runtime behaviour of its own.
+ *
+ * Optional node fields:
+ * - `prefab`: name of an entry in `scene.prefabs` (`{ type?, size?, components? }`)
+ *   whose components the node inherits (node values win).
+ * - `scripts`: project-relative paths of the scripts attached to the node
+ *   (e.g. `"src/components/UnitVisual.js"`), shown and opened by the editor.
+ * - `links`: ids of nodes this node connects to (routes, paths, graphs).
  *
  * @example
  * const scene = new SceneDocument(context.assets.jsons.stage_movement);
@@ -40,6 +49,9 @@ export class SceneDocument {
 
     /** @returns {Object[]} Declared layers, in draw order. */
     get layers() { return this.data.layers ?? []; }
+
+    /** @returns {Object<string, Object>} Prefabs nodes can inherit from. */
+    get prefabs() { return this.data.prefabs ?? {}; }
 
     /**
      * Returns true when a value looks like a scene document (any supported format id).
@@ -159,6 +171,66 @@ export class SceneDocument {
      * @returns {Object}
      */
     Component(node, name, fallback = {}) {
-        return node?.components?.[name] ?? fallback;
+        const own = node?.components?.[name];
+        const inherited = this.Prefab(node)?.components?.[name];
+        if (own && inherited && typeof own === 'object' && typeof inherited === 'object' && !Array.isArray(own)) return { ...inherited, ...own };
+        return own ?? inherited ?? fallback;
+    }
+
+    /**
+     * The prefab a node inherits from, or null.
+     * @param {Object} node - Scene node.
+     * @returns {Object|null}
+     */
+    Prefab(node) {
+        return node?.prefab ? this.prefabs[node.prefab] ?? null : null;
+    }
+
+    /**
+     * Center of a 2D node's rectangle in scene space (its position when it has no size).
+     * @param {Object} node - Scene node.
+     * @returns {number[]} [x, y].
+     */
+    Center(node) {
+        const { x, y, width, height } = this.Rect(node);
+        return [x + width / 2, y + height / 2];
+    }
+
+    /**
+     * Scripts attached to a node (project-relative paths).
+     * @param {Object} node - Scene node.
+     * @returns {string[]}
+     */
+    Scripts(node) {
+        return Array.isArray(node?.scripts) ? [...node.scripts] : [];
+    }
+
+    /**
+     * Nodes a node links to (`links` ids that exist in the scene), in order.
+     * @param {Object} node - Scene node.
+     * @returns {Object[]}
+     */
+    Links(node) {
+        return (Array.isArray(node?.links) ? node.links : []).map(id => this.Node(id)).filter(Boolean);
+    }
+
+    /**
+     * Rebuilds the keyed runtime documents of a 2D level scene written by the
+     * editor from stage/player/enemies manifests (layers with a `source`).
+     * @returns {Object<string, Object>} Documents keyed like the level (e.g. stage, player, enemies).
+     */
+    ToLevelDocuments() {
+        if (this.dimension !== '2d') throw new RangeError('ToLevelDocuments needs a 2D scene.');
+        return sceneToLevelDocuments(this.data);
+    }
+
+    /**
+     * Converts a 3D scene to a SceneManifest3D document (`SceneManifest3D.Create` input).
+     * Prefab components are merged into each object.
+     * @returns {Object}
+     */
+    ToManifest3D() {
+        if (this.dimension !== '3d') throw new RangeError('ToManifest3D needs a 3D scene.');
+        return sceneToManifest3D(this.data, { resolvePrefabs: true });
     }
 }

@@ -1,49 +1,44 @@
 {
   "schemaVersion": 2,
   "kind": "GameForgeJS.Workspace",
-  "defaultSceneFormat": "SkyTrailCourse",
   "id": "demo_mini_game_3d",
   "name": "Sky Trail 3D",
   "resources": "config/resources.json",
   "sceneFormat": "gameforgejs.scene",
   "play": "index.html",
-  "editing": "manifest",
+  "editing": "scene",
   "scenes": [
     {
       "dimension": "3d",
-      "format": "SkyTrailCourse",
       "id": "sky-trail",
       "label": "Sky Trail",
-      "path": "assets/Manifests/sky-trail/course.json",
-      "resourceName": "sky_trail_course",
-      "resources": "config/resources.json"
+      "path": "assets/Scenes/sky-trail/sky-trail.gfscene.json",
+      "format": "gameforgejs.scene",
+      "resourceName": "sky_trail_course"
     },
     {
       "dimension": "3d",
-      "format": "SkyTrailCourse",
-      "id": "high_winds",
+      "id": "high-winds",
       "label": "Sky Trail — Ventos Altos",
-      "path": "assets/Manifests/sky-trail/high-winds.json",
-      "resourceName": "sky_trail_course_high_winds",
-      "resources": "config/resources.json"
+      "path": "assets/Scenes/sky-trail/high-winds.gfscene.json",
+      "format": "gameforgejs.scene",
+      "resourceName": "sky_trail_course_high_winds"
     },
     {
       "dimension": "3d",
-      "format": "SkyTrailCourse",
       "id": "archipelago",
       "label": "Arquipélago Celeste",
-      "path": "assets/Manifests/sky-trail/archipelago.json",
-      "resourceName": "sky_trail_course_archipelago",
-      "resources": "config/resources.json"
+      "path": "assets/Scenes/sky-trail/archipelago.gfscene.json",
+      "format": "gameforgejs.scene",
+      "resourceName": "sky_trail_course_archipelago"
     },
     {
       "dimension": "3d",
-      "format": "SkyTrailCourse",
       "id": "aurora",
       "label": "Farol da Aurora",
-      "path": "assets/Manifests/sky-trail/aurora.json",
-      "resourceName": "sky_trail_course_aurora",
-      "resources": "config/resources.json"
+      "path": "assets/Scenes/sky-trail/aurora.gfscene.json",
+      "format": "gameforgejs.scene",
+      "resourceName": "sky_trail_course_aurora"
     }
   ]
 }
