@@ -7,5 +7,6 @@ export const CONFIG_DEFAULTS = Object.freeze({
     network: Object.freeze({ serverUrl: "ws://localhost:3000", autoConnect: false, syncRate: 60 }),
     audio: Object.freeze({ masterVolume: 0.8, muteOnFocusLoss: true }),
     assets: Object.freeze({ basePath: "./assets/", preload: Object.freeze([]) }),
-    debug: Object.freeze({ showFPS: false, showHitboxes: false, admin: false, logLevel: "info" }),
+    // stats: show the "Stats for Nerds" HUD at start; statsKey toggles it (false disables the key).
+    debug: Object.freeze({ showFPS: false, showHitboxes: false, admin: false, logLevel: "info", stats: false, statsKey: "F3" }),
 });

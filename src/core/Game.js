@@ -3,6 +3,8 @@ import { EventEmitter } from "./EventEmitter.js";
 import { AssetManager } from "./Assets/AssetManager.js";
 import { ResourceManifestLoader } from "./Assets/ResourceManifestLoader.js";
 import { Config } from "./Config.js";
+import { FrameStats } from "./Debug/FrameStats.js";
+import { StatsOverlay } from "./Debug/StatsOverlay.js";
 
 import { resolveModules } from './ModuleGraph.js';
 export { resolveModules } from './ModuleGraph.js';
@@ -102,6 +104,7 @@ export class Game {
                     this.context.manifest = await ResourceManifestLoader.Load(this.manifestPath, this.context.assets);
                 }
                 await this.beforeStart?.(this.context);
+                this.installStats();
                 await startModules(ordered);
                 this.enterLevel();
                 this.initialized = true;
@@ -123,6 +126,13 @@ export class Game {
         }
     }
 
+    /** "Stats for Nerds" HUD: debug.statsKey (F3) toggles it; debug.stats shows it at start. */
+    installStats() {
+        const debug = this.context.config?.debug ?? {};
+        if (typeof window === "undefined" || typeof document === "undefined" || debug.statsKey === false) return;
+        this.cleanups.push(StatsOverlay.Install({ key: debug.statsKey || "F3", visible: debug.stats === true }));
+    }
+
     enterLevel() {
         const level = this.currentLevel;
         if (!level) return;
@@ -135,6 +145,8 @@ export class Game {
     frame(timestamp) {
         this.frameId = null;
         if (this.state !== "running") return;
+        const stats = FrameStats.global;
+        const workStart = stats.enabled ? globalThis.performance?.now?.() : null;
         try {
             const dt = this.lastTime === null ? 0 : Math.max(0, Math.min((timestamp - this.lastTime) / 1000, 0.25));
             this.lastTime = timestamp;
@@ -168,6 +180,11 @@ export class Game {
             this.currentLevel?.OnGUI?.();
             this.events.emit("render", this.accumulator / this.fixedStep);
             this.events.emit("PostUpdate", timestamp);
+            if (workStart !== null && workStart !== undefined) {
+                stats.Work(globalThis.performance.now() - workStart);
+                const entities = this.currentLevel?.entities;
+                if (Array.isArray(entities)) stats.Observe("entities", entities.length);
+            }
         } catch (error) {
             this.stop();
             if (this.events.listeners.error?.length) this.events.emit("error", error);

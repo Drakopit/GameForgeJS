@@ -22,6 +22,8 @@ export {
     VelocityComponent,
 } from "./Component.js";
 export { Config } from "./Config.js";
+export { FrameStats } from "./Debug/FrameStats.js";
+export { StatsOverlay } from "./Debug/StatsOverlay.js";
 export { Deprecation } from "./Deprecation.js";
 export { Engine, LevelHandler, DEBUG } from "./Engine.js";
 export { EventEmitter } from "./EventEmitter.js";
