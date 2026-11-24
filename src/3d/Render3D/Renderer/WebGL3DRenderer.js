@@ -1,4 +1,5 @@
 import { Mat4 } from "../../../core/Math/Mat4.js";
+import { FrameStats } from "../../../core/Debug/FrameStats.js";
 import { RenderQueue3D } from './RenderQueue3D.js';
 import { Texture } from "../Texture/Texture.js";
 import { BuiltinShaders } from "../Shader/BuiltinShaders.js";
@@ -129,6 +130,7 @@ export class WebGL3DRenderer {
                 const geometry = this.#meshGeometry(mesh); // subdivided when the mesh or its shader asks for it
                 return sum + (geometry.indices?.length ?? geometry.vertexCount) / 3;
             }, 0) };
+        FrameStats.global.Observe("meshes", objects.length);
         for (const mesh of objects) {
             this.#drawMesh(mesh, scene, camera, shadowState);
         }

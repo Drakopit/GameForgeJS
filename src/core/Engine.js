@@ -12,6 +12,8 @@
 import { Base } from "./Base.js";
 import { Level } from "./Level/Level.js"
 import { EventEmitter } from "./EventEmitter.js";
+import { FrameStats } from "./Debug/FrameStats.js";
+import { StatsOverlay } from "./Debug/StatsOverlay.js";
 
 /**
  * Ordered level registry and current-level cursor used by `Engine`.
@@ -113,6 +115,9 @@ export class Engine extends Base {
 
         // Configura o handler
         LevelHandler.current.LEVEL_HANDLER = LevelHandler;
+        if (typeof document !== "undefined" && this.context?.config?.debug?.statsKey !== false) {
+            this.statsCleanup ??= StatsOverlay.Install({ key: this.context?.config?.debug?.statsKey || "F3", visible: this.context?.config?.debug?.stats === true });
+        }
 
         // Inicia o Level (Isso vai chamar o OnStart do Menu)
         this.startedLevels.add(LevelHandler.current);
@@ -148,6 +153,8 @@ export class Engine extends Base {
         while (this.cleanups.length) {
             try { await this.cleanups.pop()(); } catch (error) { errors.push(error); }
         }
+        this.statsCleanup?.();
+        this.statsCleanup = null;
         LevelHandler.levels = [];
         LevelHandler.current = null;
         LevelHandler.index = 0;
@@ -170,6 +177,8 @@ export class Engine extends Base {
     static GameLoop(currentTime) {
         this.frameId = null;
         if (!this.running) return;
+        const stats = FrameStats.global;
+        const workStart = stats.enabled ? performance.now() : null;
         let deltaTime = (currentTime - lastTime) / 1000.0;
 
         if (deltaTime > 0.25) deltaTime = 0.25;
@@ -263,6 +272,10 @@ export class Engine extends Base {
         this.OnDrawn();
 
         this.events.emit("PostUpdate", lastTime);
+        if (workStart !== null) {
+            stats.Work(performance.now() - workStart);
+            if (Array.isArray(LevelHandler.current?.entities)) stats.Observe("entities", LevelHandler.current.entities.length);
+        }
         if (this.running) this.frameId = window.requestAnimationFrame(this.GameLoop.bind(this));
     }
 
