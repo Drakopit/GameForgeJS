@@ -3,6 +3,7 @@ import { RenderQueue3D } from './RenderQueue3D.js';
 import { Texture } from "../Texture/Texture.js";
 import { BuiltinShaders } from "../Shader/BuiltinShaders.js";
 import { Shader } from "../Shader/Shader.js";
+import { ResolveShaderIncludes } from "../Shader/ShaderIncludes.js";
 import { PrimitiveMesh } from "../Mesh/PrimitiveMesh.js";
 import { AssetManager } from "../../../core/Assets/AssetManager.js";
 
@@ -15,6 +16,20 @@ const ATTRIBUTE = Object.freeze({
 
 const MAX_POINT_LIGHTS = 4;
 const MAX_SPOT_LIGHTS = 2;
+
+/** Full-screen triangle for post-process shaders without their own vertex stage. */
+const POST_VERTEX = `#version 300 es
+precision highp float;
+out vec2 vUv;
+void main() {
+    vec2 corner = vec2(float((gl_VertexID << 1) & 2), float(gl_VertexID & 2));
+    vUv = corner;
+    gl_Position = vec4(corner * 2.0 - 1.0, 0.0, 1.0);
+}`;
+/** Depth-only fragment stage paired with a ShaderMaterial's vertex stage in the shadow pass. */
+const DEPTH_FRAGMENT = "#version 300 es\nprecision highp float;\nvoid main() {\n}";
+/** Texture units free for ShaderMaterial properties (7 is the shadow map). */
+const PROPERTY_UNITS = [0, 1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13, 14, 15];
 
 /**
  * WebGL2 renderer for `Scene3D`, including lit materials, skyboxes and shadows.
@@ -41,6 +56,13 @@ export class WebGL3DRenderer {
         }
 
         this.clearColor = [...clearColor];
+        this.assets = assets;
+        /** ShaderMaterial programs by stage sources: { shader } or { error }. */
+        this.materialPrograms = new Map();
+        this.subdivisionCache = new WeakMap();
+        this.warnings = new Set();
+        /** A ShaderMaterial of domain "post" applied to the finished frame (see SetPostProcess). */
+        this.postProcess = null;
         this.renderQueue = new RenderQueue3D();
         /** Main camera pass only; shadow and skybox draws are not included. */
         this.stats = { visible: 0, culled: 0, triangles: 0 };
@@ -61,7 +83,7 @@ export class WebGL3DRenderer {
         // resources.json "shaders" as <name>_vs / <name>_fs (e.g. "celestial_fs": "../shader/Celestial.fs.glsl").
         const source = name => {
             const { vertex, fragment } = BuiltinShaders[name];
-            return [assets?.shaders?.[`${name}_vs`] || vertex, assets?.shaders?.[`${name}_fs`] || fragment];
+            return [assets?.shaders?.[`${name}_vs`] || vertex, assets?.shaders?.[`${name}_fs`] || fragment].map(stage => ResolveShaderIncludes(stage));
         };
 
         try {
@@ -96,7 +118,9 @@ export class WebGL3DRenderer {
 
         const shadowState = this.#renderShadowPass(scene, camera);
         this.#renderReflection(scene, camera, shadowState);
-        this.#beginMainPass(scene.backgroundColor ?? this.clearColor);
+        const post = this.postProcess;
+        const postTarget = post ? this.#getPostTarget() : null;
+        this.#beginMainPass(scene.backgroundColor ?? this.clearColor, postTarget?.framebuffer ?? null);
         this.#drawSkybox(scene.skybox, camera);
 
         const objects = this.renderQueue.Build(scene.GetRenderableObjects(), camera);
@@ -105,6 +129,21 @@ export class WebGL3DRenderer {
         for (const mesh of objects) {
             this.#drawMesh(mesh, scene, camera, shadowState);
         }
+        if (postTarget) this.#drawPostProcess(post, postTarget, camera);
+    }
+
+    /**
+     * Applies a full-screen `post` ShaderMaterial to every rendered frame, or removes it (null).
+     * Its fragment stage reads `uSceneColor` / `uSceneDepth` (sampler2D), `vUv`, `uResolution`,
+     * `uTime`, `uCameraNear` / `uCameraFar` and its own properties, and writes `outColor`.
+     * @param {ShaderMaterial|null} material
+     * @returns {void}
+     */
+    SetPostProcess(material) {
+        if (material && (material.type !== "shader" || material.domain !== "post")) {
+            throw new Error('SetPostProcess needs a ShaderMaterial whose shader domain is "post".');
+        }
+        this.postProcess = material ?? null;
     }
 
     /**
@@ -119,6 +158,9 @@ export class WebGL3DRenderer {
         this.shadowShader?.Dispose();
         this.celestialShader?.Dispose();
         this.skyboxShader?.Dispose();
+        this.materialPrograms?.forEach(entry => entry.shader?.Dispose());
+        this.materialPrograms?.clear();
+        this.postTarget = null;
         this.ownedBuffers.forEach(buffer => this.gl.deleteBuffer(buffer));
         this.ownedVertexArrays.forEach(vao => this.gl.deleteVertexArray(vao));
         this.ownedTextures.forEach(texture => this.gl.deleteTexture(texture));
@@ -149,6 +191,9 @@ export class WebGL3DRenderer {
         this.whiteTexture = this.#createSolidTexture([255, 255, 255, 255]);
         this.normalTexture = this.#createSolidTexture([128, 128, 255, 255]);
         this.blackTexture = this.#createSolidTexture([0, 0, 0, 255]);
+        this.grayTexture = this.#createSolidTexture([128, 128, 128, 255]);
+        this.emptyVertexArray = this.gl.createVertexArray();
+        this.ownedVertexArrays.add(this.emptyVertexArray);
     }
 
     #createSolidTexture(color) {
@@ -174,9 +219,9 @@ export class WebGL3DRenderer {
         }
     }
 
-    #beginMainPass(clearColor) {
+    #beginMainPass(clearColor, framebuffer = null) {
         const gl = this.gl;
-        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+        gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
         gl.viewport(0, 0, this.canvas.width, this.canvas.height);
         gl.colorMask(true, true, true, true);
         gl.clearColor(clearColor[0], clearColor[1], clearColor[2], clearColor[3] ?? 1);
@@ -329,10 +374,16 @@ export class WebGL3DRenderer {
     }
 
     #drawMesh(mesh, scene, camera, shadowState) {
-        const material = mesh.material ?? {};
-        const shader = this.#getShaderForMaterial(material);
+        let material = mesh.material ?? {};
+        if (material.type === "shader" && material.domain === "post") return;
+        let shader = this.#getShaderForMaterial(material);
+        if (!shader) {
+            // The ShaderMaterial's program failed to compile (reported once): draw it magenta.
+            shader = this.standardShader;
+            material = { type: "standard", albedoColor: [1, 0, 1, 1], roughness: 1 };
+        }
         const gl = this.gl;
-        const geometry = this.#getGeometryState(mesh.geometry);
+        const geometry = this.#getGeometryState(this.#meshGeometry(mesh));
         const model = mesh.transform.GetMatrix(Mat4.create());
 
         shader.Use();
@@ -347,7 +398,10 @@ export class WebGL3DRenderer {
         this.#set1f(shader, 'uFogFar', scene.fog?.far ?? 0);
         this.#set1i(shader, 'uReflectionClip', this.reflectionClip === undefined ? 0 : 1);
         this.#set1f(shader, 'uReflectionClipHeight', this.reflectionClip ?? 0);
-        gl.depthMask(!material.transparent);
+        gl.depthMask(!material.transparent && material.asset?.render.depthWrite !== false);
+        const cull = material.asset?.render.cull ?? "back";
+        if (cull === "none") gl.disable(gl.CULL_FACE);
+        else if (cull === "front") gl.cullFace(gl.FRONT);
 
         if (material.transparent) {
             gl.enable(gl.BLEND);
@@ -356,7 +410,16 @@ export class WebGL3DRenderer {
             gl.disable(gl.BLEND);
         }
 
-        if (material.type === "unlit") {
+        if (material.type === "shader") {
+            const normalMatrix = Mat4.create();
+            Mat4.copy(normalMatrix, model);
+            if (Mat4.invert(normalMatrix, normalMatrix)) {
+                Mat4.transpose(normalMatrix, normalMatrix);
+            }
+            this.#setMatrix(shader, "uNormalMatrix", normalMatrix);
+            this.#setMatrix(shader, "uLightViewProjection", shadowState?.matrix ?? this.lightViewProjection);
+            this.#bindShaderMaterial(shader, material, mesh, scene, shadowState);
+        } else if (material.type === "unlit") {
             this.#bindUnlitMaterial(shader, material);
         } else if (material.type === "celestial") {
             const normalMatrix = Mat4.create();
@@ -390,12 +453,169 @@ export class WebGL3DRenderer {
 
         gl.bindVertexArray(null);
         gl.depthMask(true);
+        if (cull === "none") gl.enable(gl.CULL_FACE);
+        else if (cull === "front") gl.cullFace(gl.BACK);
     }
 
     #getShaderForMaterial(material) {
+        if (material.type === "shader") return this.#getMaterialProgram(material.asset, "main");
         if (material.type === "unlit") return this.unlitShader;
         if (material.type === "celestial") return this.celestialShader;
         return this.standardShader;
+    }
+
+    /**
+     * The compiled program of a shader asset: "main" draws it, "shadow" pairs its vertex stage with a
+     * depth-only fragment. Programs are shared by every asset with the same sources. Null when the
+     * sources do not compile (logged once).
+     */
+    #getMaterialProgram(asset, kind) {
+        const vertex = asset.vertex ?? (asset.domain === "post" ? POST_VERTEX : BuiltinShaders.standard.vertex);
+        const fragment = kind === "shadow" ? DEPTH_FRAGMENT : asset.fragment;
+        const key = `${vertex}\u0000${fragment}`;
+        let entry = this.materialPrograms.get(key);
+        if (!entry) {
+            try {
+                entry = { shader: new Shader(this.gl, ResolveShaderIncludes(vertex), ResolveShaderIncludes(fragment), `${asset.name} (${kind})`) };
+            } catch (error) {
+                entry = { error };
+                console.error(`ShaderMaterial "${asset.name}": ${error.message}`);
+            }
+            this.materialPrograms.set(key, entry);
+        }
+        return entry.shader ?? null;
+    }
+
+    #bindShaderMaterial(shader, material, mesh, scene, shadowState) {
+        if (material.domain === "surface") {
+            this.#set1f(shader, "uToonBands", 0);
+            this.#bindLights(shader, scene, shadowState);
+            const useShadow = Boolean(shadowState?.texture && material.receiveShadow !== false && mesh.receiveShadow !== false);
+            this.#set1i(shader, "uUseShadowMap", useShadow ? 1 : 0);
+            this.#bindTextureObject(shader, 7, "uShadowMap", shadowState?.texture ?? this.whiteTexture);
+        }
+        this.#bindShaderProperties(shader, material, PROPERTY_UNITS);
+    }
+
+    /** Time, resolution and the material's property values (numbers by GLSL type, textures on free units). */
+    #bindShaderProperties(shader, material, units) {
+        shader.SetUniform("uTime", material.time ?? performance.now() / 1000);
+        shader.SetUniform("uResolution", [this.canvas.width, this.canvas.height]);
+        let unit = 0;
+        for (const property of material.asset.properties) {
+            const value = material.values.get(property.name);
+            if (property.type !== "texture") {
+                shader.SetUniform(property.name, value);
+                continue;
+            }
+            if (!shader.IsSampler2D(property.name)) continue;
+            if (unit >= units.length) {
+                this.#warnOnce(`units:${material.asset.name}`, `ShaderMaterial "${material.asset.name}": more than ${units.length} textures; the rest are not bound.`);
+                break;
+            }
+            this.#bindTextureObject(shader, units[unit++], property.name, this.#propertyTexture(value, material));
+        }
+    }
+
+    #propertyTexture(value, material) {
+        const builtin = { white: this.whiteTexture, black: this.blackTexture, gray: this.grayTexture, normal: this.normalTexture };
+        if (value == null) return this.whiteTexture;
+        if (typeof value === "string") {
+            if (builtin[value]) return builtin[value];
+            const image = this.assets?.images?.[value];
+            if (!image) {
+                this.#warnOnce(`image:${value}`, `ShaderMaterial "${material.name}": image "${value}" is not loaded; using white.`);
+                return this.whiteTexture;
+            }
+            value = image;
+        }
+        if (typeof WebGLTexture !== "undefined" && value instanceof WebGLTexture) return value;
+        return this.#resolveTexture(value)?.EnsureGPU(this.gl, this.whiteTexture) ?? this.whiteTexture;
+    }
+
+    #warnOnce(key, message) {
+        if (this.warnings.has(key)) return;
+        this.warnings.add(key);
+        console.warn(message);
+    }
+
+    /** The geometry a mesh draws with: subdivided when the mesh or its shader asks for it. */
+    #meshGeometry(mesh) {
+        const level = mesh.subdivision ?? mesh.material?.asset?.render.subdivision ?? 0;
+        if (!level) return mesh.geometry;
+        let levels = this.subdivisionCache.get(mesh.geometry);
+        if (!levels) this.subdivisionCache.set(mesh.geometry, levels = new Map());
+        if (!levels.has(level)) levels.set(level, mesh.geometry.Subdivide(level));
+        return levels.get(level);
+    }
+
+    #getPostTarget() {
+        const gl = this.gl;
+        const width = this.canvas.width || 1;
+        const height = this.canvas.height || 1;
+        if (!this.postTarget) {
+            const framebuffer = gl.createFramebuffer();
+            const color = gl.createTexture();
+            const depth = gl.createTexture();
+            this.ownedFramebuffers.add(framebuffer);
+            this.ownedTextures.add(color);
+            this.ownedTextures.add(depth);
+            this.postTarget = { framebuffer, color, depth };
+        }
+        const target = this.postTarget;
+        if (target.width !== width || target.height !== height) {
+            gl.bindTexture(gl.TEXTURE_2D, target.color);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+            gl.bindTexture(gl.TEXTURE_2D, target.depth);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.DEPTH_COMPONENT24, width, height, 0, gl.DEPTH_COMPONENT, gl.UNSIGNED_INT, null);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+            gl.bindTexture(gl.TEXTURE_2D, null);
+            gl.bindFramebuffer(gl.FRAMEBUFFER, target.framebuffer);
+            gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, target.color, 0);
+            gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.TEXTURE_2D, target.depth, 0);
+            gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+            Object.assign(target, { width, height });
+        }
+        return target;
+    }
+
+    #drawPostProcess(material, target, camera) {
+        const gl = this.gl;
+        const shader = this.#getMaterialProgram(material.asset, "main");
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+        gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+        if (!shader) {
+            // Show the frame unprocessed when the post shader does not compile.
+            gl.bindFramebuffer(gl.READ_FRAMEBUFFER, target.framebuffer);
+            gl.blitFramebuffer(0, 0, target.width, target.height, 0, 0, this.canvas.width, this.canvas.height, gl.COLOR_BUFFER_BIT, gl.NEAREST);
+            gl.bindFramebuffer(gl.READ_FRAMEBUFFER, null);
+            return;
+        }
+        shader.Use();
+        gl.disable(gl.DEPTH_TEST);
+        gl.disable(gl.BLEND);
+        gl.depthMask(false);
+        gl.bindVertexArray(this.emptyVertexArray);
+        this.#bindTextureObject(shader, 0, "uSceneColor", target.color);
+        this.#bindTextureObject(shader, 1, "uSceneDepth", target.depth);
+        shader.SetUniform("uCameraNear", camera.near ?? 0.1);
+        shader.SetUniform("uCameraFar", camera.far ?? 1000);
+        this.#bindShaderProperties(shader, material, PROPERTY_UNITS.filter(unit => unit > 1));
+        gl.drawArrays(gl.TRIANGLES, 0, 3);
+        gl.bindVertexArray(null);
+        gl.depthMask(true);
+        gl.enable(gl.DEPTH_TEST);
+        for (const unit of [0, 1]) {
+            gl.activeTexture(gl.TEXTURE0 + unit);
+            gl.bindTexture(gl.TEXTURE_2D, null);
+        }
     }
 
     #bindUnlitMaterial(shader, material) {
@@ -517,10 +737,29 @@ export class WebGL3DRenderer {
         this.shadowShader.Use();
         this.#setMatrix(this.shadowShader, "uLightViewProjection", matrix);
 
+        const identity = Mat4.create();
         for (const mesh of objects) {
-            const geometry = this.#getGeometryState(mesh.geometry);
+            const material = mesh.material;
+            if (material?.type === "shader" && material.domain === "post") continue;
+            // A ShaderMaterial with its own vertex stage casts its displaced shape: that stage runs
+            // with view = identity and projection = the light's view-projection.
+            const custom = material?.type === "shader" && material.asset.vertex ? this.#getMaterialProgram(material.asset, "shadow") : null;
+            const program = custom ?? this.shadowShader;
+            const geometry = this.#getGeometryState(custom ? this.#meshGeometry(mesh) : mesh.geometry);
             const model = mesh.transform.GetMatrix(Mat4.create());
-            this.#setMatrix(this.shadowShader, "uModel", model);
+            program.Use();
+            this.#setMatrix(program, "uModel", model);
+            if (custom) {
+                const normalMatrix = Mat4.create();
+                if (Mat4.invert(normalMatrix, model)) Mat4.transpose(normalMatrix, normalMatrix);
+                this.#setMatrix(program, "uNormalMatrix", normalMatrix);
+                this.#setMatrix(program, "uView", identity);
+                this.#setMatrix(program, "uProjection", matrix);
+                this.#setMatrix(program, "uLightViewProjection", matrix);
+                this.#bindShaderProperties(program, material, PROPERTY_UNITS);
+            } else {
+                this.#setMatrix(program, "uLightViewProjection", matrix);
+            }
             gl.bindVertexArray(geometry.vao);
 
             if (geometry.indexed) {

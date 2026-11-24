@@ -61,7 +61,7 @@ export class SceneManifest3D {
      */
     static CreateGeometry(definition?: any): Geometry3D;
     /**
-     * Creates a standard or unlit material from JSON-compatible values.
+     * Creates a material from JSON-compatible scene values.
      * @param {Object} [definition={}] - Material definition.
      * @returns {Material} Created material.
      */

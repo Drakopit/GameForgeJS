@@ -10,6 +10,7 @@ import { PointLight } from "../Light/PointLight.js";
 import { SpotLight } from "../Light/SpotLight.js";
 import { StandardMaterial } from "../Material/StandardMaterial.js";
 import { UnlitMaterial } from "../Material/UnlitMaterial.js";
+import { ShaderMaterial } from "../Material/ShaderMaterial.js";
 import { Mesh } from "../Mesh/Mesh.js";
 import { PrimitiveMesh } from "../Mesh/PrimitiveMesh.js";
 import { Scene3D } from "./Scene3D.js";
@@ -135,6 +136,7 @@ export class SceneManifest3D {
                 visible: definition.visible !== false,
             },
         );
+        if (Number.isInteger(definition.subdivision) && definition.subdivision > 0) mesh.subdivision = definition.subdivision;
         const transform = definition.transform ?? {};
         mesh.transform
             .SetPosition(...(transform.position ?? [0, 0, 0]))
@@ -182,6 +184,15 @@ export class SceneManifest3D {
      * @returns {Material} Created material.
      */
     static CreateMaterial(definition = {}) {
+        if (definition.type === "shader") {
+            // { "type": "shader", "shader": "<.gfshader name in resources.json>", "properties": { … } }
+            return ShaderMaterial.FromAssets(definition.shader, {
+                name: definition.name,
+                properties: definition.properties,
+                transparent: definition.transparent,
+                receiveShadow: definition.receiveShadow !== false,
+            });
+        }
         if (definition.type === "toon") return new ToonMaterial(definition);
         if (definition.type === "celestial") return new CelestialBodyMaterial(definition);
         if(definition.type === 'surface') return new SurfaceMaterial(definition);
