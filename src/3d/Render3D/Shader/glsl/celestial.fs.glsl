@@ -20,6 +20,9 @@ uniform float uCloudStrength;
 uniform float uAtmosphereStrength;
 uniform float uEmissiveStrength;
 uniform float uTime;
+// Optional surface texture (CelestialBodyMaterial.albedoMap): replaces the procedural base/secondary mix.
+uniform sampler2D uAlbedoMap;
+uniform bool uHasAlbedoMap;
 
 float hash(vec2 p) {
     p = fract(p * vec2(123.34, 456.21));
@@ -68,7 +71,7 @@ void main() {
     float clouds = smoothstep(0.4, 0.9, fbm(movingUv * 12.0 + q * 2.0 + vec2(uTime * 0.015)));
     
     float mask = clamp(terrain * 0.7 + bands * 0.3, 0.0, 1.0);
-    vec3 surface = mix(uBaseColor, uSecondaryColor, mask);
+    vec3 surface = uHasAlbedoMap ? texture(uAlbedoMap, vUv).rgb : mix(uBaseColor, uSecondaryColor, mask);
     
     // Add realistic atmospheric scattering / clouds
     surface = mix(surface, vec3(1.0, 0.98, 0.95), clouds * uCloudStrength);
