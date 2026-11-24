@@ -49,16 +49,14 @@ export class PrimitiveMesh {
         const positions = [];
         const normals = [];
         const uvs = [];
-        const tangents = [];
         const indices = [];
         const faceUvs = [[0, 0], [1, 0], [1, 1], [0, 1]];
-        const addFace = (corners, normal, tangent) => {
+        const addFace = (corners, normal) => {
             const offset = positions.length / 3;
             corners.forEach((corner, index) => {
                 positions.push(...corner);
                 normals.push(...normal);
                 uvs.push(...faceUvs[index]);
-                tangents.push(...tangent);
             });
             const first = corners[1].map((value, axis) => value - corners[0][axis]);
             const second = corners[2].map((value, axis) => value - corners[0][axis]);
@@ -70,25 +68,25 @@ export class PrimitiveMesh {
         };
         const slope = Math.SQRT1_2;
 
-        addFace([[-inner, half, inner], [inner, half, inner], [inner, half, -inner], [-inner, half, -inner]], [0, 1, 0], [1, 0, 0, 1]);
-        addFace([[-inner, -half, -inner], [inner, -half, -inner], [inner, -half, inner], [-inner, -half, inner]], [0, -1, 0], [1, 0, 0, 1]);
+        addFace([[-inner, half, inner], [inner, half, inner], [inner, half, -inner], [-inner, half, -inner]], [0, 1, 0]);
+        addFace([[-inner, -half, -inner], [inner, -half, -inner], [inner, -half, inner], [-inner, -half, inner]], [0, -1, 0]);
 
-        addFace([[-half, -inner, half], [half, -inner, half], [half, inner, half], [-half, inner, half]], [0, 0, 1], [1, 0, 0, 1]);
-        addFace([[half, -inner, -half], [-half, -inner, -half], [-half, inner, -half], [half, inner, -half]], [0, 0, -1], [-1, 0, 0, 1]);
-        addFace([[half, -inner, half], [half, -inner, -half], [half, inner, -half], [half, inner, half]], [1, 0, 0], [0, 0, -1, 1]);
-        addFace([[-half, -inner, -half], [-half, -inner, half], [-half, inner, half], [-half, inner, -half]], [-1, 0, 0], [0, 0, 1, 1]);
+        addFace([[-half, -inner, half], [half, -inner, half], [half, inner, half], [-half, inner, half]], [0, 0, 1]);
+        addFace([[half, -inner, -half], [-half, -inner, -half], [-half, inner, -half], [half, inner, -half]], [0, 0, -1]);
+        addFace([[half, -inner, half], [half, -inner, -half], [half, inner, -half], [half, inner, half]], [1, 0, 0]);
+        addFace([[-half, -inner, -half], [-half, -inner, half], [-half, inner, half], [-half, inner, -half]], [-1, 0, 0]);
 
-        addFace([[-inner, half, inner], [inner, half, inner], [half, inner, half], [-half, inner, half]], [0, slope, slope], [1, 0, 0, 1]);
-        addFace([[inner, half, -inner], [-inner, half, -inner], [-half, inner, -half], [half, inner, -half]], [0, slope, -slope], [-1, 0, 0, 1]);
-        addFace([[inner, half, inner], [inner, half, -inner], [half, inner, -half], [half, inner, half]], [slope, slope, 0], [0, 0, -1, 1]);
-        addFace([[-inner, half, -inner], [-inner, half, inner], [-half, inner, half], [-half, inner, -half]], [-slope, slope, 0], [0, 0, 1, 1]);
+        addFace([[-inner, half, inner], [inner, half, inner], [half, inner, half], [-half, inner, half]], [0, slope, slope]);
+        addFace([[inner, half, -inner], [-inner, half, -inner], [-half, inner, -half], [half, inner, -half]], [0, slope, -slope]);
+        addFace([[inner, half, inner], [inner, half, -inner], [half, inner, -half], [half, inner, half]], [slope, slope, 0]);
+        addFace([[-inner, half, -inner], [-inner, half, inner], [-half, inner, half], [-half, inner, -half]], [-slope, slope, 0]);
 
-        addFace([[-half, -inner, half], [half, -inner, half], [inner, -half, inner], [-inner, -half, inner]], [0, -slope, slope], [1, 0, 0, 1]);
-        addFace([[half, -inner, -half], [-half, -inner, -half], [-inner, -half, -inner], [inner, -half, -inner]], [0, -slope, -slope], [-1, 0, 0, 1]);
-        addFace([[half, -inner, half], [half, -inner, -half], [inner, -half, -inner], [inner, -half, inner]], [slope, -slope, 0], [0, 0, -1, 1]);
-        addFace([[-half, -inner, -half], [-half, -inner, half], [-inner, -half, inner], [-inner, -half, -inner]], [-slope, -slope, 0], [0, 0, 1, 1]);
+        addFace([[-half, -inner, half], [half, -inner, half], [inner, -half, inner], [-inner, -half, inner]], [0, -slope, slope]);
+        addFace([[half, -inner, -half], [-half, -inner, -half], [-inner, -half, -inner], [inner, -half, -inner]], [0, -slope, -slope]);
+        addFace([[half, -inner, half], [half, -inner, -half], [inner, -half, -inner], [inner, -half, inner]], [slope, -slope, 0]);
+        addFace([[-half, -inner, -half], [-half, -inner, half], [-inner, -half, inner], [-inner, -half, -inner]], [-slope, -slope, 0]);
 
-        return new Geometry3D({ positions, normals, uvs, tangents, indices });
+        return new Geometry3D({ positions, normals, uvs, indices }).ComputeTangents();
     }
 
     /**
@@ -166,7 +164,7 @@ export class PrimitiveMesh {
                 positions.push(nx * radius, ny * radius, nz * radius);
                 normals.push(nx, ny, nz);
                 uvs.push(u, 1 - v);
-                tangents.push(-sinPhi, 0, cosPhi, 1);
+                tangents.push(-sinPhi, 0, cosPhi, -1);
             }
         }
 
@@ -188,7 +186,6 @@ export class PrimitiveMesh {
         const positions = [];
         const normals = [];
         const uvs = [];
-        const tangents = [];
         const indices = [];
         const count = Math.max(12, segments);
 
@@ -201,7 +198,6 @@ export class PrimitiveMesh {
             positions.push(cos * outerRadius, 0, sin * outerRadius);
             normals.push(0, 1, 0, 0, 1, 0);
             uvs.push(0, i / count, 1, i / count);
-            tangents.push(1, 0, 0, 1, 1, 0, 0, 1);
         }
 
         for (let i = 0; i < count; i++) {
@@ -212,6 +208,6 @@ export class PrimitiveMesh {
             indices.push(a, c, b, a, d, c);
         }
 
-        return new Geometry3D({ positions, normals, uvs, tangents, indices });
+        return new Geometry3D({ positions, normals, uvs, indices }).ComputeTangents();
     }
 }

@@ -15,6 +15,13 @@ export class WebGL3DRenderer {
     canvas: any;
     gl: any;
     clearColor: number[];
+    assets: any;
+    /** ShaderMaterial programs by stage sources: { shader } or { error }. */
+    materialPrograms: Map<any, any>;
+    subdivisionCache: WeakMap<object, any>;
+    warnings: Set<any>;
+    /** A ShaderMaterial of domain "post" applied to the finished frame (see SetPostProcess). */
+    postProcess: any;
     renderQueue: RenderQueue3D;
     /** Main camera pass only; shadow and skybox draws are not included. */
     stats: {
@@ -47,14 +54,29 @@ export class WebGL3DRenderer {
      */
     Render(scene: Scene3D, camera?: PerspectiveCamera): void;
     /**
+     * Applies a full-screen `post` ShaderMaterial to every rendered frame, or removes it (null).
+     * Its fragment stage reads `uSceneColor` / `uSceneDepth` (sampler2D), `vUv`, `uResolution`,
+     * `uTime`, `uCameraNear` / `uCameraFar` and its own properties, and writes `outColor`.
+     * @param {ShaderMaterial|null} material
+     * @returns {void}
+     */
+    SetPostProcess(material: ShaderMaterial | null): void;
+    /**
      * Releases shader programs, caches and GPU-owned resources.
      * @returns {void}
      */
     Dispose(): void;
     disposed: boolean;
+    postTarget: {
+        framebuffer: any;
+        color: any;
+        depth: any;
+    };
     whiteTexture: any;
     normalTexture: any;
     blackTexture: any;
+    grayTexture: any;
+    emptyVertexArray: any;
     activeReflection: {
         texture: any;
         matrix: any;

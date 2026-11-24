@@ -100,6 +100,9 @@ export class Texture {
         if (state.texture) gl.deleteTexture(state.texture);
         this.glTexture = gl.createTexture();
         state.texture = this.glTexture;
+        // Uploading binds on the active unit: restore what was bound there (the renderer may have
+        // just bound another map or the shadow map to it).
+        const previous = gl.getParameter(gl.TEXTURE_BINDING_2D);
         gl.bindTexture(gl.TEXTURE_2D, this.glTexture);
         gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, this.flipY);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
@@ -126,7 +129,7 @@ export class Texture {
             }
         }
 
-        gl.bindTexture(gl.TEXTURE_2D, null);
+        gl.bindTexture(gl.TEXTURE_2D, previous ?? null);
         this.ready = true;
         return this.glTexture;
     }
