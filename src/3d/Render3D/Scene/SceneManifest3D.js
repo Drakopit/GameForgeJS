@@ -1,3 +1,6 @@
+import { ToonMaterial } from "../Material/ToonMaterial.js";
+import { CelestialBodyMaterial } from "../Material/CelestialBodyMaterial.js";
+import { Transform3D } from "../Core/Transform3D.js";
 import { SurfaceMaterial } from '../Material/SurfaceMaterial.js';
 import { PerspectiveCamera } from "../Camera/PerspectiveCamera.js";
 import { AmbientLight } from "../Light/AmbientLight.js";
@@ -81,8 +84,12 @@ export class SceneManifest3D {
             scene.Add(light);
             return light;
         });
+        const definitions = manifest.transforms ?? [];
+        const transforms = new Map(definitions.map(node => [node.id, new Transform3D(node.transform)]));
+        for (const node of definitions) transforms.get(node.id).parent = transforms.get(node.parent) ?? null;
         const objects = (manifest.objects ?? []).map(definition => {
             const mesh = this.CreateObject(definition);
+            if (transforms.has(definition.id)) mesh.transform = transforms.get(definition.id);
             scene.Add(mesh);
             return mesh;
         });
@@ -133,6 +140,7 @@ export class SceneManifest3D {
             .SetPosition(...(transform.position ?? [0, 0, 0]))
             .SetRotation(...(transform.rotation ?? [0, 0, 0]))
             .SetScale(...(transform.scale ?? [1, 1, 1]));
+        if (transform.matrix) mesh.transform.matrix = new Float32Array(transform.matrix);
         return mesh;
     }
 
@@ -169,11 +177,13 @@ export class SceneManifest3D {
     }
 
     /**
-     * Creates a standard or unlit material from JSON-compatible values.
+     * Creates a material from JSON-compatible scene values.
      * @param {Object} [definition={}] - Material definition.
      * @returns {Material} Created material.
      */
     static CreateMaterial(definition = {}) {
+        if (definition.type === "toon") return new ToonMaterial(definition);
+        if (definition.type === "celestial") return new CelestialBodyMaterial(definition);
         if(definition.type === 'surface') return new SurfaceMaterial(definition);
         if (definition.type === "unlit") {
             return new UnlitMaterial({

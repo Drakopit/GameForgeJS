@@ -30,13 +30,15 @@ export class Component {
  * Stores 2D position, rotation and scale and can mirror them onto its owner.
  */
 export class TransformComponent extends Component {
-    constructor({ x, y, rotation, scaleX, scaleY, syncOwner, }?: {
+    constructor({ x, y, rotation, scaleX, scaleY, syncOwner, parent, renderTransform, }?: {
         x?: any;
         y?: any;
         rotation?: number;
         scaleX?: number;
         scaleY?: number;
         syncOwner?: boolean;
+        parent?: any;
+        renderTransform?: boolean;
     });
     set x(value: any);
     get x(): any;
@@ -48,10 +50,17 @@ export class TransformComponent extends Component {
     scaleX: number;
     scaleY: number;
     syncOwner: boolean;
+    renderTransform: boolean;
     hasInitialPosition: boolean;
     OnAttach(owner: any): void;
     SetPosition(x: any, y: any): this;
     Translate(dx: any, dy: any): this;
+    /** Links the local transform to another 2D transform. */
+    SetParent(parent?: any): this;
+    parent: any;
+    GetMatrix(): any;
+    /** Adapts legacy drawing at owner.x/y to this node's local transform. */
+    DrawWithTransform(context: any, draw: any): void;
     CopyFromOwner(): this;
     ApplyToOwner(): this;
 }
