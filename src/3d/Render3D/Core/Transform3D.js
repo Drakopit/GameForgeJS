@@ -7,6 +7,9 @@ import { Mat4 } from "../../../core/Math/Mat4.js";
  * @param {number[]} [options.position] - Three-component world position.
  * @param {Object|number[]} [options.rotation] - Euler rotation in radians.
  * @param {number[]} [options.scale] - Three-component scale.
+ * @param {boolean} [options.inheritScale=true] - When false (scene-node hierarchies), the
+ *     parent's scale only spaces this transform's position and never deforms its shape;
+ *     see `Mat4.attachRigid`. Meshes inside a model keep the default full inheritance.
  */
 export class Transform3D {
     constructor({
@@ -15,6 +18,7 @@ export class Transform3D {
         scale = [1, 1, 1],
         matrix = null,
         parent = null,
+        inheritScale = true,
     } = {}) {
         this.position = [...position];
         this.rotation = {
@@ -25,6 +29,7 @@ export class Transform3D {
         this.scale = [...scale];
         this.matrix = matrix ? Mat4.clone(matrix) : null;
         this.parent = parent;
+        this.inheritScale = inheritScale;
     }
 
     /**
@@ -70,7 +75,10 @@ export class Transform3D {
             Mat4.rotateZ(out, out, this.rotation.z);
             Mat4.scale(out, out, this.scale);
         }
-        if (this.parent) Mat4.multiply(out, this.parent.GetMatrix(), out);
+        if (this.parent) {
+            if (this.inheritScale) Mat4.multiply(out, this.parent.GetMatrix(), out);
+            else Mat4.attachRigid(out, this.parent.GetMatrix(), out);
+        }
         return out;
     }
 }

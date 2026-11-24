@@ -79,6 +79,7 @@ export class TransformComponent extends Component {
         syncOwner = true,
         parent = null,
         renderTransform = false,
+        inheritScale = false,
     } = {}) {
         super();
         this.x = x ?? 0;
@@ -88,6 +89,8 @@ export class TransformComponent extends Component {
         this.scaleY = scaleY;
         this.syncOwner = syncOwner;
         this.renderTransform = renderTransform;
+        /** False: the parent's scale spaces this node but never deforms it (no squash/shear). */
+        this.inheritScale = inheritScale;
         this.SetParent(parent);
         this.hasInitialPosition = x !== null || y !== null;
     }
@@ -139,7 +142,8 @@ export class TransformComponent extends Component {
         Mat4.translate(local, local, [this.x, this.y, 0]);
         Mat4.rotateZ(local, local, this.rotation);
         Mat4.scale(local, local, [this.scaleX, this.scaleY, 1]);
-        return this.parent ? Mat4.multiply(local, this.parent.GetMatrix(), local) : local;
+        if (!this.parent) return local;
+        return this.inheritScale ? Mat4.multiply(local, this.parent.GetMatrix(), local) : Mat4.attachRigid(local, this.parent.GetMatrix(), local);
     }
 
     /** Adapts legacy drawing at owner.x/y to this node's local transform. */

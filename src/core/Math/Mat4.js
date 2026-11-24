@@ -112,6 +112,37 @@ export class Mat4 {
         return out;
     }
 
+    /**
+     * Attaches a local matrix to a parent without letting the parent's scale deform it:
+     * the child's origin is placed through the full parent matrix (so parent scale still
+     * spaces children), but its axes only inherit the parent's rotation. Unlike
+     * `multiply`, a non-uniformly scaled parent never squashes or shears its children.
+     * @param {Float32Array|Float64Array|number[]} out - Result (may alias `local`).
+     * @param {ArrayLike<number>} parent - Parent world matrix.
+     * @param {ArrayLike<number>} local - Child local matrix.
+     * @returns {typeof out}
+     */
+    static attachRigid(out, parent, local) {
+        const columns = [0, 4, 8].map(offset => {
+            const x = parent[offset], y = parent[offset + 1], z = parent[offset + 2];
+            const length = Math.hypot(x, y, z) || 1;
+            return [x / length, y / length, z / length];
+        });
+        const tx = local[12], ty = local[13], tz = local[14];
+        const position = [0, 1, 2].map(row => parent[row] * tx + parent[4 + row] * ty + parent[8 + row] * tz + parent[12 + row]);
+        const axes = [0, 4, 8].map(offset => [0, 1, 2].map(row =>
+            columns[0][row] * local[offset] + columns[1][row] * local[offset + 1] + columns[2][row] * local[offset + 2]));
+        for (let column = 0; column < 3; column++) {
+            for (let row = 0; row < 3; row++) out[column * 4 + row] = axes[column][row];
+            out[column * 4 + 3] = 0;
+        }
+        out[12] = position[0];
+        out[13] = position[1];
+        out[14] = position[2];
+        out[15] = 1;
+        return out;
+    }
+
     static translate(out, a, v) {
         const x = v[0], y = v[1], z = v[2];
 
