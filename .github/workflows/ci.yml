@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  runtime:
+    name: Runtime entry points
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Import every package export
+        # Parses the whole public module graph; the runtime is zero-dependency, so nothing is installed.
+        run: |
+          node --input-type=module -e '
+          import { readFileSync } from "node:fs";
+          globalThis.window ??= { AudioContext: null, webkitAudioContext: null, addEventListener() {}, removeEventListener() {} };
+          const { exports } = JSON.parse(readFileSync("package.json", "utf8"));
+          let failed = 0;
+          for (const [key, entry] of Object.entries(exports)) {
+            const target = typeof entry === "string" ? entry : entry.default;
+            if (!target?.endsWith(".js")) continue;
+            try { const module = await import(new URL(target, `file://${process.cwd()}/`).href); console.log(`ok ${key}: ${Object.keys(module).length} exports`); }
+            catch (error) { failed++; console.error(`FAIL ${key}: ${error.message}`); }
+          }
+          process.exit(failed ? 1 : 0);'
+
+  tools:
+    # The runtime's unit and contract tests live in GameForgeJS.Tools (private):
+    # add a GF_REPOS_TOKEN secret (read access to Drakopit/GameForgeJS.Tools) to run them here.
+    name: Tools tests against this runtime
+    runs-on: ubuntu-latest
+    env:
+      HAS_TOKEN: ${{ secrets.GF_REPOS_TOKEN != '' }}
+    steps:
+      - name: Skipped without GF_REPOS_TOKEN
+        if: env.HAS_TOKEN != 'true'
+        run: echo "::notice::Set the GF_REPOS_TOKEN secret to run GameForgeJS.Tools tests against this runtime."
+      - uses: actions/checkout@v4
+        if: env.HAS_TOKEN == 'true'
+        with:
+          path: GameForgeJS
+      - uses: actions/checkout@v4
+        if: env.HAS_TOKEN == 'true'
+        with:
+          repository: Drakopit/GameForgeJS.Tools
+          token: ${{ secrets.GF_REPOS_TOKEN }}
+          path: GameForgeJS.Tools
+      - uses: actions/setup-node@v4
+        if: env.HAS_TOKEN == 'true'
+        with:
+          node-version: 22
+      - name: npm test and framework check
+        if: env.HAS_TOKEN == 'true'
+        working-directory: GameForgeJS.Tools
+        run: |
+          npm ci
+          npm test
+          npm run check

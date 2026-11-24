@@ -1,3 +1,5 @@
+import { Mat4 } from "../Math/Mat4.js";
+
 /**
  * Reader for `gameforgejs.scene` documents (`*.gfscene.json`): the one scene
  * format shared by the engine and the GameForgeJS Editor, for 2D and 3D.
@@ -21,7 +23,7 @@
  * }
  * ```
  *
- * Positions are relative to the parent node (translation only). Games read the
+ * Transforms are local to the parent node. Games read the
  * nodes they need, usually as plain records with `Items(layer)`, and build their
  * own ECS entities; the format adds no runtime behaviour of its own.
  *
@@ -146,9 +148,17 @@ export class SceneDocument {
                 throw new TypeError(`Scene node "${node.id}" position must be ${size} finite numbers.`);
             }
         }
+        const byId = new Map(document.nodes.map(node => [node.id, node]));
         for (const node of document.nodes) {
             if (node.parent !== undefined && node.parent !== null && !ids.has(node.parent)) {
                 throw new RangeError(`Scene node "${node.id}" has an unknown parent "${node.parent}".`);
+            }
+        }
+        for (const node of document.nodes) {
+            const seen = new Set();
+            for (let ancestor = node; ancestor; ancestor = byId.get(ancestor.parent)) {
+                if (seen.has(ancestor.id)) throw new RangeError(`Scene hierarchy contains a cycle at "${ancestor.id}".`);
+                seen.add(ancestor.id);
             }
         }
         return document.format === SceneDocument.FORMAT ? document : { ...document, format: SceneDocument.FORMAT };
@@ -185,21 +195,42 @@ export class SceneDocument {
         return [...(node?.transform?.position ?? (this.dimension === '3d' ? [0, 0, 0] : [0, 0]))];
     }
 
-    /**
-     * Position of a node in scene space: its local position plus every ancestor's.
-     * @param {Object} node - Scene node.
-     * @returns {number[]} [x, y] or [x, y, z].
-     */
-    WorldPosition(node) {
-        const position = this.LocalPosition(node);
-        const seen = new Set([node?.id]);
-        let parent = node?.parent ? this.Node(node.parent) : null;
-        while (parent && !seen.has(parent.id)) {
-            seen.add(parent.id);
-            this.LocalPosition(parent).forEach((value, index) => { position[index] += value; });
-            parent = parent.parent ? this.Node(parent.parent) : null;
+    /** Composes the local transform and every ancestor into a scene-space matrix. */
+    WorldMatrix(node) {
+        const matrix = Mat4.identity(new Float64Array(16));
+        const chain = [];
+        const seen = new Set();
+        for (let ancestor = node; ancestor; ancestor = ancestor.parent ? this.Node(ancestor.parent) : null) {
+            if (seen.has(ancestor.id)) throw new RangeError(`Scene hierarchy contains a cycle at "${ancestor.id}".`);
+            seen.add(ancestor.id);
+            chain.unshift(ancestor.transform ?? {});
         }
-        return position;
+        for (const { position = [], rotation = 0, scale = [] } of chain) {
+            Mat4.translate(matrix, matrix, [position[0] ?? 0, position[1] ?? 0, position[2] ?? 0]);
+            if (this.dimension === "3d") {
+                Mat4.rotateX(matrix, matrix, rotation[0] ?? 0);
+                Mat4.rotateY(matrix, matrix, rotation[1] ?? 0);
+            }
+            Mat4.rotateZ(matrix, matrix, typeof rotation === "number" ? rotation : rotation[2] ?? 0);
+            Mat4.scale(matrix, matrix, [scale[0] ?? 1, scale[1] ?? 1, scale[2] ?? 1]);
+        }
+        return matrix;
+    }
+
+    /** Transforms a point using a scene matrix. */
+    static TransformPoint(matrix, [x, y, z = 0]) {
+        return [
+            matrix[0] * x + matrix[4] * y + matrix[8] * z + matrix[12],
+            matrix[1] * x + matrix[5] * y + matrix[9] * z + matrix[13],
+            matrix[2] * x + matrix[6] * y + matrix[10] * z + matrix[14],
+        ];
+    }
+
+    /** Returns the scene-space origin of a local node. */
+    WorldPosition(node) {
+        if (!node?.parent) return this.LocalPosition(node);
+        const position = SceneDocument.TransformPoint(this.WorldMatrix(this.Node(node.parent)), this.LocalPosition(node));
+        return this.dimension === "2d" ? position.slice(0, 2) : position;
     }
 
     /**
@@ -392,8 +423,13 @@ export class SceneDocument {
      * @param {boolean} [options.keepWorld=true] - Keep the node's scene position.
      */
     SetParent(node, parentId, { keepWorld = true } = {}) {
+        if (parentId && !this.Node(parentId)) throw new RangeError(`Unknown scene parent "${parentId}".`);
+        for (let ancestor = this.Node(parentId); ancestor; ancestor = this.Node(ancestor.parent)) {
+            if (ancestor.id === node.id) throw new RangeError("A node cannot be parented to itself or its descendants.");
+        }
         const world = keepWorld ? this.WorldPosition(node) : null;
-        if (parentId && this.Node(parentId) && parentId !== node.id) node.parent = parentId;
+        if (world && parentId && !Mat4.invert(new Float64Array(16), this.WorldMatrix(this.Node(parentId)))) throw new RangeError("Cannot reparent under a singular transform.");
+        if (parentId) node.parent = parentId;
         else delete node.parent;
         if (world) this.SetWorldPosition(node, world);
     }
@@ -404,17 +440,17 @@ export class SceneDocument {
     }
 
     /**
-     * Sets a node's scene-space position (translation only, like `WorldPosition`).
+     * Sets a node's scene-space position.
      * Axes that only differ by floating-point rounding keep their stored value.
      */
     SetWorldPosition(node, position) {
         const parent = node.parent ? this.Node(node.parent) : null;
-        const origin = parent ? this.WorldPosition(parent) : position.map(() => 0);
+        const inverse = parent && Mat4.invert(new Float64Array(16), this.WorldMatrix(parent));
+        if (parent && !inverse) throw new RangeError("Cannot position a child under a singular transform.");
+        const local = inverse ? SceneDocument.TransformPoint(inverse, position) : position;
         const current = node.transform?.position;
-        this.SetLocalPosition(node, position.map((value, index) => {
-            const local = value - (origin[index] ?? 0);
-            return current && Math.abs(current[index] - local) < 1e-9 ? current[index] : local;
-        }));
+        this.SetLocalPosition(node, local.slice(0, position.length).map((value, index) =>
+            current && Math.abs(current[index] - value) < 1e-8 ? current[index] : value));
     }
 
     /**
@@ -517,18 +553,23 @@ export class SceneDocument {
             if (!components.Mesh) continue;
             objects.push({
                 id: node.id,
+                ...(node.parent ? { parent: node.parent } : {}),
                 name: node.name ?? node.id,
                 ...(components.Data ?? {}),
                 primitive: components.Mesh,
                 ...(components.Material ? { material: components.Material } : {}),
                 transform: {
                     position: this.WorldPosition(node),
+                    ...(node.parent ? { matrix: [...this.WorldMatrix(node)] } : {}),
                     rotation: [...(node.transform?.rotation ?? [0, 0, 0])],
                     scale: [...(node.transform?.scale ?? [1, 1, 1])],
                 },
             });
         }
         const manifest = { name: this.name, lights: this.Lights(), objects };
+        if (objects.some(object => object.parent)) manifest.transforms = this.data.nodes.map(node => ({
+            id: node.id, parent: node.parent, transform: clone(node.transform ?? {}),
+        }));
         if (this.settings.backgroundColor) manifest.backgroundColor = clone(this.settings.backgroundColor);
         if (this.settings.camera) manifest.camera = clone(this.settings.camera);
         return manifest;

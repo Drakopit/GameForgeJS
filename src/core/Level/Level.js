@@ -11,6 +11,7 @@
  */
 
 import { Base } from "../Base.js";
+import { TransformComponent } from "../Component.js";
 import { Logger } from "../Logger.js";
 
 /**
@@ -116,7 +117,11 @@ export class Level extends Base {
         // Draw the GUI for all entities
         this.entities.forEach(entity => {
             if (typeof entity.OnDrawn === "function") {
-                entity.OnDrawn();
+                const transform = entity.GetComponent?.(TransformComponent);
+                const context = this.screen?.Context;
+                if (context?.transform && transform?.enabled !== false && (transform?.parent || transform?.renderTransform)) {
+                    transform.DrawWithTransform(context, () => entity.OnDrawn());
+                } else entity.OnDrawn();
             }
         });
     }

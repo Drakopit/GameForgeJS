@@ -21,7 +21,7 @@
  * }
  * ```
  *
- * Positions are relative to the parent node (translation only). Games read the
+ * Transforms are local to the parent node. Games read the
  * nodes they need, usually as plain records with `Items(layer)`, and build their
  * own ECS entities; the format adds no runtime behaviour of its own.
  *
@@ -98,6 +98,8 @@ export class SceneDocument {
      * @returns {Object} The validated document (never mutated; legacy ids are normalized on a copy).
      */
     static Validate(document: any): any;
+    /** Transforms a point using a scene matrix. */
+    static TransformPoint(matrix: any, [x, y, z]: [any, any, number?]): any[];
     /**
      * @param {Object} document - Parsed scene JSON.
      * @param {Object} [options]
@@ -145,12 +147,10 @@ export class SceneDocument {
      * @returns {number[]} [x, y] or [x, y, z].
      */
     LocalPosition(node: any): number[];
-    /**
-     * Position of a node in scene space: its local position plus every ancestor's.
-     * @param {Object} node - Scene node.
-     * @returns {number[]} [x, y] or [x, y, z].
-     */
-    WorldPosition(node: any): number[];
+    /** Composes the local transform and every ancestor into a scene-space matrix. */
+    WorldMatrix(node: any): any;
+    /** Returns the scene-space origin of a local node. */
+    WorldPosition(node: any): any[];
     /**
      * Size of a node: `size` when present, otherwise `fallback`.
      * @param {Object} node - Scene node.
@@ -273,7 +273,7 @@ export class SceneDocument {
     /** Sets a node's position relative to its parent. */
     SetLocalPosition(node: any, position: any): void;
     /**
-     * Sets a node's scene-space position (translation only, like `WorldPosition`).
+     * Sets a node's scene-space position.
      * Axes that only differ by floating-point rounding keep their stored value.
      */
     SetWorldPosition(node: any, position: any): void;

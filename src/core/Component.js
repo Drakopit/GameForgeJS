@@ -1,3 +1,4 @@
+import { Mat4 } from "./Math/Mat4.js";
 import { ActionManager } from "./Input/ActionManager.js";
 
 /**
@@ -76,6 +77,8 @@ export class TransformComponent extends Component {
         scaleX = 1,
         scaleY = 1,
         syncOwner = true,
+        parent = null,
+        renderTransform = false,
     } = {}) {
         super();
         this.x = x ?? 0;
@@ -84,6 +87,8 @@ export class TransformComponent extends Component {
         this.scaleX = scaleX;
         this.scaleY = scaleY;
         this.syncOwner = syncOwner;
+        this.renderTransform = renderTransform;
+        this.SetParent(parent);
         this.hasInitialPosition = x !== null || y !== null;
     }
 
@@ -118,6 +123,36 @@ export class TransformComponent extends Component {
 
     Translate(dx, dy) {
         return this.SetPosition(this.x + dx, this.y + dy);
+    }
+
+    /** Links the local transform to another 2D transform. */
+    SetParent(parent = null) {
+        for (let ancestor = parent; ancestor; ancestor = ancestor.parent) {
+            if (ancestor === this) throw new RangeError("A transform cannot parent itself or an ancestor.");
+        }
+        this.parent = parent;
+        return this;
+    }
+
+    GetMatrix() {
+        const local = Mat4.create();
+        Mat4.translate(local, local, [this.x, this.y, 0]);
+        Mat4.rotateZ(local, local, this.rotation);
+        Mat4.scale(local, local, [this.scaleX, this.scaleY, 1]);
+        return this.parent ? Mat4.multiply(local, this.parent.GetMatrix(), local) : local;
+    }
+
+    /** Adapts legacy drawing at owner.x/y to this node's local transform. */
+    DrawWithTransform(context, draw) {
+        const m = this.GetMatrix();
+        context.save();
+        try {
+            context.transform(m[0], m[1], m[4], m[5], m[12], m[13]);
+            context.translate(-this.x, -this.y);
+            draw();
+        } finally {
+            context.restore();
+        }
     }
 
     CopyFromOwner() {
