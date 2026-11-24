@@ -86,7 +86,8 @@ export class SceneManifest3D {
             return light;
         });
         const definitions = manifest.transforms ?? [];
-        const transforms = new Map(definitions.map(node => [node.id, new Transform3D(node.transform)]));
+        // Scene nodes: a parent's scale spaces its children but never squashes them.
+        const transforms = new Map(definitions.map(node => [node.id, new Transform3D({ ...node.transform, inheritScale: false })]));
         for (const node of definitions) transforms.get(node.id).parent = transforms.get(node.parent) ?? null;
         const objects = (manifest.objects ?? []).map(definition => {
             const mesh = this.CreateObject(definition);

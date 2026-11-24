@@ -195,7 +195,11 @@ export class SceneDocument {
         return [...(node?.transform?.position ?? (this.dimension === '3d' ? [0, 0, 0] : [0, 0]))];
     }
 
-    /** Composes the local transform and every ancestor into a scene-space matrix. */
+    /**
+     * Composes the local transform and every ancestor into a scene-space matrix.
+     * Ancestors' scale spaces descendants but never deforms them (`Mat4.attachRigid`),
+     * so a child keeps its own proportions under a non-uniformly scaled parent.
+     */
     WorldMatrix(node) {
         const matrix = Mat4.identity(new Float64Array(16));
         const chain = [];
@@ -205,15 +209,19 @@ export class SceneDocument {
             seen.add(ancestor.id);
             chain.unshift(ancestor.transform ?? {});
         }
-        for (const { position = [], rotation = 0, scale = [] } of chain) {
-            Mat4.translate(matrix, matrix, [position[0] ?? 0, position[1] ?? 0, position[2] ?? 0]);
+        const local = new Float64Array(16);
+        chain.forEach(({ position = [], rotation = 0, scale = [] }, index) => {
+            Mat4.identity(local);
+            Mat4.translate(local, local, [position[0] ?? 0, position[1] ?? 0, position[2] ?? 0]);
             if (this.dimension === "3d") {
-                Mat4.rotateX(matrix, matrix, rotation[0] ?? 0);
-                Mat4.rotateY(matrix, matrix, rotation[1] ?? 0);
+                Mat4.rotateX(local, local, rotation[0] ?? 0);
+                Mat4.rotateY(local, local, rotation[1] ?? 0);
             }
-            Mat4.rotateZ(matrix, matrix, typeof rotation === "number" ? rotation : rotation[2] ?? 0);
-            Mat4.scale(matrix, matrix, [scale[0] ?? 1, scale[1] ?? 1, scale[2] ?? 1]);
-        }
+            Mat4.rotateZ(local, local, typeof rotation === "number" ? rotation : rotation[2] ?? 0);
+            Mat4.scale(local, local, [scale[0] ?? 1, scale[1] ?? 1, scale[2] ?? 1]);
+            if (index === 0) Mat4.copy(matrix, local);
+            else Mat4.attachRigid(matrix, matrix, local);
+        });
         return matrix;
     }
 
