@@ -82,7 +82,7 @@ export class StatsOverlay {
     Show() {
         if (this.visible || typeof document === "undefined") return;
         this.visible = true;
-        this.stats.Enable();
+        this.stats.Reset().Enable();
         if (!this.element) this.#build();
         (document.body ?? document.documentElement).appendChild(this.element);
         this.frameId = requestAnimationFrame(this.tick);
@@ -137,7 +137,7 @@ export class StatsOverlay {
         const rows = [
             ["FPS", `${format(s.fps, 1)}`],
             ["Frame", `${format(s.frameMs, 2)} ms  (p95 ${format(s.p95Ms, 1)}, max ${format(s.worstMs, 1)})`],
-            ["Update+draw", `${format(s.workMs, 2)} ms`],
+            ["Update+draw", `${format(s.workMs, 2)} ms avg  (last ${format(s.workLastMs, 1)})`],
             ["Draw calls", format(s.drawCalls)],
             ["Triangles", format(s.triangles)],
             ["Vertices", format(s.vertices)],

@@ -58,6 +58,8 @@ export class Game {
     get currentLevel(): any;
     start(): any;
     startInternal(): Promise<this>;
+    /** "Stats for Nerds" HUD: debug.statsKey (F3) toggles it; debug.stats shows it at start. */
+    installStats(): void;
     enterLevel(): void;
     frame(timestamp: any): void;
     stop(): this;

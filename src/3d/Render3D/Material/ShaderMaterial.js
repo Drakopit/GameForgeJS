@@ -19,16 +19,40 @@ import { Material } from "./Material.js";
  * @param {string} [options.name] - Display name (defaults to the shader's name).
  * @param {boolean} [options.transparent] - Overrides the shader's render.transparent.
  * @param {boolean} [options.receiveShadow=true] - Whether shadows darken this surface.
+ * @param {number} [options.toonBands] - Toon lighting bands (0 = smooth, 2–8); defaults to the shader's render.toonBands.
  */
 export class ShaderMaterial extends Material {
-    constructor({ shader, properties = {}, name, transparent, receiveShadow = true } = {}) {
+    constructor({ shader, properties = {}, name, transparent, receiveShadow = true, toonBands } = {}) {
         const asset = ShaderAsset.Parse(shader);
         super({ name: name ?? asset.name, transparent: transparent ?? asset.render.transparent });
         this.type = "shader";
         this.asset = asset;
         this.receiveShadow = receiveShadow;
+        this.toonBands = toonBands ?? asset.render.toonBands;
         this.values = new Map(asset.properties.map(property => [property.name, cloneValue(property.default)]));
         for (const [key, value] of Object.entries(properties ?? {})) this.SetProperty(key, value);
+    }
+
+    /**
+     * Toon lighting bands of a surface shader: 0 for smooth lighting, otherwise 2–8 flat bands.
+     * Changing it at runtime is free (it is a uniform).
+     */
+    get toonBands() {
+        return this._toonBands;
+    }
+
+    set toonBands(value) {
+        const bands = Math.round(Number(value) || 0);
+        this._toonBands = bands < 2 ? 0 : Math.min(8, bands);
+    }
+
+    /** Alias of `toonBands`, so code written for `ToonMaterial` (`material.bands = 3`) works unchanged. */
+    get bands() {
+        return this.toonBands;
+    }
+
+    set bands(value) {
+        this.toonBands = value;
     }
 
     /** "surface", "unlit" or "post". */

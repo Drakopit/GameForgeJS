@@ -192,6 +192,7 @@ export class SceneManifest3D {
                 properties: definition.properties,
                 transparent: definition.transparent,
                 receiveShadow: definition.receiveShadow !== false,
+                toonBands: definition.toonBands,
             });
         }
         if (definition.type === "toon") return new ToonMaterial(definition);

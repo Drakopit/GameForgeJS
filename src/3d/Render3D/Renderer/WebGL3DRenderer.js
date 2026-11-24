@@ -130,7 +130,7 @@ export class WebGL3DRenderer {
                 const geometry = this.#meshGeometry(mesh); // subdivided when the mesh or its shader asks for it
                 return sum + (geometry.indices?.length ?? geometry.vertexCount) / 3;
             }, 0) };
-        FrameStats.global.Observe("meshes", objects.length);
+        FrameStats.global.Observe("meshes", objects.length, this);
         for (const mesh of objects) {
             this.#drawMesh(mesh, scene, camera, shadowState);
         }
@@ -494,7 +494,7 @@ export class WebGL3DRenderer {
     #bindShaderMaterial(shader, material, mesh, scene, shadowState) {
         // Surface and unlit graphs may read the lights (unlit: e.g. a toon ramp from the key light).
         if (material.domain !== "post") {
-            this.#set1f(shader, "uToonBands", 0);
+            this.#set1f(shader, "uToonBands", material.domain === "surface" ? material.toonBands ?? 0 : 0);
             this.#bindLights(shader, scene, shadowState);
             const useShadow = Boolean(shadowState?.texture && material.receiveShadow !== false && mesh.receiveShadow !== false);
             this.#set1i(shader, "uUseShadowMap", useShadow ? 1 : 0);

@@ -6,7 +6,7 @@
  * { "format": "gameforge.shader", "version": 1, "name": "Mossy rock", "domain": "surface",
  *   "properties": [{ "name": "uTint", "type": "color", "default": [1, 1, 1, 1] },
  *                  { "name": "uNormalMap", "type": "texture", "default": "normal" }],
- *   "render": { "transparent": false, "cull": "back", "subdivision": 0 },
+ *   "render": { "transparent": false, "cull": "back", "subdivision": 0, "toonBands": 0 },
  *   "graph": { "nodes": [], "links": [] },
  *   "glsl": { "vertex": "…optional…", "fragment": "#version 300 es\n…#include <gf_surface>…" } }
  * ```
@@ -15,6 +15,9 @@
  * (a full-screen pass over the rendered frame, see `WebGL3DRenderer.SetPostProcess`). A missing
  * vertex stage uses the standard vertex (`gf_vertex`) or, for `post`, a full-screen triangle.
  * GLSL may use `#include <gf_…>` chunks of `ShaderLibrary`; the renderer expands them.
+ *
+ * `render.toonBands` (0, or 2–8) quantizes the scene lighting of a `surface` shader into that many
+ * flat bands, exactly like `ToonMaterial` (materials may change it at runtime, see `ShaderMaterial`).
  */
 export class ShaderAsset {
     static FORMAT = "gameforge.shader";
@@ -80,11 +83,14 @@ export class ShaderAsset {
         if (!["back", "front", "none"].includes(cull)) fail('render.cull must be "back", "front" or "none".');
         const subdivision = render.subdivision ?? 0;
         if (!Number.isInteger(subdivision) || subdivision < 0 || subdivision > 4) fail("render.subdivision must be an integer from 0 to 4.");
+        const toonBands = render.toonBands ?? 0;
+        if (!Number.isInteger(toonBands) || toonBands === 1 || toonBands < 0 || toonBands > 8) fail("render.toonBands must be 0 (smooth lighting) or an integer from 2 to 8.");
         this.render = Object.freeze({
             transparent: Boolean(render.transparent),
             cull,
             depthWrite: render.depthWrite ?? !render.transparent,
             subdivision,
+            toonBands,
         });
         this.graph = data.graph ?? null;
         this.description = typeof data.description === "string" ? data.description : "";

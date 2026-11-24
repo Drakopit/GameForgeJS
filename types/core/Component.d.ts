@@ -30,7 +30,7 @@ export class Component {
  * Stores 2D position, rotation and scale and can mirror them onto its owner.
  */
 export class TransformComponent extends Component {
-    constructor({ x, y, rotation, scaleX, scaleY, syncOwner, parent, renderTransform, }?: {
+    constructor({ x, y, rotation, scaleX, scaleY, syncOwner, parent, renderTransform, inheritScale, }?: {
         x?: any;
         y?: any;
         rotation?: number;
@@ -39,6 +39,7 @@ export class TransformComponent extends Component {
         syncOwner?: boolean;
         parent?: any;
         renderTransform?: boolean;
+        inheritScale?: boolean;
     });
     set x(value: any);
     get x(): any;
@@ -51,6 +52,8 @@ export class TransformComponent extends Component {
     scaleY: number;
     syncOwner: boolean;
     renderTransform: boolean;
+    /** False: the parent's scale spaces this node but never deforms it (no squash/shear). */
+    inheritScale: boolean;
     hasInitialPosition: boolean;
     OnAttach(owner: any): void;
     SetPosition(x: any, y: any): this;
