@@ -142,7 +142,8 @@ export class StatsOverlay {
             ["Triangles", format(s.triangles)],
             ["Vertices", format(s.vertices)],
             ["Entities", format(s.entities)],
-            ["Bodies", format(s.bodies)],
+            // Only a physics world (PhysicsWorld3D) reports bodies; 2D games have none.
+            ["Bodies", s.bodies === null ? "— (no physics world)" : format(s.bodies)],
             ["Meshes", format(s.meshes)],
             ["Shader binds", format(s.shaderBinds)],
             ["Texture binds", format(s.textureBinds)],
