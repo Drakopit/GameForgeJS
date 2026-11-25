@@ -11,34 +11,50 @@ import { SpotLight } from "../Light/SpotLight.js";
 import { StandardMaterial } from "../Material/StandardMaterial.js";
 import { UnlitMaterial } from "../Material/UnlitMaterial.js";
 import { ShaderMaterial } from "../Material/ShaderMaterial.js";
+import { ShaderAsset } from "../Shader/ShaderAsset.js";
 import { Mesh } from "../Mesh/Mesh.js";
 import { PrimitiveMesh } from "../Mesh/PrimitiveMesh.js";
+import { Texture } from "../Texture/Texture.js";
+import { Skybox } from "../Skybox/Skybox.js";
 import { Scene3D } from "./Scene3D.js";
+import { ModelMeshFactory } from "../../Model/ModelMeshFactory.js";
 import { SceneDocument } from "../../../core/Scene/SceneDocument.js";
+import { AssetManager } from "../../../core/Assets/AssetManager.js";
+
+/** Texture slots a material definition may name by resources.json image name. */
+const TEXTURE_SLOTS = ["albedoMap", "normalMap", "roughnessMap", "aoMap", "ormMap", "heightMap", "emissiveMap"];
 
 /**
- * Creates simple Render3D scenes from JSON-compatible game manifests.
+ * Creates Render3D scenes from scene documents and JSON-compatible manifests: the one scene
+ * pipeline shared by games and the GameForgeJS Editor's 3D view.
  *
- * A game or an authoring tool owns the manifest data; this factory converts
- * its camera, lights, primitives and basic materials into runtime objects.
- * A 3D `gameforgejs.scene` document is accepted too: it is converted with
- * `SceneDocument.ToManifest3D()` first (prefabs resolved).
+ * A 3D `gameforgejs.scene` document is converted with `SceneDocument.ToManifest3D()` first
+ * (prefabs resolved). Objects may be primitives (`primitive`), several parts (`parts`) or a
+ * resources.json model (`model`); materials may name resources.json images (`albedoMap`,
+ * `normalMap`, ...) and `.gfshader` assets (`{ type: "shader", shader }`).
+ *
+ * Assets come from a resolver, `{ image(name), texture(name, options), shader(name), model(name) }`
+ * (each returns null / false while missing). The default reads the shared AssetManager, where a
+ * game's resources.json is loaded; the editor passes one that reads project files and sets
+ * `lenient: true` (placeholders while something loads, instead of errors).
  *
  * @example
- * const { scene, camera } = SceneManifest3D.Create(levelManifest, {
+ * const { scene, camera } = SceneManifest3D.Create(context.assets.jsons.level_1, {
  *     aspect: canvas.width / canvas.height,
  * });
  */
 export class SceneManifest3D {
     /**
-     * Builds a scene, camera and manifest-owned content collection.
-     * @param {Object} [manifest={}] - Scene manifest definition.
+     * Builds a scene, camera, skybox and the manifest's lights and objects.
+     * @param {Object} [manifest={}] - Scene manifest or 3D scene document.
      * @param {Object} [options] - Creation context.
      * @param {number} [options.aspect=1] - Camera aspect ratio.
-     * @returns {Object} Object containing `scene`, `camera`, `lights` and `objects`.
+     * @param {Object} [options.assets] - Asset resolver or AssetManager (default: the shared AssetManager).
+     * @returns {Object} `scene`, `camera`, `skybox`, `lights`, `objects` and `nodes` (see `Populate`).
      */
-    static Create(manifest = {}, { aspect = 1 } = {}) {
+    static Create(manifest = {}, { aspect = 1, assets = null } = {}) {
         manifest = this.Normalize(manifest);
+        const resolver = this.Assets(assets);
         const backgroundColor = manifest.backgroundColor ?? [0.03, 0.04, 0.07, 1];
         const scene = new Scene3D({
             backgroundColor,
@@ -48,8 +64,10 @@ export class SceneManifest3D {
         });
         const camera = this.CreateCamera(manifest.camera, aspect);
         scene.Add(camera);
-        const content = this.Populate(scene, manifest);
-        return { scene, camera, ...content };
+        const skybox = manifest.skybox ? this.CreateSkybox(manifest.skybox, resolver) : null;
+        if (skybox) scene.Add(skybox);
+        const content = this.Populate(scene, manifest, { assets: resolver });
+        return { scene, camera, skybox, ...content };
     }
 
     /**
@@ -59,6 +77,30 @@ export class SceneManifest3D {
      */
     static Normalize(manifest = {}) {
         return SceneDocument.IsScene(manifest) && manifest.dimension === "3d" ? new SceneDocument(manifest).ToManifest3D() : manifest;
+    }
+
+    /**
+     * The asset resolver for `assets`: a resolver passes through; an AssetManager (or nothing,
+     * meaning the shared one) is wrapped. Textures are cached per image and options.
+     * @param {Object|null} [assets]
+     * @returns {{image: Function, texture: Function, shader: Function, model: Function, lenient?: boolean}}
+     */
+    static Assets(assets = null) {
+        if (assets && typeof assets.texture === "function") return assets;
+        const manager = () => assets ?? AssetManager.instance;
+        const cache = new Map();
+        return {
+            image: name => (name && manager()?.HasImage?.(name) ? manager().GetImage(name) : null),
+            texture(name, options = {}) {
+                const image = this.image(name);
+                if (!image) return null;
+                const key = `${name}|${JSON.stringify(options)}`;
+                if (cache.get(key)?.image !== image) cache.set(key, { image, texture: Texture.FromImage(image, options) });
+                return cache.get(key).texture;
+            },
+            shader: name => manager()?.GetShader?.(name) ?? manager()?.shaders?.[name] ?? null,
+            model: name => Boolean(name && manager()?.models?.[name]),
+        };
     }
 
     /**
@@ -77,30 +119,53 @@ export class SceneManifest3D {
     }
 
     /**
-     * Adds declared lights and primitive objects to an existing scene.
+     * A skybox from a resources.json image (`settings.skybox`), or null while it is missing.
+     * @param {string} name - Image name.
+     * @param {Object} [assets] - Asset resolver or AssetManager.
+     * @returns {Skybox|null}
+     */
+    static CreateSkybox(name, assets = null) {
+        const image = this.Assets(assets).image(name);
+        return image ? Skybox.FromImage(image, { name }) : null;
+    }
+
+    /**
+     * Adds declared lights and objects to an existing scene.
+     *
+     * With `manifest.transforms` (every node: id, parent, local transform) objects and point/spot
+     * lights with a `parent` follow the node hierarchy; objects without one keep their own transform.
      * @param {Scene3D} scene - Target scene.
      * @param {Object} [manifest={}] - Scene manifest definition.
-     * @returns {Object} Added `lights` and `objects`.
+     * @param {Object} [options]
+     * @param {Object} [options.assets] - Asset resolver or AssetManager.
+     * @returns {{lights: Light[], objects: (Mesh|null)[], nodes: Map<string, Object>}} `objects[i]`
+     *   is the first mesh of `manifest.objects[i]`; `nodes` maps each object id to
+     *   `{ root, meshes, materials, model, pending }` (see `BuildObject`).
      */
-    static Populate(scene, manifest = {}) {
+    static Populate(scene, manifest = {}, { assets = null } = {}) {
         manifest = this.Normalize(manifest);
-        const lights = (manifest.lights ?? []).map(definition => {
-            const light = this.CreateLight(definition);
-            scene.Add(light);
-            return light;
-        });
+        const resolver = this.Assets(assets);
         const definitions = manifest.transforms ?? [];
         // Scene nodes inherit their parent's full transform, scale included (SceneDocument.WorldMatrix).
         const transforms = new Map(definitions.map(node => [node.id, new Transform3D(node.transform)]));
         for (const node of definitions) transforms.get(node.id).parent = transforms.get(node.parent) ?? null;
-        const objects = (manifest.objects ?? []).map(definition => {
-            const mesh = this.CreateObject(definition);
-            if (transforms.has(definition.id)) mesh.transform = transforms.get(definition.id);
-            scene.Add(mesh);
-            return mesh;
+        const lights = (manifest.lights ?? []).map(definition => {
+            const parent = transforms.get(definition.parent);
+            const placed = parent && Array.isArray(definition.position)
+                ? { ...definition, position: SceneDocument.TransformPoint(parent.GetMatrix(), definition.position) }
+                : definition;
+            const light = this.CreateLight(placed);
+            scene.Add(light);
+            return light;
         });
-
-        return { lights, objects };
+        const nodes = new Map();
+        const objects = (manifest.objects ?? []).map(definition => {
+            const node = this.BuildObject(definition, { assets: resolver, root: transforms.get(definition.id) ?? null });
+            if (definition.id !== undefined) nodes.set(definition.id, node);
+            for (const mesh of node.meshes) scene.Add(mesh);
+            return node.meshes[0] ?? null;
+        });
+        return { lights, objects, nodes };
     }
 
     /**
@@ -125,30 +190,97 @@ export class SceneManifest3D {
     }
 
     /**
-     * Creates a primitive mesh and applies its declared transform.
+     * Builds the renderable of one object: its transform and meshes.
+     *
+     * - `model`: a resources.json model with its own materials (a Material with explicit colours
+     *   or maps replaces them; `{ type: "toon" }` converts them);
+     * - `parts`: `[{ primitive, transform, material, castShadow }]` under the object's transform;
+     * - otherwise `primitive` (a cube when nothing is declared; nothing for group nodes, i.e.
+     *   a `nodeType` without a primitive).
+     * @param {Object} [definition={}] - Manifest object.
+     * @param {Object} [options]
+     * @param {Object} [options.assets] - Asset resolver or AssetManager.
+     * @param {Transform3D} [options.root] - Use this transform (e.g. from the node hierarchy).
+     * @returns {{root: Transform3D, meshes: Mesh[], materials: Object[], model: Object|null, pending: boolean}}
+     *   `pending` is true while a model is not loaded yet (lenient resolvers only).
+     */
+    static BuildObject(definition = {}, { assets = null, root = null } = {}) {
+        const resolver = this.Assets(assets);
+        if (!root) {
+            const transform = definition.transform ?? {};
+            root = new Transform3D();
+            root.SetPosition(...(transform.position ?? [0, 0, 0]))
+                .SetRotation(...(transform.rotation ?? [0, 0, 0]))
+                .SetScale(...(transform.scale ?? [1, 1, 1]));
+            if (transform.matrix) root.matrix = new Float32Array(transform.matrix);
+        }
+        const shading = {
+            castShadow: definition.castShadow !== false,
+            receiveShadow: definition.receiveShadow !== false,
+            visible: definition.visible !== false,
+        };
+        const result = { root, meshes: [], materials: [], model: null, pending: false };
+        const add = (mesh, transform = root) => {
+            mesh.transform = transform;
+            if (Number.isInteger(definition.subdivision) && definition.subdivision > 0) mesh.subdivision = definition.subdivision;
+            result.meshes.push(mesh);
+            result.materials.push(mesh.material);
+        };
+
+        if (definition.model) {
+            if (!resolver.model(definition.model)) {
+                if (!resolver.lenient) throw new Error(`SceneManifest3D: model "${definition.model}" is not loaded (list it in resources.json).`);
+                result.pending = true;
+                return result;
+            }
+            const material = definition.material ?? {};
+            const replaces = ["albedoColor", "albedoMap", "color"].some(key => material[key] !== undefined);
+            const options = { name: definition.name ?? definition.model };
+            if (replaces) options.material = this.CreateMaterial(material, resolver);
+            else if (material.type === "toon") options.materialFactory = (part, index) => new ToonMaterial(ModelMeshFactory.CreateMaterial(part, index, definition.model));
+            const model = ModelMeshFactory.FromAsset(definition.model, options);
+            model.transform.parent = root;
+            for (const mesh of model.meshes) {
+                Object.assign(mesh, shading);
+                result.meshes.push(mesh);
+                result.materials.push(mesh.material);
+            }
+            result.model = model;
+            return result;
+        }
+
+        if (Array.isArray(definition.parts) && definition.parts.length) {
+            for (const part of definition.parts) {
+                const local = part.transform ?? {};
+                const mesh = Mesh.FromGeometry(
+                    this.CreateGeometry(part.primitive ?? { type: "cube" }),
+                    this.CreateMaterial(part.material ?? definition.material, resolver),
+                    { name: `${definition.name ?? "Object"} part`, ...shading, castShadow: part.castShadow ?? shading.castShadow },
+                );
+                add(mesh, new Transform3D({ position: local.position, rotation: local.rotation, scale: local.scale, parent: root }));
+            }
+            return result;
+        }
+
+        if (definition.primitive || !definition.nodeType) {
+            add(Mesh.FromGeometry(
+                this.CreateGeometry(definition.primitive),
+                this.CreateMaterial(definition.material, resolver),
+                { name: definition.name ?? "SceneObject", ...shading },
+            ));
+        }
+        return result;
+    }
+
+    /**
+     * Creates one primitive mesh with its declared transform (`BuildObject` for a single mesh).
      * @param {Object} [definition={}] - Manifest object definition.
+     * @param {Object} [assets] - Asset resolver or AssetManager.
      * @returns {Mesh} Scene mesh.
      */
-    static CreateObject(definition = {}) {
-        const material = this.CreateMaterial(definition.material);
-        const mesh = Mesh.FromGeometry(
-            this.CreateGeometry(definition.primitive),
-            material,
-            {
-                name: definition.name ?? "SceneObject",
-                castShadow: definition.castShadow !== false,
-                receiveShadow: definition.receiveShadow !== false,
-                visible: definition.visible !== false,
-            },
-        );
-        if (Number.isInteger(definition.subdivision) && definition.subdivision > 0) mesh.subdivision = definition.subdivision;
-        const transform = definition.transform ?? {};
-        mesh.transform
-            .SetPosition(...(transform.position ?? [0, 0, 0]))
-            .SetRotation(...(transform.rotation ?? [0, 0, 0]))
-            .SetScale(...(transform.scale ?? [1, 1, 1]));
-        if (transform.matrix) mesh.transform.matrix = new Float32Array(transform.matrix);
-        return mesh;
+    static CreateObject(definition = {}, assets = null) {
+        const { model, parts, nodeType, ...rest } = definition;
+        return this.BuildObject(rest, { assets }).meshes[0];
     }
 
     /**
@@ -157,6 +289,7 @@ export class SceneManifest3D {
      * @returns {Geometry3D} Generated geometry.
      */
     static CreateGeometry(definition = {}) {
+        definition ??= {};
         switch (definition.type) {
             case "plane":
                 return PrimitiveMesh.Plane(
@@ -184,39 +317,75 @@ export class SceneManifest3D {
     }
 
     /**
-     * Creates a material from JSON-compatible scene values.
+     * Creates a material from JSON-compatible scene values: standard (default), `toon`, `unlit`,
+     * `surface` (preset), `celestial` or `shader` (a `.gfshader` asset with per-object
+     * `properties`). Texture slots and texture properties may name resources.json images
+     * (`anisotropy` applies to them).
      * @param {Object} [definition={}] - Material definition.
+     * @param {Object} [assets] - Asset resolver or AssetManager.
      * @returns {Material} Created material.
      */
-    static CreateMaterial(definition = {}) {
-        if (definition.type === "shader") {
-            // { "type": "shader", "shader": "<.gfshader name in resources.json>", "properties": { … } }
-            return ShaderMaterial.FromAssets(definition.shader, {
+    static CreateMaterial(definition = {}, assets = null) {
+        definition ??= {};
+        const resolver = this.Assets(assets);
+        if (definition.type === "shader") return this.CreateShaderMaterial(definition, resolver);
+        const textureOptions = definition.anisotropy ? { anisotropy: definition.anisotropy } : {};
+        const { type, anisotropy, ...values } = definition;
+        for (const slot of TEXTURE_SLOTS) {
+            if (typeof values[slot] === "string") values[slot] = resolver.texture(values[slot], textureOptions);
+        }
+        switch (type) {
+            case "toon":
+                return new ToonMaterial({ ...values, bands: definition.bands ?? 3 });
+            case "celestial":
+                return new CelestialBodyMaterial(values);
+            case "surface":
+                return new SurfaceMaterial(values);
+            case "unlit":
+                return new UnlitMaterial({
+                    name: definition.name,
+                    color: definition.color ?? definition.albedoColor,
+                    transparent: definition.transparent,
+                });
+            default:
+                return new StandardMaterial(values);
+        }
+    }
+
+    /**
+     * `{ type: "shader", shader: "<.gfshader name in resources.json>", properties: { … } }`.
+     * Texture properties naming an image use that image. A lenient resolver (the editor) gets a
+     * neutral placeholder while the shader loads or fails to compile; games get the error.
+     * @param {Object} definition - Material definition.
+     * @param {Object} [assets] - Asset resolver or AssetManager.
+     * @returns {Material}
+     */
+    static CreateShaderMaterial(definition, assets = null) {
+        const resolver = this.Assets(assets);
+        const source = resolver.shader(definition.shader);
+        if (source == null) {
+            if (resolver.lenient) return new StandardMaterial({ albedoColor: [0.55, 0.55, 0.58, 1], roughness: 0.8 });
+            throw new Error(`ShaderMaterial: shader asset "${definition.shader}" is not loaded.`);
+        }
+        try {
+            const material = new ShaderMaterial({
+                shader: ShaderAsset.Parse(source, { name: definition.shader }),
                 name: definition.name,
                 properties: definition.properties,
                 transparent: definition.transparent,
                 receiveShadow: definition.receiveShadow !== false,
                 toonBands: definition.toonBands,
             });
+            for (const property of material.asset.properties) {
+                const value = material.GetProperty(property.name);
+                const texture = property.type === "texture" && typeof value === "string" ? resolver.texture(value) : null;
+                if (texture) material.SetProperty(property.name, texture);
+            }
+            return material;
+        } catch (error) {
+            if (!resolver.lenient) throw error;
+            console.warn(`Shader material "${definition.shader}":`, error.message);
+            return new StandardMaterial({ albedoColor: [1, 0, 1, 1] });
         }
-        if (definition.type === "toon") return new ToonMaterial(definition);
-        if (definition.type === "celestial") return new CelestialBodyMaterial(definition);
-        if(definition.type === 'surface') return new SurfaceMaterial(definition);
-        if (definition.type === "unlit") {
-            return new UnlitMaterial({
-                name: definition.name,
-                color: definition.color ?? definition.albedoColor,
-                transparent: definition.transparent,
-            });
-        }
-
-        return new StandardMaterial({
-            name: definition.name,
-            albedoColor: definition.albedoColor,
-            emissiveColor: definition.emissiveColor,
-            roughness: definition.roughness,
-            metallic: definition.metallic,
-            transparent: definition.transparent,
-        });
     }
 }

@@ -54,8 +54,15 @@ export class Game {
     /** @type {GameContext} */
     context: GameContext;
     events: EventEmitter;
+    /** Scene switching (`context.scenes`): load registered levels by name or index. */
+    scenes: SceneManager;
     tick: (timestamp: any) => void;
     get currentLevel(): any;
+    /**
+     * Loads a registered scene (level) by name or index at the start of the next frame.
+     * @see SceneManager#Load
+     */
+    loadScene(target: any, params: any): any;
     start(): any;
     startInternal(): Promise<this>;
     /** "Stats for Nerds" HUD: debug.statsKey (F3) toggles it; debug.stats shows it at start. */
@@ -105,4 +112,5 @@ export type GameContext = {
     registerAssetLoader: (type: string, loader: Function) => Function;
 };
 import { EventEmitter } from "./EventEmitter.js";
+import { SceneManager } from "./Scene/SceneManager.js";
 import { AssetManager } from "./Assets/AssetManager.js";

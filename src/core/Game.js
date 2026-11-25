@@ -5,6 +5,7 @@ import { ResourceManifestLoader } from "./Assets/ResourceManifestLoader.js";
 import { Config } from "./Config.js";
 import { FrameStats } from "./Debug/FrameStats.js";
 import { StatsOverlay } from "./Debug/StatsOverlay.js";
+import { SceneManager } from "./Scene/SceneManager.js";
 
 import { resolveModules } from './ModuleGraph.js';
 export { resolveModules } from './ModuleGraph.js';
@@ -73,10 +74,24 @@ export class Game {
             },
         };
         this.events = events;
+        /** Scene switching (`context.scenes`): load registered levels by name or index. */
+        this.scenes = new SceneManager({
+            levels: () => this.levels,
+            getIndex: () => this.currentIndex,
+            setIndex: index => { this.currentIndex = index; },
+            enter: () => this.enterLevel(),
+        });
+        this.context.scenes = this.scenes;
         this.tick = timestamp => this.frame(timestamp);
     }
 
     get currentLevel() { return this.levels[this.currentIndex] ?? null; }
+
+    /**
+     * Loads a registered scene (level) by name or index at the start of the next frame.
+     * @see SceneManager#Load
+     */
+    loadScene(target, params) { return this.scenes.Load(target, params); }
 
     start() {
         if (this.disposing || this.state === "disposed") return Promise.reject(new Error("Cannot start a disposed game."));
@@ -106,6 +121,14 @@ export class Game {
                 await this.beforeStart?.(this.context);
                 this.installStats();
                 await startModules(ordered);
+                // A scene loaded before start (loadScene) is the first one.
+                const first = this.scenes.pending;
+                this.scenes.pending = null;
+                if (first) {
+                    this.currentIndex = first.index;
+                    this.scenes.params = first.params;
+                    if (this.currentLevel) this.currentLevel.sceneParams = first.params;
+                }
                 this.enterLevel();
                 this.initialized = true;
             }
@@ -157,14 +180,8 @@ export class Game {
             }
             this.events.emit("PreUpdate", timestamp);
             if (this.state !== "running") return;
-            if (this.currentLevel?.Next || this.currentLevel?.Back) {
-                const old = this.currentLevel;
-                const offset = old.Next ? 1 : -1;
-                old.Next = old.Back = false;
-                old.OnExit?.();
-                this.currentIndex = (this.currentIndex + offset + this.levels.length) % this.levels.length;
-                this.enterLevel();
-            }
+            // Scene switches (loadScene, level.Next / level.Back): OnExit, then the new OnStart.
+            this.scenes.Apply();
             this.accumulator += gameDt;
             this.events.emit("update", gameDt);
             if (this.state !== "running") return;

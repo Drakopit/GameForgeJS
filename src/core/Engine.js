@@ -14,6 +14,7 @@ import { Level } from "./Level/Level.js"
 import { EventEmitter } from "./EventEmitter.js";
 import { FrameStats } from "./Debug/FrameStats.js";
 import { StatsOverlay } from "./Debug/StatsOverlay.js";
+import { SceneManager } from "./Scene/SceneManager.js";
 
 /**
  * Ordered level registry and current-level cursor used by `Engine`.
@@ -81,6 +82,21 @@ export class Engine extends Base {
     static cleanups = [];
     static startedLevels = new Set();
     static context = null;
+    /** Scene switching (`context.scenes`): load registered levels by name or index. */
+    static scenes = new SceneManager({
+        levels: () => LevelHandler.levels,
+        getIndex: () => LevelHandler.index,
+        setIndex: index => {
+            LevelHandler.index = index;
+            LevelHandler.current = LevelHandler.getCurrent(index);
+            if (LevelHandler.current) LevelHandler.current.LEVEL_HANDLER = LevelHandler;
+        },
+        enter: level => {
+            Engine.startedLevels.add(level);
+            level.context = Engine.context;
+            level.OnStart?.(Engine.context);
+        },
+    });
 
     static HitStop(duration = 0.06) {
         this.hitStopRemaining = Math.max(this.hitStopRemaining, Math.max(0, duration));
@@ -106,9 +122,12 @@ export class Engine extends Base {
             this.frameId = window.requestAnimationFrame(this.GameLoop.bind(this));
             return;
         }
-        // Pega a primeira fase (que no seu caso é o Menu)
-        LevelHandler.index = 0;
-        LevelHandler.current = LevelHandler.getCurrent(0);
+        // The first level, or the scene loaded before start (context.scenes.Load).
+        const first = this.scenes.pending;
+        this.scenes.pending = null;
+        LevelHandler.index = first?.index ?? 0;
+        LevelHandler.current = LevelHandler.getCurrent(LevelHandler.index);
+        if (LevelHandler.current && first) LevelHandler.current.sceneParams = this.scenes.params = first.params;
         if (!LevelHandler.current) {
             throw new Error("Engine.OnStart requires at least one level.");
         }
@@ -158,6 +177,8 @@ export class Engine extends Base {
         LevelHandler.levels = [];
         LevelHandler.current = null;
         LevelHandler.index = 0;
+        this.scenes.pending = null;
+        this.scenes.params = {};
         this.initialized = false;
         this.context = null;
         this.hitStopRemaining = 0;
@@ -206,41 +227,8 @@ export class Engine extends Base {
         this.events.emit("PreUpdate", currentTime);
 
 
-        // --- LÓGICA DE TRANSIÇÃO DE LEVEL CORRIGIDA ---
-        if (LevelHandler.current && (LevelHandler.current.Next || LevelHandler.current.Back)) {
-
-            // 1. A fase atual limpa o seu próprio lixo (Múltiplos canvases, eventos, etc)
-            if (typeof LevelHandler.current.OnExit === "function") {
-                LevelHandler.current.OnExit();
-            }
-
-            // 2. Calcula o novo index baseado na flag
-            if (LevelHandler.current.Next) {
-                LevelHandler.index++;
-                // Se passou da última fase, volta para a primeira (ou pode travar na última, se preferir)
-                if (LevelHandler.index >= LevelHandler.levels.length) LevelHandler.index = 0;
-            }
-            else if (LevelHandler.current.Back) {
-                LevelHandler.index--;
-                // Se tentou voltar antes da primeira, vai para a última (ou trava no 0)
-                if (LevelHandler.index < 0) LevelHandler.index = LevelHandler.levels.length - 1;
-            }
-
-            // 3. Reseta as flags da fase velha para não dar loop infinito se voltarmos para ela
-            LevelHandler.current.Next = false;
-            LevelHandler.current.Back = false;
-
-            // 4. Carrega a nova fase
-            LevelHandler.current = LevelHandler.getCurrent(LevelHandler.index);
-            LevelHandler.current.LEVEL_HANDLER = LevelHandler;
-
-            // 5. Inicia a nova fase
-            if (typeof LevelHandler.current.OnStart === "function") {
-                this.startedLevels.add(LevelHandler.current);
-                LevelHandler.current.context = this.context;
-                LevelHandler.current.OnStart(this.context);
-            }
-        }
+        // Scene switches (context.scenes.Load, level.Next / level.Back): OnExit, then the new OnStart.
+        this.scenes.Apply();
 
         if (LevelHandler.current) {
             LevelHandler.current.FPS = fps.toFixed(2);

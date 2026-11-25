@@ -5,9 +5,9 @@
  * @param {number[]} [options.position] - Three-component world position.
  * @param {Object|number[]} [options.rotation] - Euler rotation in radians.
  * @param {number[]} [options.scale] - Three-component scale.
- * @param {boolean} [options.inheritScale=true] - When false (scene-node hierarchies), the
- *     parent's scale only spaces this transform's position and never deforms its shape;
- *     see `Mat4.attachRigid`. Meshes inside a model keep the default full inheritance.
+ * @param {boolean} [options.inheritScale=true] - Opt-out: when false, the parent's scale only
+ *     spaces this transform's position and never deforms its shape (`Mat4.attachRigid`).
+ *     Scene nodes and model meshes use the default full inheritance.
  */
 export class Transform3D {
     constructor({ position, rotation, scale, matrix, parent, inheritScale, }?: {

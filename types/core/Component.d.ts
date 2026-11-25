@@ -52,7 +52,7 @@ export class TransformComponent extends Component {
     scaleY: number;
     syncOwner: boolean;
     renderTransform: boolean;
-    /** False: the parent's scale spaces this node but never deforms it (no squash/shear). */
+    /** True (default): the parent's full transform applies. False: its scale only spaces this node (Mat4.attachRigid). */
     inheritScale: boolean;
     hasInitialPosition: boolean;
     OnAttach(owner: any): void;

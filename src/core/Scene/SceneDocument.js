@@ -1,4 +1,5 @@
 import { Mat4 } from "../Math/Mat4.js";
+import { AssetManager } from "../Assets/AssetManager.js";
 
 /**
  * Reader for `gameforgejs.scene` documents (`*.gfscene.json`): the one scene
@@ -22,6 +23,14 @@ import { Mat4 } from "../Math/Mat4.js";
  *   }]
  * }
  * ```
+ *
+ * Prefabs: a node's `prefab` names either an entry of the scene's own `prefabs` (one node
+ * template) or a prefab file (`*.gfprefab.json`, format `gameforgejs.prefab`): a node
+ * hierarchy saved once and reused by every scene of a game. The instance node keeps its own
+ * transform and overrides; the prefab root's components are inherited and its children appear
+ * under the instance with ids `<instance>/<child>` (read-only: they are never written back).
+ * Prefab files are found in the AssetManager's JSONs (list them in resources.json) or in the
+ * `prefabs` option.
  *
  * Transforms are local to the parent node. Games read the
  * nodes they need, usually as plain records with `Items(layer)`, and build their
@@ -51,17 +60,98 @@ export class SceneDocument {
     static LEGACY_FORMATS = Object.freeze(['gameforge.scene']);
     /** Highest format version this runtime understands. */
     static VERSION = 1;
+    /** Prefab file identifier (`*.gfprefab.json`). */
+    static PREFAB_FORMAT = 'gameforgejs.prefab';
 
     /**
      * @param {Object} document - Parsed scene JSON.
      * @param {Object} [options]
      * @param {boolean} [options.copy=false] - Work on a deep copy (use it before writing).
+     * @param {Object<string, Object>} [options.prefabs] - Prefab files by id (default: the prefab
+     *   documents among the AssetManager's JSONs).
      * @throws {TypeError|RangeError} When the document is not a valid scene.
      */
-    constructor(document, { copy = false } = {}) {
+    constructor(document, { copy = false, prefabs = null } = {}) {
         const validated = SceneDocument.Validate(document);
         this.data = copy ? clone(validated) : validated;
-        this.byId = new Map(this.data.nodes.map(node => [node.id, node]));
+        this.library = prefabs ?? SceneDocument.LoadedPrefabs();
+        this.Reindex();
+    }
+
+    /** True when a value is a prefab file document. */
+    static IsPrefab(value) {
+        return Boolean(value) && typeof value === 'object' && value.format === SceneDocument.PREFAB_FORMAT && Array.isArray(value.nodes);
+    }
+
+    /**
+     * A new prefab file document from scene nodes: the first node without a parent (among them)
+     * is the root; its position is cleared so instances place it.
+     * @param {Object} fields
+     * @param {string} fields.id - Prefab id (what nodes write in `prefab`).
+     * @param {"2d"|"3d"} fields.dimension
+     * @param {Object[]} fields.nodes - The root and its descendants (scene node shape).
+     * @param {string} [fields.name]
+     * @returns {Object}
+     */
+    static CreatePrefab({ id, name, dimension, nodes }) {
+        if (typeof id !== 'string' || !id) throw new TypeError('A prefab needs a string id.');
+        const copy = clone(nodes ?? []);
+        const ids = new Set(copy.map(node => node.id));
+        const root = copy.find(node => !node.parent || !ids.has(node.parent));
+        if (!root) throw new RangeError('A prefab needs a root node.');
+        for (const node of copy) if (node !== root && !ids.has(node.parent)) delete node.parent;
+        delete root.parent;
+        delete root.layer;
+        root.transform = { ...(root.transform ?? {}), position: dimension === '3d' ? [0, 0, 0] : [0, 0] };
+        // Root first, then the rest in document order.
+        const ordered = [root, ...copy.filter(node => node !== root)];
+        const document = { format: SceneDocument.PREFAB_FORMAT, version: SceneDocument.VERSION, dimension, id, name: name ?? id, nodes: ordered };
+        SceneDocument.Validate({ ...document, format: SceneDocument.FORMAT });
+        return document;
+    }
+
+    /** Prefab documents loaded as JSON assets, by prefab id (and by resource name). */
+    static LoadedPrefabs(assets = AssetManager.instance) {
+        const result = {};
+        for (const [name, value] of Object.entries(assets?.jsons ?? {})) {
+            if (!SceneDocument.IsPrefab(value)) continue;
+            result[name] = value;
+            result[value.id] ??= value;
+        }
+        return result;
+    }
+
+    /** The root node of a prefab file, or null. */
+    PrefabFile(name) {
+        const prefab = name ? this.library?.[name] : null;
+        return SceneDocument.IsPrefab(prefab) ? prefab : null;
+    }
+
+    /**
+     * Rebuilds the node index: the document's nodes plus, right after each instance of a prefab
+     * file, that prefab's children (ids `<instance>/<child>`, `instance` set to the instance id).
+     * Called by the write methods; call it after editing `data.nodes` directly.
+     */
+    Reindex() {
+        const nodes = [];
+        const expand = (node, depth) => {
+            nodes.push(node);
+            const prefab = this.data.prefabs?.[node.prefab] ? null : this.PrefabFile(node.prefab);
+            if (!prefab || depth > 8) return;
+            const [root, ...children] = prefab.nodes;
+            const idOf = id => (id === root.id ? node.id : `${node.id}/${id}`);
+            for (const child of children) {
+                const copy = clone(child);
+                copy.id = idOf(child.id);
+                copy.parent = idOf(child.parent ?? root.id);
+                copy.instance = node.instance ?? node.id;
+                if (node.layer && !copy.layer) copy.layer = node.layer;
+                expand(copy, depth + 1);
+            }
+        };
+        for (const node of this.data.nodes) expand(node, 0);
+        this.nodes = nodes;
+        this.byId = new Map(nodes.map(node => [node.id, node]));
     }
 
     /** @returns {string} Scene display name. */
@@ -181,7 +271,7 @@ export class SceneDocument {
      * @returns {Object[]}
      */
     Nodes({ layer, type, parent } = {}) {
-        return this.data.nodes.filter(node => (layer === undefined || node.layer === layer)
+        return this.nodes.filter(node => (layer === undefined || node.layer === layer)
             && (type === undefined || node.type === type)
             && (parent === undefined || (node.parent ?? null) === parent));
     }
@@ -278,7 +368,8 @@ export class SceneDocument {
      * @returns {Object|null}
      */
     Prefab(node) {
-        return node?.prefab ? this.prefabs[node.prefab] ?? null : null;
+        if (!node?.prefab) return null;
+        return this.prefabs[node.prefab] ?? this.PrefabFile(node.prefab)?.nodes[0] ?? null;
     }
 
     /**
@@ -405,7 +496,7 @@ export class SceneDocument {
         const stored = clone(node);
         const at = Number.isInteger(index) ? Math.max(0, Math.min(index, this.data.nodes.length)) : this.data.nodes.length;
         this.data.nodes.splice(at, 0, stored);
-        this.byId.set(stored.id, stored);
+        this.Reindex();
         return stored;
     }
 
@@ -416,10 +507,11 @@ export class SceneDocument {
      */
     RemoveNode(id) {
         const node = this.Node(id);
-        if (!node) return false;
+        // Prefab children belong to the prefab file: remove the instance instead.
+        if (!node || node.instance) return false;
         for (const child of this.data.nodes.filter(item => item.parent === id)) this.SetParent(child, node.parent ?? null);
         this.data.nodes.splice(this.data.nodes.indexOf(node), 1);
-        this.byId.delete(id);
+        this.Reindex();
         return true;
     }
 
@@ -548,23 +640,24 @@ export class SceneDocument {
 
     /**
      * Converts a 3D scene to a SceneManifest3D document (`SceneManifest3D.Create` input):
-     * `Light3D` nodes become lights; other nodes with a `Mesh` become objects
-     * (`Mesh` -> primitive, `Material` -> material, `Data` fields copied).
+     * `Light3D` nodes become lights; other nodes with a `Mesh` (or a `Data.model` / `Data.parts`)
+     * become objects (`Mesh` -> primitive, `Material` -> material, `Data` fields copied).
+     * Prefab-file children are included. `settings.skybox` names a resources.json image.
      * @returns {Object}
      */
     ToManifest3D() {
         if (this.dimension !== '3d') throw new RangeError('ToManifest3D needs a 3D scene.');
         const objects = [];
-        for (const node of this.data.nodes) {
+        for (const node of this.nodes) {
             if (node.type === 'Light3D') continue;
             const components = this.Components(node);
-            if (!components.Mesh) continue;
+            if (!components.Mesh && !components.Data?.model && !components.Data?.parts) continue;
             objects.push({
                 id: node.id,
                 ...(node.parent ? { parent: node.parent } : {}),
                 name: node.name ?? node.id,
                 ...(components.Data ?? {}),
-                primitive: components.Mesh,
+                ...(components.Mesh ? { primitive: components.Mesh } : {}),
                 ...(components.Material ? { material: components.Material } : {}),
                 transform: {
                     position: this.WorldPosition(node),
@@ -575,13 +668,14 @@ export class SceneDocument {
             });
         }
         const manifest = { name: this.name, lights: this.Lights(), objects };
-        if (objects.some(object => object.parent)) manifest.transforms = this.data.nodes.map(node => ({
+        if (objects.some(object => object.parent)) manifest.transforms = this.nodes.map(node => ({
             id: node.id, parent: node.parent, transform: clone(node.transform ?? {}),
         }));
         if (this.settings.backgroundColor) manifest.backgroundColor = clone(this.settings.backgroundColor);
         if (this.settings.fog) manifest.fog = clone(this.settings.fog);
         if (this.settings.planarReflection) manifest.planarReflection = clone(this.settings.planarReflection);
         if (this.settings.camera) manifest.camera = clone(this.settings.camera);
+        if (this.settings.skybox) manifest.skybox = this.settings.skybox;
         return manifest;
     }
 }

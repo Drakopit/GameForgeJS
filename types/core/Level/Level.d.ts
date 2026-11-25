@@ -16,6 +16,15 @@ export class Level extends Base {
     _startedEntities: WeakSet<object>;
     _destroyedEntities: WeakSet<object>;
     context: any;
+    /** Values passed by `LoadScene(name, params)` when this level was loaded. */
+    sceneParams: {};
+    /**
+     * Switches to another registered scene (level) at the start of the next frame.
+     * @param {string|number|Level} target - The level's `id`, `scene`, class name, `caption` or index.
+     * @param {Object} [params] - Passed to the next level as `sceneParams`.
+     * @returns {Level} The level that will run.
+     */
+    LoadScene(target: string | number | Level, params?: any): Level;
     /**
      * @doc Method
      * @description Called when the level starts.
