@@ -11,6 +11,7 @@ export { FloatingText } from "./Effects/FloatingText.js";
 export { Animator } from "./Graphics/Animator.js";
 export { Draw } from "./Graphics/Draw.js";
 export { TileMap2D } from "./Graphics/TileMap2D.js";
+export { TileMapLayer2D } from "./Graphics/TileMapLayer2D.js";
 export { Rectangle } from "./Graphics/Rectangle.js";
 export { Sprite } from "./Graphics/Sprite.js";
 export { CanvasRenderTarget } from "./Graphics/CanvasRenderTarget.js";

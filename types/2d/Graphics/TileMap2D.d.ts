@@ -21,6 +21,12 @@ export class TileMap2D {
      */
     static FromScene(scene: any, nodeId?: string): TileMap2D | null;
     /**
+     * Every `TileMap2D` node of a 2D scene, in node order (the first is drawn first, under the rest).
+     * @param {Object} scene - A SceneDocument or its JSON.
+     * @returns {TileMap2D[]}
+     */
+    static AllFromScene(scene: any): TileMap2D[];
+    /**
      * @param {Object} [options]
      * @param {Object} [options.tilemap] - The `TileMap` component.
      * @param {Object} [options.world] - The grid (`settings.world` of the scene).
@@ -97,4 +103,25 @@ export class TileMap2D {
         y: number;
         tile: any;
     }[];
+    /**
+     * Moves a rectangle by (dx, dy) one axis at a time and stops it flush against blocked cells, so
+     * it slides along walls. A long move (a slow frame, a fast actor) is swept in steps of at most
+     * one cell, so it cannot jump over a thin wall. Returns the new position and which axes hit something.
+     * @param {{x:number,y:number,width:number,height:number}} rect - Not modified.
+     * @param {number} dx
+     * @param {number} dy
+     * @returns {{x:number, y:number, hitX:boolean, hitY:boolean}}
+     */
+    Move(rect: {
+        x: number;
+        y: number;
+        width: number;
+        height: number;
+    }, dx: number, dy: number): {
+        x: number;
+        y: number;
+        hitX: boolean;
+        hitY: boolean;
+    };
+    #private;
 }
