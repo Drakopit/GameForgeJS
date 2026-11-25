@@ -46,6 +46,17 @@ export class TileMap2D {
         return new TileMap2D({ tilemap: node.components?.TileMap ?? {}, world: data.settings?.world ?? {} });
     }
 
+    /**
+     * Every `TileMap2D` node of a 2D scene, in node order (the first is drawn first, under the rest).
+     * @param {Object} scene - A SceneDocument or its JSON.
+     * @returns {TileMap2D[]}
+     */
+    static AllFromScene(scene) {
+        const data = scene?.data ?? scene ?? {};
+        return (data.nodes ?? []).filter(item => item.type === "TileMap2D")
+            .map(node => Object.assign(new TileMap2D({ tilemap: node.components?.TileMap ?? {}, world: data.settings?.world ?? {} }), { nodeId: node.id ?? null }));
+    }
+
     /** The image name (AssetManager) of the tileset. */
     get sprite() { return this.tilemap.sprite ?? null; }
 
@@ -137,5 +148,36 @@ export class TileMap2D {
         }).map(hit => ({ ...hit, rect: this.CellRect(hit.x, hit.y) }))
             .filter(({ rect: cell }) => rect.x < cell.x + cell.width && rect.x + rect.width > cell.x
                 && rect.y < cell.y + cell.height && rect.y + rect.height > cell.y);
+    }
+
+    /**
+     * Moves a rectangle by (dx, dy) one axis at a time and stops it flush against blocked cells, so
+     * it slides along walls. A long move (a slow frame, a fast actor) is swept in steps of at most
+     * one cell, so it cannot jump over a thin wall. Returns the new position and which axes hit something.
+     * @param {{x:number,y:number,width:number,height:number}} rect - Not modified.
+     * @param {number} dx
+     * @param {number} dy
+     * @returns {{x:number, y:number, hitX:boolean, hitY:boolean}}
+     */
+    Move(rect, dx, dy) {
+        const moved = { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
+        const hitX = Boolean(dx) && this.#sweep(moved, "x", "width", dx);
+        const hitY = Boolean(dy) && this.#sweep(moved, "y", "height", dy);
+        return { x: moved.x, y: moved.y, hitX, hitY };
+    }
+
+    /** Moves `moved[axis]` by `delta` in steps of at most one cell; true if it stopped at a solid cell. */
+    #sweep(moved, axis, extent, delta) {
+        const steps = Math.max(1, Math.ceil(Math.abs(delta) / this.cell));
+        for (let step = 1; step <= steps; step++) {
+            moved[axis] += delta / steps;
+            const hits = this.QuerySolid(moved);
+            if (!hits.length) continue;
+            moved[axis] = delta > 0
+                ? Math.min(...hits.map(hit => hit.rect[axis])) - moved[extent]
+                : Math.max(...hits.map(hit => hit.rect[axis] + hit.rect[extent]));
+            return true;
+        }
+        return false;
     }
 }
