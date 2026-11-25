@@ -197,8 +197,8 @@ export class SceneDocument {
 
     /**
      * Composes the local transform and every ancestor into a scene-space matrix.
-     * Ancestors' scale spaces descendants but never deforms them (`Mat4.attachRigid`),
-     * so a child keeps its own proportions under a non-uniformly scaled parent.
+     * Children inherit their parent's full transform, scale included (as in most engines):
+     * a part authored under a scaled parent keeps its proportions relative to that parent.
      */
     WorldMatrix(node) {
         const matrix = Mat4.identity(new Float64Array(16));
@@ -220,7 +220,7 @@ export class SceneDocument {
             Mat4.rotateZ(local, local, typeof rotation === "number" ? rotation : rotation[2] ?? 0);
             Mat4.scale(local, local, [scale[0] ?? 1, scale[1] ?? 1, scale[2] ?? 1]);
             if (index === 0) Mat4.copy(matrix, local);
-            else Mat4.attachRigid(matrix, matrix, local);
+            else Mat4.multiply(matrix, matrix, local);
         });
         return matrix;
     }
@@ -579,6 +579,8 @@ export class SceneDocument {
             id: node.id, parent: node.parent, transform: clone(node.transform ?? {}),
         }));
         if (this.settings.backgroundColor) manifest.backgroundColor = clone(this.settings.backgroundColor);
+        if (this.settings.fog) manifest.fog = clone(this.settings.fog);
+        if (this.settings.planarReflection) manifest.planarReflection = clone(this.settings.planarReflection);
         if (this.settings.camera) manifest.camera = clone(this.settings.camera);
         return manifest;
     }

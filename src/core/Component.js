@@ -79,7 +79,7 @@ export class TransformComponent extends Component {
         syncOwner = true,
         parent = null,
         renderTransform = false,
-        inheritScale = false,
+        inheritScale = true,
     } = {}) {
         super();
         this.x = x ?? 0;
@@ -89,7 +89,7 @@ export class TransformComponent extends Component {
         this.scaleY = scaleY;
         this.syncOwner = syncOwner;
         this.renderTransform = renderTransform;
-        /** False: the parent's scale spaces this node but never deforms it (no squash/shear). */
+        /** True (default): the parent's full transform applies. False: its scale only spaces this node (Mat4.attachRigid). */
         this.inheritScale = inheritScale;
         this.SetParent(parent);
         this.hasInitialPosition = x !== null || y !== null;

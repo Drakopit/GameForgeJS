@@ -6,6 +6,11 @@ background:rgba(10,12,18,.82);color:#e6edf3;border:1px solid rgba(255,255,255,.1
 font:11px/1.45 ui-monospace,SFMono-Regular,Consolas,monospace;pointer-events:none;user-select:none;
 backdrop-filter:blur(4px);box-shadow:0 4px 18px rgba(0,0,0,.35);white-space:pre;`;
 
+/** Tells the page that embeds this game (if any) about the HUD; postMessage works across origins. */
+function notifyHost(detail) {
+    if (typeof window === "undefined" || window.parent === window) return;
+    try { window.parent.postMessage({ source: "gameforge-play", type: "stats", ...detail }, "*"); } catch { /* detached frame */ }
+}
 const format = (value, digits = 0) => (value === null || value === undefined ? "—" : Number(value).toLocaleString("en-US", { maximumFractionDigits: digits, minimumFractionDigits: digits }));
 
 /**
@@ -27,7 +32,11 @@ export class StatsOverlay {
 
     /**
      * Binds the toggle key once per page and exposes `globalThis.__gameforgeStats` so hosts
-     * (the editor's Play mode) can toggle it. Returns a cleanup function.
+     * (the editor's Play mode) can toggle it. Inside a frame it also talks to the embedding page
+     * with `postMessage`, which works across origins (the desktop editor's local preview):
+     * it announces `{ source: "gameforge-play", type: "stats", ready: true, visible }`, reports every
+     * toggle the same way, and obeys `{ source: "gameforge-editor", action: "stats", visible }`.
+     * Returns a cleanup function.
      * @param {{ key?: string, visible?: boolean }} [options]
      */
     static Install({ key = "F3", visible = false } = {}) {
@@ -40,6 +49,16 @@ export class StatsOverlay {
                 overlay.Toggle();
             };
             window.addEventListener("keydown", overlay.onKey);
+            overlay.onHostMessage = event => {
+                const data = event.data;
+                if (event.source !== window.parent || data?.source !== "gameforge-editor" || data.action !== "stats") return;
+                if (data.visible) overlay.Show();
+                else overlay.Hide();
+                notifyHost({ visible: overlay.visible });
+            };
+            overlay.onToggle = event => notifyHost({ visible: Boolean(event.detail?.visible) });
+            window.addEventListener("message", overlay.onHostMessage);
+            window.addEventListener("gameforge:stats", overlay.onToggle);
             globalThis.__gameforgeStats = {
                 toggle: () => overlay.Toggle(),
                 show: () => overlay.Show(),
@@ -50,12 +69,15 @@ export class StatsOverlay {
         }
         // A host (the editor's Play) may ask for the HUD before the game has started.
         if (visible || globalThis.__gameforgeStatsWanted === true) overlay.Show();
+        if (overlay.installs === 1) notifyHost({ ready: true, visible: overlay.visible });
         return () => {
             overlay.installs = Math.max(0, overlay.installs - 1);
             if (overlay.installs) return;
             overlay.Hide();
             if (overlay.onKey) window.removeEventListener("keydown", overlay.onKey);
-            overlay.onKey = null;
+            if (overlay.onHostMessage) window.removeEventListener("message", overlay.onHostMessage);
+            if (overlay.onToggle) window.removeEventListener("gameforge:stats", overlay.onToggle);
+            overlay.onKey = overlay.onHostMessage = overlay.onToggle = null;
             if (globalThis.__gameforgeStats) delete globalThis.__gameforgeStats;
         };
     }

@@ -39,8 +39,12 @@ export class SceneManifest3D {
      */
     static Create(manifest = {}, { aspect = 1 } = {}) {
         manifest = this.Normalize(manifest);
+        const backgroundColor = manifest.backgroundColor ?? [0.03, 0.04, 0.07, 1];
         const scene = new Scene3D({
-            backgroundColor: manifest.backgroundColor ?? [0.03, 0.04, 0.07, 1],
+            backgroundColor,
+            // { color, near, far } from the scene's settings.fog; without a color it fades to the background.
+            fog: manifest.fog ? { color: backgroundColor.slice(0, 3), ...manifest.fog } : null,
+            planarReflection: manifest.planarReflection ?? null,
         });
         const camera = this.CreateCamera(manifest.camera, aspect);
         scene.Add(camera);
@@ -86,8 +90,8 @@ export class SceneManifest3D {
             return light;
         });
         const definitions = manifest.transforms ?? [];
-        // Scene nodes: a parent's scale spaces its children but never squashes them.
-        const transforms = new Map(definitions.map(node => [node.id, new Transform3D({ ...node.transform, inheritScale: false })]));
+        // Scene nodes inherit their parent's full transform, scale included (SceneDocument.WorldMatrix).
+        const transforms = new Map(definitions.map(node => [node.id, new Transform3D(node.transform)]));
         for (const node of definitions) transforms.get(node.id).parent = transforms.get(node.parent) ?? null;
         const objects = (manifest.objects ?? []).map(definition => {
             const mesh = this.CreateObject(definition);
