@@ -21,6 +21,14 @@
  * }
  * ```
  *
+ * Prefabs: a node's `prefab` names either an entry of the scene's own `prefabs` (one node
+ * template) or a prefab file (`*.gfprefab.json`, format `gameforgejs.prefab`): a node
+ * hierarchy saved once and reused by every scene of a game. The instance node keeps its own
+ * transform and overrides; the prefab root's components are inherited and its children appear
+ * under the instance with ids `<instance>/<child>` (read-only: they are never written back).
+ * Prefab files are found in the AssetManager's JSONs (list them in resources.json) or in the
+ * `prefabs` option.
+ *
  * Transforms are local to the parent node. Games read the
  * nodes they need, usually as plain records with `Items(layer)`, and build their
  * own ECS entities; the format adds no runtime behaviour of its own.
@@ -49,6 +57,28 @@ export class SceneDocument {
     static LEGACY_FORMATS: readonly string[];
     /** Highest format version this runtime understands. */
     static VERSION: number;
+    /** Prefab file identifier (`*.gfprefab.json`). */
+    static PREFAB_FORMAT: string;
+    /** True when a value is a prefab file document. */
+    static IsPrefab(value: any): boolean;
+    /**
+     * A new prefab file document from scene nodes: the first node without a parent (among them)
+     * is the root; its position is cleared so instances place it.
+     * @param {Object} fields
+     * @param {string} fields.id - Prefab id (what nodes write in `prefab`).
+     * @param {"2d"|"3d"} fields.dimension
+     * @param {Object[]} fields.nodes - The root and its descendants (scene node shape).
+     * @param {string} [fields.name]
+     * @returns {Object}
+     */
+    static CreatePrefab({ id, name, dimension, nodes }: {
+        id: string;
+        dimension: "2d" | "3d";
+        nodes: any[];
+        name?: string;
+    }): any;
+    /** Prefab documents loaded as JSON assets, by prefab id (and by resource name). */
+    static LoadedPrefabs(assets?: any): {};
     /**
      * A new, empty scene document (plain JSON, ready for `new SceneDocument(...)`).
      * @param {Object} fields
@@ -104,12 +134,27 @@ export class SceneDocument {
      * @param {Object} document - Parsed scene JSON.
      * @param {Object} [options]
      * @param {boolean} [options.copy=false] - Work on a deep copy (use it before writing).
+     * @param {Object<string, Object>} [options.prefabs] - Prefab files by id (default: the prefab
+     *   documents among the AssetManager's JSONs).
      * @throws {TypeError|RangeError} When the document is not a valid scene.
      */
-    constructor(document: any, { copy }?: {
+    constructor(document: any, { copy, prefabs }?: {
         copy?: boolean;
+        prefabs?: {
+            [x: string]: any;
+        };
     });
     data: any;
+    library: {};
+    /** The root node of a prefab file, or null. */
+    PrefabFile(name: any): any;
+    /**
+     * Rebuilds the node index: the document's nodes plus, right after each instance of a prefab
+     * file, that prefab's children (ids `<instance>/<child>`, `instance` set to the instance id).
+     * Called by the write methods; call it after editing `data.nodes` directly.
+     */
+    Reindex(): void;
+    nodes: any[];
     byId: Map<any, any>;
     /** @returns {string} Scene display name. */
     get name(): string;
@@ -149,8 +194,8 @@ export class SceneDocument {
     LocalPosition(node: any): number[];
     /**
      * Composes the local transform and every ancestor into a scene-space matrix.
-     * Ancestors' scale spaces descendants but never deforms them (`Mat4.attachRigid`),
-     * so a child keeps its own proportions under a non-uniformly scaled parent.
+     * Children inherit their parent's full transform, scale included (as in most engines):
+     * a part authored under a scaled parent keeps its proportions relative to that parent.
      */
     WorldMatrix(node: any): any;
     /** Returns the scene-space origin of a local node. */
@@ -315,8 +360,9 @@ export class SceneDocument {
     ToJSON(): any;
     /**
      * Converts a 3D scene to a SceneManifest3D document (`SceneManifest3D.Create` input):
-     * `Light3D` nodes become lights; other nodes with a `Mesh` become objects
-     * (`Mesh` -> primitive, `Material` -> material, `Data` fields copied).
+     * `Light3D` nodes become lights; other nodes with a `Mesh` (or a `Data.model` / `Data.parts`)
+     * become objects (`Mesh` -> primitive, `Material` -> material, `Data` fields copied).
+     * Prefab-file children are included. `settings.skybox` names a resources.json image.
      * @returns {Object}
      */
     ToManifest3D(): any;

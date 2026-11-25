@@ -19,6 +19,8 @@ export class Engine extends Base {
     static cleanups: any[];
     static startedLevels: Set<any>;
     static context: any;
+    /** Scene switching (`context.scenes`): load registered levels by name or index. */
+    static scenes: SceneManager;
     static HitStop(duration?: number): void;
     static IsHitStopped(): boolean;
     /**
@@ -59,3 +61,4 @@ export class Engine extends Base {
 }
 import { Base } from "./Base.js";
 import { EventEmitter } from "./EventEmitter.js";
+import { SceneManager } from "./Scene/SceneManager.js";

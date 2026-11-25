@@ -51,7 +51,7 @@ export async function BootstrapGame({
         Engine.cleanups.push(() => assets.Dispose());
         const context = {
             game: { get currentLevel() { return LevelHandler.current; }, stop: () => Engine.Stop(), dispose: () => Engine.Dispose() },
-            canvas: null, config, assets, events: Engine.events,
+            canvas: null, config, assets, events: Engine.events, scenes: Engine.scenes,
             services: new Map([["audio", audio]]),
             onDispose: cleanup => {
                 if (typeof cleanup !== "function") throw new TypeError("onDispose requires a function.");

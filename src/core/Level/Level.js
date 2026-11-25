@@ -44,6 +44,20 @@ export class Level extends Base {
         this._startedEntities = new WeakSet();
         this._destroyedEntities = new WeakSet();
         this.context = null;
+        /** Values passed by `LoadScene(name, params)` when this level was loaded. */
+        this.sceneParams = {};
+    }
+
+    /**
+     * Switches to another registered scene (level) at the start of the next frame.
+     * @param {string|number|Level} target - The level's `id`, `scene`, class name, `caption` or index.
+     * @param {Object} [params] - Passed to the next level as `sceneParams`.
+     * @returns {Level} The level that will run.
+     */
+    LoadScene(target, params) {
+        const scenes = this.context?.scenes;
+        if (!scenes) throw new Error('LoadScene needs a running game (context.scenes).');
+        return scenes.Load(target, params);
     }
 
     /**

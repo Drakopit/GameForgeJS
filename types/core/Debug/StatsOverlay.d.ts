@@ -12,7 +12,11 @@ export class StatsOverlay {
     static get instance(): any;
     /**
      * Binds the toggle key once per page and exposes `globalThis.__gameforgeStats` so hosts
-     * (the editor's Play mode) can toggle it. Returns a cleanup function.
+     * (the editor's Play mode) can toggle it. Inside a frame it also talks to the embedding page
+     * with `postMessage`, which works across origins (the desktop editor's local preview):
+     * it announces `{ source: "gameforge-play", type: "stats", ready: true, visible }`, reports every
+     * toggle the same way, and obeys `{ source: "gameforge-editor", action: "stats", visible }`.
+     * Returns a cleanup function.
      * @param {{ key?: string, visible?: boolean }} [options]
      */
     static Install({ key, visible }?: {
