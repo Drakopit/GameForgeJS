@@ -123,7 +123,8 @@ export class TileMap2D {
     }
 
     /**
-     * Blocked cells overlapping a world rectangle (see TileCollision2D.QuerySolidTiles).
+     * Blocked cells overlapping a world rectangle (see TileCollision2D.QuerySolidTiles). A rectangle
+     * that only touches a cell's edge (a 32px body flush against a wall on a 32px grid) does not overlap it.
      * @param {{x:number,y:number,width:number,height:number}} rect
      */
     QuerySolid(rect) {
@@ -133,6 +134,8 @@ export class TileMap2D {
             getTile: (col, row) => ({ col, row }),
             isSolid: (_, col, row) => this.IsBlocked(col, row),
             padding: 0,
-        }).map(hit => ({ ...hit, rect: this.CellRect(hit.x, hit.y) }));
+        }).map(hit => ({ ...hit, rect: this.CellRect(hit.x, hit.y) }))
+            .filter(({ rect: cell }) => rect.x < cell.x + cell.width && rect.x + rect.width > cell.x
+                && rect.y < cell.y + cell.height && rect.y + rect.height > cell.y);
     }
 }

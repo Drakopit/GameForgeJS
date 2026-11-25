@@ -12,6 +12,8 @@ export { AudioManager } from "./Audio/AudioManager.js";
 export { Base } from "./Base.js";
 export { BootstrapGame } from "./Bootstrap.js";
 export { Config } from "./Config.js";
+export { FrameStats } from "./Debug/FrameStats.js";
+export { StatsOverlay } from "./Debug/StatsOverlay.js";
 export { Deprecation } from "./Deprecation.js";
 export { EventEmitter } from "./EventEmitter.js";
 export { ActionManager } from "./Input/ActionManager.js";

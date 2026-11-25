@@ -42,7 +42,7 @@ export class PhysicsWorld3D {
     Step(dt) {
         const delta = Math.min(dt || 0.016, 0.05);
         const activeBodies = this.bodies.filter(body => body.enabled !== false);
-        FrameStats.global.Observe("bodies", activeBodies.length);
+        FrameStats.global.Observe("bodies", activeBodies.length, this);
         const dynamicBodies = activeBodies.filter(body => body.rigidbody && !body.rigidbody.isKinematic);
         const staticBodies = activeBodies.filter(body => !body.rigidbody || body.rigidbody.isKinematic);
 

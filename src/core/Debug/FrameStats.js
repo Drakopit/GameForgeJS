@@ -7,6 +7,10 @@
  * report counts they own with `Observe` (entities from the game loop, bodies from physics
  * worlds, visible meshes from the 3D renderer). Disabled, the wrappers cost one flag check.
  *
+ * An observed count is per source: a physics world stepping three times in one catch-up frame
+ * still reports its bodies once, while two worlds add up. A count no source has reported for
+ * about a second (its level is gone) shows as unknown again instead of a stale number.
+ *
  * A frame is committed by `Commit()` once per animation frame (StatsOverlay does it), so the
  * snapshot always shows the last complete frame.
  */
@@ -30,6 +34,7 @@ export class FrameStats {
         this.fps = 0;
         this.frameMs = 0;
         this.workMs = 0;
+        this.workLastMs = 0;
         this.fpsFrames = 0;
         this.fpsTime = 0;
         this.lastImage = null;
@@ -51,6 +56,20 @@ export class FrameStats {
         return this;
     }
 
+    /** Forgets every sample (the HUD calls it when it opens, so old frames do not show). */
+    Reset() {
+        this.current = FrameStats.#emptyCounters();
+        this.last = FrameStats.#emptyCounters();
+        this.observed = {};
+        this.history.fill(0);
+        this.historyIndex = 0;
+        this.lastCommit = null;
+        this.fps = this.frameMs = this.workMs = this.workLastMs = 0;
+        this.fpsFrames = this.fpsTime = 0;
+        this.lastImage = null;
+        return this;
+    }
+
     /** Records draw work: `count` calls producing `vertices` and `triangles`. */
     Draw(vertices = 0, triangles = 0, count = 1) {
         if (!this.enabled) return;
@@ -62,20 +81,33 @@ export class FrameStats {
     BindShader() { if (this.enabled) this.current.shaderBinds += 1; }
     BindTexture() { if (this.enabled) this.current.textureBinds += 1; }
 
+    /** Frames after which a count nobody reports any more shows as unknown (about 1 s at 60 Hz). */
+    static STALE_FRAMES = 60;
+
     /**
      * Reports a value owned by an engine system for this frame (e.g. "entities", "bodies",
-     * "meshes"). Values from several sources of the same kind in one frame add up.
+     * "meshes"). Several sources of the same kind in one frame add up; the same source reporting
+     * again in that frame (a physics world stepping twice) replaces its own value.
+     * @param {string} kind
+     * @param {number} value
+     * @param {*} [source] - Who reports it (the world, the renderer); one default source if omitted.
      */
-    Observe(kind, value) {
+    Observe(kind, value, source = "default") {
         if (!this.enabled || !Number.isFinite(value)) return;
-        const entry = this.observed[kind];
-        if (entry && entry.frame === this.historyIndex) entry.value += value;
-        else this.observed[kind] = { value, frame: this.historyIndex, shown: entry?.shown ?? value };
+        const entry = this.observed[kind] ??= { sources: new Map(), frame: -1, shown: null };
+        if (entry.frame !== this.historyIndex) entry.sources.clear();
+        entry.sources.set(source, value);
+        entry.frame = this.historyIndex;
     }
 
-    /** Time the game spent updating and drawing this frame, in ms (reported by the loop). */
+    /**
+     * Time the game spent updating and drawing a frame, in ms (reported by the loop). The HUD
+     * shows a moving average (`workMs`); `workLastMs` is the last frame alone.
+     */
     Work(ms) {
-        if (this.enabled && Number.isFinite(ms)) this.workMs = ms;
+        if (!this.enabled || !Number.isFinite(ms)) return;
+        this.workLastMs = ms;
+        this.workMs = this.workMs ? this.workMs + (ms - this.workMs) * 0.1 : ms;
     }
 
     /** Closes the current frame: its counters become `last` and the frame time is sampled. */
@@ -96,7 +128,8 @@ export class FrameStats {
         this.last = this.current;
         this.current = FrameStats.#emptyCounters();
         for (const entry of Object.values(this.observed)) {
-            if (entry.frame === this.historyIndex) entry.shown = entry.value;
+            if (entry.frame === this.historyIndex) entry.shown = [...entry.sources.values()].reduce((sum, value) => sum + value, 0);
+            else if (this.historyIndex - entry.frame > FrameStats.STALE_FRAMES) entry.shown = null;
         }
         this.historyIndex += 1;
         this.lastImage = null;
@@ -123,6 +156,7 @@ export class FrameStats {
             worstMs: sorted.at(-1) ?? 0,
             p95Ms: sorted.length ? sorted[Math.min(sorted.length - 1, Math.floor(sorted.length * 0.95))] : 0,
             workMs: this.workMs,
+            workLastMs: this.workLastMs,
             ...this.last,
             entities: observed.entities ?? null,
             bodies: observed.bodies ?? null,

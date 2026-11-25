@@ -16,7 +16,7 @@ export function NormalizeShaderValue(property: {
  * { "format": "gameforge.shader", "version": 1, "name": "Mossy rock", "domain": "surface",
  *   "properties": [{ "name": "uTint", "type": "color", "default": [1, 1, 1, 1] },
  *                  { "name": "uNormalMap", "type": "texture", "default": "normal" }],
- *   "render": { "transparent": false, "cull": "back", "subdivision": 0 },
+ *   "render": { "transparent": false, "cull": "back", "subdivision": 0, "toonBands": 0 },
  *   "graph": { "nodes": [], "links": [] },
  *   "glsl": { "vertex": "…optional…", "fragment": "#version 300 es\n…#include <gf_surface>…" } }
  * ```
@@ -25,6 +25,9 @@ export function NormalizeShaderValue(property: {
  * (a full-screen pass over the rendered frame, see `WebGL3DRenderer.SetPostProcess`). A missing
  * vertex stage uses the standard vertex (`gf_vertex`) or, for `post`, a full-screen triangle.
  * GLSL may use `#include <gf_…>` chunks of `ShaderLibrary`; the renderer expands them.
+ *
+ * `render.toonBands` (0, or 2–8) quantizes the scene lighting of a `surface` shader into that many
+ * flat bands, exactly like `ToonMaterial` (materials may change it at runtime, see `ShaderMaterial`).
  */
 export class ShaderAsset {
     static FORMAT: string;
@@ -56,6 +59,7 @@ export class ShaderAsset {
         cull: any;
         depthWrite: any;
         subdivision: any;
+        toonBands: any;
     }>;
     graph: any;
     description: any;
@@ -74,6 +78,7 @@ export class ShaderAsset {
             cull: any;
             depthWrite: any;
             subdivision: any;
+            toonBands: any;
         };
         description?: any;
         format: string;

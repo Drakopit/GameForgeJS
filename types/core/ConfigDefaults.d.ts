@@ -45,5 +45,7 @@ export const CONFIG_DEFAULTS: Readonly<{
         showHitboxes: false;
         admin: false;
         logLevel: "info";
+        stats: false;
+        statsKey: "F3";
     }>;
 }>;

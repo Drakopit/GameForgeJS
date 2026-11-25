@@ -15,6 +15,7 @@
  * @param {string} [options.name] - Display name (defaults to the shader's name).
  * @param {boolean} [options.transparent] - Overrides the shader's render.transparent.
  * @param {boolean} [options.receiveShadow=true] - Whether shadows darken this surface.
+ * @param {number} [options.toonBands] - Toon lighting bands (0 = smooth, 2–8); defaults to the shader's render.toonBands.
  */
 export class ShaderMaterial extends Material {
     /**
@@ -25,14 +26,24 @@ export class ShaderMaterial extends Material {
      * @returns {ShaderMaterial}
      */
     static FromAssets(name: string, options?: any, assets?: AssetManager): ShaderMaterial;
-    constructor({ shader, properties, name, transparent, receiveShadow }?: {
+    constructor({ shader, properties, name, transparent, receiveShadow, toonBands }?: {
         properties?: {};
         receiveShadow?: boolean;
     });
     type: string;
     asset: ShaderAsset;
     receiveShadow: boolean;
+    set toonBands(value: number);
+    /**
+     * Toon lighting bands of a surface shader: 0 for smooth lighting, otherwise 2–8 flat bands.
+     * Changing it at runtime is free (it is a uniform).
+     */
+    get toonBands(): number;
     values: Map<any, any>;
+    _toonBands: number;
+    set bands(value: number);
+    /** Alias of `toonBands`, so code written for `ToonMaterial` (`material.bands = 3`) works unchanged. */
+    get bands(): number;
     /** "surface", "unlit" or "post". */
     get domain(): any;
     /**

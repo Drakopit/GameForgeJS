@@ -147,7 +147,11 @@ export class SceneDocument {
      * @returns {number[]} [x, y] or [x, y, z].
      */
     LocalPosition(node: any): number[];
-    /** Composes the local transform and every ancestor into a scene-space matrix. */
+    /**
+     * Composes the local transform and every ancestor into a scene-space matrix.
+     * Ancestors' scale spaces descendants but never deforms them (`Mat4.attachRigid`),
+     * so a child keeps its own proportions under a non-uniformly scaled parent.
+     */
     WorldMatrix(node: any): any;
     /** Returns the scene-space origin of a local node. */
     WorldPosition(node: any): any[];
