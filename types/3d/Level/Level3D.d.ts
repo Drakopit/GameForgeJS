@@ -51,7 +51,8 @@ export class Level3D extends Level {
      * Builds the level from a scene file, exactly as the editor's 3D view draws it
      * (SceneManifest3D.Create: camera, background, fog, skybox, lights, objects), and starts the
      * scene's systems: animations, particle emitters, audio sources and UI canvases
-     * (SceneSystems). Positional audio hears from the camera.
+     * (SceneSystems; each is the runtime class a game can also create in code). UI draws on the
+     * level's UI screen (`useUI`). Positional audio hears from the camera.
      * @param {SceneDocument|Object|string} source - A scene, its JSON, or its resources.json name.
      * @returns {Object} SceneManifest3D content plus `systems` and `document`.
      * @example
@@ -64,22 +65,21 @@ export class Level3D extends Level {
     sceneSystems: {
         audio: import("../../core/index.js").AudioSource[];
         emitters: import("../../core/index.js").ParticleEmitter[];
-        renderers: any[];
         canvases: import("../../core/index.js").UICanvas[];
-        animations: AnimationPlayer[];
+        animations: import("../../core/index.js").AnimationPlayer[];
         byId: Map<string, {
             audio?: import("../../core/index.js").AudioSource;
             emitter?: import("../../core/index.js").ParticleEmitter;
             canvas?: import("../../core/index.js").UICanvas;
-            animation?: AnimationPlayer;
+            animation?: import("../../core/index.js").AnimationPlayer;
         }>;
         Find(id: string): {
             audio?: import("../../core/index.js").AudioSource;
             emitter?: import("../../core/index.js").ParticleEmitter;
             canvas?: import("../../core/index.js").UICanvas;
-            animation?: AnimationPlayer;
+            animation?: import("../../core/index.js").AnimationPlayer;
         };
-        All(): any[];
+        All(): (import("../../core/index.js").AudioSource | import("../../core/index.js").AnimationPlayer | import("../../core/index.js").ParticleEmitter | import("../../core/index.js").UICanvas)[];
     };
     OnFixedUpdate(dt: any): void;
 }
@@ -88,4 +88,3 @@ import { Screen3D } from "../Window/Screen3D.js";
 import { WebGL3DRenderer } from "../Render3D/index.js";
 import { PhysicsWorld3D } from "../Physics/PhysicsWorld3D.js";
 import { SceneDocument } from "../../core/Scene/SceneDocument.js";
-import { AnimationPlayer } from "../../core/Animation/AnimationPlayer.js";

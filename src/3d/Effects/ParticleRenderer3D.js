@@ -2,6 +2,7 @@ import { Component } from "../../core/Component.js";
 import { Geometry3D } from "../Render3D/Mesh/Geometry3D.js";
 import { Mesh } from "../Render3D/Mesh/Mesh.js";
 import { ShaderMaterial } from "../Render3D/Material/ShaderMaterial.js";
+import { ParticleEmitter } from "../../core/Particles/ParticleEmitter.js";
 
 const SPRITES = { soft: 0, circle: 1, square: 2 };
 
@@ -143,4 +144,15 @@ export class ParticleRenderer3D extends Component {
         this.added = false;
         this.scene = null;
     }
+}
+
+/**
+ * Code-first 3D particles: a ParticleEmitter drawn in `scene` (one level entity).
+ * @param {any} scene - The Scene3D. @param {Record<string, any>} [settings] - `ParticleEmitter` values.
+ * @param {{target?: any, name?: string}} [options]
+ * @example
+ * level.AddEntity(Particles3D(level.scene, { rate: 30, blend: "additive" }, { target: torch }));
+ */
+export function Particles3D(scene, settings = {}, options = {}) {
+    return new ParticleEmitter(settings, { ...options, renderer: emitter => new ParticleRenderer3D(scene, emitter) });
 }

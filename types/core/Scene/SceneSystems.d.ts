@@ -1,52 +1,67 @@
 /**
- * Starts the runtime systems a scene declares, as level entities: `AudioSource`,
- * `ParticleEmitter`, `Animation` components on any node, and `UICanvas` nodes with their
- * `UIElement` descendants. `Level3D.BuildFromScene` and `SceneSystems2D.Attach` call it with
- * the right particle renderer and node bindings; the editor uses the same classes to preview.
+ * Maps a scene's runtime components onto the runtime classes, one to one: each
+ * `node.components.<Name>` becomes `new <Name>(values, { target, … })`, the class of the same
+ * name, and each `UICanvas` node becomes `new UICanvas(values, { elements })` with its
+ * `UIElement` nodes. Nothing here is scene-only: games use the same classes directly in code,
+ * with the same values.
+ *
+ * The caller supplies what depends on the renderer: `target(node)` (the node's runtime object),
+ * `particles(emitter)` (an emitter's renderer) and `ui(canvas)` (a canvas's renderer).
+ * `Level3D.BuildFromScene`, `SceneSystems2D.Attach` and the editor's preview do.
  *
  * @example
- * const systems = SceneSystems.Attach(level, document, { particles: emitter => new ParticleRenderer2D(emitter, { screen }) });
+ * const systems = SceneSystems.Attach(level, scene, { target: node => objects[node.id] });
  * systems.Find("hud").canvas.Set("score", 10);
  */
 export class SceneSystems {
     /** Node types of the in-game UI. */
     static UI_TYPES: readonly string[];
+    /** Component name → runtime class (the name is the class name). */
+    static COMPONENTS: Readonly<{
+        AnimationPlayer: typeof AnimationPlayer;
+        ParticleEmitter: typeof ParticleEmitter;
+        AudioSource: typeof AudioSource;
+    }>;
+    /** Where each component's system is listed in the returned set ([per-node slot, list]). */
+    static SLOTS: Readonly<{
+        AnimationPlayer: string[];
+        ParticleEmitter: string[];
+        AudioSource: string[];
+    }>;
     /**
-     * @param {any} level - Receives the systems through `AddEntity` (null: not added).
+     * @param {any} level - Receives every system through `AddEntity` (null: not added).
      * @param {SceneDocument|Object} document - The scene (document or JSON).
      * @param {Object} [options]
-     * @param {any} [options.audio] - AudioManager (default: the game's `audio` service).
+     * @param {((node: Object) => any)|null} [options.target] - A node's runtime object (see Targets.js).
+     *   Emitters and audio of a node without one use its position in the scene.
+     * @param {((emitter: ParticleEmitter) => any)|null} [options.particles] - Creates an emitter's renderer.
+     * @param {((canvas: UICanvas) => any)|null} [options.ui] - Creates a canvas's renderer
+     *   (default: UIRenderer2D on the level's UI screen).
+     * @param {any} [options.audio] - AudioManager (default: the level's).
      * @param {any} [options.assets] - AssetManager (default: the level's).
-     * @param {((emitter: ParticleEmitter, node: Object) => any)|null} [options.particles] - Creates the emitter's renderer.
-     * @param {((node: Object) => number[]|null)|null} [options.position] - A node's live world position.
-     * @param {((node: Object) => any)|null} [options.bind] - A node's animation target (see AnimationPlayer.Bind).
-     * @param {HTMLElement|null} [options.uiTarget] - The canvas the UI covers.
-     * @param {HTMLElement|null} [options.uiHost] - Where the UI layer is added (default: the target's parent).
-     * @param {boolean} [options.placeholders] - UI shows unset `{key}` bindings as written (editor preview).
      */
-    static Attach(level: any, document: SceneDocument | any, { audio, assets, particles, position, bind, uiTarget, uiHost, placeholders }?: {
+    static Attach(level: any, document: SceneDocument | any, { target, particles, ui, audio, assets }?: {
+        target?: ((node: any) => any) | null;
+        particles?: ((emitter: ParticleEmitter) => any) | null;
+        ui?: ((canvas: UICanvas) => any) | null;
         audio?: any;
         assets?: any;
-        particles?: ((emitter: ParticleEmitter, node: any) => any) | null;
-        position?: ((node: any) => number[] | null) | null;
-        bind?: ((node: any) => any) | null;
-        uiTarget?: HTMLElement | null;
-        uiHost?: HTMLElement | null;
-        placeholders?: boolean;
     }): SceneSystemsSet;
     /**
-     * The `UIElement` descendants of a canvas node, parents first, ready for `UICanvas`.
+     * The `UIElement` descendants of a canvas node, parents first, as UICanvas `elements`.
      * @param {SceneDocument} doc @param {Object} canvas
      */
     static UIElements(doc: SceneDocument, canvas: any): any[];
 }
-import { SceneDocument } from "./SceneDocument.js";
+import { AnimationPlayer } from "../Animation/AnimationPlayer.js";
 import { ParticleEmitter } from "../Particles/ParticleEmitter.js";
+import { AudioSource } from "../Audio/AudioSource.js";
+import { SceneDocument } from "./SceneDocument.js";
+import { UICanvas } from "../UI/UICanvas.js";
 /** What `SceneSystems.Attach` started, by kind and by node id. */
 declare class SceneSystemsSet {
     /** @type {AudioSource[]} */ audio: AudioSource[];
     /** @type {ParticleEmitter[]} */ emitters: ParticleEmitter[];
-    /** @type {any[]} */ renderers: any[];
     /** @type {UICanvas[]} */ canvases: UICanvas[];
     /** @type {AnimationPlayer[]} */ animations: AnimationPlayer[];
     /** @type {Map<string, {audio?: AudioSource, emitter?: ParticleEmitter, canvas?: UICanvas, animation?: AnimationPlayer}>} */
@@ -63,10 +78,7 @@ declare class SceneSystemsSet {
         canvas?: UICanvas;
         animation?: AnimationPlayer;
     };
-    /** Every system, renderers included (for removal). */
-    All(): any[];
+    /** Every system. */
+    All(): (AudioSource | AnimationPlayer | ParticleEmitter | UICanvas)[];
 }
-import { AudioSource } from "../Audio/AudioSource.js";
-import { UICanvas } from "../UI/UICanvas.js";
-import { AnimationPlayer } from "../Animation/AnimationPlayer.js";
 export {};

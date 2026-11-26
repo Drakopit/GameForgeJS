@@ -28,8 +28,8 @@ export class SceneComponents {
             label: "UI Element";
             fields: readonly Readonly<unknown>[];
         }>;
-        Animation: Readonly<{
-            label: "Animation";
+        AnimationPlayer: Readonly<{
+            label: "Animation Player";
             fields: readonly Readonly<unknown>[];
         }>;
     }>;

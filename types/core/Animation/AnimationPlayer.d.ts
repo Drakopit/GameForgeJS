@@ -7,9 +7,15 @@ export function SampleTrack(track: {
     interpolation?: string;
 }, time: number): any;
 /**
+ * Code-first entry point: an AnimationPlayer for `target`, built with Clip / Track / Event /
+ * Transition and added to a level like any entity.
+ * @param {any} target @param {Record<string, any>} [settings]
+ */
+export function Animate(target: any, settings?: Record<string, any>): AnimationPlayer;
+/**
  * Keyframe animation for a scene node, with a basic state machine.
  *
- * A clip (`Animation.clips[]`) has `name`, `duration`, `loop`, `tracks` and `events`:
+ * A clip (`clips[]`) has `name`, `duration`, `loop`, `tracks` and `events`:
  * - a track animates one `property` through `keys` ([[time, value], …]) with `interpolation`
  *   "linear" (default), "smooth" or "step". Properties: position, rotation (radians, like the
  *   scene's transforms), scale, color (RGBA 0..1), opacity, any other number or array field the
@@ -20,44 +26,33 @@ export function SampleTrack(track: {
  * `SetTrigger(name)`, when parameter conditions hold (`when: [{param, op, value}]`, op one of
  * > < >= <= == !=) or when the clip ends (`exitTime: true`); `from: "*"` means any state.
  *
+ * Code first and scene first build the same object: the scene's `AnimationPlayer` component is
+ * exactly the `settings` argument.
+ *
  * @example
- * const player = new AnimationPlayer(node.components.Animation, { target: AnimationPlayer.Bind(mesh.transform, { meshes: [mesh] }) });
- * player.SetTrigger("hit");
- * player.On("footstep", () => sounds.Play("step"));
+ * // Code first
+ * level.AddEntity(Animate(cube)
+ *     .Clip("spin", 8, { loop: true }).Track("rotation", [[0, [0, 0, 0]], [8, [0, Math.PI * 2, 0]]])
+ *     .Clip("hit", 0.3).Track("color", [[0, [1, 0, 0, 1]], [0.3, [1, 1, 1, 1]]])
+ *     .Transition({ from: "*", to: "hit", trigger: "hit" }).Transition({ from: "hit", to: "spin", exitTime: true }));
+ * // Scene first: the same settings, from components.AnimationPlayer
+ * level.AddEntity(new AnimationPlayer(node.components.AnimationPlayer, { target: cube }));
  */
 export class AnimationPlayer extends Component {
     /**
-     * A target for 3D nodes (a Transform3D and its meshes) or 2D objects (x / y, rotation, scale,
-     * color, alpha fields): position / rotation / scale / color / opacity, any other field by name,
-     * and `clip` through the object's `animator` (sprite) or `skeletal` animator.
-     * @param {any} object - Transform3D, or a 2D game object.
-     * @param {{meshes?: any[], animator?: any}} [options]
-     */
-    static Bind(object: any, { meshes, animator }?: {
-        meshes?: any[];
-        animator?: any;
-    }): {
-        Get(property: any): any;
-        Set(property: any, value: any): any;
-        PlayClip(name: any): void;
-    };
-    /**
-     * @param {Record<string, any>} [settings] - `Animation` component values.
-     * @param {{target?: {Get?: (property: string) => any, Set: (property: string, value: any) => void, PlayClip?: (name: string) => void}|null, name?: string}} [options]
+     * @param {Record<string, any>} [settings] - `AnimationPlayer` component values.
+     * @param {{target?: any, name?: string}} [options] - `target`: what the tracks animate (a 3D
+     *   scene node, Mesh, Transform3D, 2D object, or any object with Get / Set; see Targets.js).
      */
     constructor(settings?: Record<string, any>, { target, name }?: {
-        target?: {
-            Get?: (property: string) => any;
-            Set: (property: string, value: any) => void;
-            PlayClip?: (name: string) => void;
-        } | null;
+        target?: any;
         name?: string;
     });
     name: string;
     target: {
-        Get?: (property: string) => any;
+        Get: (property: string) => any;
         Set: (property: string, value: any) => void;
-        PlayClip?: (name: string) => void;
+        PlayClip: (name: string) => void;
     };
     /** @type {Map<string, Set<Function>>} */
     listeners: Map<string, Set<Function>>;
@@ -69,8 +64,41 @@ export class AnimationPlayer extends Component {
     transitions: any;
     parameters: any;
     triggers: Set<any>;
+    /** The settings (the scene's `AnimationPlayer` component values). */
+    ToJSON(): any;
     /** The clip of a state, or null. @param {string} name */
-    Clip(name: string): any;
+    GetClip(name: string): any;
+    /**
+     * Adds (or replaces) a clip; the next Track / Event calls add to it.
+     * @param {string} name @param {number} duration @param {{loop?: boolean}} [options]
+     */
+    Clip(name: string, duration: number, { loop }?: {
+        loop?: boolean;
+    }): this;
+    building: {
+        name: string;
+        duration: number;
+        loop: boolean;
+        tracks: any[];
+        events: any[];
+    };
+    /**
+     * Adds a track to the last clip.
+     * @param {string} property @param {Array<[number, any]>} keys @param {"linear"|"smooth"|"step"} [interpolation]
+     */
+    Track(property: string, keys: Array<[number, any]>, interpolation?: "linear" | "smooth" | "step"): this;
+    /** Adds an event to the last clip. @param {number} at @param {string} name */
+    Event(at: number, name: string): this;
+    /** Adds a transition: {from, to, trigger?, exitTime?, when?}. @param {Record<string, any>} transition */
+    Transition(transition: Record<string, any>): this;
+    /** @param {string} method */
+    Building(method: string): {
+        name: string;
+        duration: number;
+        loop: boolean;
+        tracks: any[];
+        events: any[];
+    };
     /** Switches to a state (clip) from its start. @param {string} name */
     Play(name: string): boolean;
     state: string;

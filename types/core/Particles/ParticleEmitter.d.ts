@@ -8,27 +8,33 @@ export function SampleCurve(points: any[], t: number): any;
 /**
  * Bounded particle simulation shared by 2D and 3D: emission (rate, bursts, shape, cone),
  * motion (speed, gravity) and colour / size over each particle's life. It only simulates;
- * `ParticleRenderer2D` (canvas) and `ParticleRenderer3D` (one batched mesh) draw it, in the
- * editor's viewport as in Play. Units are the scene's (world units in 3D, pixels in 2D).
+ * its `renderer` (`ParticleRenderer2D` on a canvas, `ParticleRenderer3D` as one batched mesh)
+ * draws it and follows its lifecycle, so an emitter is one level entity. Units are the scene's
+ * (world units in 3D, pixels in 2D). The scene's `ParticleEmitter` component is exactly `settings`.
  *
  * @example
- * const sparks = level.AddEntity(new ParticleEmitter({ rate: 40, blend: "additive" }, { origin: () => [0, 1, 0] }));
+ * // Code first: Particles3D / Particles2D pick the renderer
+ * const sparks = level.AddEntity(Particles3D(level.scene, { rate: 40, blend: "additive" }, { target: torch }));
  * sparks.Emit(20); // an extra burst
  */
 export class ParticleEmitter extends Component {
     /**
      * @param {Record<string, any>} [settings] - `ParticleEmitter` component values.
-     * @param {{origin?: (() => number[])|null, name?: string}} [options] - `origin`: where the
-     *   emitter is (the node's world position), read every frame.
+     * @param {{target?: any, renderer?: ((emitter: ParticleEmitter) => any)|any, name?: string}} [options]
+     *   `target`: where the emitter is, read every frame (a node, Transform3D, 2D object, [x, y, z]
+     *   or a function; see Targets.js); `renderer`: draws the particles (a renderer or a factory).
      */
-    constructor(settings?: Record<string, any>, { origin, name }?: {
-        origin?: (() => number[]) | null;
+    constructor(settings?: Record<string, any>, { target, renderer, name }?: {
+        target?: any;
+        renderer?: ((emitter: ParticleEmitter) => any) | any;
         name?: string;
     });
     name: string;
-    origin: () => number[];
+    target: any;
     /** Particles not emitted because `maxParticles` were alive. */
     dropped: number;
+    /** @type {any} */
+    renderer: any;
     /** Applies new settings (editor changes); live particles keep flying. @param {Record<string, any>} settings */
     Configure(settings: Record<string, any>): void;
     settings: any;
@@ -37,6 +43,7 @@ export class ParticleEmitter extends Component {
     count: number;
     random: () => number;
     direction: number[];
+    OnStart(context: any): void;
     /** Starts (or restarts) emitting; the burst fires now. */
     Play(): void;
     playing: boolean;
@@ -46,13 +53,14 @@ export class ParticleEmitter extends Component {
     Stop({ clear }?: {
         clear?: boolean;
     }): void;
-    /** Where new particles start: the origin, or 0 in local space. */
+    /** Where the emitter is (its target's world position, or the origin). */
     Origin(): number[];
     /** Emits `count` particles now (dropped past maxParticles). @param {number} count */
     Emit(count: number): void;
     ShapeOffset(): number[];
     /** @param {number} dt */
     OnUpdate(dt?: number): void;
+    ToJSON(): any;
     /**
      * Calls `visit` for every live particle with its drawn position (local-space particles follow
      * the origin), colour and size.

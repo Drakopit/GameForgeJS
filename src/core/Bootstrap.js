@@ -48,6 +48,7 @@ export async function BootstrapGame({
 
         const assets = new AssetManager();
         assets.audio = audio;
+        audio.assets = assets;
         Engine.cleanups.push(() => assets.Dispose());
         const context = {
             game: { get currentLevel() { return LevelHandler.current; }, stop: () => Engine.Stop(), dispose: () => Engine.Dispose() },

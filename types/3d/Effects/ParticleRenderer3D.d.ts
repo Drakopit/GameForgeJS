@@ -1,4 +1,15 @@
 /**
+ * Code-first 3D particles: a ParticleEmitter drawn in `scene` (one level entity).
+ * @param {any} scene - The Scene3D. @param {Record<string, any>} [settings] - `ParticleEmitter` values.
+ * @param {{target?: any, name?: string}} [options]
+ * @example
+ * level.AddEntity(Particles3D(level.scene, { rate: 30, blend: "additive" }, { target: torch }));
+ */
+export function Particles3D(scene: any, settings?: Record<string, any>, options?: {
+    target?: any;
+    name?: string;
+}): ParticleEmitter;
+/**
  * The particle shader: each particle is a camera-facing quad built in the vertex stage
  * (position = particle centre, uv = corner, normal.x = size, tangent = RGBA colour).
  */
@@ -37,7 +48,7 @@ export class ParticleRenderer3D extends Component {
      */
     constructor(scene: import("../Render3D/Scene/Scene3D.js").Scene3D | null, emitter: import("../../core/Particles/ParticleEmitter.js").ParticleEmitter);
     scene: import("../index.js").Scene3D;
-    emitter: import("../../core/index.js").ParticleEmitter;
+    emitter: ParticleEmitter;
     material: ShaderMaterial;
     mesh: Mesh;
     /** Re-creates the batch when the emitter's capacity changed. */
@@ -49,6 +60,7 @@ export class ParticleRenderer3D extends Component {
     Sync(): void;
     OnUpdate(): void;
 }
+import { ParticleEmitter } from "../../core/Particles/ParticleEmitter.js";
 import { Component } from "../../core/Component.js";
 import { ShaderMaterial } from "../Render3D/Material/ShaderMaterial.js";
 import { Mesh } from "../Render3D/Mesh/Mesh.js";
