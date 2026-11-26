@@ -668,7 +668,10 @@ export class SceneDocument {
             });
         }
         const manifest = { name: this.name, lights: this.Lights(), objects };
-        if (objects.some(object => object.parent)) manifest.transforms = this.nodes.map(node => ({
+        // Every node gets a transform when objects have parents or runtime systems (animation,
+        // particles, audio) need group nodes to move or be found.
+        const systems = this.nodes.some(node => ['Animation', 'ParticleEmitter', 'AudioSource'].some(name => this.Components(node)[name]));
+        if (systems || objects.some(object => object.parent)) manifest.transforms = this.nodes.map(node => ({
             id: node.id, parent: node.parent, transform: clone(node.transform ?? {}),
         }));
         if (this.settings.backgroundColor) manifest.backgroundColor = clone(this.settings.backgroundColor);

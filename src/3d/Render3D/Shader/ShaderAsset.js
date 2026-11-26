@@ -6,7 +6,7 @@
  * { "format": "gameforge.shader", "version": 1, "name": "Mossy rock", "domain": "surface",
  *   "properties": [{ "name": "uTint", "type": "color", "default": [1, 1, 1, 1] },
  *                  { "name": "uNormalMap", "type": "texture", "default": "normal" }],
- *   "render": { "transparent": false, "cull": "back", "subdivision": 0, "toonBands": 0 },
+ *   "render": { "transparent": false, "blend": "alpha", "cull": "back", "subdivision": 0, "toonBands": 0 },
  *   "graph": { "nodes": [], "links": [] },
  *   "glsl": { "vertex": "…optional…", "fragment": "#version 300 es\n…#include <gf_surface>…" } }
  * ```
@@ -83,11 +83,14 @@ export class ShaderAsset {
         if (!["back", "front", "none"].includes(cull)) fail('render.cull must be "back", "front" or "none".');
         const subdivision = render.subdivision ?? 0;
         if (!Number.isInteger(subdivision) || subdivision < 0 || subdivision > 4) fail("render.subdivision must be an integer from 0 to 4.");
+        const blend = render.blend ?? "alpha";
+        if (!["alpha", "additive"].includes(blend)) fail('render.blend must be "alpha" or "additive".');
         const toonBands = render.toonBands ?? 0;
         if (!Number.isInteger(toonBands) || toonBands === 1 || toonBands < 0 || toonBands > 8) fail("render.toonBands must be 0 (smooth lighting) or an integer from 2 to 8.");
         this.render = Object.freeze({
             transparent: Boolean(render.transparent),
             cull,
+            blend,
             depthWrite: render.depthWrite ?? !render.transparent,
             subdivision,
             toonBands,
@@ -111,11 +114,16 @@ export class ShaderAsset {
             domain: this.domain,
             ...(this.description ? { description: this.description } : {}),
             properties: this.properties.map(property => ({ ...property, default: cloneValue(property.default) })),
-            render: { ...this.render },
+            render: renderJSON(this.render),
             ...(this.graph ? { graph: this.graph } : {}),
             glsl: { ...(this.vertex ? { vertex: this.vertex } : {}), fragment: this.fragment },
         };
     }
+}
+
+/** Render settings as written to a .gfshader (the default alpha blend is left out). */
+function renderJSON({ blend, ...render }) {
+    return blend === "additive" ? { ...render, blend } : render;
 }
 
 const SIZES = { float: 1, int: 1, bool: 1, vec2: 2, vec3: 3, vec4: 4, color: 4 };

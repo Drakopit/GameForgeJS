@@ -16,7 +16,7 @@ export function NormalizeShaderValue(property: {
  * { "format": "gameforge.shader", "version": 1, "name": "Mossy rock", "domain": "surface",
  *   "properties": [{ "name": "uTint", "type": "color", "default": [1, 1, 1, 1] },
  *                  { "name": "uNormalMap", "type": "texture", "default": "normal" }],
- *   "render": { "transparent": false, "cull": "back", "subdivision": 0, "toonBands": 0 },
+ *   "render": { "transparent": false, "blend": "alpha", "cull": "back", "subdivision": 0, "toonBands": 0 },
  *   "graph": { "nodes": [], "links": [] },
  *   "glsl": { "vertex": "…optional…", "fragment": "#version 300 es\n…#include <gf_surface>…" } }
  * ```
@@ -57,6 +57,7 @@ export class ShaderAsset {
     render: Readonly<{
         transparent: boolean;
         cull: any;
+        blend: any;
         depthWrite: any;
         subdivision: any;
         toonBands: any;
@@ -74,11 +75,7 @@ export class ShaderAsset {
         graph?: any;
         properties: any;
         render: {
-            transparent: boolean;
-            cull: any;
-            depthWrite: any;
-            subdivision: any;
-            toonBands: any;
+            [x: string]: any;
         };
         description?: any;
         format: string;

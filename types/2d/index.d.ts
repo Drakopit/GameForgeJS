@@ -22,6 +22,8 @@ export { Physic2D } from "./Collision/Physic2D.js";
 export { GameObject } from "./Objects/GameObject.js";
 export { Particle } from "./Particle/Particle.js";
 export { ParticleSystem } from "./Particle/ParticleSystem.js";
+export { ParticleRenderer2D } from "./Particle/ParticleRenderer2D.js";
+export { SceneSystems2D } from "./Scene/SceneSystems2D.js";
 export { Scene } from "./Scene/Scene.js";
 export { Button } from "./UI/Button.js";
 export { Slider } from "./UI/Slider.js";
