@@ -6,7 +6,6 @@ import { SceneManifest3D } from "../Render3D/Scene/SceneManifest3D.js";
 import { ParticleRenderer3D } from "../Effects/ParticleRenderer3D.js";
 import { SceneDocument } from "../../core/Scene/SceneDocument.js";
 import { SceneSystems } from "../../core/Scene/SceneSystems.js";
-import { AnimationPlayer } from "../../core/Animation/AnimationPlayer.js";
 
 /**
  * Base level for current Render3D games with optional canvas UI and physics.
@@ -89,7 +88,8 @@ export class Level3D extends Level {
      * Builds the level from a scene file, exactly as the editor's 3D view draws it
      * (SceneManifest3D.Create: camera, background, fog, skybox, lights, objects), and starts the
      * scene's systems: animations, particle emitters, audio sources and UI canvases
-     * (SceneSystems). Positional audio hears from the camera.
+     * (SceneSystems; each is the runtime class a game can also create in code). UI draws on the
+     * level's UI screen (`useUI`). Positional audio hears from the camera.
      * @param {SceneDocument|Object|string} source - A scene, its JSON, or its resources.json name.
      * @returns {Object} SceneManifest3D content plus `systems` and `document`.
      * @example
@@ -106,22 +106,11 @@ export class Level3D extends Level {
         const content = SceneManifest3D.Create(document.ToManifest3D(), { aspect: this.width / this.height, assets });
         this.scene = content.scene;
         this.camera = content.camera;
-        const transformOf = id => content.transforms?.get(id) ?? content.nodes.get(id)?.root ?? content.nodes.get(id)?.meshes?.[0]?.transform ?? null;
         const systems = SceneSystems.Attach(this, document, {
-            assets,
+            // A node's runtime object: its built meshes ({ root, meshes, model }) or, for group
+            // and effect nodes, its Transform3D.
+            target: node => content.nodes.get(node.id) ?? content.transforms?.get(node.id) ?? null,
             particles: emitter => new ParticleRenderer3D(this.scene, emitter),
-            position: node => {
-                const transform = transformOf(node.id);
-                if (!transform) return document.WorldPosition(node);
-                const matrix = transform.GetMatrix();
-                return [matrix[12], matrix[13], matrix[14]];
-            },
-            bind: node => {
-                const transform = transformOf(node.id);
-                const entry = content.nodes.get(node.id);
-                return transform ? AnimationPlayer.Bind(transform, { meshes: entry?.meshes ?? [], animator: entry?.model?.animator ?? null }) : null;
-            },
-            uiTarget: this.screen3D?.Canvas ?? null,
         });
         if (systems.audio.some(source => source.settings.spatial)) {
             const camera = () => this.camera;

@@ -3,6 +3,8 @@ export class AudioManager {
     static set instance(value: any);
     static get instance(): any;
     context: any;
+    /** @type {any} The game's AssetManager: clips can be played by resources.json name. */
+    assets: any;
     masterGain: any;
     analyserNode: any;
     currentBGM: any;
@@ -38,6 +40,12 @@ export class AudioManager {
     /**
      * Plays a one-shot sound effect (kept for older games; see PlaySound).
      */
+    /**
+     * A clip: an AudioBuffer as it is, or a name from resources.json audios (`assets.audios[name]`,
+     * with the game's AssetManager as `assets`). @param {AudioBuffer|string|null} clip
+     * @returns {AudioBuffer|null}
+     */
+    Clip(clip: AudioBuffer | string | null): AudioBuffer | null;
     PlaySFX(audioBuffer: any, localVolume?: number): {
         source: AudioBufferSourceNode;
         gain: GainNode;
@@ -50,11 +58,11 @@ export class AudioManager {
      * Plays a sound: 2D, or positional when `position` is given (an [x, y, z] point heard from
      * the listener, see SetListener). A suspended context drops one-shots instead of queueing a
      * burst for later; looping sounds start and are heard once audio unlocks.
-     * @param {AudioBuffer} buffer - Decoded clip (`assets.audios[name]`).
+     * @param {AudioBuffer|string} buffer - Decoded clip, or its resources.json name.
      * @param {{volume?: number, pitch?: number, loop?: boolean, position?: number[]|null, minDistance?: number, maxDistance?: number, force?: boolean}} [options]
      * @returns {{source: AudioBufferSourceNode, gain: GainNode, panner: PannerNode|null, SetPosition: (position: number[]) => void, SetVolume: (volume: number) => void, Stop: () => void}|null}
      */
-    PlaySound(buffer: AudioBuffer, { volume, pitch, loop, position, minDistance, maxDistance, force }?: {
+    PlaySound(buffer: AudioBuffer | string, { volume, pitch, loop, position, minDistance, maxDistance, force }?: {
         volume?: number;
         pitch?: number;
         loop?: boolean;
@@ -78,10 +86,12 @@ export class AudioManager {
     /**
      * Starts a music track, crossfading from the current one over `fade` seconds (0 cuts).
      * Playing the track that is already on only changes its volume.
-     * @param {AudioBuffer} buffer
+     * @param {AudioBuffer|string} buffer - Decoded clip, or its resources.json name.
      * @param {{volume?: number, fade?: number, loop?: boolean}} [options]
+     * @example
+     * audio.PlayMusic("theme", { fade: 1.5 });
      */
-    PlayMusic(buffer: AudioBuffer, { volume, fade, loop }?: {
+    PlayMusic(buffer: AudioBuffer | string, { volume, fade, loop }?: {
         volume?: number;
         fade?: number;
         loop?: boolean;

@@ -1,11 +1,12 @@
 // @ts-check
 import { Component } from "../Component.js";
 import { SceneComponents } from "../Scene/SceneComponents.js";
+import { BindTarget } from "../Scene/Targets.js";
 
 /**
  * Keyframe animation for a scene node, with a basic state machine.
  *
- * A clip (`Animation.clips[]`) has `name`, `duration`, `loop`, `tracks` and `events`:
+ * A clip (`clips[]`) has `name`, `duration`, `loop`, `tracks` and `events`:
  * - a track animates one `property` through `keys` ([[time, value], …]) with `interpolation`
  *   "linear" (default), "smooth" or "step". Properties: position, rotation (radians, like the
  *   scene's transforms), scale, color (RGBA 0..1), opacity, any other number or array field the
@@ -16,20 +17,28 @@ import { SceneComponents } from "../Scene/SceneComponents.js";
  * `SetTrigger(name)`, when parameter conditions hold (`when: [{param, op, value}]`, op one of
  * > < >= <= == !=) or when the clip ends (`exitTime: true`); `from: "*"` means any state.
  *
+ * Code first and scene first build the same object: the scene's `AnimationPlayer` component is
+ * exactly the `settings` argument.
+ *
  * @example
- * const player = new AnimationPlayer(node.components.Animation, { target: AnimationPlayer.Bind(mesh.transform, { meshes: [mesh] }) });
- * player.SetTrigger("hit");
- * player.On("footstep", () => sounds.Play("step"));
+ * // Code first
+ * level.AddEntity(Animate(cube)
+ *     .Clip("spin", 8, { loop: true }).Track("rotation", [[0, [0, 0, 0]], [8, [0, Math.PI * 2, 0]]])
+ *     .Clip("hit", 0.3).Track("color", [[0, [1, 0, 0, 1]], [0.3, [1, 1, 1, 1]]])
+ *     .Transition({ from: "*", to: "hit", trigger: "hit" }).Transition({ from: "hit", to: "spin", exitTime: true }));
+ * // Scene first: the same settings, from components.AnimationPlayer
+ * level.AddEntity(new AnimationPlayer(node.components.AnimationPlayer, { target: cube }));
  */
 export class AnimationPlayer extends Component {
     /**
-     * @param {Record<string, any>} [settings] - `Animation` component values.
-     * @param {{target?: {Get?: (property: string) => any, Set: (property: string, value: any) => void, PlayClip?: (name: string) => void}|null, name?: string}} [options]
+     * @param {Record<string, any>} [settings] - `AnimationPlayer` component values.
+     * @param {{target?: any, name?: string}} [options] - `target`: what the tracks animate (a 3D
+     *   scene node, Mesh, Transform3D, 2D object, or any object with Get / Set; see Targets.js).
      */
     constructor(settings = {}, { target = null, name = "" } = {}) {
         super();
         this.name = name;
-        this.target = target;
+        this.target = BindTarget(target);
         /** @type {Map<string, Set<Function>>} */
         this.listeners = new Map();
         this.Configure(settings);
@@ -37,7 +46,7 @@ export class AnimationPlayer extends Component {
 
     /** @param {Record<string, any>} settings */
     Configure(settings) {
-        this.settings = SceneComponents.Resolve("Animation", settings);
+        this.settings = SceneComponents.Resolve("AnimationPlayer", settings);
         /** @type {Map<string, any>} */
         this.clips = new Map((Array.isArray(this.settings.clips) ? this.settings.clips : []).map(clip => [clip.name, NormalizeClip(clip)]));
         this.transitions = Array.isArray(this.settings.transitions) ? this.settings.transitions : [];
@@ -52,14 +61,66 @@ export class AnimationPlayer extends Component {
         if (this.settings.playOnStart) this.Play(this.settings.initial || this.clips.keys().next().value || "");
     }
 
+    /** The settings (the scene's `AnimationPlayer` component values). */
+    ToJSON() {
+        return structuredClone(this.settings);
+    }
+
     /** The clip of a state, or null. @param {string} name */
-    Clip(name) {
+    GetClip(name) {
         return this.clips.get(name) ?? null;
+    }
+
+    /* Builders (code first): each adds to `settings`, so the result serializes as the scene component. */
+
+    /**
+     * Adds (or replaces) a clip; the next Track / Event calls add to it.
+     * @param {string} name @param {number} duration @param {{loop?: boolean}} [options]
+     */
+    Clip(name, duration, { loop = false } = {}) {
+        const clip = { name, duration, loop, tracks: [], events: [] };
+        this.settings.clips = [...this.settings.clips.filter(item => item.name !== name), clip];
+        this.building = clip;
+        this.clips.set(name, NormalizeClip(clip));
+        if (!this.settings.initial) this.settings.initial = name;
+        return this;
+    }
+
+    /**
+     * Adds a track to the last clip.
+     * @param {string} property @param {Array<[number, any]>} keys @param {"linear"|"smooth"|"step"} [interpolation]
+     */
+    Track(property, keys, interpolation = "linear") {
+        const clip = this.Building("Track");
+        clip.tracks.push({ property, interpolation, keys: keys.map(([at, value]) => [at, Array.isArray(value) ? [...value] : value]) });
+        this.clips.set(clip.name, NormalizeClip(clip));
+        return this;
+    }
+
+    /** Adds an event to the last clip. @param {number} at @param {string} name */
+    Event(at, name) {
+        const clip = this.Building("Event");
+        clip.events.push({ at, name });
+        this.clips.set(clip.name, NormalizeClip(clip));
+        return this;
+    }
+
+    /** Adds a transition: {from, to, trigger?, exitTime?, when?}. @param {Record<string, any>} transition */
+    Transition(transition) {
+        this.settings.transitions = [...this.settings.transitions, { ...transition }];
+        this.transitions = this.settings.transitions;
+        return this;
+    }
+
+    /** @param {string} method */
+    Building(method) {
+        if (!this.building) throw new Error(`AnimationPlayer.${method}: call Clip(name, duration) first.`);
+        return this.building;
     }
 
     /** Switches to a state (clip) from its start. @param {string} name */
     Play(name) {
-        const clip = this.Clip(name);
+        const clip = this.GetClip(name);
         if (!clip) return false;
         const previous = this.state;
         this.state = name;
@@ -99,7 +160,7 @@ export class AnimationPlayer extends Component {
     /** @param {number} dt */
     OnUpdate(dt) {
         if (!this.playing || !Number.isFinite(dt) || dt < 0) return;
-        const clip = this.Clip(/** @type {string} */ (this.state));
+        const clip = this.GetClip(/** @type {string} */ (this.state));
         if (!clip) return;
         const previous = this.time;
         let time = previous + dt * this.settings.speed;
@@ -158,55 +219,6 @@ export class AnimationPlayer extends Component {
         this.listeners.clear();
         this.target = null;
     }
-
-    /**
-     * A target for 3D nodes (a Transform3D and its meshes) or 2D objects (x / y, rotation, scale,
-     * color, alpha fields): position / rotation / scale / color / opacity, any other field by name,
-     * and `clip` through the object's `animator` (sprite) or `skeletal` animator.
-     * @param {any} object - Transform3D, or a 2D game object.
-     * @param {{meshes?: any[], animator?: any}} [options]
-     */
-    static Bind(object, { meshes = [], animator = null } = {}) {
-        const isTransform3D = Array.isArray(object?.position) && object?.rotation && "x" in object.rotation;
-        const materials = () => meshes.map(mesh => mesh.material).filter(Boolean);
-        return {
-            Get(property) {
-                if (isTransform3D && property === "rotation") return [object.rotation.x, object.rotation.y, object.rotation.z];
-                if (property === "color") return materials()[0]?.albedoColor ?? object.color;
-                return object?.[property];
-            },
-            Set(property, value) {
-                if (isTransform3D) {
-                    if (property === "position") return object.SetPosition?.(value[0], value[1], value[2]) ?? object.position.splice(0, 3, ...value);
-                    if (property === "rotation") return object.SetRotation?.(value[0], value[1], value[2]);
-                    if (property === "scale") return object.SetScale?.(value[0], value[1], value[2]) ?? object.scale.splice(0, 3, ...value);
-                }
-                if (property === "color" || property === "opacity") {
-                    const list = materials();
-                    if (list.length) {
-                        for (const material of list) {
-                            if (!material.albedoColor) continue;
-                            if (property === "color") material.albedoColor = [...value];
-                            else material.albedoColor[3] = value;
-                            if ((property === "opacity" ? value : value[3]) < 1) material.transparent = true;
-                        }
-                        return;
-                    }
-                    if (property === "opacity") { object.alpha = value; object.opacity = value; return; }
-                }
-                if (property === "position" && !isTransform3D && object && "x" in object) {
-                    object.x = value[0]; object.y = value[1];
-                    return;
-                }
-                if (property === "rotation" && !isTransform3D && Array.isArray(value)) { object.rotation = value[2] ?? value[0]; return; }
-                if (object) object[property] = Array.isArray(value) ? [...value] : value;
-            },
-            PlayClip(name) {
-                const target = animator ?? object?.animator ?? object?.skeletal;
-                target?.Play?.(name);
-            },
-        };
-    }
 }
 
 /** @param {any} clip */
@@ -255,4 +267,13 @@ function Compare(left, op, right) {
         case "!=": return left !== right;
         default: return left === right;
     }
+}
+
+/**
+ * Code-first entry point: an AnimationPlayer for `target`, built with Clip / Track / Event /
+ * Transition and added to a level like any entity.
+ * @param {any} target @param {Record<string, any>} [settings]
+ */
+export function Animate(target, settings = {}) {
+    return new AnimationPlayer(settings, { target });
 }

@@ -15,6 +15,7 @@ export function audioModule({ initialize = true } = {}) {
                 context.services.delete("audio");
             });
             context.assets.audio = audio;
+            audio.assets = context.assets;
             context.services.set("audio", audio);
             if (initialize) {
                 audio.Initialize();

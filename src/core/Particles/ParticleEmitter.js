@@ -1,30 +1,37 @@
 // @ts-check
 import { Component } from "../Component.js";
 import { SceneComponents } from "../Scene/SceneComponents.js";
+import { TargetPosition } from "../Scene/Targets.js";
 
 /**
  * Bounded particle simulation shared by 2D and 3D: emission (rate, bursts, shape, cone),
  * motion (speed, gravity) and colour / size over each particle's life. It only simulates;
- * `ParticleRenderer2D` (canvas) and `ParticleRenderer3D` (one batched mesh) draw it, in the
- * editor's viewport as in Play. Units are the scene's (world units in 3D, pixels in 2D).
+ * its `renderer` (`ParticleRenderer2D` on a canvas, `ParticleRenderer3D` as one batched mesh)
+ * draws it and follows its lifecycle, so an emitter is one level entity. Units are the scene's
+ * (world units in 3D, pixels in 2D). The scene's `ParticleEmitter` component is exactly `settings`.
  *
  * @example
- * const sparks = level.AddEntity(new ParticleEmitter({ rate: 40, blend: "additive" }, { origin: () => [0, 1, 0] }));
+ * // Code first: Particles3D / Particles2D pick the renderer
+ * const sparks = level.AddEntity(Particles3D(level.scene, { rate: 40, blend: "additive" }, { target: torch }));
  * sparks.Emit(20); // an extra burst
  */
 export class ParticleEmitter extends Component {
     /**
      * @param {Record<string, any>} [settings] - `ParticleEmitter` component values.
-     * @param {{origin?: (() => number[])|null, name?: string}} [options] - `origin`: where the
-     *   emitter is (the node's world position), read every frame.
+     * @param {{target?: any, renderer?: ((emitter: ParticleEmitter) => any)|any, name?: string}} [options]
+     *   `target`: where the emitter is, read every frame (a node, Transform3D, 2D object, [x, y, z]
+     *   or a function; see Targets.js); `renderer`: draws the particles (a renderer or a factory).
      */
-    constructor(settings = {}, { origin = null, name = "" } = {}) {
+    constructor(settings = {}, { target = null, renderer = null, name = "" } = {}) {
         super();
         this.name = name;
-        this.origin = origin;
+        this.target = target;
         /** Particles not emitted because `maxParticles` were alive. */
         this.dropped = 0;
         this.Configure(settings);
+        // Created after Configure, so the renderer sees the emitter's capacity.
+        /** @type {any} */
+        this.renderer = typeof renderer === "function" ? renderer(this) : renderer;
     }
 
     /** Applies new settings (editor changes); live particles keep flying. @param {Record<string, any>} settings */
@@ -48,7 +55,8 @@ export class ParticleEmitter extends Component {
         this.playing ??= false;
     }
 
-    OnStart() {
+    OnStart(context) {
+        this.renderer?.OnStart?.(context);
         if (this.settings.playOnStart) this.Play();
     }
 
@@ -66,9 +74,9 @@ export class ParticleEmitter extends Component {
         if (clear) this.count = 0;
     }
 
-    /** Where new particles start: the origin, or 0 in local space. */
+    /** Where the emitter is (its target's world position, or the origin). */
     Origin() {
-        return this.origin?.() ?? [0, 0, 0];
+        return TargetPosition(this.target) ?? [0, 0, 0];
     }
 
     /** Emits `count` particles now (dropped past maxParticles). @param {number} count */
@@ -128,6 +136,15 @@ export class ParticleEmitter extends Component {
             d[i + 3] += g[0] * dt; d[i + 4] += g[1] * dt; d[i + 5] += (g[2] ?? 0) * dt;
             d[i] += d[i + 3] * dt; d[i + 1] += d[i + 4] * dt; d[i + 2] += d[i + 5] * dt;
         }
+        this.renderer?.OnUpdate?.(dt);
+    }
+
+    OnDrawn() {
+        this.renderer?.OnDrawn?.();
+    }
+
+    ToJSON() {
+        return structuredClone(this.settings);
     }
 
     /**
@@ -148,7 +165,9 @@ export class ParticleEmitter extends Component {
 
     OnDestroy() {
         this.count = 0;
-        this.origin = null;
+        this.renderer?.OnDestroy?.();
+        this.renderer = null;
+        this.target = null;
     }
 }
 

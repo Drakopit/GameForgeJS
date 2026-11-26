@@ -19,4 +19,4 @@ export { OrthographicCamera } from "./Render3D/Camera/OrthographicCamera.js";
 export { HeightGrid } from "./Navigation/HeightGrid.js";
 export { WetSurfaceResponse } from "./Environment/WetSurfaceResponse.js";
 export { AmbientLight, CelestialBodyMaterial, Color, DirectionalLight, Geometry3D, HemisphereLight, Mesh, PerspectiveCamera, PointLight, PrimitiveMesh, Scene3D, SceneManifest3D, Skybox, SpotLight, Material, Shader, BuiltinShaders, ShaderLibrary, ResolveShaderIncludes, HasShaderIncludes, ShaderAsset, NormalizeShaderValue, ShaderMaterial, StandardMaterial, ToonMaterial, Texture, Transform3D, UnlitMaterial, WebGL3DRenderer } from "./Render3D/index.js";
-export { PARTICLE_SHADER, ParticleRenderer3D } from "./Effects/ParticleRenderer3D.js";
+export { PARTICLE_SHADER, ParticleRenderer3D, Particles3D } from "./Effects/ParticleRenderer3D.js";

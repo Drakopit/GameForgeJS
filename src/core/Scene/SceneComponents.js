@@ -84,8 +84,8 @@ export class SceneComponents {
                 { key: "visible", type: "boolean", default: true },
             ].map(Object.freeze)),
         }),
-        Animation: Object.freeze({
-            label: "Animation",
+        AnimationPlayer: Object.freeze({
+            label: "Animation Player",
             fields: Object.freeze([
                 { key: "initial", type: "string", default: "" },
                 { key: "playOnStart", type: "boolean", default: true },

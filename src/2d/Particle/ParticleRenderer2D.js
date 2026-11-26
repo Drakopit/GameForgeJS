@@ -1,12 +1,13 @@
 // @ts-check
 import { Component } from "../../core/Component.js";
+import { ParticleEmitter } from "../../core/Particles/ParticleEmitter.js";
 
 /**
  * Draws a `ParticleEmitter` on a 2D canvas (the game's screen, or the editor's viewport):
  * soft, circle or square sprites, alpha or additive blending.
  *
  * @example
- * level.AddEntity(new ParticleRenderer2D(emitter, { screen: level.screen }));
+ * new ParticleEmitter(settings, { renderer: emitter => new ParticleRenderer2D(emitter, { screen }) }); // or Particles2D(settings)
  */
 export class ParticleRenderer2D extends Component {
     /**
@@ -20,7 +21,8 @@ export class ParticleRenderer2D extends Component {
     }
 
     OnDrawn() {
-        if (this.screen?.Context) ParticleRenderer2D.Draw(this.screen.Context, this.emitter);
+        const screen = this.screen ?? /** @type {any} */ (this.emitter)?.level?.screen;
+        if (screen?.Context) ParticleRenderer2D.Draw(screen.Context, this.emitter);
     }
 
     /**
@@ -61,4 +63,15 @@ export class ParticleRenderer2D extends Component {
         this.emitter = null;
         this.screen = null;
     }
+}
+
+/**
+ * Code-first 2D particles: a ParticleEmitter drawn on `screen` (default: the level's screen).
+ * @param {Record<string, any>} [settings] - `ParticleEmitter` values.
+ * @param {{screen?: any, target?: any, name?: string}} [options]
+ * @example
+ * level.AddEntity(Particles2D({ rate: 30, gravity: [0, 200, 0] }, { target: player }));
+ */
+export function Particles2D(settings = {}, { screen = null, ...options } = {}) {
+    return new ParticleEmitter(settings, { ...options, renderer: emitter => new ParticleRenderer2D(emitter, { screen }) });
 }

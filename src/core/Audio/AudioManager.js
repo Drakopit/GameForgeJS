@@ -16,6 +16,8 @@ export class AudioManager {
 
     constructor() {
         this.context = null;
+        /** @type {any} The game's AssetManager: clips can be played by resources.json name. */
+        this.assets = null;
 
         // Nodos Globais
         this.masterGain = null;
@@ -112,6 +114,16 @@ export class AudioManager {
     /**
      * Plays a one-shot sound effect (kept for older games; see PlaySound).
      */
+    /**
+     * A clip: an AudioBuffer as it is, or a name from resources.json audios (`assets.audios[name]`,
+     * with the game's AssetManager as `assets`). @param {AudioBuffer|string|null} clip
+     * @returns {AudioBuffer|null}
+     */
+    Clip(clip) {
+        if (typeof clip === "string") return this.assets?.audios?.[clip] ?? null;
+        return clip ?? null;
+    }
+
     PlaySFX(audioBuffer, localVolume = 1.0) {
         return this.PlaySound(audioBuffer, { volume: localVolume, force: true });
     }
@@ -120,11 +132,12 @@ export class AudioManager {
      * Plays a sound: 2D, or positional when `position` is given (an [x, y, z] point heard from
      * the listener, see SetListener). A suspended context drops one-shots instead of queueing a
      * burst for later; looping sounds start and are heard once audio unlocks.
-     * @param {AudioBuffer} buffer - Decoded clip (`assets.audios[name]`).
+     * @param {AudioBuffer|string} buffer - Decoded clip, or its resources.json name.
      * @param {{volume?: number, pitch?: number, loop?: boolean, position?: number[]|null, minDistance?: number, maxDistance?: number, force?: boolean}} [options]
      * @returns {{source: AudioBufferSourceNode, gain: GainNode, panner: PannerNode|null, SetPosition: (position: number[]) => void, SetVolume: (volume: number) => void, Stop: () => void}|null}
      */
     PlaySound(buffer, { volume = 1, pitch = 1, loop = false, position = null, minDistance = 1, maxDistance = 30, force = false } = {}) {
+        buffer = /** @type {AudioBuffer} */ (this.Clip(buffer));
         const ctx = this.context;
         if (!ctx || !buffer || !this.masterGain) return null;
         if (!loop && !force && ctx.state !== "running") return null;
@@ -183,10 +196,13 @@ export class AudioManager {
     /**
      * Starts a music track, crossfading from the current one over `fade` seconds (0 cuts).
      * Playing the track that is already on only changes its volume.
-     * @param {AudioBuffer} buffer
+     * @param {AudioBuffer|string} buffer - Decoded clip, or its resources.json name.
      * @param {{volume?: number, fade?: number, loop?: boolean}} [options]
+     * @example
+     * audio.PlayMusic("theme", { fade: 1.5 });
      */
     PlayMusic(buffer, { volume = 0.5, fade = 1, loop = true } = {}) {
+        buffer = /** @type {AudioBuffer} */ (this.Clip(buffer));
         const ctx = this.context;
         if (!ctx || !buffer || !this.masterGain) return null;
         if (this.music?.buffer === buffer) {

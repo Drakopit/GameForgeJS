@@ -50,7 +50,7 @@ export { SurfaceMaterial } from './Render3D/Material/SurfaceMaterial.js';
 export { SurfaceAnimator } from './Environment/SurfaceAnimator.js';
 export { RainEmitter } from './Environment/RainEmitter.js';
 export { RainRenderer } from './Environment/RainRenderer.js';
-export { PARTICLE_SHADER, ParticleRenderer3D } from './Effects/ParticleRenderer3D.js';
+export { PARTICLE_SHADER, ParticleRenderer3D, Particles3D } from './Effects/ParticleRenderer3D.js';
 
 export { OrthographicCamera } from './Render3D/Camera/OrthographicCamera.js';
 
