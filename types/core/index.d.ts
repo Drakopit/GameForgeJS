@@ -37,6 +37,9 @@ export { dfs } from "./Pathfinding/DFS.js";
 export { dijkstra } from "./Pathfinding/Dijkstra.js";
 export { SceneDocument } from "./Scene/SceneDocument.js";
 export { SceneManager } from "./Scene/SceneManager.js";
+export { SceneComponents } from "./Scene/SceneComponents.js";
+export { SceneSystems } from "./Scene/SceneSystems.js";
+export { AudioSource } from "./Audio/AudioSource.js";
 export { Store } from "./Store.js";
 export { Util } from "./Utils.js";
 export { GameViewport } from "./Window/GameViewport.js";
@@ -45,3 +48,6 @@ export { ActionInputComponent, BoundsComponent, Component, HealthComponent, Life
 export { Engine, LevelHandler, DEBUG } from "./Engine.js";
 export { CharCode, KeyCode } from "./Input/KeyCode.js";
 export { getNeighbors, key, reconstructPath } from "./Pathfinding/Structure.js";
+export { ParticleEmitter, SampleCurve, SampleGradient } from "./Particles/ParticleEmitter.js";
+export { CanvasScale, FormatBinding, LayoutRect, ProgressFraction, UICanvas } from "./UI/UICanvas.js";
+export { AnimationPlayer, SampleTrack } from "./Animation/AnimationPlayer.js";

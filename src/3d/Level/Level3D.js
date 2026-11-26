@@ -2,6 +2,11 @@ import { Level } from "../../core/Level/Level.js";
 import { Screen3D } from "../Window/Screen3D.js";
 import { PerspectiveCamera, Scene3D, WebGL3DRenderer } from "../Render3D/index.js";
 import { PhysicsWorld3D } from "../Physics/PhysicsWorld3D.js";
+import { SceneManifest3D } from "../Render3D/Scene/SceneManifest3D.js";
+import { ParticleRenderer3D } from "../Effects/ParticleRenderer3D.js";
+import { SceneDocument } from "../../core/Scene/SceneDocument.js";
+import { SceneSystems } from "../../core/Scene/SceneSystems.js";
+import { AnimationPlayer } from "../../core/Animation/AnimationPlayer.js";
 
 /**
  * Base level for current Render3D games with optional canvas UI and physics.
@@ -79,6 +84,59 @@ export class Level3D extends Level {
      * @returns {void}
      */
     BuildScene() {}
+
+    /**
+     * Builds the level from a scene file, exactly as the editor's 3D view draws it
+     * (SceneManifest3D.Create: camera, background, fog, skybox, lights, objects), and starts the
+     * scene's systems: animations, particle emitters, audio sources and UI canvases
+     * (SceneSystems). Positional audio hears from the camera.
+     * @param {SceneDocument|Object|string} source - A scene, its JSON, or its resources.json name.
+     * @returns {Object} SceneManifest3D content plus `systems` and `document`.
+     * @example
+     * BuildScene() {
+     *     const { systems } = this.BuildFromScene("first_scene");
+     *     this.hud = systems.Find("hud").canvas;
+     * }
+     */
+    BuildFromScene(source) {
+        const assets = this.context?.assets ?? null;
+        const data = typeof source === "string" ? assets?.jsons?.[source] : source;
+        if (!data) throw new Error(`Scene "${source}" is not loaded (list it in resources.json).`);
+        const document = data instanceof SceneDocument ? data : new SceneDocument(data);
+        const content = SceneManifest3D.Create(document.ToManifest3D(), { aspect: this.width / this.height, assets });
+        this.scene = content.scene;
+        this.camera = content.camera;
+        const transformOf = id => content.transforms?.get(id) ?? content.nodes.get(id)?.root ?? content.nodes.get(id)?.meshes?.[0]?.transform ?? null;
+        const systems = SceneSystems.Attach(this, document, {
+            assets,
+            particles: emitter => new ParticleRenderer3D(this.scene, emitter),
+            position: node => {
+                const transform = transformOf(node.id);
+                if (!transform) return document.WorldPosition(node);
+                const matrix = transform.GetMatrix();
+                return [matrix[12], matrix[13], matrix[14]];
+            },
+            bind: node => {
+                const transform = transformOf(node.id);
+                const entry = content.nodes.get(node.id);
+                return transform ? AnimationPlayer.Bind(transform, { meshes: entry?.meshes ?? [], animator: entry?.model?.animator ?? null }) : null;
+            },
+            uiTarget: this.screen3D?.Canvas ?? null,
+        });
+        if (systems.audio.some(source => source.settings.spatial)) {
+            const camera = () => this.camera;
+            this.AddEntity({
+                OnUpdate: () => {
+                    const view = camera(), audio = systems.audio[0]?.audio;
+                    if (!view || !audio) return;
+                    const forward = view.target ? view.target.map((value, index) => value - view.position[index]) : [0, 0, -1];
+                    audio.SetListener(view.position, forward);
+                },
+            });
+        }
+        this.sceneSystems = systems;
+        return { ...content, systems, document };
+    }
 
     OnUpdate(dt) {
         super.OnUpdate(dt);

@@ -3,6 +3,11 @@
 /**
  * Web Audio service. New games own an instance; the lazy static accessor supports older games.
  */
+function setPannerPosition(panner, [x, y, z = 0]) {
+    if (panner.positionX) { panner.positionX.value = x; panner.positionY.value = y; panner.positionZ.value = z; }
+    else panner.setPosition?.(x, y, z);
+}
+
 export class AudioManager {
     // Padrão Singleton: Só existe uma instância no jogo inteiro
     static _instance = null;
@@ -25,6 +30,8 @@ export class AudioManager {
         this.volume = 1;
         this.muted = false;
         this.maxVoices = 24;
+        /** @type {{buffer: AudioBuffer, source: AudioBufferSourceNode, gain: GainNode, volume: number}|null} */
+        this.music = null;
     }
 
     // A inicialização deve ser chamada no primeiro clique/interação do usuário
@@ -103,67 +110,149 @@ export class AudioManager {
     }
 
     /**
-     * Plays a one-shot sound effect.
-     * Creates a source and releases its audio nodes when playback ends.
+     * Plays a one-shot sound effect (kept for older games; see PlaySound).
      */
     PlaySFX(audioBuffer, localVolume = 1.0) {
-        if (!this.context || !audioBuffer) return;
-
-        // Cria o reprodutor para ESTE som específico
-        const source = this.context.createBufferSource();
-        source.buffer = audioBuffer;
-
-        // Cria um controle de volume individual para este tiro/pulo
-        const sfxGain = this.context.createGain();
-        sfxGain.gain.value = localVolume;
-
-        // Rota: Som -> Volume Local -> Volume Global
-        source.connect(sfxGain);
-        sfxGain.connect(this.masterGain);
-        this.activeSources.add(source);
-        source.onended = () => { source.disconnect(); sfxGain.disconnect(); this.activeSources.delete(source); };
-
-        source.start(0); // Toca imediatamente
+        return this.PlaySound(audioBuffer, { volume: localVolume, force: true });
     }
 
     /**
-     * Replaces the current background track and starts looping playback.
+     * Plays a sound: 2D, or positional when `position` is given (an [x, y, z] point heard from
+     * the listener, see SetListener). A suspended context drops one-shots instead of queueing a
+     * burst for later; looping sounds start and are heard once audio unlocks.
+     * @param {AudioBuffer} buffer - Decoded clip (`assets.audios[name]`).
+     * @param {{volume?: number, pitch?: number, loop?: boolean, position?: number[]|null, minDistance?: number, maxDistance?: number, force?: boolean}} [options]
+     * @returns {{source: AudioBufferSourceNode, gain: GainNode, panner: PannerNode|null, SetPosition: (position: number[]) => void, SetVolume: (volume: number) => void, Stop: () => void}|null}
+     */
+    PlaySound(buffer, { volume = 1, pitch = 1, loop = false, position = null, minDistance = 1, maxDistance = 30, force = false } = {}) {
+        const ctx = this.context;
+        if (!ctx || !buffer || !this.masterGain) return null;
+        if (!loop && !force && ctx.state !== "running") return null;
+        if (this.activeSources.size >= this.maxVoices) return null;
+        const source = ctx.createBufferSource();
+        source.buffer = buffer;
+        source.loop = Boolean(loop);
+        source.playbackRate.value = Math.max(0.05, Number(pitch) || 1);
+        const gain = ctx.createGain();
+        gain.gain.value = Math.max(0, Number(volume) || 0);
+        let panner = null;
+        if (Array.isArray(position)) {
+            panner = ctx.createPanner();
+            panner.panningModel = "HRTF";
+            panner.distanceModel = "linear";
+            panner.refDistance = Math.max(0.01, minDistance);
+            panner.maxDistance = Math.max(panner.refDistance + 0.01, maxDistance);
+            setPannerPosition(panner, position);
+            source.connect(gain).connect(panner).connect(this.masterGain);
+        } else {
+            source.connect(gain).connect(this.masterGain);
+        }
+        this.activeSources.add(source);
+        const handle = {
+            source, gain, panner,
+            SetPosition: point => { if (panner && Array.isArray(point)) setPannerPosition(panner, point); },
+            SetVolume: value => { gain.gain.value = Math.max(0, Number(value) || 0); },
+            Stop: () => { try { source.stop(); } catch { /* not started or already ended */ } release(); },
+        };
+        const release = () => {
+            if (!this.activeSources.delete(source)) return;
+            source.disconnect(); gain.disconnect(); panner?.disconnect();
+        };
+        source.onended = release;
+        source.start(0);
+        return handle;
+    }
+
+    /**
+     * Where the listener stands (usually the camera): positional sounds pan and fade from here.
+     * @param {number[]} position @param {number[]} [forward] @param {number[]} [up]
+     */
+    SetListener(position, forward = [0, 0, -1], up = [0, 1, 0]) {
+        const listener = this.context?.listener;
+        if (!listener) return;
+        if (listener.positionX) {
+            listener.positionX.value = position[0]; listener.positionY.value = position[1]; listener.positionZ.value = position[2] ?? 0;
+            listener.forwardX.value = forward[0]; listener.forwardY.value = forward[1]; listener.forwardZ.value = forward[2];
+            listener.upX.value = up[0]; listener.upY.value = up[1]; listener.upZ.value = up[2];
+        } else {
+            listener.setPosition?.(position[0], position[1], position[2] ?? 0);
+            listener.setOrientation?.(forward[0], forward[1], forward[2], up[0], up[1], up[2]);
+        }
+    }
+
+    /**
+     * Starts a music track, crossfading from the current one over `fade` seconds (0 cuts).
+     * Playing the track that is already on only changes its volume.
+     * @param {AudioBuffer} buffer
+     * @param {{volume?: number, fade?: number, loop?: boolean}} [options]
+     */
+    PlayMusic(buffer, { volume = 0.5, fade = 1, loop = true } = {}) {
+        const ctx = this.context;
+        if (!ctx || !buffer || !this.masterGain) return null;
+        if (this.music?.buffer === buffer) {
+            this.SetMusicVolume(volume, fade);
+            return this.music;
+        }
+        this.StopMusic({ fade });
+        const source = ctx.createBufferSource();
+        source.buffer = buffer;
+        source.loop = Boolean(loop);
+        const gain = ctx.createGain();
+        const now = ctx.currentTime;
+        gain.gain.setValueAtTime(fade > 0 ? 0 : volume, now);
+        if (fade > 0) gain.gain.linearRampToValueAtTime(volume, now + fade);
+        source.connect(gain).connect(this.masterGain);
+        source.start(0);
+        this.music = { buffer, source, gain, volume };
+        this.currentBGM = source;
+        this.currentBGMGain = gain;
+        source.onended = () => { if (this.music?.source === source) this.StopMusic(); };
+        return this.music;
+    }
+
+    /** @param {number} volume @param {number} [fade] - Seconds. */
+    SetMusicVolume(volume, fade = 0) {
+        if (!this.music || !this.context) return;
+        const gain = this.music.gain.gain, now = this.context.currentTime;
+        this.music.volume = volume;
+        gain.cancelScheduledValues(now);
+        gain.setValueAtTime(gain.value, now);
+        if (fade > 0) gain.linearRampToValueAtTime(volume, now + fade);
+        else gain.setValueAtTime(volume, now);
+    }
+
+    /** Stops the music, fading out over `fade` seconds (0 stops at once). */
+    StopMusic({ fade = 0 } = {}) {
+        const music = this.music;
+        if (!music) return;
+        this.music = null;
+        this.currentBGM = this.currentBGMGain = null;
+        const stop = () => {
+            try { music.source.stop(); } catch { /* not started yet (suspended context) */ }
+            music.source.disconnect(); music.gain.disconnect();
+        };
+        if (fade > 0 && this.context) {
+            const gain = music.gain.gain, now = this.context.currentTime;
+            gain.cancelScheduledValues(now);
+            gain.setValueAtTime(gain.value, now);
+            gain.linearRampToValueAtTime(0, now + fade);
+            music.source.onended = null;
+            try { music.source.stop(now + fade); } catch { stop(); return; }
+            setTimeout(stop, fade * 1000 + 50);
+        } else {
+            stop();
+        }
+    }
+
+    /**
+     * Replaces the current background track and starts looping playback (older games; see PlayMusic).
      */
     PlayBGM(audioBuffer, localVolume = 0.5) {
-        if (!this.context || !audioBuffer) return;
-
-        this.StopBGM(); // Para a música atual antes de tocar a nova
-
-        this.currentBGM = this.context.createBufferSource();
-        this.currentBGM.buffer = audioBuffer;
-        this.currentBGM.loop = true;
-
-        const bgmGain = this.context.createGain();
-        this.currentBGMGain = bgmGain;
-        bgmGain.gain.value = localVolume;
-
-        this.currentBGM.connect(bgmGain);
-        bgmGain.connect(this.masterGain);
-
-        this.currentBGM.start(0);
+        return this.PlayMusic(audioBuffer, { volume: localVolume, fade: 0 });
     }
 
     StopBGM() {
-        if (this.currentBGM) {
-            try {
-                // Tenta parar a música. Se ela estiver "suspended" pelo navegador,
-                // isso pode dar erro, então o catch ignora o erro e continua a limpeza.
-                this.currentBGM.stop();
-            } catch (e) {
-                console.warn("GameForgeJS: BGM parada antes de ser iniciada pelo usuário.");
-            }
-
-            // Garante que o nó seja desconectado e apagado da memória
-            this.currentBGM.disconnect();
-            this.currentBGM = null;
-        }
-        this.currentBGMGain?.disconnect();
-        this.currentBGMGain = null;
+        this.StopMusic();
     }
 
     async Dispose() {

@@ -39,19 +39,53 @@ export class Level3D extends Level {
     screen3D: Screen3D;
     ui: any;
     renderer: WebGL3DRenderer;
-    scene: Scene3D;
-    camera: PerspectiveCamera;
+    scene: any;
+    camera: any;
     physics: PhysicsWorld3D;
     /**
      * Scene construction hook implemented by a game level.
      * @returns {void}
      */
     BuildScene(): void;
+    /**
+     * Builds the level from a scene file, exactly as the editor's 3D view draws it
+     * (SceneManifest3D.Create: camera, background, fog, skybox, lights, objects), and starts the
+     * scene's systems: animations, particle emitters, audio sources and UI canvases
+     * (SceneSystems). Positional audio hears from the camera.
+     * @param {SceneDocument|Object|string} source - A scene, its JSON, or its resources.json name.
+     * @returns {Object} SceneManifest3D content plus `systems` and `document`.
+     * @example
+     * BuildScene() {
+     *     const { systems } = this.BuildFromScene("first_scene");
+     *     this.hud = systems.Find("hud").canvas;
+     * }
+     */
+    BuildFromScene(source: SceneDocument | any | string): any;
+    sceneSystems: {
+        audio: import("../../core/index.js").AudioSource[];
+        emitters: import("../../core/index.js").ParticleEmitter[];
+        renderers: any[];
+        canvases: import("../../core/index.js").UICanvas[];
+        animations: AnimationPlayer[];
+        byId: Map<string, {
+            audio?: import("../../core/index.js").AudioSource;
+            emitter?: import("../../core/index.js").ParticleEmitter;
+            canvas?: import("../../core/index.js").UICanvas;
+            animation?: AnimationPlayer;
+        }>;
+        Find(id: string): {
+            audio?: import("../../core/index.js").AudioSource;
+            emitter?: import("../../core/index.js").ParticleEmitter;
+            canvas?: import("../../core/index.js").UICanvas;
+            animation?: AnimationPlayer;
+        };
+        All(): any[];
+    };
     OnFixedUpdate(dt: any): void;
 }
 import { Level } from "../../core/Level/Level.js";
 import { Screen3D } from "../Window/Screen3D.js";
 import { WebGL3DRenderer } from "../Render3D/index.js";
-import { Scene3D } from "../Render3D/index.js";
-import { PerspectiveCamera } from "../Render3D/index.js";
 import { PhysicsWorld3D } from "../Physics/PhysicsWorld3D.js";
+import { SceneDocument } from "../../core/Scene/SceneDocument.js";
+import { AnimationPlayer } from "../../core/Animation/AnimationPlayer.js";

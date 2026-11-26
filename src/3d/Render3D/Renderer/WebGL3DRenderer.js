@@ -410,7 +410,9 @@ export class WebGL3DRenderer {
 
         if (material.transparent) {
             gl.enable(gl.BLEND);
-            gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+            // Additive blending (glows, sparks) adds light instead of covering what is behind.
+            if ((material.blend ?? material.asset?.render.blend) === "additive") gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+            else gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
         } else {
             gl.disable(gl.BLEND);
         }

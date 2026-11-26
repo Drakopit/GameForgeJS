@@ -138,9 +138,10 @@ export class SceneManifest3D {
      * @param {Object} [manifest={}] - Scene manifest definition.
      * @param {Object} [options]
      * @param {Object} [options.assets] - Asset resolver or AssetManager.
-     * @returns {{lights: Light[], objects: (Mesh|null)[], nodes: Map<string, Object>}} `objects[i]`
+     * @returns {{lights: Light[], objects: (Mesh|null)[], nodes: Map<string, Object>, transforms: Map<string, Transform3D>}} `objects[i]`
      *   is the first mesh of `manifest.objects[i]`; `nodes` maps each object id to
-     *   `{ root, meshes, materials, model, pending }` (see `BuildObject`).
+     *   `{ root, meshes, materials, model, pending }` (see `BuildObject`); `transforms` maps every
+     *   node of `manifest.transforms` (group nodes too) to its Transform3D.
      */
     static Populate(scene, manifest = {}, { assets = null } = {}) {
         manifest = this.Normalize(manifest);
@@ -165,7 +166,7 @@ export class SceneManifest3D {
             for (const mesh of node.meshes) scene.Add(mesh);
             return node.meshes[0] ?? null;
         });
-        return { lights, objects, nodes };
+        return { lights, objects, nodes, transforms };
     }
 
     /**
